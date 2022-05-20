@@ -1,0 +1,28 @@
+1. Create Root Certificate
+
+	New-SelfSignedCertificate -DnsName "CUSTOM-PWSH Script Signing" `
+	-Type CodeSigningCert -CertStoreLocation Cert:\LocalMachine\My
+
+2. Move from CA to Root
+
+	Open Machine Zertifikat Manager und gehe in "Zwischenzertifizierungstellen" -> "Zertifikate" 
+	Suche "Powershell Script Signing Root"
+	Verschiebe es in "Vertrauenswürdige Stammzertifizierungsstellen"
+
+2. Get CA-Zertifikat Thumbprint
+
+	Get-ChildItem cert:localMachine\Root -DnsName "CUSTOM-PWSH Script Signing"
+	
+	
+3. sign the Add-Signature.ps1 script file, type the following commands at the PowerShell command prompt:
+
+	$cert = @(Get-ChildItem cert:\localMachine\My -DnsName "CUSTOM-PWSH Script Signing")[0]
+	Set-AuthenticodeSignature add-signature.ps1 $cert
+
+6.  Setze die ExecutionPolicy
+
+	Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+	
+7. Starte Add-Signature Skript
+
+	.\add-signature .\Microsoft.PowerShell_profile.ps1

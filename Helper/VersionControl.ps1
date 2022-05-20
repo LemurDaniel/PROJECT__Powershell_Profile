@@ -42,7 +42,7 @@ function Open-RepositoryVSCode {
     if ($Repos -isnot [System.Collections.ArrayList]) {
         $Repos = @($Repos)
     }
-    if($Repos) {
+    if ($Repos) {
         $ChosenRepo = Get-PreferencedObject -SearchObjects $Repos -SearchTags $RepositoryName
     }
     if ($ChosenRepo -AND $Method -eq "local") {
@@ -83,4 +83,16 @@ function Switch-GitConfig {
     Write-Host "    $(git config  --global user.name )"
     Write-Host "    $(git config  --global user.email )"
     Write-Host ""
+}
+
+function Push-Profile {
+
+    $byteArray = [System.BitConverter]::GetBytes((Get-Random))
+    $hex = [System.Convert]::ToHexString($byteArray)
+        
+    git -C $env:PS_PROFILE_PATH pull origin
+    git -C $env:PS_PROFILE_PATH add -A
+    git -C $env:PS_PROFILE_PATH commit -m "$hex"
+    git -C $env:PS_PROFILE_PATH push
+
 }

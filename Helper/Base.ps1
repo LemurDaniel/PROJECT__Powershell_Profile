@@ -120,17 +120,17 @@ function Edit-PSProfile {
         [Parameter()]
         [System.String]
         [ValidateSet([PsProfile])] 
-        $Profile = "Profile"
+        $PsProfile = "Profile"
     )
 
-    if ($Profile -eq "Profile") {
+    if ($PsProfile -eq "Profile") {
         code  $env:PS_PROFILE
     }
-    elseif ($Profile -eq "All") {
+    elseif ($PsProfile -eq "All") {
         code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "*.ps1")      
     }
     else {
-        code  (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "$Profile.ps1") 
+        code  (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "$PsProfile.ps1") 
     }
 }
 

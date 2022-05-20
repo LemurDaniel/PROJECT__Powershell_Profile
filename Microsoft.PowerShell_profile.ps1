@@ -31,13 +31,6 @@ $env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json"
 ########################################################################################################
 ########################################################################################################
 
-$byteArray = [System.BitConverter]::GetBytes((Get-Random))
-$hex = [System.Convert]::ToHexString($byteArray)
-        
-git -C $env:PS_PROFILE_PATH pull origin
-git -C $env:PS_PROFILE_PATH add -A
-git -C $env:PS_PROFILE_PATH commit -m "$hex"
-git -C $env:PS_PROFILE_PATH push
 
 . $env:PROFILE_HELPERS_PATH/Base.ps1
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1

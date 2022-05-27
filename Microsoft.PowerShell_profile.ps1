@@ -10,8 +10,8 @@ $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE\..\Helper").Path
 
 
 ## Resolve Repository Path
-$env:RepoPath = "$env:Userprofile/Documents/Repos"
-$env:RepoPathSecondary = "$env:Userprofile/Repos"
+$env:RepoPath = "$env:Userprofile/Repos"
+$env:RepoPathSecondary = "$env:Userprofile/Documents/Repos"
 if (Test-Path $env:RepoPath) {
   $env:RepoPath = (Resolve-Path $env:RepoPath).Path
 }
@@ -20,9 +20,9 @@ else {
 }
 
 ## Resolve App Path
-$env:AppPath = "$env:OneDrive/Dokumente/Apps/"
+$env:AppPath = "$env:OneDrive/Apps/"
 $env:AppPathSecondary = "$env:OneDrive/Dokumente/Apps/"
-if (Test-Path $env:TerraformPath) {
+if (Test-Path $env:AppPath) {
   $env:AppPath = (Resolve-Path $env:AppPath).Path
 }
 else {

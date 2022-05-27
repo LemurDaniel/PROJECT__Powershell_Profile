@@ -23,7 +23,7 @@ function Open-RepositoryVSCode {
         $RepositoryName,
 
         [Parameter()]
-        [ValidateSet("DC", "RD")] # DC-Migration, RD-Redeployment
+        [ValidateSet([RepoProjects])]  # DC-Migration, RD-Redeployment
         $Project = "DC",
 
         [Parameter()]

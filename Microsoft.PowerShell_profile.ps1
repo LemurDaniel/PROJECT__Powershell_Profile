@@ -1,3 +1,6 @@
+
+$ErrorActionPreference = "Stop"
+
 ## ENV Variables
 $env:SECRET_TOKEN_STORE = Join-Path -Path $env:APPDATA -ChildPath "SECRET_TOKEN_STORE/TOKEN_STORE.json"
 
@@ -5,14 +8,28 @@ $env:PS_PROFILE = $PROFILE
 $env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path
 $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE\..\Helper").Path
 
-$env:RepoPathPrimary = (Resolve-Path  "$env:Userprofile/Documents/Repos").Path
-$env:RepoPathSecondary = (Resolve-Path  "$env:Userprofile/Documents/Repos").Path
+## Resolve Repository Path
+$env:RepoPath = "$env:Userprofile/Documents/Repos"
+$env:RepoPathSecondary = "$env:Userprofile/Repos"
+if (Test-Path $env:RepoPath) {
+  $env:RepoPath = (Resolve-Path $env:RepoPath).Path
+}
+else {
+  $env:RepoPath = (Resolve-Path $env:RepoPathSecondary).Path
+}
 
-$env:TerraformPath = (Resolve-Path "$env:OneDrive/Dokumente/Apps/terraform/").Path
+### Resolve Terraform Path
 $env:TerraformDownloadSource = "https://releases.hashicorp.com/terraform/"
+$env:TerraformPath = "$env:OneDrive/Dokumente/Apps/terraform/"
+$env:TerraformPathSecondary = "$env:OneDrive/Apps/terraform/"
+if (Test-Path $env:TerraformPath) {
+  $env:TerraformPath = (Resolve-Path $env:TerraformPath).Path
+}
+else {
+  $env:TerraformPath = (Resolve-Path $env:TerraformPathSecondary).Path
+}
 
-$env:InitialEnvsPaths = $env:Path
-$env:RepoPath = $env:RepoPathPrimary 
+
 
 ########################################################################################################################
 ########################################################################################################################
@@ -31,7 +48,8 @@ $env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json"
 ########################################################################################################
 ########################################################################################################
 
-
+## Load Helper Functions
+. $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
 . $env:PROFILE_HELPERS_PATH/Base.ps1
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1
 . $env:PROFILE_HELPERS_PATH/Terraform.ps1
@@ -42,7 +60,6 @@ $env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json"
 ## Initial Script
 
 Add-EnvPaths
-
 Get-TerraformNewestVersion
 Switch-Terraform
 Switch-GitConfig

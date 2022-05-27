@@ -29,6 +29,7 @@ function Add-EnvPaths {
         VSCode            = "C:\Program Files\Microsoft VS Code\bin"
 
         WindowsAppsFolder = "C:\Users\M01947\AppData\Local\Microsoft\WindowsApps"
+        TerraformDocs     = "C:\Users\M01947\OneDrive - Nürnberger Baugruppe GmbH + Co KG\Apps\terraform-docs-v0.16.0-windows-amd64"
 
     }
 
@@ -104,15 +105,6 @@ function Get-PreferencedObject {
 
 
 ######################################################
-
-class PsProfile : System.Management.Automation.IValidateSetValuesGenerator {
-    [String[]] GetValidValues() {
-        return @(
-            "Profile",
-            "All"
-        ) + (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "*.ps1").Name.replace('.ps1', '')
-    }
-}
 
 function Edit-PSProfile {
 

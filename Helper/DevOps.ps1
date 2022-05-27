@@ -120,7 +120,10 @@ function New-BranchFromWorkitem {
     elseif ($workItem) {
 
 
-        $transformedTitle = $workItem.'System.Title'.toLower().split(' ') -join '-'
+        $transformedTitle = $workItem.'System.Title'.toLower() 
+        .replace(':','_').replace('!','').replace('?','')
+        .split(' ') -join '-'
+
         $branchName = "features/$($workItem.'System.id')-$transformedTitle"
 
         $byteArray = [System.BitConverter]::GetBytes((Get-Random))

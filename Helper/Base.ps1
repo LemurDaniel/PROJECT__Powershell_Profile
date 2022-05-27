@@ -18,6 +18,7 @@ function Add-EnvPaths {
         ThinPrint         = "C:\Program Files\ThinPrint Client\"
         ThinPrintx86      = "C:\Program Files (x86)\ThinPrint Client\"
 
+        nodejs            = "C:\Program Files\nodejs\"
         gitcmd            = "C:\Program Files\Git\cmd"
         git               = "C:\Program Files\Git"
 
@@ -25,11 +26,14 @@ function Add-EnvPaths {
         PowerShell        = "C:\Program Files\PowerShell\7\"
 
         AzureCLI          = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
-        nodejs            = "C:\Program Files\nodejs\"
-        VSCode            = "C:\Program Files\Microsoft VS Code\bin"
+
+        VSCodePrimary     = "C:\Program Files\Microsoft VS Code\bin"
+        VSCodeSecondary   = "C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
 
         WindowsAppsFolder = "C:\Users\M01947\AppData\Local\Microsoft\WindowsApps"
-        TerraformDocs     = "C:\Users\M01947\OneDrive - Nürnberger Baugruppe GmbH + Co KG\Apps\terraform-docs-v0.16.0-windows-amd64"
+ 
+        terraform         = $env:TerraformNewestVersion 
+        terraformDocs     = $env:TerraformDocsNewestVersion
 
     }
 

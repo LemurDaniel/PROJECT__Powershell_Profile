@@ -1,13 +1,14 @@
-(Get-Content -Path $env:SECRET_TOKEN_STORE | ConvertFrom-Json).PSObject.Properties | `
-    ForEach-Object { 
-    Write-Host "Loading '$($_.Name)' from Secret Store"
-    if ($_.value[0] -eq '´') {
-        $value = Invoke-Expression -Command $_.value.substring(1)
-        $null = New-Item -Path "env:$($_.Name)" -Value $value -Force
+
+
+function Update-AzDevOpsSecrets {
+
+    $DEVOPS = Get-PersonalSecret -SecretType AZURE_DEVOPS
+    $EXPIRES = [System.DateTime] $DEVOPS.EXPIRES
+    $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $EXPIRES
+    if ($TIMESPAN.Days -lt 2) {
+        Load-ONEDRIVE_SecretStore
     }
-    else {
-        $null = New-Item -Path "env:$($_.Name)" -Value $_.Value -Force  
-    }
+    
 }
 
 function Invoke-AzDevOpsRest {
@@ -63,7 +64,7 @@ function Invoke-AzDevOpsRest {
 
     try {
         $headers = @{ 
-            Authorization  = "Basic $env:AzureDevops_HEADER"
+            Authorization  = "Basic $env:AZURE_DEVOPS_HEADER"
             "Content-Type" = $Method.ToLower() -eq "get" ? "application/x-www-form-urlencoded" : "application/json"
         }
 
@@ -120,7 +121,7 @@ function New-BranchFromWorkitem {
     elseif ($workItem) {
 
 
-        $transformedTitle = $workItem.'System.Title'.toLower().replace(':','_').replace('!','').replace('?','').split(' ') -join '-'
+        $transformedTitle = $workItem.'System.Title'.toLower().replace(':', '_').replace('!', '').replace('?', '').split(' ') -join '-'
 
         $branchName = "features/$($workItem.'System.id')-$transformedTitle"
 

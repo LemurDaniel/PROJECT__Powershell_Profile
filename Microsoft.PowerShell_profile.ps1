@@ -1,9 +1,6 @@
 
 $ErrorActionPreference = "Stop"
 
-## ENV Variables
-$env:SECRET_TOKEN_STORE = Join-Path -Path $env:APPDATA -ChildPath "SECRET_TOKEN_STORE/TOKEN_STORE.json"
-
 $env:PS_PROFILE = $PROFILE
 $env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path
 $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE\..\Helper").Path
@@ -12,21 +9,22 @@ $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE\..\Helper").Path
 ## Resolve Repository Path
 $env:RepoPath = "$env:Userprofile/Repos"
 $env:RepoPathSecondary = "$env:Userprofile/Documents/Repos"
-if (Test-Path $env:RepoPath) {
-  $env:RepoPath = (Resolve-Path $env:RepoPath).Path
-}
-else {
+if (!(Test-Path $env:RepoPath)) {
   $env:RepoPath = (Resolve-Path $env:RepoPathSecondary).Path
 }
 
 ## Resolve App Path
 $env:AppPath = "$env:OneDrive/Apps/"
 $env:AppPathSecondary = "$env:OneDrive/Dokumente/Apps/"
-if (Test-Path $env:AppPath) {
-  $env:AppPath = (Resolve-Path $env:AppPath).Path
-}
-else {
+if (!(Test-Path $env:AppPath)) {
   $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
+}
+
+## ENV Variables
+$env:SECRET_TOKEN_STORE = "$env:AppPath/SECRET_STORE/TOKEN_STORE.json"
+$env:Secondary_SECRET_TOKEN_STORE = "$env:APPDATA/SECRET_TOKEN_STORE/TOKEN_STORE.json"
+if (!(Test-Path $env:RepoPath)) {
+  $env:SECRET_TOKEN_STORE = (Resolve-Path $env:Secondary_SECRET_TOKEN_STORE).Path
 }
 
 

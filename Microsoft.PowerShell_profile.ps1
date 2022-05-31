@@ -23,7 +23,7 @@ if (!(Test-Path $env:AppPath)) {
 ## ENV Variables
 $env:SECRET_TOKEN_STORE = "$env:AppPath/SECRET_STORE/TOKEN_STORE.json"
 $env:Secondary_SECRET_TOKEN_STORE = "$env:APPDATA/SECRET_TOKEN_STORE/TOKEN_STORE.json"
-if (!(Test-Path $env:RepoPath)) {
+if (!(Test-Path $env:SECRET_TOKEN_STORE)) {
   $env:SECRET_TOKEN_STORE = (Resolve-Path $env:Secondary_SECRET_TOKEN_STORE).Path
 }
 

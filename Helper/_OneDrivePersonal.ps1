@@ -13,20 +13,24 @@ function Update-ONEDRIVE_TOKEN {
       -DontShowLoginScreen -AutoAccept -Scope onedrive.readonly `
       -ClientId $env:ONEDRIVE_PERSONAL_CLIENT_ID 
 
-    Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
+    $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
   }
+
+  return $ONEDRIVE_PERSONAL_AUTHENTICATION
 }
 
 function Load-ONEDRIVE_SecretStore {
   param ()
 
-  Update-ONEDRIVE_TOKEN
+  $ONEDRIVE_PERSONAL_AUTHENTICATION = Update-ONEDRIVE_TOKEN
   
   $SecretStoreItem = Get-Item -Path $env:SECRET_TOKEN_STORE
   $null = Get-ODItem -AccessToken $env:ONEDRIVE_PERSONAL_access_token `
     -ElementId $env:ONEDRIVE_PERSONAL_SECRET_STORE_ID `
     -LocalPath  $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
     -LocalFileName $SecretStoreItem.PSChildName
+
+  $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
 
 }
 

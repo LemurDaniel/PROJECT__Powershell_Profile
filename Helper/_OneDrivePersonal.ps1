@@ -20,13 +20,13 @@ function Update-ONEDRIVE_TOKEN {
 function Load-ONEDRIVE_SecretStore {
   param ()
 
+  Update-ONEDRIVE_TOKEN
+  
   $SecretStoreItem = Get-Item -Path $env:SECRET_TOKEN_STORE
   $null = Get-ODItem -AccessToken $env:ONEDRIVE_PERSONAL_access_token `
     -ElementId $env:ONEDRIVE_PERSONAL_SECRET_STORE_ID `
     -LocalPath  $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
     -LocalFileName $SecretStoreItem.PSChildName
-
-  Update-ONEDRIVE_TOKEN
 
 }
 

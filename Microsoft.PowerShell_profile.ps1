@@ -70,8 +70,10 @@ $env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json"
 . $env:PROFILE_HELPERS_PATH/Azure.ps1
 . $env:PROFILE_HELPERS_PATH/Prompt.ps1
  
-## Initial Script
 Load-PersonalSecrets -Quiet $false
+
+## Initial Script
+Update-AzDevOpsSecrets
 
 Add-EnvPaths
 Get-TerraformNewestVersion

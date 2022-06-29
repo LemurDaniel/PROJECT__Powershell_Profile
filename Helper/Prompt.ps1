@@ -1,5 +1,4 @@
 
-
 function prompt {
 
 	if( (Get-Location | Split-Path -NoQualifier).Equals("\") ) { return $loc } # Edgecase if current folder is a drive

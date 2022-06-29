@@ -57,6 +57,12 @@ $env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json"
 ########################################################################################################
 ########################################################################################################
 
+$header = @{
+	"Accept" = "application/json"
+}
+$joke = Invoke-RestMethod -Method GET -Uri "https://icanhazdadjoke.com/" -Headers $header
+
+
 ## Load Helper Functions  Load-PersonalSecrets
 . $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
 . $env:PROFILE_HELPERS_PATH/_SecretStore.ps1
@@ -79,10 +85,16 @@ Add-EnvPaths
 Get-TerraformNewestVersion
 Switch-Terraform
 
-
 if ($env:USERNAME -eq "M01947") {
   Switch-GitConfig -config brz
 }
 else {
   Switch-GitConfig -config git
 }
+
+
+Write-Host ""
+Write-Host "  🤓 Joke of the Session 🤓"
+Write-Host "  🎉 $($joke.joke)"
+Write-Host "  👾 !!! Go Go Programming !!! 👾"
+Write-Host ""

@@ -7,7 +7,7 @@ function Get-TerraformNewestVersion {
     }
 
     $versions = (Invoke-WebRequest -Method GET -Uri $env:TerraformDownloadSource).Links.href `
-    | Where-Object { $_ -match "^\/terraform\/\d.\d.\d$" }
+    | Where-Object { $_ -match "^\/terraform\/\d.\d.\d{1,2}\/" }
 
     $newVersion = $versions[0].split("/")[2]
     $downloadZipFile = "$env:USERPROFILE\downloads/terraform_$newVersion`_temp-$(Get-Random).zip"

@@ -18,10 +18,6 @@ function Add-EnvPaths {
         ThinPrint         = "C:\Program Files\ThinPrint Client\"
         ThinPrintx86      = "C:\Program Files (x86)\ThinPrint Client\"
 
-        nodejs            = "C:\Program Files\nodejs\"
-        gitcmd            = "C:\Program Files\Git\cmd"
-        git               = "C:\Program Files\Git"
-
         WindowsPowerShell = "C:\Windows\System32\WindowsPowerShell\v1.0\"
         PowerShell        = "C:\Program Files\PowerShell\7\"
 
@@ -34,6 +30,11 @@ function Add-EnvPaths {
  
         terraform         = $env:TerraformNewestVersion 
         terraformDocs     = $env:TerraformDocsNewestVersion
+
+        vlang             = Resolve-Path -Path "$env:AppPath\v" -ErrorAction Ignore
+        nodejs            = "C:\Program Files\nodejs\"
+        gitcmd            = "C:\Program Files\Git\cmd"
+        git               = "C:\Program Files\Git"
 
     }
 

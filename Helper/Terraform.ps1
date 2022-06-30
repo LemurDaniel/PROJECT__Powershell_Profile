@@ -1,15 +1,23 @@
 function Get-TerraformNewestVersion {
 
-    param ()
+    param ( [Parameter()]
+        [System.String]
+        $Version = "latest"
+    )
 
-    if((terraform --version --json | ConvertFrom-Json).terraform_outdated -ne $true) {
+    if($Version -eq "latest" -AND (!(terraform --version --json | ConvertFrom-Json).terraform_outdated)) {
         return
     }
-
+    
     $versions = (Invoke-WebRequest -Method GET -Uri $env:TerraformDownloadSource).Links.href `
     | Where-Object { $_ -match "^\/terraform\/\d.\d.\d{1,2}\/" }
 
     $newVersion = $versions[0].split("/")[2]
+    if($Version -ne "latest") {
+        Write-Host $Version
+        $newVersion = ($versions | Where-Object { $_ -match "1.2.3" }).split("/")[2]
+    }
+
     $downloadZipFile = "$env:USERPROFILE\downloads/terraform_$newVersion`_temp-$(Get-Random).zip"
     Invoke-WebRequest -Method GET -Uri "$env:TerraformDownloadSource$newVersion/terraform_$newVersion`_windows_amd64.zip" -OutFile  $downloadZipFile
 
@@ -40,7 +48,7 @@ function Switch-Terraform {
     $TerraformFolder = $null
 
     if ($Version -and $Version.ToLower() -ne "latest") {
-        # Write-Host (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
+        Write-Host (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
         $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
     }
     else {

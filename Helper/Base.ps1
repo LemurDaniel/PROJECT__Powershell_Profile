@@ -73,8 +73,13 @@ function Get-PreferencedObject {
 
         [Parameter()]
         [System.String]
-        $SearchProperty = "name"
+        $SearchProperty = "name",
+
+        [Parameter()]
+        [System.Boolean]
+        $Quiet = [bool]::Parse($env:Quiet)
     )
+
 
 
     $ChosenObjects = [System.Collections.ArrayList]::new()
@@ -86,14 +91,25 @@ function Get-PreferencedObject {
             Object         = $SearchObject
         }
         foreach ($Tag in $SearchTags) {
-            # Write-Host $SearchObject."$SearchProperty".ToLower()
-            # Write-Host $SearchObject."$SearchProperty".ToLower(),  $Tag  $SearchObject."$SearchProperty".ToLower().Contains($Tag)
+
+            if(!$Quiet) {
+                Write-Host "Search Property: $SearchProperty"
+                Write-Host "Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
+                Write-Host $Tag  $SearchObject."$SearchProperty".ToLower().Contains($Tag)
+                Write-Host -Foreground yellow "###############################################################################################"
+            }
+
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag) ) {
                 $ObjectWrapper.Hits -= 1;
             }
         }
 
-        # Write-Host $ObjectWrapper
+        if(!$Quiet) {
+            Write-Host $ObjectWrapper
+        }
+        
+
+
         if ($ObjectWrapper.Hits -lt 0) {
             $null = $ChosenObjects.Add($ObjectWrapper)
         }

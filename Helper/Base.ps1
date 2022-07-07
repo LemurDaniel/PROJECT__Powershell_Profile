@@ -32,6 +32,7 @@ function Add-EnvPaths {
         terraformDocs     = $env:TerraformDocsNewestVersion
 
         vlang             = Resolve-Path -Path "$env:AppPath\v" -ErrorAction Ignore
+        nodejsSecondary   = Resolve-Path -Path "$env:AppPath\nodejs" -ErrorAction Ignore
         nodejs            = "C:\Program Files\nodejs\"
         gitcmd            = "C:\Program Files\Git\cmd"
         git               = "C:\Program Files\Git"

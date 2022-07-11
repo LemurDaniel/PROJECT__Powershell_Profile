@@ -21,7 +21,7 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.String]
-        [ValidateSet("dev","vssps", "vsaex.dev")]
+        [ValidateSet("dev","vssps.dev", "vsaex.dev")]
         $Type = "dev",
 
         [Parameter()]

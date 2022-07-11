@@ -2,6 +2,11 @@
 
 $ErrorActionPreference = "Stop"
 
+# Config ENVS
+$env:QUIET = $false
+
+# Config ENVs
+
 $env:PS_PROFILE = $PROFILE
 $env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path
 $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE\..\Helper").Path

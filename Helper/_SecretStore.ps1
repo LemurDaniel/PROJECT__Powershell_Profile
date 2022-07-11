@@ -5,9 +5,14 @@ function Load-PersonalSecrets {
   param ( 
     [parameter()]
     [System.Boolean]
-    $Quiet = $true
+    $Quiet = $true,
+
+    [parameter()]
+    [System.Boolean]
+    $Show = $false
   )
-  
+
+
   $SECRET_STORE = (Get-Content -Path $env:SECRET_TOKEN_STORE | ConvertFrom-Json).PSObject.Properties
   
   foreach ($BaseSecret in $SECRET_STORE) {
@@ -15,7 +20,7 @@ function Load-PersonalSecrets {
     $SECRET_BASE_NAME = $BaseSecret.name
     
     if ($BaseSecret.TypeNameOfValue -eq "System.String") {
-      if (!$Quiet) {
+      if (!$Quiet -or $Show) {
         Write-Host "Loading '$($SECRET_BASE_NAME)' from Secret Store"
       }
 
@@ -27,10 +32,14 @@ function Load-PersonalSecrets {
         $null = New-Item -Path "env:$($SECRET_BASE_NAME)" -Value $BaseSecret.Value -Force  
       }
 
+      if($Show) {
+        Write-Host "  => $( (Get-ChildItem -Path "env:$SECRET_BASE_NAME").value )"
+      }
+
     }
     else {
 
-      if (!$Quiet) {
+      if (!$Quiet -or $Show) {
         Write-Host "Loading '$($SECRET_BASE_NAME)' Secrets from Secret Store"
       }
 
@@ -46,6 +55,11 @@ function Load-PersonalSecrets {
         else {
           $null = New-Item -Path "env:$($SecretName)" -Value $Secret.Value -Force  
         }
+
+        if($Show) {
+          Write-Host "  => $( (Get-ChildItem -Path "env:$SecretName").value )"
+        }
+
       }
     } 
 

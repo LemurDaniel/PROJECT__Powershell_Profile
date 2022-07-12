@@ -90,6 +90,8 @@ Add-EnvPaths
 Get-TerraformNewestVersion
 Switch-Terraform
 
+Set-Item -Path env:TF_DATA_DIR -Value "C:\TFCACHE"
+
 if ($env:USERNAME -eq "M01947") {
   Switch-GitConfig -config brz
 }

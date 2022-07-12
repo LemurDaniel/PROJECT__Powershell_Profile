@@ -3,7 +3,7 @@
 $ErrorActionPreference = "Stop"
 
 # Config ENVS
-$env:QUIET = $false
+$env:QUIET = $true
 
 # Config ENVs
 

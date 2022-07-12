@@ -40,6 +40,10 @@ function Switch-Terraform {
         $Version = "latest"
     )
     
+    if ($Version -ne "latest" -And $Version.ToLower()[0] -ne "v") {
+        $Version = "v$Version"
+    }
+
     if ($Version.Length -eq 2 -and $Version.ToLower()[0] -eq 'v' -and "0123456789".Contains($Version[1])) {
         $Version = "v1.1.$($Version[1])"
     }
@@ -53,6 +57,11 @@ function Switch-Terraform {
     }
     else {
         $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory | Sort-Object -Property Name -Descending)[0]
+    }
+
+    if ( $TerraformFolder -eq $null)  {
+        Get-TerraformNewestVersion -Version ($Version[1..$Version.Length] -join "")
+        $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
     }
 
     # Write-Host $TerraformFolder

@@ -21,11 +21,7 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.String]
-<<<<<<< HEAD
         [ValidateSet("dev", "vssps", "vsaex.dev")]
-=======
-        [ValidateSet("dev","vssps.dev", "vsaex.dev")]
->>>>>>> 3499baebd228c1b03834758e2a3b8d1691d8e660
         $Type = "dev",
 
         [Parameter()]

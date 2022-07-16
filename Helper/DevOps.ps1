@@ -21,7 +21,7 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.String]
-        [ValidateSet("dev","vssps.dev", "vsaex.dev")]
+        [ValidateSet("dev", "vssps", "vsaex.dev")]
         $Type = "dev",
 
         [Parameter()]
@@ -49,8 +49,13 @@ function Invoke-AzDevOpsRest {
         $Property = "value",
 
         [Parameter()]
+        [System.String]
         [ValidateSet("DC", "RD")] # DC-Migration, RD-Redeployment
-        $Project = "DC"
+        $Project = "DC",
+
+        [Parameter()]
+        [System.Boolean]
+        $Quiet = [System.Boolean]::parse($env:QUIET)
     )
 
     $ProjectName = "DC%20Azure%20Migration"
@@ -72,10 +77,11 @@ function Invoke-AzDevOpsRest {
     }
 
 
-    if(!$TargetUri.contains("api-version")) {
-        if($TargetUri.contains("?")) {
+    if (!$TargetUri.contains("api-version")) {
+        if ($TargetUri.contains("?")) {
             $TargetUri += "&api-version=7.1-preview.1"
-        } else {
+        }
+        else {
             $TargetUri += "?api-version=7.1-preview.1"
             $TargetUri = $TargetUri.Replace("/?", "?")
         }
@@ -85,13 +91,19 @@ function Invoke-AzDevOpsRest {
 
     try {
         $headers = @{ 
-            username = "my-user-name"
-            password = "Basic $env:AZURE_DEVOPS_HEADER"
+            username       = "my-user-name"
+            password       = "Basic $env:AZURE_DEVOPS_HEADER"
             Authorization  = "Basic $env:AZURE_DEVOPS_HEADER"
             "Content-Type" = $Method.ToLower() -eq "get" ? "application/x-www-form-urlencoded" : "application/json"
         }
 
-        $response = Invoke-RestMethod -Method $Method -Uri $TargetUri -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose
+        $response = ""
+        if ($Quiet) {
+            $response = Invoke-RestMethod -Method $Method -Uri $TargetUri -Headers $headers -Body ($body | ConvertTo-Json -Compress)
+        }
+        else {
+            $response = Invoke-RestMethod -Method $Method -Uri $TargetUri -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose
+        }
 
         if ($Property) {
             $response = ($response.PSObject.Properties | Where-Object { $_.Name -like $Property }).Value 
@@ -102,11 +114,12 @@ function Invoke-AzDevOpsRest {
 
         #####
         Write-Host ($response -is [array])
-        if( !($response -is [array]) ){
+        if ( !($response -is [array]) ) {
             
             Write-Host "Return Array"
             return @($response)
-        } else {
+        }
+        else {
             Write-Host "Return Response"
             return $response
         }
@@ -189,7 +202,13 @@ function New-MasterPR {
 
         # Get Repo name
         $search_by_key = "remoteUrl"
-        $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
+        $repository_name = "terraform-acf-main" 
+        try {
+            $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
+        }
+        catch {
+
+        }
     
         # Search by remote url
         $repository_list = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories"
@@ -199,23 +218,24 @@ function New-MasterPR {
         $active_pull_requests = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories/$repository_id/pullrequests"
         $chosen_pull_request = $active_pull_requests | Where-Object { $_.targetRefName -eq "refs/heads/master" }
 
-        if(!$chosen_pull_request) {
+        if (!$chosen_pull_request) {
 
             $body = @{
                 sourceRefName = "refs/heads/dev"
                 targetRefName = "refs/heads/master"
-                title = "Merge branch DEV into Master"
-                description = ""
-                reviewers = $(
-                #{
-                #  "id": "d6245f20-2af8-44f4-9451-8107cb2767db"
-                #}
+                title         = "Merge branch DEV into Master"
+                description   = ""
+                reviewers     = $(
+                    #{
+                    #  "id": "d6245f20-2af8-44f4-9451-8107cb2767db"
+                    #}
                 )
             }
         
             $chosen_pull_request = Invoke-AzDevOpsRest -Method POST -body $body -Property $null -API_Project "/_apis/git/repositories/$repository_id/pullrequests" 
 
-        } elseif($approve) {
+        }
+        elseif ($approve) {
 
             $pull_request_id = $chosen_pull_request.pullRequestId
 
@@ -279,56 +299,56 @@ function New-PullRequest {
 
     try {
 
-    # Get Repo name
-    $search_by_key = "remoteUrl"
-    $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
+        # Get Repo name
+        $search_by_key = "remoteUrl"
+        $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
 
-    # Search by remote url
-    $repository_list = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories"
-    $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags @($repository_name) -SearchProperty $search_by_key
-    $repository_id = $preferenced_repo.id
+        # Search by remote url
+        $repository_list = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories"
+        $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags @($repository_name) -SearchProperty $search_by_key
+        $repository_id = $preferenced_repo.id
 
-    # Search branch by name
-    $current_branch = git branch --show-current
-    $remote_branches = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories/$repository_id/refs"
-    $preferenced_branch =  Get-PreferencedObject -SearchObjects $remote_branches -SearchTags @($current_branch)
+        # Search branch by name
+        $current_branch = git branch --show-current
+        $remote_branches = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories/$repository_id/refs"
+        $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags @($current_branch)
 
 
-    ##############################################
-    ########## Prepare and create PR  ############
+        ##############################################
+        ########## Prepare and create PR  ############
 
-    if($PR_title -eq $null -or $PR_title.length -lt 3) {
-        $branch_name = $preferenced_branch.name.split('/')[-2..-1] -join('/')
-        $PR_title = "Merge branch $branch_name into DEV"
-    }
+        if ($PR_title -eq $null -or $PR_title.length -lt 3) {
+            $branch_name = $preferenced_branch.name.split('/')[-2..-1] -join ('/')
+            $PR_title = "Merge branch $branch_name into DEV"
+        }
 
-    $body = @{
-        sourceRefName = "$($preferenced_branch.name)"
-        targetRefName = "refs/heads/dev"
-        title = "$PR_title"
-        description = ""
-        reviewers = $(
-        #{
-        #  "id": "d6245f20-2af8-44f4-9451-8107cb2767db"
-        #}
-        )
-    }
+        $body = @{
+            sourceRefName = "$($preferenced_branch.name)"
+            targetRefName = "refs/heads/dev"
+            title         = "$PR_title"
+            description   = ""
+            reviewers     = $(
+                #{
+                #  "id": "d6245f20-2af8-44f4-9451-8107cb2767db"
+                #}
+            )
+        }
 
-    if(!$Quiet){
-        $body
-    }
+        if (!$Quiet) {
+            $body
+        }
 
-    $pull_request_id = Invoke-AzDevOpsRest -Method POST -body $body -Property "pullRequestId" -API_Project "/_apis/git/repositories/$repository_id/pullrequests" 
+        $pull_request_id = Invoke-AzDevOpsRest -Method POST -body $body -Property "pullRequestId" -API_Project "/_apis/git/repositories/$repository_id/pullrequests" 
 
-    $project_name = $preferenced_repo.project.name.replace(" ", "%20")
-    $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"
+        $project_name = $preferenced_repo.project.name.replace(" ", "%20")
+        $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"
 
-    Write-Host -Foreground Green "      "
-    Write-Host -Foreground Green " 🎉 New Pull-Request created  🎉  "
-    Write-Host -Foreground Green "    $pull_request_url "
-    Write-Host -Foreground Green "      "
+        Write-Host -Foreground Green "      "
+        Write-Host -Foreground Green " 🎉 New Pull-Request created  🎉  "
+        Write-Host -Foreground Green "    $pull_request_url "
+        Write-Host -Foreground Green "      "
 
-    Start-Process $pull_request_url
+        Start-Process $pull_request_url
 
     } 
     catch {

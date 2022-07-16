@@ -62,10 +62,18 @@ $env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json"
 ########################################################################################################
 ########################################################################################################
 
-$header = @{
-	"Accept" = "application/json"
+
+<#
+# CREDITS: Tim Krehan (tim.krehand@brz.eu)
+#>
+function Get-DumbJoke {
+
+  param()
+
+  return (Invoke-RestMethod -Method GET -Uri "https://icanhazdadjoke.com/" -Headers @{"Accept" = "application/json"}).joke
+
 }
-$joke = Invoke-RestMethod -Method GET -Uri "https://icanhazdadjoke.com/" -Headers $header
+
 
 
 ## Load Helper Functions  Load-PersonalSecrets
@@ -102,6 +110,6 @@ else {
 
 Write-Host ""
 Write-Host "  🤓 Joke of the Session 🤓"
-Write-Host "  🎉 $($joke.joke)"
+Write-Host "  🎉 $(Get-DumbJoke)"
 Write-Host "  👾 !!! Go Go Programming !!! 👾"
 Write-Host ""

@@ -138,8 +138,8 @@ function New-BranchFromWorkitem {
     [Alias("gitW")]
     param (
         [Parameter()]
-        [System.Collections.ArrayList]
-        $SearchTags = [System.Collections.ArrayList]::new()
+        [System.String[]]
+        $SearchTags
     )
     
     $currentIteration = Invoke-AzDevOpsRest -Method GET -API_Team "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=7.1-preview.1"
@@ -212,7 +212,7 @@ function New-MasterPR {
     
         # Search by remote url
         $repository_list = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories"
-        $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags @($repository_name) -SearchProperty $search_by_key
+        $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags $repository_name -SearchProperty $search_by_key
         $repository_id = $preferenced_repo.id
 
         $active_pull_requests = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories/$repository_id/pullrequests"
@@ -305,13 +305,13 @@ function New-PullRequest {
 
         # Search by remote url
         $repository_list = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories"
-        $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags @($repository_name) -SearchProperty $search_by_key
+        $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags $repository_name -SearchProperty $search_by_key
         $repository_id = $preferenced_repo.id
 
         # Search branch by name
         $current_branch = git branch --show-current
         $remote_branches = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories/$repository_id/refs"
-        $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags @($current_branch)
+        $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags $current_branch
 
 
         ##############################################

@@ -19,7 +19,7 @@ function Open-RepositoryVSCode {
     [Alias("VC")]
     param (
         [Parameter()]
-        [System.Collections.ArrayList]
+        [System.String[]]
         $RepositoryName,
 
         [Parameter()]
@@ -34,19 +34,19 @@ function Open-RepositoryVSCode {
     $ReposLocation = Get-ChildItem -Path $env:RepoPath -Directory | `
         Where-Object { $_.Name -like "_$Project*" } 
 
-        
     $Repos = Get-ChildItem -Path $ReposLocation.FullName -Directory | `
         Where-Object { (Get-ChildItem -Path $_.FullName -Hidden -Filter '.git') } 
 
-    $Repos = $Repos ?? ([System.Collections.ArrayList]::new())
-    if ($Repos -isnot [System.Collections.ArrayList]) {
-        $Repos = @($Repos)
-    }
     if ($Repos) {
         $ChosenRepo = Get-PreferencedObject -SearchObjects $Repos -SearchTags $RepositoryName
+    } else {
+        return
     }
+
     if ($ChosenRepo -AND $Method -eq "local") {
         code $ChosenRepo.FullName
+        git -C "$($ChosenRepo.FullName)" config --local user.email "$env:GitMailWork"
+        git -C "$($ChosenRepo.FullName)" config --local user.name "$env:GitNameWork" 
     }
     else {
 
@@ -71,18 +71,37 @@ function Switch-GitConfig {
     )
 
     if ($config -eq "brz") {
-        git config --global user.name "Daniel Landau"
-        git config --global user.email "daniel.landau@brz.eu"      
+        git config --global user.name  $env:GitNameWork
+        git config --global user.email $env:GitMailWork    
     }
     elseif ($config -eq "git") {
         git config --global user.name "LemurDaniel"
         git config --global user.email "landau.daniel.1998@gmail.com"  
     }
 
-    Write-Host "Current Git Profile:"
+    Write-Host "Current Global Git Profile:"
     Write-Host "    $(git config  --global user.name )"
     Write-Host "    $(git config  --global user.email )"
     Write-Host ""
+
+    git -C . rev-parse >nul 2>&1; 
+    if($?){
+
+        $localMail = git config --local user.email
+        $localUser = git config --local user.name
+
+        if($localMail -AND $LocalUser) {
+        
+            Write-Host "Current Local Git Profile:"
+            Write-Host "    $localUser"
+            Write-Host "    $localMail"
+            Write-Host ""
+        
+        }
+
+    }
+
+
 }
 
 function Push-Profile {

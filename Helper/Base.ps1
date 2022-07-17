@@ -12,30 +12,41 @@ function Add-EnvPaths {
 
 
     $global:DefaultEnvPaths = @{
+
+        # Some default
         System32          = "C:\Windows\system32"
         wbem              = "C:\Windows;C:\Windows\System32\Wbem"
         OpenSSH           = "C:\Windows\System32\OpenSSH\"
         ThinPrint         = "C:\Program Files\ThinPrint Client\"
         ThinPrintx86      = "C:\Program Files (x86)\ThinPrint Client\"
 
+        # Code Editors
+        VSCode_Primary     = "C:\Program Files\Microsoft VS Code\bin"
+        VSCode_Secondary   = "C:\Users\Daniel\OneDrive\Dokumente\Apps\Microsoft VS Code\bin" 
+        #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
+
+        # Powershell
         WindowsPowerShell = "C:\Windows\System32\WindowsPowerShell\v1.0\"
         PowerShell        = "C:\Program Files\PowerShell\7\"
 
+        PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
+        initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
+
+        WindowsAppsFolder = "C:\Users\M01947\AppData\Local\Microsoft\WindowsApps" #TODO
+        
+        # CLI Tools
         AzureCLI          = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
-
-        VSCodePrimary     = "C:\Program Files\Microsoft VS Code\bin"
-        VSCodeSecondary   = "C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
-
-        WindowsAppsFolder = "C:\Users\M01947\AppData\Local\Microsoft\WindowsApps"
  
         terraform         = $env:TerraformNewestVersion 
         terraformDocs     = $env:TerraformDocsNewestVersion
 
-        vlang             = Resolve-Path -Path "$env:AppPath\v" -ErrorAction Ignore
-        nodejsSecondary   = Resolve-Path -Path "$env:AppPath\nodejs" -ErrorAction Ignore
         nodejs            = "C:\Program Files\nodejs\"
         gitcmd            = "C:\Program Files\Git\cmd"
         git               = "C:\Program Files\Git"
+
+        nodejs_Secondary   = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter "nodejs")
+        vlang             = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter "v")
+        dotnet = (Get-ChildItem -Path "C:\Program Files" -Directory -Filter "dotnet").FullName
 
     }
 
@@ -65,11 +76,11 @@ function Add-EnvPaths {
 function Get-PreferencedObject {
     param (
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.Object[]]
         $SearchObjects,
 
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.Object[]]
         $SearchTags,
 
         [Parameter()]
@@ -148,3 +159,13 @@ function Edit-PSProfile {
     }
 }
 
+######################################################
+
+function Update-VSCodeSettings {
+
+    param()
+
+    git -C "$env:APPDATA\Code\User\" pull origin master
+    git -C "$env:APPDATA\Code\User\" push origin master
+
+}

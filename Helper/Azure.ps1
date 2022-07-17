@@ -2,7 +2,7 @@
 function Search-AzResource {
     param (
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.String[]]
         $ResourceName,
     
         [Parameter(Mandatory = $true)]
@@ -31,7 +31,7 @@ function Search-AzResource {
 function Search-AzStorageAccount {
     param (
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.String[]]
         $StorageAccountName
     )
     
@@ -42,7 +42,7 @@ function Search-AzStorageAccount {
 function Search-AzFunctionApp {
     param (
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.String[]]
         $FunctionAppName
     )
     
@@ -55,7 +55,7 @@ function Search-AzFunctionAppConfiguration {
     [Alias("FAConf")]
     param (
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.String[]]
         $FunctionAppName,
 
         [Parameter(Mandatory = $true)]
@@ -83,7 +83,7 @@ function Search-AzStorageAccountContext {
     [Alias("STCtx")]
     param (
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.String[]]
         $StorageAccountName
     )
 
@@ -104,7 +104,7 @@ function Search-AzStorageAccountKey {
     [Alias("STkey")]
     param (
         [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
+        [System.String[]]
         $StorageAccountName,
 
         [Parameter()]
@@ -130,3 +130,4 @@ function Search-AzStorageAccountKey {
         }
     }
 }
+

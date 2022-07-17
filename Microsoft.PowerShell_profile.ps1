@@ -1,24 +1,40 @@
-
-
 $ErrorActionPreference = "Stop"
+
+#Hardlinks
+try{
+
+  $settings_WindowsTerminal = "C:\Users\Daniel\OneDrive\Dokumente\Apps\_Settings\WindowsTerminal\settings.json"
+  if(Test-Path -Path "$settings_WindowsTerminal") {
+
+    $folder_WindowsTerminal = Get-ChildItem -Directory -Filter "Microsoft.WindowsTerminal*" -Path "C:\Users\Daniel\AppData\Local\Packages\" 
+    $file = Get-ChildItem -Path "$($folder_WindowsTerminal.FullName)\LocalState\settings.json"
+
+    if($file.LinkType -ne "Hardlink") {
+      Remove-Item -InputObject $file
+      New-Item -ItemType HardLink `
+        -Path "$($file.Fullname)" `
+        -Target "$settings_WindowsTerminal"
+    }
+    Get-Item -ItemType HardLink -Path $file.FullName
+  }
+
+} 
+catch {}
+
 
 # Config ENVS
 $env:QUIET = $true
+$env:GitMailWork = "daniel.landau@brz.eu"
+$env:GitNameWork = "Daniel Landau"
 
-# Config ENVs
 
 $env:PS_PROFILE = $PROFILE
 $env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path
-$env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE\..\Helper").Path
+$env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE_PATH\Helper").Path
+#$env:PSModulePath = "$env:PS_PROFILE_PATH\Modules;$PSHOME\Modules;"
+#[Environment]::SetEnvironmentVariable("PSModulePath", $env:PSModulePath)
 
-
-## Resolve Repository Path
-$env:RepoPath = "$env:Userprofile/Repos"
-$env:RepoPathSecondary = "$env:Userprofile/Documents/Repos"
-if (!(Test-Path $env:RepoPath)) {
-  $env:RepoPath = (Resolve-Path $env:RepoPathSecondary).Path
-}
-
+## Same entry also exists in ONEDRIVE/Powershell/7/profile.ps1
 ## Resolve App Path
 $env:AppPath = "$env:OneDrive/Apps/"
 $env:AppPathSecondary = "$env:OneDrive/Dokumente/Apps/"
@@ -26,14 +42,20 @@ if (!(Test-Path $env:AppPath)) {
   $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
 }
 
+
+## Resolve Repository Path
+$env:RepoPath = "$env:Userprofile/Repos"
+$env:RepoPathSecondary = "$env:OneDrive/Dokumente/Repos" #"$env:Userprofile/Documents/Repos"
+if (!(Test-Path $env:RepoPath)) {
+  $env:RepoPath = (Resolve-Path $env:RepoPathSecondary).Path
+}
+
 ## ENV Variables
-$env:SECRET_TOKEN_STORE = "$env:AppPath/SECRET_STORE/TOKEN_STORE.json"
-$env:Secondary_SECRET_TOKEN_STORE = "$env:APPDATA/SECRET_TOKEN_STORE/TOKEN_STORE.json"
+$env:SECRET_TOKEN_STORE = "$env:AppPath/_SECRET_STORE/TOKEN_STORE.json"
+$env:Secondary_SECRET_TOKEN_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/TOKEN_STORE.json"
 if (!(Test-Path $env:SECRET_TOKEN_STORE)) {
   $env:SECRET_TOKEN_STORE = (Resolve-Path $env:Secondary_SECRET_TOKEN_STORE).Path
 }
-
-
 
 
 ### Resolve Terraform Path
@@ -48,7 +70,7 @@ $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort
 ########################################################################################################################
 ########################################################################################################################
 ########################################################################################################################
-$env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json").Path
+#$env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json").Path
 #$VSCodeSettings = (Get-Content -Path $env:VSCodeSettings) | ConvertFrom-Json 
 #$VSCodeSettings | Add-Member -MemberType NoteProperty -Name "editor.tabSize" -Value 2
 #$VSCodeSettings | Add-Member -MemberType NoteProperty -Name "editor.fontFamily" -Value "Jetbrains Mono, Consolas, \'Courier New\', monospace"
@@ -162,5 +184,3 @@ function Get-ScrambledText {
   return ($newText -join " ")
 
 }
-
-

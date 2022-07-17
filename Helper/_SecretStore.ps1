@@ -1,26 +1,44 @@
 
 
+# TODO Make recursive
 function Load-PersonalSecrets {
 
   param ( 
     [parameter()]
-    [System.Boolean]
-    $Quiet = $true,
+    [Switch]
+    $Show,
 
     [parameter()]
-    [System.Boolean]
-    $Show = $false
+    [Switch]
+    $ShowFull,
+
+    [parameter()]
+    [Switch]
+    $ShowJSON
   )
 
 
   $SECRET_STORE = (Get-Content -Path $env:SECRET_TOKEN_STORE | ConvertFrom-Json).PSObject.Properties
-  
-  foreach ($BaseSecret in $SECRET_STORE) {
 
+  if($ShowJson) {
+    Get-Content -Path $env:SECRET_TOKEN_STORE
+  }
+
+  if($SECRET_STORE["_ORDER"]) {
+    $SECRET_STORE = $SECRET_STORE `
+    | Sort-Object -Property { $SECRET_STORE["_ORDER"].Value.IndexOf($_.Name) } 
+  }
+
+  foreach ($BaseSecret in $SECRET_STORE) {
+    
+    if($BaseSecret.Name -eq "_ORDER"){
+      continue
+    }
     $SECRET_BASE_NAME = $BaseSecret.name
     
+    # Convert to ENV if String or Value
     if ($BaseSecret.TypeNameOfValue -eq "System.String") {
-      if (!$Quiet -or $Show) {
+      if ($ShowFull -or $Show) {
         Write-Host "Loading '$($SECRET_BASE_NAME)' from Secret Store"
       }
 
@@ -32,19 +50,28 @@ function Load-PersonalSecrets {
         $null = New-Item -Path "env:$($SECRET_BASE_NAME)" -Value $BaseSecret.Value -Force  
       }
 
-      if($Show) {
+      if($ShowFull) {
         Write-Host "  => $( (Get-ChildItem -Path "env:$SECRET_BASE_NAME").value )"
       }
 
     }
+    # Parse further if Object
     else {
 
-      if (!$Quiet -or $Show) {
+      if ($ShowFull -or $Show) {
         Write-Host "Loading '$($SECRET_BASE_NAME)' Secrets from Secret Store"
       }
 
-      foreach ($Secret in $BaseSecret.Value.PSObject.Properties ) {
+      $BaseSecretProperties = $BaseSecret.Value.PSObject.Properties
+      if($BaseSecret["_ORDER"]) {
+        $BaseSecret = $BaseSecret | Sort-Object -Property { $BaseSecret["_ORDER"].Value.IndexOf($_.Name) }
+      }
+
+      foreach ($Secret in $BaseSecretProperties ) {
   
+        if($Secret.Name -eq "_ORDER"){
+          continue
+        }
         $SecretName = "$($SECRET_BASE_NAME)_$($Secret.name)"
         # Write-Host "Loading '$($SecretName)' from Secret Store"
   
@@ -56,7 +83,7 @@ function Load-PersonalSecrets {
           $null = New-Item -Path "env:$($SecretName)" -Value $Secret.Value -Force  
         }
 
-        if($Show) {
+        if($ShowFull) {
           Write-Host "  => $( (Get-ChildItem -Path "env:$SecretName").value )"
         }
 

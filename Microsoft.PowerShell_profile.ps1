@@ -37,7 +37,7 @@ $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE_PATH\Helper").Path
 ## Same entry also exists in ONEDRIVE/Powershell/7/profile.ps1
 ## Resolve App Path
 $env:AppPath = "$env:OneDrive/Apps/"
-$env:AppPathSecondary = "$env:OneDrive/Dokumente/Apps/"
+$env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps/"
 if (!(Test-Path $env:AppPath)) {
   $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
 }
@@ -107,10 +107,10 @@ function Get-DumbJoke {
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1
 . $env:PROFILE_HELPERS_PATH/Terraform.ps1
 . $env:PROFILE_HELPERS_PATH/DevOps.ps1
-. $env:PROFILE_HELPERS_PATH/Azure.ps1
+#. $env:PROFILE_HELPERS_PATH/Azure.ps1
 . $env:PROFILE_HELPERS_PATH/Prompt.ps1
  
-Load-PersonalSecrets -Quiet $false
+Load-PersonalSecrets -Show
 
 ## Initial Script
 Update-AzDevOpsSecrets

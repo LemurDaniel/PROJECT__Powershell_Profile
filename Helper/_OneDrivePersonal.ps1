@@ -1,11 +1,22 @@
+#Requires -Modules @{ ModuleName="OneDrive"; ModuleVersion="2.2.0" }
 
+
+function Login-ONEDRIVE_Auth {
+
+  param ()
+
+  Get-ODAuthentication  -ClientId $env:ONEDRIVE_PERSONAL_CLIENT_ID  -Scope onedrive.readonly 
+
+}
 
 function Update-ONEDRIVE_TOKEN {
   param ()
 
   $ONEDRIVE = Get-PersonalSecret -SecretType ONEDRIVE_PERSONAL
 
-  $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::Now) -End ([System.DateTime] $ONEDRIVE.expires)
+  $EXPIRES = [System.DateTime]::new(0)
+  try {$EXPIRES = [System.DateTime] $ONEDRIVE.expires} catch{}
+  $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::Now) -End $EXPIRES
   if ($TIMESPAN.Minutes -lt 2) {
 
     #Write-Host "Updated Token"
@@ -20,7 +31,11 @@ function Update-ONEDRIVE_TOKEN {
 }
 
 function Load-ONEDRIVE_SecretStore {
-  param ()
+  param (
+    [Parameter()]
+    [Switch]
+    $ShowJSON
+  )
 
   $ONEDRIVE_PERSONAL_AUTHENTICATION = Update-ONEDRIVE_TOKEN
   
@@ -30,7 +45,15 @@ function Load-ONEDRIVE_SecretStore {
     -LocalPath  $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
     -LocalFileName $SecretStoreItem.PSChildName
 
+  if ($ShowJson) {
+    Load-PersonalSecrets -ShowJSON
+  }
+
   $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
+
+  if ($ShowJson) {
+    Load-PersonalSecrets -ShowJSON
+  }
 
 }
 

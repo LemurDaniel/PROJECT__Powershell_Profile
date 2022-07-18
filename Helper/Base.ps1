@@ -22,13 +22,13 @@ function Add-EnvPaths {
 
         # Code Editors
         VSCode_Primary     = "C:\Program Files\Microsoft VS Code\bin"
-        VSCode_Secondary   = "C:\Users\Daniel\OneDrive\Dokumente\Apps\Microsoft VS Code\bin" 
+        VSCode_Secondary   = "$env:AppPath\Microsoft VS Code\bin" 
         #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
 
         # Powershell
         WindowsPowerShell = "C:\Windows\System32\WindowsPowerShell\v1.0\"
         PowerShell        = "C:\Program Files\PowerShell\7\"
-
+     
         PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
         initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
 

@@ -51,7 +51,7 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.String]
-        [ValidateSet("DC", "RD")] # DC-Migration, RD-Redeployment
+        [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
         $Project = "DC",
 
         [Parameter()]
@@ -65,7 +65,14 @@ function Invoke-AzDevOpsRest {
         $ProjectName = "DC%20ACF%20Redeployment"
         $Team = ""
     }
-
+    elseif ($Project -eq "DCProjects") {
+        $ProjectName = "DCProjects"
+        $Team = ""
+    } 
+    elseif ($Project -eq "TB") {
+        $ProjectName = "TeamsBuilder"
+        $Team = ""
+    } 
     $TargetUri = "https:///$(Join-Path -Path "$Type.azure.com/baugruppe/" -ChildPath $API)".Replace("\", "/").Replace("//", "/")
     if ($API_Project) {
         $TargetUri = "https:///$(Join-Path -Path "$Type.azure.com/baugruppe/$ProjectName/" -ChildPath $API_Project)".Replace("\", "/").Replace("//", "/")

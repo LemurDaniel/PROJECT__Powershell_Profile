@@ -8,7 +8,7 @@ function Open-RepositoryVSCodeDevOps {
         $RepositoryName,
 
         [Parameter()]
-        [ValidateSet("DC", "RD")] # DC-Migration, RD-Redeployment
+        [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
         $Project = "DC"
     )
 
@@ -39,8 +39,6 @@ function Open-RepositoryVSCode {
 
     if ($Repos) {
         $ChosenRepo = Get-PreferencedObject -SearchObjects $Repos -SearchTags $RepositoryName
-    } else {
-        return
     }
 
     if ($ChosenRepo -AND $Method -eq "local") {

@@ -129,9 +129,11 @@ function Get-PreferencedObject {
     
     if ($ChosenObjects[0]) {
         $preferedObject = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty)[0]
-        Write-Host 
-        Write-Host $preferedObject.SearchProperty
-        Write-Host 
+        if(!$Quiet) {
+            Write-Host 
+            Write-Host $preferedObject.SearchProperty
+            Write-Host 
+        }
         return $preferedObject.Object
     }
 }

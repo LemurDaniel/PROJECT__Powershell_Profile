@@ -165,11 +165,6 @@ function Invoke-AzDevOpsRest {
     $project = [RepoProjects]::GetProject($ProjectShort)
     $team =  Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
 
-    if(!$Verbose){
-        Write-Host ($project | ConvertTo-Json)
-        Write-Host ($team | ConvertTo-Json)
-    }
-
     $TargetURL = $null
     switch ($CALL) {
         "ORG" { 
@@ -197,8 +192,11 @@ function Invoke-AzDevOpsRest {
         }
     }
 
-
-    Write-Host "    "$TargetURL
+    if(!$Quiet){
+        #Write-Host ($project | ConvertTo-Json)
+        #Write-Host ($team | ConvertTo-Json)
+       Write-Host "    "$TargetURL
+   }
 
     try {
         $headers = @{ 
@@ -288,7 +286,11 @@ function New-MasterPR {
 
         [Parameter()]
         [System.Boolean]
-        $Approve = $false
+        $Approve = $false,
+
+        [Parameter()]
+        [System.Boolean]
+        $Quiet = [System.Boolean]::parse($env:QUIET)
     )
 
     try {
@@ -387,7 +389,11 @@ function New-PullRequest {
     param(
         [Parameter()]
         [System.String]
-        $PR_title = $null
+        $PR_title = $null,
+
+        [Parameter()]
+        [System.Boolean]
+        $Quiet = [System.Boolean]::parse($env:QUIET)
     )
 
     try {

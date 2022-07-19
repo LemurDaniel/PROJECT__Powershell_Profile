@@ -49,7 +49,7 @@ function Load-ONEDRIVE_SecretStore {
     Load-PersonalSecrets -ShowJSON
   }
 
-  $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
+  $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION 
 
   if ($ShowJson) {
     Load-PersonalSecrets -ShowJSON

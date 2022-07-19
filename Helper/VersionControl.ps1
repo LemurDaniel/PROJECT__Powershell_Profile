@@ -14,6 +14,7 @@ function Open-RepositoryVSCodeDevOps {
 
     Open-RepositoryVSCode -RepositoryName $RepositoryName -Method devops -Project $Project
 }
+
 function Open-RepositoryVSCode {
 
     [Alias("VC")]
@@ -24,39 +25,32 @@ function Open-RepositoryVSCode {
 
         [Parameter()]
         [ValidateSet([RepoProjects])]  # DC-Migration, RD-Redeployment
-        $Project = "DC",
+        $Project = $env:DEVOPS_DEFAULT_PROJECT,
 
         [Parameter()]
         [ValidateSet("local", "devops")]
         $Method = "local"
     )
 
-    $ReposLocation = Get-ChildItem -Path $env:RepoPath -Directory | `
-        Where-Object { $_.Name -like "_$Project*" } 
-
-    $Repos = Get-ChildItem -Path $ReposLocation.FullName -Directory | `
-        Where-Object { (Get-ChildItem -Path $_.FullName -Hidden -Filter '.git') } 
-
-    if ($Repos) {
-        $ChosenRepo = Get-PreferencedObject -SearchObjects $Repos -SearchTags $RepositoryName
+    $Repositories = [RepoProjects]::GetRepositories($Project)
+    $ChosenRepo = Get-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName
+    if(!$ChosenRepo) {
+        Write-Host -Foreground RED "No Repository Found"
+        return;
     }
 
-    if ($ChosenRepo -AND $Method -eq "local") {
-        code $ChosenRepo.FullName
-        git -C "$($ChosenRepo.FullName)" config --local user.email "$env:GitMailWork"
-        git -C "$($ChosenRepo.FullName)" config --local user.name "$env:GitNameWork" 
-    }
-    else {
+    $repository = [RepoProjects]::GetRepositoryPath($ChosenRepo.id)
 
-        $response = Invoke-AzDevOpsRest -Method GET -Property "value" -API_Project "_apis/git/repositories?api-version=7.1-preview.1" -Project $Project
-        $preferedObject = Get-PreferencedObject -SearchObjects $response -SearchTags $RepositoryName
-        if ($preferedObject) {
-            $preferedObject
-            git clone $preferedObject.remoteUrl (Join-Path -Path $ReposLocation -ChildPath $preferedObject.name)
-            Open-RepositoryVSCode -RepositoryName $RepositoryName
-        }
-
+    if(($repository | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
+        git -C $repository.FullName clone $ChosenRepo.remoteUrl .
+        git -C $repository.FullName config --local user.email "$env:GitMailWork"
+        git -C $repository.FullName config --local user.name "$env:GitNameWork" 
     }
+
+    code $repository.FullName
+    git -C "$($repository.FullName)" config --local user.email "$env:GitMailWork"
+    git -C "$($repository.FullName)" config --local user.name "$env:GitNameWork" 
+
 }
 
 function Switch-GitConfig {

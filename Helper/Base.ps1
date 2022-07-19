@@ -107,11 +107,11 @@ function Get-PreferencedObject {
             if(!$Quiet) {
                 Write-Host "Search Property: $SearchProperty"
                 Write-Host "Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
-                Write-Host $Tag  $SearchObject."$SearchProperty".ToLower().Contains($Tag)
+                Write-Host $Tag  $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
                 Write-Host -Foreground yellow "###############################################################################################"
             }
 
-            if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag) ) {
+            if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
                 $ObjectWrapper.Hits -= 1;
             }
         }

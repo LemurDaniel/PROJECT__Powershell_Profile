@@ -8,10 +8,54 @@ class PsProfile : System.Management.Automation.IValidateSetValuesGenerator {
 }
 
 class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
-  [String[]] GetValidValues() {
-    return  ((Get-ChildItem -Path $env:RepoPath -Filter "_*").Name | `
-        Select-String -Pattern "^_[A-Z]*[-]{0,1}").Matches.Value.Replace('_', '').Replace('-', '')
+
+  static [PSCustomObject] GetProject($projectName) {
+    return (Get-PersonalSecret -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
   }
+
+  static [System.IO.DirectoryInfo] GetProjectPathById($projectId) {
+    $projectRelative = (Get-PersonalSecret -SecretType DEVOPS_PROJECTS) | Where-Object { $_.id -eq $projectId }
+    return [RepoProjects]::GetProjectPath($projectRelative.ShortName)
+  }
+
+  static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
+    $projectPath = Join-Path -Path $env:RepoPath -ChildPath [RepoProjects]::GetProject($projectName).ShortName 
+
+    if(!(Test-Path -Path $projectPath)) {
+      return New-Item -ItemType Directory -Path $projectPath
+    } else {
+      return Get-Item -Path $projectPath
+    }
+  }
+
+  static [PSCustomObject[]] GetRepositories($projectName) {
+    $project = (Get-PersonalSecret -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
+    return $project.Repositories
+  }
+
+  static [PSCustomObject] GetRepository($repositoryId) {
+    return (Get-PersonalSecret -SecretType DEVOPS_REPOSITORIES_ALL) | Where-Object { $_.id -eq $repositoryId }
+  }
+
+  static [System.IO.DirectoryInfo] GetRepositoryPath($repositoryId) {
+    Write-Host $repositoryId
+      $repository = [RepoProjects]::GetRepository($repositoryId)
+      $projectPath = [RepoProjects]::GetProjectPathById($repository.project.id)
+      Write-Host $projectPath
+      $repositoryPath = Join-Path -Path $projectPath -ChildPath $repository.Name
+    Write-Host $repositoryPath
+      if(!(Test-Path -Path $repositoryPath)) {
+        return New-Item -ItemType Directory -Path $repositoryPath
+      } else {
+        return Get-Item -Path $repositoryPath
+      }
+  }
+
+  [String[]] GetValidValues() {
+    return   @("ALL") + (Get-PersonalSecret -SecretType DEVOPS_PROJECTS).ShortName
+  }
+
+
 }
 
 

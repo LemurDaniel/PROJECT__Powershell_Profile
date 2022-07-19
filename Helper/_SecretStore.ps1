@@ -24,6 +24,7 @@ function Load-PersonalSecrets {
     Get-Content -Path $env:SECRET_TOKEN_STORE
   }
 
+  $_NOLOAD = $SECRET_STORE["_NOLOAD"].Value
   if($SECRET_STORE["_ORDER"]) {
     $SECRET_STORE = $SECRET_STORE `
     | Sort-Object -Property { $SECRET_STORE["_ORDER"].Value.IndexOf($_.Name) } 
@@ -31,9 +32,10 @@ function Load-PersonalSecrets {
 
   foreach ($BaseSecret in $SECRET_STORE) {
     
-    if($BaseSecret.Name -eq "_ORDER"){
+    if($_NOLOAD.contains($BaseSecret.Name)){
       continue
     }
+
     $SECRET_BASE_NAME = $BaseSecret.name
     
     # Convert to ENV if String or Value
@@ -69,7 +71,7 @@ function Load-PersonalSecrets {
 
       foreach ($Secret in $BaseSecretProperties ) {
   
-        if($Secret.Name -eq "_ORDER"){
+        if(@("_ORDER", "_NOLOAD").contains($SecretName.Name)){
           continue
         }
         $SecretName = "$($SECRET_BASE_NAME)_$($Secret.name)"
@@ -100,7 +102,7 @@ function Get-PersonalSecret {
     $SecretType
   )
   
-  return (Get-Content -Path $env:SECRET_TOKEN_STORE | ConvertFrom-Json -Depth 3)."$SecretType"
+  return (Get-Content -Path $env:SECRET_TOKEN_STORE | ConvertFrom-Json -Depth 6)."$SecretType"
 
 }
 
@@ -112,19 +114,26 @@ function Update-PersonalSecret {
 
     [parameter(Mandatory = $true)]
     [PSCustomObject]
-    $SecretValue
+    $SecretValue,
+
+    [parameter(Mandatory)]
+    [Switch]
+    $NoLoad
   )
   
   $SECRET_STORE = Get-Content -Path $env:SECRET_TOKEN_STORE | `
-    ConvertFrom-Json -Depth 3 | `
+    ConvertFrom-Json -Depth 6 | `
     Add-Member `
     -MemberType NoteProperty `
     -Name $SecretType `
-    -Value $SecretValue `
-    -PassThru -Force | `
-    ConvertTo-Json -Depth 3
+    -Value $SecretValue  `
+    -Passthru -Force
+
+  if($NoLoad){
+    $SECRET_STORE._NOLOAD = @((@($SecretType) + $SECRET_STORE._NOLOAD) | Get-Unique)
+  }
   
-  Out-File -FilePath $env:SECRET_TOKEN_STORE -InputObject $SECRET_STORE
+  $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath $env:SECRET_TOKEN_STORE
 
   Load-PersonalSecrets
   

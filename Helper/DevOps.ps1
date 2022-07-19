@@ -11,6 +11,112 @@ function Update-AzDevOpsSecrets {
     
 }
 
+
+function Invoke-AzDevOpsRestORG {
+
+    param(
+        # Parameter help description
+        [Parameter()]
+        [System.String]
+        [ValidateSet("dev", "vssps", "vsaex.dev")]
+        $Type = "dev",
+
+        [Parameter()]
+        [System.String]
+        $API,
+
+        [Parameter()]
+        [System.String]
+        $Property = "value",
+
+        [Parameter()]
+        [System.Boolean]
+        $Quiet = [System.Boolean]::parse($env:QUIET)
+    )
+
+
+    $TargetUri = "https:///$(Join-Path -Path "$Type.azure.com/baugruppe/" -ChildPath $API)".Replace("\", "/").Replace("//", "/")
+
+    Write-Host "    "$TargetUri
+
+    try {
+        $headers = @{ 
+            username       = "my-user-name"
+            password       = "Basic $env:AZURE_DEVOPS_HEADER"
+            Authorization  = "Basic $env:AZURE_DEVOPS_HEADER"
+            "Content-Type" = "application/x-www-form-urlencoded"
+        }
+
+        $response = ""
+        if ($Quiet) {
+            $response = Invoke-RestMethod -Method GET -Uri $TargetUri -Headers $headers
+        }
+        else {
+            $response = Invoke-RestMethod -Method GET -Uri $TargetUri -Headers $headers
+        }
+
+        if ($Property) {
+            return ($response.PSObject.Properties | Where-Object { $_.Name -like $Property }).Value 
+        } else {
+            return $response
+        }
+
+
+    }
+    catch {
+        Write-Host "ERROR"
+        throw $_
+    }
+   
+}
+
+
+
+function Get-DevOpsProjects {
+
+    param(
+        [Parameter()]
+        [System.Boolean]
+        $Quiet = [System.Boolean]::parse($env:QUIET)
+    )
+    Invoke-AzDevOpsRestORG -API "_apis/teams?mine={true}&api-version=6.0-preview.3"
+
+    $projects = Invoke-AzDevOpsRestORG -API _apis/projects?api-version=6.0 `
+       | Select-Object -Property name, `
+       @{Name="ShortName"; Expression={ "__$($_.Name)".replace(" ", "") }}, `
+       @{Name="ReposLocation"; Expression={$_.Name.replace(" ", "")}}, `
+       @{Name="Teams"; Expression={  
+            Invoke-AzDevOpsRestORG -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
+        }, `
+       @{Name="Repositories"; Expression={  
+            Invoke-AzDevOpsRestORG -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
+        }, ` 
+       visibility,id,url
+
+    Update-PersonalSecret -SecretType "DEVOPS_REPOSITORIES_ALL" -SecretValue $projects.Repositories -NoLoad
+
+    $projects | ForEach-Object { 
+        $_.Repositories = ($_.Repositories | Select-Object -Property `
+            @{Name="Repository"; Expression={
+                [PSCustomObject]@{
+                    id = $_.id
+                    name = $_.name
+                    url = $_.url
+                    remoteUrl  = $_.remoteUrl
+                    defaultBranch=  $_.defaultBranch
+                    
+                }
+            }}).Repository
+        }
+   
+    Update-PersonalSecret -SecretType "DEVOPS_PROJECTS" -SecretValue $projects -NoLoad
+}
+
+
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+
 function Invoke-AzDevOpsRest {
 
     param(
@@ -30,16 +136,13 @@ function Invoke-AzDevOpsRest {
         $API,
 
         [Parameter()]
+        [ValidateSet("ORG", "PROJ", "TEAM", "URI")]
         [System.String]
-        $API_Project,
+        $CALL = "ORG",
 
         [Parameter()]
-        [System.String]
-        $API_Team,
-
-        [Parameter()]
-        [System.String]
-        $URI,
+        [System.String[]]
+        $TeamQuery = @("Azure", "Migration"),
 
         [Parameter()]
         [System.Collections.Hashtable]
@@ -52,50 +155,50 @@ function Invoke-AzDevOpsRest {
         [Parameter()]
         [System.String]
         [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
-        $Project = "DC",
+        $ProjectShort = $env:DEVOPS_DEFAULT_PROJECT,
 
         [Parameter()]
         [System.Boolean]
         $Quiet = [System.Boolean]::parse($env:QUIET)
     )
 
-    $ProjectName = "DC%20Azure%20Migration"
-    $Team = "DC%20Azure%20Migration%20Team"
-    if ($Project -eq "RD") {
-        $ProjectName = "DC%20ACF%20Redeployment"
-        $Team = ""
-    }
-    elseif ($Project -eq "DCProjects") {
-        $ProjectName = "DCProjects"
-        $Team = ""
-    } 
-    elseif ($Project -eq "TB") {
-        $ProjectName = "TeamsBuilder"
-        $Team = ""
-    } 
-    $TargetUri = "https:///$(Join-Path -Path "$Type.azure.com/baugruppe/" -ChildPath $API)".Replace("\", "/").Replace("//", "/")
-    if ($API_Project) {
-        $TargetUri = "https:///$(Join-Path -Path "$Type.azure.com/baugruppe/$ProjectName/" -ChildPath $API_Project)".Replace("\", "/").Replace("//", "/")
-    }
-    elseif ($API_Team) {
-        $TargetUri = "https:///$(Join-Path -Path "$Type.azure.com/baugruppe/$ProjectName/$Team/" -ChildPath $API_Team)".Replace("\", "/").Replace("//", "/")
-    }
-    elseif ($URI) {
-        $TargetUri = $URI
+    $project = [RepoProjects]::GetProject($ProjectShort)
+    $team =  Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
+
+    if(!$Quiet){
+        Write-Host ($project | ConvertTo-Json)
+        Write-Host ($team | ConvertTo-Json)
     }
 
+    $TargetURL = $null
+    switch ($CALL) {
+        "ORG" { 
+            $TargetURL = "https:///$Type.azure.com/baugruppe/"
+        }
+        "PROJ" { 
+            $TargetURL = "https:///" + (Join-Path -Path "$Type.azure.com/baugruppe/$($project.id)" -ChildPath $API) 
+        }
+        "TEAM" { 
+            $TargetURL = "https:///" + (Join-Path -Path "$Type.azure.com/baugruppe/$($project.id)/$($team.id)" -ChildPath $API) 
+        }
+        Default {
+            $TargetURL = $URI
+        }
+    }
 
-    if (!$TargetUri.contains("api-version")) {
-        if ($TargetUri.contains("?")) {
-            $TargetUri += "&api-version=7.1-preview.1"
+    $TargetURL = $TargetURL.Replace("\", "/").Replace("//", "/") 
+    if (!$TargetURL.contains("api-version")) {
+        if ($TargetURL.contains("?")) {
+            $TargetURL += "&api-version=7.1-preview.1"
         }
         else {
-            $TargetUri += "?api-version=7.1-preview.1"
-            $TargetUri = $TargetUri.Replace("/?", "?")
+            $TargetURL += "?api-version=7.1-preview.1"
+            $TargetURL = $TargetURL.Replace("/?", "?")
         }
     }
 
-    Write-Host "    "$TargetUri
+
+    Write-Host "    "$TargetURL
 
     try {
         $headers = @{ 
@@ -105,30 +208,11 @@ function Invoke-AzDevOpsRest {
             "Content-Type" = $Method.ToLower() -eq "get" ? "application/x-www-form-urlencoded" : "application/json"
         }
 
-        $response = ""
-        if ($Quiet) {
-            $response = Invoke-RestMethod -Method $Method -Uri $TargetUri -Headers $headers -Body ($body | ConvertTo-Json -Compress)
-        }
-        else {
-            $response = Invoke-RestMethod -Method $Method -Uri $TargetUri -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose
-        }
+        $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:$Quiet
 
         if ($Property) {
-            $response = ($response.PSObject.Properties | Where-Object { $_.Name -like $Property }).Value 
-        }
-
-        return [array]@($response)
-        
-
-        #####
-        Write-Host ($response -is [array])
-        if ( !($response -is [array]) ) {
-            
-            Write-Host "Return Array"
-            return @($response)
-        }
-        else {
-            Write-Host "Return Response"
+            return ($response.PSObject.Properties | Where-Object { $_.Name.toLower() -like $Property.toLower() }).Value 
+        } else {
             return $response
         }
 
@@ -150,8 +234,8 @@ function New-BranchFromWorkitem {
         $SearchTags
     )
     
-    $currentIteration = Invoke-AzDevOpsRest -Method GET -API_Team "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=7.1-preview.1"
-    $workItems = Invoke-AzDevOpsRest -Method GET -Property "WorkItemRelations" -API_Team "/_apis/work/teamsettings/iterations/$($currentIteration.Id)/workitems?api-version=7.1-preview.1"
+    $currentIteration = Invoke-AzDevOpsRest -Method GET -CALL TEAM -API "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=6.0"
+    $workItems = Invoke-AzDevOpsRest -Method GET -CALL TEAM -Property "WorkItemRelations" -API "/_apis/work/teamsettings/iterations/$($currentIteration.Id)/workitems?api-version=7.1-preview.1"
 
     $body = @{
         ids    = $workItems.target.id
@@ -164,17 +248,17 @@ function New-BranchFromWorkitem {
         )
     }
 
-    $workItems = (Invoke-AzDevOpsRest -Method POST -API_Project "/_apis/wit/workitemsbatch?api-version=7.1-preview.1" -body $body).fields | Where-Object { $_.'System.AssignedTo'.uniqueName -like "daniel.landau@brz.eu" }
+    $workItems = (Invoke-AzDevOpsRest -Method POST -CALL PROJ -API "/_apis/wit/workitemsbatch?api-version=7.1-preview.1" -body $body).fields `
+                | Where-Object { $_.'System.AssignedTo'.uniqueName -like "daniel.landau@brz.eu" }
 
     $workItem = Get-PreferencedObject -SearchObjects $workItems -SearchTags $SearchTags -SearchProperty "System.Title"
     
-    $isRepo = (Get-ChildItem -Path . -Directory -Hidden -Filter '.git').Count -gt 0
-    
-    if (!$isRepo) {
+
+    git -C . rev-parse >nul 2>&1; 
+    if(!$?) {
         Write-Host "Please exexcute command inside a Repository"
     }
     elseif ($workItem) {
-
 
         $transformedTitle = $workItem.'System.Title'.toLower().replace(':', '_').replace('!', '').replace('?', '').split(' ') -join '-'
 
@@ -182,13 +266,14 @@ function New-BranchFromWorkitem {
 
         $byteArray = [System.BitConverter]::GetBytes((Get-Random))
         $hex = [System.Convert]::ToHexString($byteArray)
-        git stash save "st-$hex"
+        #git stash save "st-$hex" #TODO
         git checkout master
         git pull origin master
         git checkout dev
         git pull origin dev
         git checkout -b "$branchName"
-        git stash pop
+        # git stash pop #TODO
+
     }
 
 }

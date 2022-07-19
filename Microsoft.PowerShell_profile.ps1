@@ -70,19 +70,6 @@ $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort
 ########################################################################################################################
 ########################################################################################################################
 ########################################################################################################################
-#$env:VSCodeSettings = (Resolve-Path -Path "$env:appdata/code/user/settings.json").Path
-#$VSCodeSettings = (Get-Content -Path $env:VSCodeSettings) | ConvertFrom-Json 
-#$VSCodeSettings | Add-Member -MemberType NoteProperty -Name "editor.tabSize" -Value 2
-#$VSCodeSettings | Add-Member -MemberType NoteProperty -Name "editor.fontFamily" -Value "Jetbrains Mono, Consolas, \'Courier New\', monospace"
-#$VSCodeSettings | Add-Member -MemberType NoteProperty -Name "editor.fontLigatures" -Value true
-#$VSCodeSettings | ConvertTo-Json -Depth 4 | Out-File -Path $env:VSCodeSettings 
-# $env:TerraformPath = (Resolve-Path  "$env:APPDATA/../Local/Microsoft/WindowsApps/terraform").Path
-
-# Invoke-WebRequest -Method GET -Au -Uri "https://dev.azure.com/baugruppe/_apis/projects?api-version=2.0"
-
-########################################################################################################
-########################################################################################################
-########################################################################################################
 
 
 <#
@@ -110,10 +97,11 @@ function Get-DumbJoke {
 #. $env:PROFILE_HELPERS_PATH/Azure.ps1
 . $env:PROFILE_HELPERS_PATH/Prompt.ps1
  
-Load-PersonalSecrets -Show
 
 ## Initial Script
+Load-PersonalSecrets -Show
 Update-AzDevOpsSecrets
+# Get-DevOpsProjects # Takes long
 
 Add-EnvPaths
 

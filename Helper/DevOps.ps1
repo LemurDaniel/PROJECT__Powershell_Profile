@@ -159,13 +159,13 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.Boolean]
-        $Quiet = [System.Boolean]::parse($env:QUIET)
+        $Verbose = ![System.Boolean]::parse($env:QUIET)
     )
 
     $project = [RepoProjects]::GetProject($ProjectShort)
     $team =  Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
 
-    if(!$Quiet){
+    if(!$Verbose){
         Write-Host ($project | ConvertTo-Json)
         Write-Host ($team | ConvertTo-Json)
     }
@@ -208,7 +208,7 @@ function Invoke-AzDevOpsRest {
             "Content-Type" = $Method.ToLower() -eq "get" ? "application/x-www-form-urlencoded" : "application/json"
         }
 
-        $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:$Quiet
+        $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:$Verbose
 
         if ($Property) {
             return ($response.PSObject.Properties | Where-Object { $_.Name.toLower() -like $Property.toLower() }).Value 
@@ -304,11 +304,11 @@ function New-MasterPR {
         }
     
         # Search by remote url
-        $repository_list = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories"
+        $repository_list = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories"
         $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags $repository_name -SearchProperty $search_by_key
         $repository_id = $preferenced_repo.id
 
-        $active_pull_requests = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories/$repository_id/pullrequests"
+        $active_pull_requests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$repository_id/pullrequests"
         $chosen_pull_request = $active_pull_requests | Where-Object { $_.targetRefName -eq "refs/heads/master" }
 
         if (!$chosen_pull_request) {
@@ -325,7 +325,7 @@ function New-MasterPR {
                 )
             }
         
-            $chosen_pull_request = Invoke-AzDevOpsRest -Method POST -body $body -Property $null -API_Project "/_apis/git/repositories/$repository_id/pullrequests" 
+            $chosen_pull_request = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property $null -API "/_apis/git/repositories/$repository_id/pullrequests" 
 
         }
         elseif ($approve) {
@@ -397,13 +397,13 @@ function New-PullRequest {
         $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
 
         # Search by remote url
-        $repository_list = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories"
+        $repository_list = Invoke-AzDevOpsRest -Method GET -CALL PROJ  -API "/_apis/git/repositories"
         $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags $repository_name -SearchProperty $search_by_key
         $repository_id = $preferenced_repo.id
 
         # Search branch by name
         $current_branch = git branch --show-current
-        $remote_branches = Invoke-AzDevOpsRest -Method GET -API_Project "/_apis/git/repositories/$repository_id/refs"
+        $remote_branches = Invoke-AzDevOpsRest -Method GET -CALL PROJ  -API "/_apis/git/repositories/$repository_id/refs"
         $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags $current_branch
 
 
@@ -431,7 +431,7 @@ function New-PullRequest {
             $body
         }
 
-        $pull_request_id = Invoke-AzDevOpsRest -Method POST -body $body -Property "pullRequestId" -API_Project "/_apis/git/repositories/$repository_id/pullrequests" 
+        $pull_request_id = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property "pullRequestId" -API "/_apis/git/repositories/$repository_id/pullrequests" 
 
         $project_name = $preferenced_repo.project.name.replace(" ", "%20")
         $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"

@@ -19,7 +19,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
-    $projectPath = Join-Path -Path $env:RepoPath -ChildPath [RepoProjects]::GetProject($projectName).ShortName 
+    $projectPath = Join-Path -Path $env:RepoPath -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
 
     if(!(Test-Path -Path $projectPath)) {
       return New-Item -ItemType Directory -Path $projectPath
@@ -38,12 +38,10 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [System.IO.DirectoryInfo] GetRepositoryPath($repositoryId) {
-    Write-Host $repositoryId
       $repository = [RepoProjects]::GetRepository($repositoryId)
       $projectPath = [RepoProjects]::GetProjectPathById($repository.project.id)
-      Write-Host $projectPath
       $repositoryPath = Join-Path -Path $projectPath -ChildPath $repository.Name
-    Write-Host $repositoryPath
+
       if(!(Test-Path -Path $repositoryPath)) {
         return New-Item -ItemType Directory -Path $repositoryPath
       } else {

@@ -94,7 +94,7 @@ function Get-DumbJoke {
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1
 . $env:PROFILE_HELPERS_PATH/Terraform.ps1
 . $env:PROFILE_HELPERS_PATH/DevOps.ps1
-#. $env:PROFILE_HELPERS_PATH/Azure.ps1
+. $env:PROFILE_HELPERS_PATH/Azure.ps1
 . $env:PROFILE_HELPERS_PATH/Prompt.ps1
  
 

@@ -21,10 +21,7 @@ function Search-AzResource {
         $query += "or name contains '$name'"
     }
     
-    $results = [System.Collections.ArrayList]::new()
-    foreach ($result in (Search-AzGraph -ManagementGroup (Get-AzContext).Tenant.Id -Query $query)) {
-        $null = $results.Add($result)
-    }
+    $results = (Search-AzGraph -ManagementGroup (Get-AzContext).Tenant.Id -Query $query)
 
     return Get-PreferencedObject -SearchObjects $results -SearchTags $ResourceName   
 }

@@ -159,7 +159,7 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.Boolean]
-        $Verbose = ![System.Boolean]::parse($env:QUIET)
+        $Quiet = [System.Boolean]::parse($env:QUIET)
     )
 
     $project = [RepoProjects]::GetProject($ProjectShort)
@@ -208,7 +208,7 @@ function Invoke-AzDevOpsRest {
             "Content-Type" = $Method.ToLower() -eq "get" ? "application/x-www-form-urlencoded" : "application/json"
         }
 
-        $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:$Verbose
+        $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:(!$Quiet)
 
         if ($Property) {
             return ($response.PSObject.Properties | Where-Object { $_.Name.toLower() -like $Property.toLower() }).Value 

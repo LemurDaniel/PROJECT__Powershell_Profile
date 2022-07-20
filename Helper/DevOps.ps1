@@ -391,7 +391,7 @@ function New-MasterPR {
 
         $pull_request_id = $chosen_pull_request.pullRequestId
         $project_name = $preferenced_repo.project.name.replace(" ", "%20")
-        $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$($preferenced_repo.id)"
+        $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"
 
         Start-Process $pull_request_url
         

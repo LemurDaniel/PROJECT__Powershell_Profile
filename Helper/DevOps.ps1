@@ -57,7 +57,8 @@ function Invoke-AzDevOpsRestORG {
 
         if ($Property) {
             return ($response.PSObject.Properties | Where-Object { $_.Name -like $Property }).Value 
-        } else {
+        }
+        else {
             return $response
         }
 
@@ -82,32 +83,33 @@ function Get-DevOpsProjects {
     Invoke-AzDevOpsRestORG -API "_apis/teams?mine={true}&api-version=6.0-preview.3"
 
     $projects = Invoke-AzDevOpsRestORG -API _apis/projects?api-version=6.0 `
-       | Select-Object -Property name, `
-       @{Name="ShortName"; Expression={ "__$($_.Name)".replace(" ", "") }}, `
-       @{Name="ReposLocation"; Expression={$_.Name.replace(" ", "")}}, `
-       @{Name="Teams"; Expression={  
+    | Select-Object -Property name, `
+    @{Name = "ShortName"; Expression = { "__$($_.Name)".replace(" ", "") } }, `
+    @{Name = "ReposLocation"; Expression = { $_.Name.replace(" ", "") } }, `
+    @{Name = "Teams"; Expression = {  
             Invoke-AzDevOpsRestORG -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
-        }, `
-       @{Name="Repositories"; Expression={  
+    }, `
+    @{Name = "Repositories"; Expression = {  
             Invoke-AzDevOpsRestORG -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
-        }, ` 
-       visibility,id,url
+    }, ` 
+    visibility, id, url
 
     Update-PersonalSecret -SecretType "DEVOPS_REPOSITORIES_ALL" -SecretValue $projects.Repositories -NoLoad
 
     $projects | ForEach-Object { 
         $_.Repositories = ($_.Repositories | Select-Object -Property `
-            @{Name="Repository"; Expression={
-                [PSCustomObject]@{
-                    id = $_.id
-                    name = $_.name
-                    url = $_.url
-                    remoteUrl  = $_.remoteUrl
-                    defaultBranch=  $_.defaultBranch
+            @{Name = "Repository"; Expression = {
+                    [PSCustomObject]@{
+                        id            = $_.id
+                        name          = $_.name
+                        url           = $_.url
+                        remoteUrl     = $_.remoteUrl
+                        defaultBranch = $_.defaultBranch
                     
+                    }
                 }
-            }}).Repository
-        }
+            }).Repository
+    }
    
     Update-PersonalSecret -SecretType "DEVOPS_PROJECTS" -SecretValue $projects -NoLoad
 }
@@ -163,7 +165,7 @@ function Invoke-AzDevOpsRest {
     )
 
     $project = [RepoProjects]::GetProject($ProjectShort)
-    $team =  Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
+    $team = Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
 
     $TargetURL = $null
     switch ($CALL) {
@@ -192,11 +194,14 @@ function Invoke-AzDevOpsRest {
         }
     }
 
-    if(!$Quiet){
+    if (!$Quiet) {
         #Write-Host ($project | ConvertTo-Json)
         #Write-Host ($team | ConvertTo-Json)
-       Write-Host "    "$TargetURL
-   }
+        Write-Host "URL ==> "$TargetURL
+        Write-Host "BODY START"
+        Write-Host $body | ConvertTo-Json
+        Write-Host "BODY END"
+    }
 
     try {
         $headers = @{ 
@@ -210,7 +215,8 @@ function Invoke-AzDevOpsRest {
 
         if ($Property) {
             return ($response.PSObject.Properties | Where-Object { $_.Name.toLower() -like $Property.toLower() }).Value 
-        } else {
+        }
+        else {
             return $response
         }
 
@@ -223,15 +229,16 @@ function Invoke-AzDevOpsRest {
 }
 #Invoke-AzDevOpsRest -Method Get -Type vssps -API /_apis/tokens
 
-function New-BranchFromWorkitem {
+function Get-WorkItemBranch {
 
-    [Alias("gitW")]
-    param (
+}
+function Get-WorkItem {
+    param(
         [Parameter()]
         [System.String[]]
         $SearchTags
     )
-    
+
     $currentIteration = Invoke-AzDevOpsRest -Method GET -CALL TEAM -API "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=6.0"
     $workItems = Invoke-AzDevOpsRest -Method GET -CALL TEAM -Property "WorkItemRelations" -API "/_apis/work/teamsettings/iterations/$($currentIteration.Id)/workitems?api-version=7.1-preview.1"
 
@@ -242,21 +249,43 @@ function New-BranchFromWorkitem {
             "System.Title",
             "System.AssignedTo",
             "System.WorkItemType",
+            "System.Parent",
+            "System.PersonId",
+            "System.ProjectId",
+            "System.Reason",
+            "System.RelatedLinkCount",
+            "System.RelatedLinks",
             "Microsoft.VSTS.Scheduling.RemainingWork"
         )
     }
 
     $workItems = (Invoke-AzDevOpsRest -Method POST -CALL PROJ -API "/_apis/wit/workitemsbatch?api-version=7.1-preview.1" -body $body).fields `
-                | Where-Object { $_.'System.AssignedTo'.uniqueName -like "daniel.landau@brz.eu" }
+    | Where-Object { $_.'System.AssignedTo'.uniqueName -like $env:GitMailWork }
 
-    $workItem = Get-PreferencedObject -SearchObjects $workItems -SearchTags $SearchTags -SearchProperty "System.Title"
-    
+    return Get-PreferencedObject -SearchObjects $workItems -SearchTags $SearchTags -SearchProperty "System.Title"
+}
+
+function New-BranchFromWorkitem {
+
+    [Alias("gitW")]
+    param (
+        [Parameter()]
+        [System.String[]]
+        $SearchTags
+    )    
 
     git -C . rev-parse >nul 2>&1; 
-    if(!$?) {
+    if (!$?) {
         Write-Host "Please exexcute command inside a Repository"
     }
-    elseif ($workItem) {
+    else {
+
+        $workItem = Get-WorkItem -SearchTags $SearchTags
+
+        if (!$workItem) {
+            Write-Host "Work Item not found"
+            return;
+        }
 
         $transformedTitle = $workItem.'System.Title'.toLower().replace(':', '_').replace('!', '').replace('?', '').split(' ') -join '-'
 
@@ -296,38 +325,28 @@ function New-MasterPR {
     try {
 
         # Get Repo name
-        $search_by_key = "remoteUrl"
-        $repository_name = "terraform-acf-main" 
-        try {
-            $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
-        }
-        catch {
-
-        }
+        $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
     
-        # Search by remote url
-        $repository_list = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories"
-        $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags $repository_name -SearchProperty $search_by_key
-        $repository_id = $preferenced_repo.id
+        $preferenced_repo = Get-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repository_name -SearchProperty  "remoteUrl"
 
-        $active_pull_requests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$repository_id/pullrequests"
+        $active_pull_requests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($preferenced_repo.id)/pullrequests"
         $chosen_pull_request = $active_pull_requests | Where-Object { $_.targetRefName -eq "refs/heads/master" }
 
         if (!$chosen_pull_request) {
 
             $body = @{
                 sourceRefName = "refs/heads/dev"
-                targetRefName = "refs/heads/master"
+                targetRefName = $preferenced_repo.defaultBranch.trim()
                 title         = "Merge branch DEV into Master"
-                description   = ""
+                description   = "Merge branch DEV into Master" 
                 reviewers     = $(
                     #{
                     #  "id": "d6245f20-2af8-44f4-9451-8107cb2767db"
                     #}
                 )
             }
-        
-            $chosen_pull_request = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property $null -API "/_apis/git/repositories/$repository_id/pullrequests" 
+
+            $chosen_pull_request = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property $null -API "/_apis/git/repositories/$($preferenced_repo.id)/pullrequests" 
 
         }
         elseif ($approve) {
@@ -372,7 +391,7 @@ function New-MasterPR {
 
         $pull_request_id = $chosen_pull_request.pullRequestId
         $project_name = $preferenced_repo.project.name.replace(" ", "%20")
-        $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"
+        $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$($preferenced_repo.id)"
 
         Start-Process $pull_request_url
         
@@ -399,19 +418,15 @@ function New-PullRequest {
     try {
 
         # Get Repo name
-        $search_by_key = "remoteUrl"
         $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
-
-        # Search by remote url
-        $repository_list = Invoke-AzDevOpsRest -Method GET -CALL PROJ  -API "/_apis/git/repositories"
-        $preferenced_repo = Get-PreferencedObject -SearchObjects $repository_list -SearchTags $repository_name -SearchProperty $search_by_key
-        $repository_id = $preferenced_repo.id
-
+        $preferenced_repo = Get-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repository_name -SearchProperty  "remoteUrl"
+        $preferenced_repo
         # Search branch by name
         $current_branch = git branch --show-current
-        $remote_branches = Invoke-AzDevOpsRest -Method GET -CALL PROJ  -API "/_apis/git/repositories/$repository_id/refs"
+        $remote_branches = Invoke-AzDevOpsRest -Method GET -CALL PROJ  -API "/_apis/git/repositories/$($preferenced_repo.id)/refs"
+        $remote_branches
         $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags $current_branch
-
+        $workItem = Get-WorkItem -SearchTags $current_branch
 
         ##############################################
         ########## Prepare and create PR  ############
@@ -425,19 +440,21 @@ function New-PullRequest {
             sourceRefName = "$($preferenced_branch.name)"
             targetRefName = "refs/heads/dev"
             title         = "$PR_title"
-            description   = ""
-            reviewers     = $(
-                #{
-                #  "id": "d6245f20-2af8-44f4-9451-8107cb2767db"
-                #}
+            description   = $workItem."System.Title"
+            workItemRefs  = @(
+                @{
+                    id  = $workItem."System.id"
+                    url = $workItem."System.id"
+                }
             )
+            reviewers     = $()
         }
 
         if (!$Quiet) {
             $body
         }
 
-        $pull_request_id = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property "pullRequestId" -API "/_apis/git/repositories/$repository_id/pullrequests" 
+        $pull_request_id = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property "pullRequestId" -API "/_apis/git/repositories/$($preferenced_repo.id)/pullrequests" 
 
         $project_name = $preferenced_repo.project.name.replace(" ", "%20")
         $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"

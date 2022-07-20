@@ -420,11 +420,11 @@ function New-PullRequest {
         # Get Repo name
         $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
         $preferenced_repo = Get-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repository_name -SearchProperty  "remoteUrl"
-        $preferenced_repo
+ 
         # Search branch by name
         $current_branch = git branch --show-current
         $remote_branches = Invoke-AzDevOpsRest -Method GET -CALL PROJ  -API "/_apis/git/repositories/$($preferenced_repo.id)/refs"
-        $remote_branches
+
         $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags $current_branch
         $workItem = Get-WorkItem -SearchTags $current_branch
 

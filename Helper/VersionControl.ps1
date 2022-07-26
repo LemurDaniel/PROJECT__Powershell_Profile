@@ -24,6 +24,11 @@ function Open-RepositoryVSCode {
         $RepositoryName,
 
         [Parameter()]
+        [alias("not")]
+        [System.String[]]
+        $excludeSearchTags,
+
+        [Parameter()]
         [ValidateSet([RepoProjects])]  # DC-Migration, RD-Redeployment
         $Project = $env:DEVOPS_DEFAULT_PROJECT,
 
@@ -33,7 +38,7 @@ function Open-RepositoryVSCode {
     )
 
     $Repositories = [RepoProjects]::GetRepositories($Project)
-    $ChosenRepo = Get-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName
+    $ChosenRepo = Get-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
     if(!$ChosenRepo) {
         Write-Host -Foreground RED "No Repository Found"
         return;

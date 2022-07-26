@@ -7,7 +7,33 @@ class PsProfile : System.Management.Automation.IValidateSetValuesGenerator {
   }
 }
 
+<#
+class DevOpsDefaultCalls : System.Management.Automation.IValidateSetValuesGenerator {
+
+}
+#>
+
+class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
+
+  static [String[]] GetAllORG() {
+    return Get-PersonalSecret -SecretType DEVOPS_ORGANIZATIONS
+  }
+
+  static [String] GetDefaultORG() {
+    return Get-PersonalSecret -SecretType DEVOPS_DEFAULT_ORGANIZATION
+  }
+
+  [String[]] GetValidValues() {
+    return   @(Get-PersonalSecret -SecretType DEVOPS_ORGANIZATIONS)
+  }
+  
+}
+
 class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
+
+  static [String] GetDefaultProject() {
+    return Get-PersonalSecret -SecretType DEVOPS_DEFAULT_PROJECT
+  }
 
   static [PSCustomObject] GetProject($projectName) {
     return (Get-PersonalSecret -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }

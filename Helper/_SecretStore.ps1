@@ -25,11 +25,13 @@ function Load-PersonalSecrets {
   }
 
   $_NOLOAD = $SECRET_STORE["_NOLOAD"].Value
+  $_SILENT = $SECRET_STORE["_SILENT"].Value
   if($SECRET_STORE["_ORDER"]) {
     $SECRET_STORE = $SECRET_STORE `
     | Sort-Object -Property { $SECRET_STORE["_ORDER"].Value.IndexOf($_.Name) } 
   }
 
+  # Load Secrets
   foreach ($BaseSecret in $SECRET_STORE) {
     
     if($_NOLOAD.contains($BaseSecret.Name)){
@@ -40,7 +42,7 @@ function Load-PersonalSecrets {
     
     # Convert to ENV if String or Value
     if ($BaseSecret.TypeNameOfValue -eq "System.String") {
-      if ($ShowFull -or $Show) {
+      if ($ShowFull -or ($Show -and !($_SILENT.contains($BaseSecret.Name)))) {
         Write-Host "Loading '$($SECRET_BASE_NAME)' from Secret Store"
       }
 
@@ -60,7 +62,7 @@ function Load-PersonalSecrets {
     # Parse further if Object
     else {
 
-      if ($ShowFull -or $Show) {
+      if ($ShowFull -or ($Show -and !($_SILENT.contains($BaseSecret.Name))))  {
         Write-Host "Loading '$($SECRET_BASE_NAME)' Secrets from Secret Store"
       }
 

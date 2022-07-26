@@ -27,6 +27,11 @@ function Invoke-AzDevOpsRestORG {
 
         [Parameter()]
         [System.String]
+        [ValidateSet([DevOpsORG])]
+        $OrgName = [DevOpsORG]::GetDefaultORG(),
+
+        [Parameter()]
+        [System.String]
         $Property = "value",
 
         [Parameter()]
@@ -71,26 +76,43 @@ function Invoke-AzDevOpsRestORG {
    
 }
 
+function Get-DevOpsProjectsORG {
 
+    param()
+
+    Get-DevOpsProjects -$Org "baugruppe" #TODO
+    <#
+        foreach($org in [DevOpsORG]::GetAllORG) {
+        
+
+    }
+    #>
+
+
+}
 
 function Get-DevOpsProjects {
 
     param(
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Org,
+
         [Parameter()]
         [System.Boolean]
         $Quiet = [System.Boolean]::parse($env:QUIET)
     )
     Invoke-AzDevOpsRestORG -API "_apis/teams?mine={true}&api-version=6.0-preview.3"
 
-    $projects = Invoke-AzDevOpsRestORG -API _apis/projects?api-version=6.0 `
+    $projects = Invoke-AzDevOpsRestORG -OrgName $Org -API _apis/projects?api-version=6.0 `
     | Select-Object -Property name, `
     @{Name = "ShortName"; Expression = { "__$($_.Name)".replace(" ", "") } }, `
     @{Name = "ReposLocation"; Expression = { $_.Name.replace(" ", "") } }, `
     @{Name = "Teams"; Expression = {  
-            Invoke-AzDevOpsRestORG -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
+            Invoke-AzDevOpsRestORG -OrgName $Org -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
     }, `
     @{Name = "Repositories"; Expression = {  
-            Invoke-AzDevOpsRestORG -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
+            Invoke-AzDevOpsRestORG -OrgName $Org -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
     }, ` 
     visibility, id, url
 
@@ -130,7 +152,7 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.String]
-        [ValidateSet("dev", "vssps", "vsaex.dev")]
+        [ValidateSet("dev", "vssps", "vsaex.dev", "app.vssps.visualstudio")]
         $Type = "dev",
 
         [Parameter()]
@@ -138,7 +160,7 @@ function Invoke-AzDevOpsRest {
         $API,
 
         [Parameter()]
-        [ValidateSet("ORG", "PROJ", "TEAM", "URI")]
+        [ValidateSet("ORG", "PROJ", "TEAM", "URI", "NONE")]
         [System.String]
         $CALL = "ORG",
 
@@ -157,7 +179,12 @@ function Invoke-AzDevOpsRest {
         [Parameter()]
         [System.String]
         [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
-        $ProjectShort = $env:DEVOPS_DEFAULT_PROJECT,
+        $ProjectShort = [DevOpsORG]::GetDefaultProject(),
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet([DevOpsORG])]
+        $OrgName = [DevOpsORG]::GetDefaultORG(),
 
         [Parameter()]
         [System.Boolean]
@@ -169,14 +196,17 @@ function Invoke-AzDevOpsRest {
 
     $TargetURL = $null
     switch ($CALL) {
+        "NONE" {
+            $TargetURL = "https:///" + (Join-Path -Path "$Type.com/" -ChildPath $API) 
+        }
         "ORG" { 
-            $TargetURL = "https:///$Type.azure.com/baugruppe/"
+            $TargetURL = "https:///" + (Join-Path -Path "$Type.azure.com/$OrgName/" -ChildPath $API) 
         }
         "PROJ" { 
-            $TargetURL = "https:///" + (Join-Path -Path "$Type.azure.com/baugruppe/$($project.id)" -ChildPath $API) 
+            $TargetURL = "https:///" + (Join-Path -Path "$Type.azure.com/$OrgName/$($project.id)" -ChildPath $API) 
         }
         "TEAM" { 
-            $TargetURL = "https:///" + (Join-Path -Path "$Type.azure.com/baugruppe/$($project.id)/$($team.id)" -ChildPath $API) 
+            $TargetURL = "https:///" + (Join-Path -Path "$Type.azure.com/$OrgName/$($project.id)/$($team.id)" -ChildPath $API) 
         }
         Default {
             $TargetURL = $URI

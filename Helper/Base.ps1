@@ -86,7 +86,7 @@ function Get-PreferencedObject {
         [System.Object[]]
         $SearchTags,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [System.Object[]]
         $ExcludeSearchTags,
 

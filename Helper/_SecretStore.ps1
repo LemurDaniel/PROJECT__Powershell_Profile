@@ -116,9 +116,9 @@ function Update-PersonalSecret {
     [PSCustomObject]
     $SecretValue,
 
-    [parameter(Mandatory)]
+    [parameter()]
     [Switch]
-    $NoLoad
+    $NoLoad = $false
   )
   
   $SECRET_STORE = Get-Content -Path $env:SECRET_TOKEN_STORE | `

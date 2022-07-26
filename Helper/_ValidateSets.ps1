@@ -28,6 +28,10 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
     }
   }
 
+  static [PSCustomObject[]] GetRepositoriesAll() {
+    return (Get-PersonalSecret -SecretType DEVOPS_REPOSITORIES_ALL)
+  }
+
   static [PSCustomObject[]] GetRepositories($projectName) {
     $project = (Get-PersonalSecret -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
     return $project.Repositories

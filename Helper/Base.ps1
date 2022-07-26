@@ -104,6 +104,10 @@ function Get-PreferencedObject {
     $ChosenObjects = [System.Collections.ArrayList]::new()
     foreach ($SearchObject in $SearchObjects) {
 
+        if(!($SearchObject."$SearchProperty")) {
+            continue
+        }
+
         $ObjectWrapper = [PSCustomObject]@{
             Hits           = 0
             SearchProperty = $SearchObject."$SearchProperty"

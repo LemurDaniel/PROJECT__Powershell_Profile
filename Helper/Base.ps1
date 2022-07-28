@@ -36,6 +36,9 @@ function Add-EnvPaths {
         
         # CLI Tools
         AzureCLI          = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
+        AzureCLI_Onedrive = "$env:AppPath\CLI\Azure\CLI2\wbin"
+
+        sqlcmd_Onedrive   = "$env:AppPath\CLI\Microsoft SQL Server\sqlcmd"
  
         terraform         = $env:TerraformNewestVersion 
         terraformDocs     = $env:TerraformDocsNewestVersion
@@ -83,6 +86,10 @@ function Get-PreferencedObject {
         [System.Object[]]
         $SearchTags,
 
+        [Parameter(Mandatory = $false)]
+        [System.Object[]]
+        $ExcludeSearchTags,
+
         [Parameter()]
         [System.String]
         $SearchProperty = "name",
@@ -117,6 +124,19 @@ function Get-PreferencedObject {
 
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
                 $ObjectWrapper.Hits -= 1;
+            }
+        }
+        foreach ($Tag in $ExcludeSearchTags) {
+
+            if(!$Quiet) {
+                Write-Host "Search Property: $SearchProperty"
+                Write-Host "Exclude Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
+                Write-Host $Tag  $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+                Write-Host -Foreground yellow "###############################################################################################"
+            }
+
+            if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
+                $ObjectWrapper.Hits += 1;
             }
         }
 

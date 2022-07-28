@@ -21,7 +21,11 @@ function prompt {
   $path += $Parent.substring(3, $Parent.length-3) + "\"
   $path += $Leaf # append foldername
   
+  $Edition = $PSVersionTable.PSEdition
+  $PSVersion = $PSVersionTable.PSVersion.Major
+
   return "$path> "
+  #return "PS $PSVersion || $path> "
 }
 
 function shorten_path  {

@@ -332,7 +332,7 @@ function New-MasterPR {
         $active_pull_requests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($preferenced_repo.id)/pullrequests"
         $chosen_pull_request = $active_pull_requests | Where-Object { $_.targetRefName -eq "refs/heads/master" }
 
-        if (!$chosen_pull_request) {
+        if (!$chosen_pull_request -or $chosen_pull_request.sourceRefName -eq "refs/heads/hotfix") {
 
             $body = @{
                 sourceRefName = "refs/heads/dev"

@@ -40,8 +40,8 @@ $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE_PATH\Helper").Path
 
 ## Same entry also exists in ONEDRIVE/Powershell/7/profile.ps1
 ## Resolve App Path
-$env:OneDrive = $env:OneDriveConsumer
-$env:AppPath = "$env:OneDrive/Apps/"
+$env:OneDrive = $env:OneDriveConsumer ?? $env:OneDrive
+$env:AppPath = "$env:OneDrive/_Apps/"
 $env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps/"
 if (!(Test-Path $env:AppPath)) {
   $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path

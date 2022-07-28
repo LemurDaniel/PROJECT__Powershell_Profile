@@ -1,6 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 #Hardlinks
+<#
 try{
 
   $settings_WindowsTerminal = "C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json"
@@ -12,7 +13,7 @@ try{
     if($file.LinkType -ne "Hardlink") {
       Write-Host "Create Hardlink for Terminal-App"
       Remove-Item -Path $file.FullName -Verbose
-      New-Item -ItemType HardLink `
+      $test = New-Item -ItemType HardLink `
         -Path "$($file.Fullname)" `
         -Target "$settings_WindowsTerminal" `
         -Verbose
@@ -24,7 +25,7 @@ try{
 catch {
   $_
 }
-
+#>
 
 # Config ENVS
 $env:QUIET = $true

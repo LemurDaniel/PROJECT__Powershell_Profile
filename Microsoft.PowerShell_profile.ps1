@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
 #Hardlinks
 <#
@@ -26,11 +26,25 @@ catch {
   $_
 }
 #>
+$settings_WindowsTerminal_cloud = 'C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json'
+if (Test-Path -Path "$settings_WindowsTerminal_cloud") {
+
+  $folder_WindowsTerminal_local = Get-ChildItem -Directory -Filter 'Microsoft.WindowsTerminal*' -Path 'C:\Users\Daniel\AppData\Local\Packages\' 
+  $settings_WindowsTerminal_local = Get-ChildItem -Path "$($folder_WindowsTerminal_local.FullName)\LocalState\settings.json"
+
+  if ($settings_WindowsTerminal_local) {
+    Write-Host 'Override local configuration'
+    Get-Content -Path $settings_WindowsTerminal_cloud | Set-Content -Path $settings_WindowsTerminal_local.FullName
+  }
+  #Get-Item -ItemType HardLink -Path $file.FullName -Verbose
+}
+
+###################################################################################
 
 # Config ENVS
 $env:QUIET = $true
-$env:GitMailWork = "daniel.landau@brz.eu"
-$env:GitNameWork = "Daniel Landau"
+$env:GitMailWork = 'daniel.landau@brz.eu'
+$env:GitNameWork = 'Daniel Landau'
 
 
 $env:PS_PROFILE = $PROFILE
@@ -67,7 +81,7 @@ if (!(Test-Path $env:SECRET_TOKEN_STORE)) {
 ### Resolve Terraform Path
 $env:TerraformDocs = (Resolve-Path "$env:AppPath/terraform-docs/").Path
 $env:TerraformPath = (Resolve-Path "$env:AppPath/terraform/").Path
-$env:TerraformDownloadSource = "https://releases.hashicorp.com/terraform/"
+$env:TerraformDownloadSource = 'https://releases.hashicorp.com/terraform/'
 $env:TerraformNewestVersion = (Get-ChildItem -Path $env:TerraformPath | Sort-Object -Descending)[0].FullName
 $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort-Object -Descending)[0].FullName
 
@@ -85,7 +99,7 @@ function Get-DumbJoke {
 
   param()
 
-  return (Invoke-RestMethod -Method GET -Uri "https://icanhazdadjoke.com/" -Headers @{"Accept" = "application/json"}).joke
+  return (Invoke-RestMethod -Method GET -Uri 'https://icanhazdadjoke.com/' -Headers @{'Accept' = 'application/json' }).joke
 
 }
 
@@ -111,14 +125,14 @@ Update-AzDevOpsSecrets
 
 Add-EnvPaths
 
-sleep -Milliseconds 100
+Start-Sleep -Milliseconds 100
 
 Get-TerraformNewestVersion
 Switch-Terraform
 
-Set-Item -Path env:TF_DATA_DIR -Value "C:\TFCACHE"
+Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 
-if ($env:USERNAME -eq "M01947") {
+if ($env:USERNAME -eq 'M01947') {
   Switch-GitConfig -config brz
 }
 else {
@@ -126,11 +140,11 @@ else {
 }
 
 
-Write-Host ""
-Write-Host "  🤓 Joke of the Session 🤓"
+Write-Host ''
+Write-Host '  🤓 Joke of the Session 🤓'
 Write-Host "  🎉 $(Get-DumbJoke)"
-Write-Host "  👾 !!! Go Go Programming !!! 👾"
-Write-Host ""
+Write-Host '  👾 !!! Go Go Programming !!! 👾'
+Write-Host ''
 
 
 
@@ -140,41 +154,41 @@ Write-Host ""
 function Get-ScrambledText {
 
   param(
-      [Parameter()]
-      [System.String]
-      $text = (Get-Clipboard)
+    [Parameter()]
+    [System.String]
+    $text = (Get-Clipboard)
   )
 
   $newText = [System.Collections.ArrayList]::new()
 
-  foreach ($word in ($text -split " ")) {
-      $word = $word.trim()
+  foreach ($word in ($text -split ' ')) {
+    $word = $word.trim()
 
-      $startLetter = ($word -split "")[1]
-      $endLetter = ($word -split "")[-2]
+    $startLetter = ($word -split '')[1]
+    $endLetter = ($word -split '')[-2]
 
-      if ($word.length -le 3) {
-          $null = $newText.Add($word)
-      }
-      else {
-          $letters = ($word -split "")[2..($word.length - 1)]
+    if ($word.length -le 3) {
+      $null = $newText.Add($word)
+    }
+    else {
+      $letters = ($word -split '')[2..($word.length - 1)]
       
-          $count = Get-Random -Minimum 2 -Maximum 5
-          for ($i = 0; $i -lt $count; $i++) {
-              $rand = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
-              $rand2 = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
-              $temp = $letters[$rand]
-              $letters[$rand] = $letters[$rand2]
-              $letters[$rand2] = $temp
-          }
-
-          $letters = $letters -join ""
-
-          $null = $newText.Add("$startLetter" + "$letters" + "$endLetter")
+      $count = Get-Random -Minimum 2 -Maximum 5
+      for ($i = 0; $i -lt $count; $i++) {
+        $rand = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
+        $rand2 = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
+        $temp = $letters[$rand]
+        $letters[$rand] = $letters[$rand2]
+        $letters[$rand2] = $temp
       }
+
+      $letters = $letters -join ''
+
+      $null = $newText.Add("$startLetter" + "$letters" + "$endLetter")
+    }
   }
 
-  Set-Clipboard -Value ($newText -join " ")
-  return ($newText -join " ")
+  Set-Clipboard -Value ($newText -join ' ')
+  return ($newText -join ' ')
 
 }

@@ -33,8 +33,8 @@ if (Test-Path -Path "$settings_WindowsTerminal_cloud") {
   $settings_WindowsTerminal_local = Get-ChildItem -Path "$($folder_WindowsTerminal_local.FullName)\LocalState\settings.json"
 
   if ($settings_WindowsTerminal_local) {
-    Write-Host 'Override local configuration'
-    Get-Content -Path $settings_WindowsTerminal_cloud | Set-Content -Path $settings_WindowsTerminal_local.FullName
+    #Write-Host 'Override local configuration'
+    #Get-Content -Path $settings_WindowsTerminal_cloud | Set-Content -Path $settings_WindowsTerminal_local.FullName
   }
   #Get-Item -ItemType HardLink -Path $file.FullName -Verbose
 }

@@ -453,6 +453,7 @@ function New-PullRequest {
  
         # Search branch by name
         $current_branch = git branch --show-current
+        git push --set-upstream origin $current_branch
         $remote_branches = Invoke-AzDevOpsRest -Method GET -CALL PROJ  -API "/_apis/git/repositories/$($preferenced_repo.id)/refs"
 
         $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags $current_branch

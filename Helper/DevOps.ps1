@@ -179,7 +179,7 @@ function Invoke-AzDevOpsRest {
         [Parameter()]
         [System.String]
         [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
-        $ProjectShort = [DevOpsORG]::GetDefaultProject(),
+        $ProjectShort = [RepoProjects]::GetDefaultProject(),
 
         [Parameter()]
         [System.String]

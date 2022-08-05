@@ -39,6 +39,9 @@ if (Test-Path -Path "$settings_WindowsTerminal_cloud") {
   #Get-Item -ItemType HardLink -Path $file.FullName -Verbose
 }
 
+
+# NPM config globals  npm install -g azure-functions-core-tools@4 --unsafe-perm true
+
 ###################################################################################
 
 # Config ENVS

@@ -78,6 +78,8 @@ $env:SECRET_STORE = "$env:AppPath/_SECRET_STORE/"
 $env:Secondary_SECRET_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/"
 if (!(Test-Path $env:SECRET_STORE)) {
   $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
+} else {
+  $env:SECRET_STORE = (Resolve-Path -Path "$env:AppPath/_SECRET_STORE/").Path
 }
 
 $env:SECRET_TOKEN_STORE = (Resolve-Path "$env:SECRET_STORE/TOKEN_STORE.json")

@@ -9,6 +9,7 @@ function Login-ONEDRIVE_Auth {
 
 }
 
+
 function Update-ONEDRIVE_TOKEN {
   param ()
 
@@ -38,12 +39,16 @@ function Load-ONEDRIVE_SecretStore {
   )
 
   $ONEDRIVE_PERSONAL_AUTHENTICATION = Update-ONEDRIVE_TOKEN
+  $ONEDRIVE_ITEMS = Get-ODChildItems -AccessToken $env:ONEDRIVE_PERSONAL_access_token -Path "\Dokumente\_APPS\_SECRET_STORE" 
+
+  foreach ($item in $ONEDRIVE_ITEMS) {
+    $null = Get-ODItem -AccessToken $env:ONEDRIVE_PERSONAL_access_token `
+      -ElementId $item.id -LocalPath $env:SECRET_STORE -LocalFileName $item.name
+
+      # $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
+  }
   
-  $SecretStoreItem = Get-Item -Path $env:SECRET_TOKEN_STORE
-  $null = Get-ODItem -AccessToken $env:ONEDRIVE_PERSONAL_access_token `
-    -ElementId $env:ONEDRIVE_PERSONAL_SECRET_STORE_ID `
-    -LocalPath  $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
-    -LocalFileName $SecretStoreItem.PSChildName
+
 
   if ($ShowJson) {
     Load-PersonalSecrets -ShowJSON

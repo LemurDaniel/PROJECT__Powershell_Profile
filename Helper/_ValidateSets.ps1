@@ -1,3 +1,27 @@
+class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
+
+  static [string] $ALL = "ALL"
+
+  static [PSCustomObject[]] GetPermissionsByProvider($Provider) {
+    if($Provider -eq [AzPermission]::ALL){
+      return [AzPermission]::GetAllPermissions()
+    } else {      
+      return ((Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv | Group-Object -Property "Resource Provider") | Where-Object { $_.Name -eq "Microsoft.Compute" }).Group
+    }
+  }
+
+  static [PSCustomObject[]] GetAllPermissions() {   
+    return (Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv)
+  }
+
+  [String[]] GetValidValues() {
+
+    $Providers = (Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv | Group-Object "Resource Provider" | Where-Object { [regex]::Match($_.Name, "^[A-Za-z1-9]+.{1}[A-Za-z1-9]+$").Success }) | Sort-Object -Property Count -Descending
+    return @([AzPermission]::ALL) + $Providers.Name
+  }
+
+}
+
 class PsProfile : System.Management.Automation.IValidateSetValuesGenerator {
   [String[]] GetValidValues() {
     return @(

@@ -96,7 +96,11 @@ function Get-PreferencedObject {
 
         [Parameter()]
         [System.Boolean]
-        $Quiet = [bool]::Parse($env:Quiet)
+        $Quiet = [bool]::Parse($env:Quiet),
+
+        [Parameter()]
+        [Switch]
+        $Multiple
     )
 
 
@@ -152,13 +156,18 @@ function Get-PreferencedObject {
     }
     
     if ($ChosenObjects[0]) {
-        $preferedObject = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty)[0]
-        if(!$Quiet) {
-            Write-Host 
-            Write-Host $preferedObject.SearchProperty
-            Write-Host 
+
+        if($Multiple) {
+            return ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty).Object
+        } else {
+            $preferedObject = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty)[0]
+            if(!$Quiet) {
+                Write-Host 
+                Write-Host $preferedObject.SearchProperty
+                Write-Host 
+            }
+            return $preferedObject.Object
         }
-        return $preferedObject.Object
     }
 }
 

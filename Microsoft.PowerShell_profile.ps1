@@ -74,10 +74,25 @@ if (!(Test-Path $env:RepoPath)) {
 }
 
 ## ENV Variables
-$env:SECRET_TOKEN_STORE = "$env:AppPath/_SECRET_STORE/TOKEN_STORE.json"
-$env:Secondary_SECRET_TOKEN_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/TOKEN_STORE.json"
-if (!(Test-Path $env:SECRET_TOKEN_STORE)) {
-  $env:SECRET_TOKEN_STORE = (Resolve-Path $env:Secondary_SECRET_TOKEN_STORE).Path
+$env:SECRET_STORE = "$env:AppPath/_SECRET_STORE/"
+$env:Secondary_SECRET_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/"
+if (!(Test-Path $env:SECRET_STORE)) {
+  $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
+}
+
+$env:SECRET_TOKEN_STORE = (Resolve-Path "$env:SECRET_STORE/TOKEN_STORE.json")
+$env:SECRET_PERMISSIONS = (Resolve-Path "$env:SECRET_STORE/PERMISSION_ACTIONS.csv")
+$env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json" -ErrorAction SilentlyContinue) 
+
+if($null -eq $env:ROLE_DEFINITIONS) {
+  $roleDefinitions_DEV = Get-AzRoleDefinition -Scope "/providers/Microsoft.Management/managementGroups/acfroot-dev"
+  $roleDefinitions_PROD = Get-AzRoleDefinition -Scope "/providers/Microsoft.Management/managementGroups/acfroot-prod"
+  
+  @{
+    PROD =  $roleDefinitions_PROD
+    DEV = $roleDefinitions_DEV 
+  } | ConvertTo-Json -Depth 8 | Out-File -Path "$env:SECRET_STORE/ROLE_DEFINITONS.json"
+  $env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json")
 }
 
 

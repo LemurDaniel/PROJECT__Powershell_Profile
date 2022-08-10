@@ -78,13 +78,11 @@ $env:SECRET_STORE = "$env:AppPath/_SECRET_STORE/"
 $env:Secondary_SECRET_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/"
 if (!(Test-Path $env:SECRET_STORE)) {
   $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
-} else {
-  $env:SECRET_STORE = (Resolve-Path -Path "$env:AppPath/_SECRET_STORE/").Path
 }
 
-$env:SECRET_TOKEN_STORE = (Resolve-Path "$env:SECRET_STORE/TOKEN_STORE.json")
-$env:SECRET_PERMISSIONS = (Resolve-Path "$env:SECRET_STORE/PERMISSION_ACTIONS.csv")
-$env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json" -ErrorAction SilentlyContinue) 
+$env:SECRET_TOKEN_STORE = (Resolve-Path "$env:SECRET_STORE/TOKEN_STORE.json"-ErrorAction Continue)
+$env:SECRET_PERMISSIONS = (Resolve-Path "$env:SECRET_STORE/PERMISSION_ACTIONS.csv" -ErrorAction Continue)
+$env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json" -ErrorAction Continue) 
 
 if($null -eq $env:ROLE_DEFINITIONS) {
   $roleDefinitions_DEV = Get-AzRoleDefinition -Scope "/providers/Microsoft.Management/managementGroups/acfroot-dev"

@@ -48,6 +48,7 @@ if (Test-Path -Path "$settings_WindowsTerminal_cloud") {
 $env:QUIET = $true
 $env:GitMailWork = 'daniel.landau@brz.eu'
 $env:GitNameWork = 'Daniel Landau'
+$env:ActiveTFversion = '1.2.5'
 
 
 $env:PS_PROFILE = $PROFILE
@@ -135,7 +136,6 @@ function Get-DumbJoke {
 . $env:PROFILE_HELPERS_PATH/Azure.ps1
 . $env:PROFILE_HELPERS_PATH/Prompt.ps1
  
-
 ## Initial Script
 Load-PersonalSecrets -Show
 Update-AzDevOpsSecrets
@@ -143,13 +143,14 @@ Update-AzDevOpsSecrets
 
 Add-EnvPaths
 
-Start-Sleep -Milliseconds 100
+Start-Sleep -Milliseconds 250
 
 Get-TerraformNewestVersion
-Switch-Terraform
+Switch-Terraform -Version $env:ActiveTFversion
+
+
 
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
-
 if ($env:USERNAME -eq 'M01947') {
   Switch-GitConfig -config brz
 }

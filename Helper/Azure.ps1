@@ -156,3 +156,16 @@ function Search-AzPermission {
 
     return (Get-PreferencedObject -SearchObjects $permissionsToSearch -SearchTags $Keys -SearchProperty "Operation Name" -Multiple)[0..($Limit-1)]
 }
+
+function Search-AzRoleDefinitions {
+
+    [CmdletBinding()]
+    param (
+        [parameter(ValueFromPipeline)]
+        [PSCustomObject[]]
+        $Permissions
+    )
+
+    
+
+}

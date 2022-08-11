@@ -1,17 +1,38 @@
 class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
 
+  [string] $resourceProvider
+  [string] $resourceType
+  [string] $operationName
+  [string] $operationDisplayName
+  [string] $operationDescription
+  [bool] $dataAction
+
+  AzPermission($resourceProvider, $resourceType, $operationName, $operationDisplayName, $operationDescription, $dataAction) {
+    $this.resourceProvider = $resourceProvider
+    $this.resourceType = $resourceType
+    $this.operationName = $operationName
+    $this.operationDisplayName = $operationDisplayName
+    $this.operationDescription = $operationDescription
+    $this.dataAction = $dataAction
+  }
+
+
   static [string] $ALL = "ALL"
 
   static [PSCustomObject[]] GetPermissionsByProvider($Provider) {
-    if($Provider -eq [AzPermission]::ALL){
+    if ($Provider -eq [AzPermission]::ALL) {
       return [AzPermission]::GetAllPermissions()
-    } else {      
+    }
+    else {      
       return ((Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv | Group-Object -Property "Resource Provider") | Where-Object { $_.Name -eq "Microsoft.Compute" }).Group
     }
   }
 
   static [PSCustomObject[]] GetAllPermissions() {   
-    return (Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv)
+    return (Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv) 
+    # | Select-Object -Property {Name="AzPermission";Expression={ 
+    #  return [AzPermission]::new($_."Resource Provider", $_."Resource Type", $_."Operation Name", $_."Operation Display Name", $_."Operation Description", $_."Data Action")
+    # }}).AzPermission
   }
 
   [String[]] GetValidValues() {
@@ -71,9 +92,10 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
     $projectPath = Join-Path -Path $env:RepoPath -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
 
-    if(!(Test-Path -Path $projectPath)) {
+    if (!(Test-Path -Path $projectPath)) {
       return New-Item -ItemType Directory -Path $projectPath
-    } else {
+    }
+    else {
       return Get-Item -Path $projectPath
     }
   }
@@ -92,15 +114,16 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [System.IO.DirectoryInfo] GetRepositoryPath($repositoryId) {
-      $repository = [RepoProjects]::GetRepository($repositoryId)
-      $projectPath = [RepoProjects]::GetProjectPathById($repository.project.id)
-      $repositoryPath = Join-Path -Path $projectPath -ChildPath $repository.Name
+    $repository = [RepoProjects]::GetRepository($repositoryId)
+    $projectPath = [RepoProjects]::GetProjectPathById($repository.project.id)
+    $repositoryPath = Join-Path -Path $projectPath -ChildPath $repository.Name
 
-      if(!(Test-Path -Path $repositoryPath)) {
-        return New-Item -ItemType Directory -Path $repositoryPath
-      } else {
-        return Get-Item -Path $repositoryPath
-      }
+    if (!(Test-Path -Path $repositoryPath)) {
+      return New-Item -ItemType Directory -Path $repositoryPath
+    }
+    else {
+      return Get-Item -Path $repositoryPath
+    }
   }
 
   [String[]] GetValidValues() {

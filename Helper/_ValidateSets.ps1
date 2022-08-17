@@ -1,5 +1,6 @@
 class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
 
+  <#
   [string] $resourceProvider
   [string] $resourceType
   [string] $operationName
@@ -15,7 +16,7 @@ class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
     $this.operationDescription = $operationDescription
     $this.dataAction = $dataAction
   }
-
+  #>
 
   static [string] $ALL = "ALL"
 
@@ -132,6 +133,3 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
 
 
 }
-
-
-

@@ -33,7 +33,7 @@ function Search-AzStorageAccount {
         $StorageAccountName
     )
     
-    return Search-AzResource -ResourceName $StorageAccountName -ResourceType "microsoft.storage/storageaccounts"
+    return Search-AzResource -ResourceName $StorageAccountName -ResourceType 'microsoft.storage/storageaccounts'
 
 }
 
@@ -44,13 +44,13 @@ function Search-AzFunctionApp {
         $FunctionAppName
     )
     
-    return Search-AzResource -ResourceName $FunctionAppName -ResourceType "microsoft.web/sites"
+    return Search-AzResource -ResourceName $FunctionAppName -ResourceType 'microsoft.web/sites'
 
 }
 
 function Search-AzFunctionAppConfiguration {
 
-    [Alias("FAConf")]
+    [Alias('FAConf')]
     param (
         [Parameter(Mandatory = $true)]
         [System.String[]]
@@ -61,7 +61,7 @@ function Search-AzFunctionAppConfiguration {
         $ConfigName
     )
 
-    if ($ConfigName.GetType().Name -eq "String") {
+    if ($ConfigName.GetType().Name -eq 'String') {
         $ConfigName = @( $ConfigName )
     }
     $FunctionApp = Search-AzFunctionApp -FunctionAppName $FunctionAppName
@@ -78,7 +78,7 @@ function Search-AzFunctionAppConfiguration {
 
 function Search-AzStorageAccountContext {
 
-    [Alias("STCtx")]
+    [Alias('STCtx')]
     param (
         [Parameter(Mandatory = $true)]
         [System.String[]]
@@ -99,15 +99,15 @@ function Search-AzStorageAccountContext {
 
 function Search-AzStorageAccountKey {
 
-    [Alias("STkey")]
+    [Alias('STkey')]
     param (
         [Parameter(Mandatory = $true)]
         [System.String[]]
         $StorageAccountName,
 
         [Parameter()]
-        [ValidateSet("Key1", "Key2", "Both")]
-        $KeySet = "Key1"
+        [ValidateSet('Key1', 'Key2', 'Both')]
+        $KeySet = 'Key1'
     )
 
     $currentContext = Get-AzContext
@@ -117,13 +117,13 @@ function Search-AzStorageAccountKey {
         $key = Get-AzStorageAccountKey -ResourceGroupName $StorageAccount.resourceGroup -Name $StorageAccount.name
         $null = Set-AzContext -Context $currentContext
 
-        if ($KeySet -eq "Key1") {
+        if ($KeySet -eq 'Key1') {
             return $key[0].Value
         }
-        elseif ($KeySet -eq "Key2") {
+        elseif ($KeySet -eq 'Key2') {
             return $key[1].Value
         }
-        elseif ($KeySet -eq "Both") {
+        elseif ($KeySet -eq 'Both') {
             return $key
         }
     }
@@ -154,7 +154,7 @@ function Search-AzPermission {
 
     $permissionsToSearch = [AzPermission]::GetPermissionsByProvider($Provider)
 
-    return (Get-PreferencedObject -SearchObjects $permissionsToSearch -SearchTags $Keys -SearchProperty "Operation Name" -Multiple)[0..($Limit-1)]
+    return (Get-PreferencedObject -SearchObjects $permissionsToSearch -SearchTags $Keys -SearchProperty 'Operation Name' -Multiple)[0..($Limit - 1)]
 }
 
 function Search-AzRoleDefinitions {

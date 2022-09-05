@@ -5,7 +5,7 @@ function Login-ONEDRIVE_Auth {
 
   param ()
 
-  Get-ODAuthentication  -ClientId $env:ONEDRIVE_PERSONAL_CLIENT_ID  -Scope onedrive.readonly 
+  Get-ODAuthentication -ClientId $env:ONEDRIVE_PERSONAL_CLIENT_ID -Scope onedrive.readonly 
 
 }
 
@@ -16,7 +16,7 @@ function Update-ONEDRIVE_TOKEN {
   $ONEDRIVE = Get-PersonalSecret -SecretType ONEDRIVE_PERSONAL
 
   $EXPIRES = [System.DateTime]::new(0)
-  try {$EXPIRES = [System.DateTime] $ONEDRIVE.expires} catch{}
+  try { $EXPIRES = [System.DateTime] $ONEDRIVE.expires } catch {}
   $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::Now) -End $EXPIRES
   if ($TIMESPAN.Minutes -lt 2) {
 
@@ -39,13 +39,13 @@ function Load-ONEDRIVE_SecretStore {
   )
 
   $ONEDRIVE_PERSONAL_AUTHENTICATION = Update-ONEDRIVE_TOKEN
-  $ONEDRIVE_ITEMS = Get-ODChildItems -AccessToken $env:ONEDRIVE_PERSONAL_access_token -Path "\Dokumente\_APPS\_SECRET_STORE" 
+  $ONEDRIVE_ITEMS = Get-ODChildItems -AccessToken $env:ONEDRIVE_PERSONAL_access_token -Path '\Dokumente\_APPS\_SECRET_STORE' 
 
   foreach ($item in $ONEDRIVE_ITEMS) {
     $null = Get-ODItem -AccessToken $env:ONEDRIVE_PERSONAL_access_token `
       -ElementId $item.id -LocalPath $env:SECRET_STORE -LocalFileName $item.name
 
-      # $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
+    # $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
   }
   
 
@@ -54,7 +54,9 @@ function Load-ONEDRIVE_SecretStore {
     Load-PersonalSecrets -ShowJSON
   }
 
-  $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION 
+  if ($null -ne $ONEDRIVE_PERSONAL_AUTHENTICATION) {
+    $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION 
+  }
 
   if ($ShowJson) {
     Load-PersonalSecrets -ShowJSON

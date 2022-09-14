@@ -199,6 +199,10 @@ function Search-AzRoleDefinitions {
 function Backup-AzState {
     param (
   
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Reason,
+
         [Parameter()]
         [System.String]
         [ValidateSet([AzTenant])]
@@ -215,7 +219,7 @@ function Backup-AzState {
   
     
     $timeStamp = [DateTime]::Now
-    $hasExistingFolders_atTimeStampe = (Get-ChildItem -Path $TFSTATE_FOLDER -Filter "*$($timeStamp.ToString("yyyy-MM-dd--HH-mm"))" ).Count -gt 0
+    $hasExistingFolders_atTimeStampe = (Get-ChildItem -Path $TFSTATE_FOLDER -Filter "*$($timeStamp.ToString("yyyy-MM-dd--HH-mm"))*" ).Count -gt 0
     if ($hasExistingFolders_atTimeStampe) {
         Write-Host -ForegroundColor RED "There was already an backup created today at: $($timeStamp.toString("HH:mm O`clock"))"
         return
@@ -226,7 +230,7 @@ function Backup-AzState {
     foreach ($StorageAccount in $StorageAccounts) {
         Write-Host -ForegroundColor GREEN "Backing up Storage Account: $($StorageAccount.name)"
   
-        $Folder = New-Item -Type Directory -Path "$TFSTATE_FOLDER/$($StorageAccount.name)-$($timeStamp.ToString("yyyy-MM-dd--HH-mm"))"
+        $Folder = New-Item -Type Directory -Path "$TFSTATE_FOLDER/$($timeStamp.ToString("yyyy-MM-dd--HH-mm"))---$($Reason.ToUpper())---$($StorageAccount.name)"
   
         $null = Set-AzContext -Tenant $currentContext.Tenant -SubscriptionId $StorageAccount.subscriptionId
         $key = Get-AzStorageAccountKey -ResourceGroupName $StorageAccount.resourceGroup -Name $StorageAccount.name
@@ -237,9 +241,9 @@ function Backup-AzState {
             $FolderContainer = New-Item -Type Directory -Path "$($Folder.FullName)/$($container.Name)"
   
             try { 
-                foreach ($blob in (Get-AzStorageBlob -Container $ct[2].name -Context $stctx | Where-Object { $null -eq $_.SnapshotTime })  ) {    
+                foreach ($blob in (Get-AzStorageBlob -Container $container.name -Context $storageContext | Where-Object { $null -eq $_.SnapshotTime })  ) {    
                     Write-Host -ForegroundColor GREEN "     Backing up Blob: $($blob.name)"
-                    $null = Out-File -FilePath "$($FolderContainer.FullName)/$($blob.name)"
+                    $blob | Get-AzStorageBlobContent  -Context $storageContext -Destination "$($FolderContainer.FullName)/$($blob.name -replace ":", "_")" | Out-Null
                 }
             }
             Catch {

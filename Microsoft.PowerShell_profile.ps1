@@ -25,6 +25,10 @@ try{
 catch {
   $_
 }
+
+
+#net user administrator /active:yes
+#net user administrator /active:no
 #>
 $settings_WindowsTerminal_cloud = 'C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json'
 if (Test-Path -Path "$settings_WindowsTerminal_cloud") {

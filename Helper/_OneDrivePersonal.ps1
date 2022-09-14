@@ -22,7 +22,7 @@ function Update-ONEDRIVE_TOKEN {
 
     #Write-Host "Updated Token"
     $ONEDRIVE_PERSONAL_AUTHENTICATION = Get-ODAuthentication `
-      -DontShowLoginScreen -AutoAccept -Scope onedrive.readonly `
+      -Scope onedrive.readonly `
       -ClientId $env:ONEDRIVE_PERSONAL_CLIENT_ID 
 
     $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION

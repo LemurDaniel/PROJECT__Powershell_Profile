@@ -59,6 +59,23 @@ class DevOpsDefaultCalls : System.Management.Automation.IValidateSetValuesGenera
 }
 #>
 
+class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
+
+  static [PSCustomObject[]] $Tenants = (Get-AzTenant | ConvertTo-Json | ConvertFrom-Json)
+
+  static [PSCustomObject[]] $Default = ([AzTenant]::Tenants | Where-Object { $_.Name -like "*baugruppe*" })
+
+  static [PSCustomObject] GetTenantByName ($name) {
+    return [AzTenant]::Tenants | Where-Object { $_.Name -like ($name -replace "_", " ") }
+  }
+
+  [String[]] GetValidValues() {
+    return   [AzTenant]::Tenants.Name -replace " ", "_"
+  }
+
+}
+
+
 class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [String[]] GetAllORG() {

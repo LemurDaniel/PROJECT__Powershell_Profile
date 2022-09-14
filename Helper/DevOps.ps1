@@ -80,7 +80,11 @@ function Get-DevOpsProjectsORG {
 
     param()
 
+<<<<<<< HEAD
     Get-DevOpsProjects -Org 'baugruppe' #TODO
+=======
+    Get-DevOpsProjects -Org "baugruppe" #TODO
+>>>>>>> 44ff8b68201abeef1f2a58e45c59c4eeba72299d
     <#
         foreach($org in [DevOpsORG]::GetAllORG) {
         

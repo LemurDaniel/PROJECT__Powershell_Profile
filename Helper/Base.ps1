@@ -14,11 +14,14 @@ function Add-EnvPaths {
     $global:DefaultEnvPaths = @{
 
         # Some default
+        winget            = "$env:HOMEDRIVE\$env:HOMEPATH\AppData\Local\Microsoft\WindowsApps"
         System32          = "C:\Windows\system32"
         wbem              = "C:\Windows;C:\Windows\System32\Wbem"
         OpenSSH           = "C:\Windows\System32\OpenSSH\"
         ThinPrint         = "C:\Program Files\ThinPrint Client\"
         ThinPrintx86      = "C:\Program Files (x86)\ThinPrint Client\"
+
+        java              = "$env:AppPath\javaSDK\jdk-10.0.2\bin"
 
         # Code Editors
         VSCode_Primary     = "C:\Program Files\Microsoft VS Code\bin"

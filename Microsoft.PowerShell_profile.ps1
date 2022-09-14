@@ -48,7 +48,7 @@ if (Test-Path -Path "$settings_WindowsTerminal_cloud") {
 $env:QUIET = $true
 $env:GitMailWork = 'daniel.landau@brz.eu'
 $env:GitNameWork = 'Daniel Landau'
-$env:ActiveTFversion = '1.2.8'
+$env:ActiveTFversion = '1.2.9'
 
 
 $env:PS_PROFILE = $PROFILE

@@ -61,7 +61,7 @@ class DevOpsDefaultCalls : System.Management.Automation.IValidateSetValuesGenera
 
 class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 
-  static [PSCustomObject[]] $Tenants = (Get-AzTenant | ConvertTo-Json | ConvertFrom-Json)
+  static [PSCustomObject[]] $Tenants = (Get-PersonalSecret -SecretType AZURE_TENANTS)
 
   static [PSCustomObject[]] $Default = ([AzTenant]::Tenants | Where-Object { $_.Name -like "*baugruppe*" })
 

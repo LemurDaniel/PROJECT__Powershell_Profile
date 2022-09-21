@@ -255,3 +255,26 @@ function Backup-AzState {
     $null = Set-AzContext -Context $currentContext
     Write-Host -ForegroundColor GREEN "FIN"
 }
+
+
+function Switch-AzTennant {
+
+    param (
+        # Parameter help description
+        [Parameter(Mandatory = $true)]
+        [ValidateSet([AzTenant])]
+        [System.String]
+        $TennantName,
+
+        [Parameter()]
+        [switch]
+        $NoDissconnect = $false
+    )
+    
+    if(!$NoDissconnect) {
+        Disconnect-AzAccount
+    }
+   
+    $tenantId = [AzTenant]::GetTenantByName($TennantName).id
+    Connect-AzAccount -Tenant $tenantId
+}

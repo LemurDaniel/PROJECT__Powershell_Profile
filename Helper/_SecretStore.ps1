@@ -142,3 +142,14 @@ function Update-PersonalSecret {
 }
 
 
+
+
+function Update-AzTenantSecret {
+  param ()
+  
+  Connect-AzAccount
+  $Tenants = Get-AzTenant
+  Update-PersonalSecret -SecretType AZURE_TENANTS -SecretValue $Tenants -NoLoad 
+
+}
+

@@ -506,3 +506,96 @@ function New-PullRequest {
     }
 
 }
+
+
+
+
+function Update-ModuleSourcesInPath {
+
+    param (
+        [Parameter()]
+        [System.String]
+        $replacementPath = $null,
+
+        [Parameter()]
+        [switch]
+        $forceApiCall = $false
+    )
+
+    if($null -eq $replacementPath -OR $replacementPath.Length -eq 0){
+        Get-Location
+        $replacementPath = Get-Location
+    }
+
+    $global:ModuleSourceReference_Cached = Get-PersonalSecret -SecretType MODULE_SOURCE_REF_CACHE
+
+    if ($null -eq $global:ModuleSourceReference_Cached -OR $forceApiCall) {
+        # Query All Repositories in DevOps
+        $devopsRepositories = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/"
+        $preferencedRepos = Get-PreferencedObject -SearchObjects $devopsRepositories -SearchTags "terraform" -SearchProperty "name" -Multiple  
+
+        # Get the most current Tag
+        foreach ($repository in $preferencedRepos) {
+
+            $sortedTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs?filter=tags" | `
+                Select-Object -Property @{Name = "Tag"; Expression = { $_.name.Split("/")[2] } }, @{Name = "TagIntSorting"; Expression = { 
+                    return [String]::Format("{0:d4}.{1:d4}.{2:d4}", @($_.name.split("/")[2].Split(".") | ForEach-Object { [int32]::parse($_) })) 
+                } 
+            } | Sort-Object -Property TagIntSorting -Descending
+    
+            if ($null -eq $sortedTags -OR $sortedTags.Count -eq 0) {
+                $repository | Add-Member -MemberType NoteProperty -Name _TagsAssigned -Value $false
+                continue
+            }
+            else {
+                $repository | Add-Member -MemberType NoteProperty -Name _TagsAssigned -Value $true
+            }
+            $regexQuery = "source\s*=\s*`"git::$($repository.remoteUrl.Replace("/", "\/"))\/{0,2}[^\/]*?ref=\d+.\d+.\d+`"".Replace("\\/{0,1}", "\/{0,1}")
+            # $regexReplacement = "source = `"git::$($repository.remoteUrl)?ref=$($sortedTags[0].Tag)`""
+            $repository | Add-Member -MemberType NoteProperty -Name CurrentTag -Value $sortedTags[0].Tag
+            $repository | Add-Member -MemberType NoteProperty -Name regexQuery -Value $regexQuery
+            #$repository | Add-Member -MemberType NoteProperty -Name regexReplacement -Value $regexReplacement
+    
+        }
+
+        $global:ModuleSourceReference_Cached = $preferencedRepos
+        Update-PersonalSecret -SecretType MODULE_SOURCE_REF_CACHE -SecretValue $preferencedRepos -NoLoad
+    }
+    
+    # Ask for confirmation
+    $confirmation = Read-Host "Do Regex-Operations on following Subfolder $($replacementPath ) | [y/n]:"
+    if ($confirmation -ne 'y') {
+        return
+    }
+    
+
+    $taggedRepositories = $global:ModuleSourceReference_Cached | Where-Object { $_._TagsAssigned }
+    # Make Regex Replace on all child-items
+    Get-ChildItem -Recurse -Path ($replacementPath) -Filter "*.tf" | `
+        ForEach-Object {
+            $_.FullName
+        $Content = Get-Content -Path $_.FullName
+        $regexMatchesCount = 0
+
+        if($null -eq $Content -OR $Content.Length -eq 0) {
+            $content = "-"
+        }
+        foreach ($repository in $taggedRepositories) {
+            $regexMatches = [regex]::Matches($Content, $repository.regexQuery)
+            $regexMatchesCount += $regexMatches.Count
+            foreach($match in $regexMatches) {
+                $source_path = $match.Value.split("?ref=")
+                $source_path[1] = "$($repository.CurrentTag)`"" # The escaped " at the source end is important!!!
+
+                $matcher = $match.Value.Replace("/", "\/").Replace("?","\?").Replace(".", "\.")
+                $Content = $Content -replace ($matcher), "$($source_path -Join "?ref=")"
+                #$matcher
+                #$($source_path -Join "?ref=")
+                #Write-Host "-----------"
+            }
+        }
+        if ($regexMatchesCount -gt 0) {
+            $Content | Out-File -LiteralPath $_.FullName
+        }
+    }  
+}

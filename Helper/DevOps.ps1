@@ -573,27 +573,35 @@ function Update-ModuleSourcesInPath {
     # Make Regex Replace on all child-items
     Get-ChildItem -Recurse -Path ($replacementPath) -Filter "*.tf" | `
         ForEach-Object {
-            $_.FullName
+
         $Content = Get-Content -Path $_.FullName
         $regexMatchesCount = 0
 
         if($null -eq $Content -OR $Content.Length -eq 0) {
-            $content = "-"
+            $content = "-" #Empty File causes Error with regex.
         }
         foreach ($repository in $taggedRepositories) {
             $regexMatches = [regex]::Matches($Content, $repository.regexQuery)
-            $regexMatchesCount += $regexMatches.Count
-            foreach($match in $regexMatches) {
+            :regexMatch foreach($match in $regexMatches) {             
                 $source_path = $match.Value.split("?ref=")
-                $source_path[1] = "$($repository.CurrentTag)`"" # The escaped " at the source end is important!!!
 
+                if ($source_path[1].Replace('"', '') -eq $repository.CurrentTag) {
+                    continue regexMatch;
+                }
+
+                $regexMatchesCount += 1
+                # -replace is used, since get-content returns an array of lines of file, not a text string.
+                # And -replace works on Arrays as well, unlike .replace
                 $matcher = $match.Value.Replace("/", "\/").Replace("?","\?").Replace(".", "\.")
-                $Content = $Content -replace ($matcher), "$($source_path -Join "?ref=")"
+                $Content = $Content -replace $matcher, "$($source_path[0])?ref=$($repository.CurrentTag)`""
+                
+                #$match.Value
                 #$matcher
-                #$($source_path -Join "?ref=")
+                #"$($source_path[0])?ref=$($repository.CurrentTag)`""
                 #Write-Host "-----------"
             }
         }
+        # Only out-file when changes happend. Overwriting files with the same content, caused issues with VSCode git extension
         if ($regexMatchesCount -gt 0) {
             $Content | Out-File -LiteralPath $_.FullName
         }

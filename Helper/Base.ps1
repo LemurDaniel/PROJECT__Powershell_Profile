@@ -15,30 +15,30 @@ function Add-EnvPaths {
 
         # Some default
         winget            = "$env:HOMEDRIVE\AppData\Local\Microsoft\WindowsApps"
-        System32          = "C:\Windows\system32"
-        wbem              = "C:\Windows;C:\Windows\System32\Wbem"
-        OpenSSH           = "C:\Windows\System32\OpenSSH\"
-        ThinPrint         = "C:\Program Files\ThinPrint Client\"
-        ThinPrintx86      = "C:\Program Files (x86)\ThinPrint Client\"
+        System32          = 'C:\Windows\system32'
+        wbem              = 'C:\Windows;C:\Windows\System32\Wbem'
+        OpenSSH           = 'C:\Windows\System32\OpenSSH\'
+        ThinPrint         = 'C:\Program Files\ThinPrint Client\'
+        ThinPrintx86      = 'C:\Program Files (x86)\ThinPrint Client\'
 
         java              = "$env:AppPath\javaSDK\jdk-10.0.2\bin"
 
         # Code Editors
-        VSCode_Primary     = "C:\Program Files\Microsoft VS Code\bin"
-        VSCode_Secondary   = "$env:AppPath\Microsoft VS Code\bin" 
+        VSCode_Primary    = 'C:\Program Files\Microsoft VS Code\bin'
+        VSCode_Secondary  = "$env:AppPath\Microsoft VS Code\bin" 
         #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
 
         # Powershell
-        WindowsPowerShell = "C:\Windows\System32\WindowsPowerShell\v1.0\"
-        PowerShell        = "C:\Program Files\PowerShell\7\"
+        WindowsPowerShell = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
+        PowerShell        = 'C:\Program Files\PowerShell\7\'
      
         #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
         #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
 
-        WindowsAppsFolder = "C:\Users\M01947\AppData\Local\Microsoft\WindowsApps" #TODO
+        WindowsAppsFolder = 'C:\Users\M01947\AppData\Local\Microsoft\WindowsApps' #TODO
         
         # CLI Tools
-        AzureCLI          = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
+        AzureCLI          = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
         AzureCLI_Onedrive = "$env:AppPath\CLI\Azure\CLI2\wbin"
 
         sqlcmd_Onedrive   = "$env:AppPath\CLI\Microsoft SQL Server\sqlcmd"
@@ -46,13 +46,13 @@ function Add-EnvPaths {
         terraform         = $env:TerraformNewestVersion 
         terraformDocs     = $env:TerraformDocsNewestVersion
 
-        nodejs            = "C:\Program Files\nodejs\"
-        gitcmd            = "C:\Program Files\Git\cmd"
-        git               = "C:\Program Files\Git"
+        nodejs            = 'C:\Program Files\nodejs\'
+        gitcmd            = 'C:\Program Files\Git\cmd'
+        git               = 'C:\Program Files\Git'
 
-        nodejs_Secondary   = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter "nodejs")
-        vlang             = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter "v")
-        dotnet = (Get-ChildItem -Path "C:\Program Files" -Directory -Filter "dotnet").FullName
+        nodejs_Secondary  = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter 'nodejs')
+        vlang             = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter 'v')
+        dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
 
     }
 
@@ -70,7 +70,7 @@ function Add-EnvPaths {
     }
 
     $UniquePathsMap = [System.Collections.Hashtable]::new()
-    $processedPaths + $global:DefaultEnvPaths.Values | Where-Object { $_.length -gt 0 } | where-Object { $UniquePathsMap[$_] = $_ } 
+    $processedPaths + $global:DefaultEnvPaths.Values | Where-Object { $_.length -gt 0 } | Where-Object { $UniquePathsMap[$_] = $_ } 
 
     $env:Path = ($UniquePathsMap.Values -join ';')
 
@@ -95,7 +95,7 @@ function Get-PreferencedObject {
 
         [Parameter()]
         [System.String]
-        $SearchProperty = "name",
+        $SearchProperty = 'name',
 
         [Parameter()]
         [System.Boolean]
@@ -111,7 +111,7 @@ function Get-PreferencedObject {
     $ChosenObjects = [System.Collections.ArrayList]::new()
     foreach ($SearchObject in $SearchObjects) {
 
-        if(!($SearchObject."$SearchProperty")) {
+        if (!($SearchObject."$SearchProperty")) {
             continue
         }
 
@@ -122,11 +122,11 @@ function Get-PreferencedObject {
         }
         foreach ($Tag in $SearchTags) {
 
-            if(!$Quiet) {
+            if (!$Quiet) {
                 Write-Host "Search Property: $SearchProperty"
                 Write-Host "Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
-                Write-Host $Tag  $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
-                Write-Host -Foreground yellow "###############################################################################################"
+                Write-Host $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+                Write-Host -Foreground yellow '###############################################################################################'
             }
 
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
@@ -135,11 +135,11 @@ function Get-PreferencedObject {
         }
         foreach ($Tag in $ExcludeSearchTags) {
 
-            if(!$Quiet) {
+            if (!$Quiet) {
                 Write-Host "Search Property: $SearchProperty"
                 Write-Host "Exclude Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
-                Write-Host $Tag  $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
-                Write-Host -Foreground yellow "###############################################################################################"
+                Write-Host $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+                Write-Host -Foreground yellow '###############################################################################################'
             }
 
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
@@ -147,7 +147,7 @@ function Get-PreferencedObject {
             }
         }
 
-        if(!$Quiet) {
+        if (!$Quiet) {
             Write-Host $ObjectWrapper
         }
         
@@ -160,11 +160,12 @@ function Get-PreferencedObject {
     
     if ($ChosenObjects[0]) {
 
-        if($Multiple) {
+        if ($Multiple) {
             return ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty).Object
-        } else {
+        }
+        else {
             $preferedObject = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty)[0]
-            if(!$Quiet) {
+            if (!$Quiet) {
                 Write-Host 
                 Write-Host $preferedObject.SearchProperty
                 Write-Host 
@@ -183,17 +184,17 @@ function Edit-PSProfile {
         [Parameter()]
         [System.String]
         [ValidateSet([PsProfile])] 
-        $PsProfile = "Profile"
+        $PsProfile = 'Profile'
     )
 
-    if ($PsProfile -eq "Profile") {
-        code  $env:PS_PROFILE
+    if ($PsProfile -eq 'Profile') {
+        code $env:PS_PROFILE
     }
-    elseif ($PsProfile -eq "All") {
-        code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "*.ps1")      
+    elseif ($PsProfile -eq 'All') {
+        code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter '*.ps1')      
     }
     else {
-        code  (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "$PsProfile.ps1") 
+        code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "$PsProfile.ps1") 
     }
 }
 

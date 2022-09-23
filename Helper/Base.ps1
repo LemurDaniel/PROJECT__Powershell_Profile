@@ -21,16 +21,14 @@ function Add-EnvPaths {
         ThinPrint         = 'C:\Program Files\ThinPrint Client\'
         ThinPrintx86      = 'C:\Program Files (x86)\ThinPrint Client\'
 
-        java              = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
-
         # Code Editors
-        VSCode_Primary    = 'C:\Program Files\Microsoft VS Code\bin'
+        # VSCode_Primary    = 'C:\Program Files\Microsoft VS Code\bin'
         VSCode_Secondary  = "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin" 
         #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
 
         # Powershell
         WindowsPowerShell = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
-        PowerShell        = 'C:\Program Files\PowerShell\7\'
+        PowerShell        = "$env:AppPath\_Apps\_EnvPath_Apps\PowerShell\7.2"
      
         #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
         #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
@@ -57,6 +55,8 @@ function Add-EnvPaths {
         vlang             = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'v')
         dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
         dotnet_Secondary  = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'dotnet').FullName
+
+        java              = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
     }
 
     foreach ($key in $AdditionalPaths.Keys) {

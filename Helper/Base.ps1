@@ -49,11 +49,18 @@ function Add-EnvPaths {
         nodejs            = 'C:\Program Files\nodejs\'
         gitcmd            = 'C:\Program Files\Git\cmd'
         git               = 'C:\Program Files\Git'
+<<<<<<< HEAD
 
         nodejs_Secondary  = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter 'nodejs')
         vlang             = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter 'v')
         dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
+=======
+>>>>>>> aa2b423ea99bc0282a2e56154d6992da84f96af5
 
+        nodejs_Secondary  = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter 'nodejs')
+        vlang             = (Get-ChildItem -Path "$env:AppPath" -Directory -Filter 'v')
+        dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
+        dotnet_Secondary  = (Get-ChildItem -Path "'$env:AppPath" -Directory -Filter 'dotnet').FullName
     }
 
     foreach ($key in $AdditionalPaths.Keys) {

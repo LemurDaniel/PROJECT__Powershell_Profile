@@ -114,7 +114,7 @@ function Get-DevOpsProjects {
     }, `
     @{Name = "Repositories"; Expression = {  
             Invoke-AzDevOpsRestORG -OrgName $Org -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
-    }, ` 
+    }, `
     visibility, id, url
 
     Update-PersonalSecret -SecretType "DEVOPS_REPOSITORIES_ALL" -SecretValue $projects.Repositories -NoLoad

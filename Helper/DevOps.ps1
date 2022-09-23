@@ -550,7 +550,7 @@ function Update-ModuleSourcesInPath {
             else {
                 $repository | Add-Member -MemberType NoteProperty -Name _TagsAssigned -Value $true
             }
-            $regexQuery = "source\s*=\s*`"git::$($repository.remoteUrl.Replace("/", "\/"))\/{0,2}[^\/]*?ref=\d+.\d+.\d+`"".Replace("\\/{0,1}", "\/{0,1}")
+            $regexQuery = "source\s*=\s*`"git::$($repository.remoteUrl.Replace('/', '\/{0,10}'))\/{0,10}[^\/]*?ref=\d+.\d+.\d+`"".Replace('\\/{0,1}', '\/{0,1}')
             # $regexReplacement = "source = `"git::$($repository.remoteUrl)?ref=$($sortedTags[0].Tag)`""
             $repository | Add-Member -MemberType NoteProperty -Name CurrentTag -Value $sortedTags[0].Tag
             $repository | Add-Member -MemberType NoteProperty -Name regexQuery -Value $regexQuery

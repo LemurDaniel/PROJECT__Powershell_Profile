@@ -28,7 +28,7 @@ function Add-EnvPaths {
 
         # Powershell
         WindowsPowerShell = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
-        PowerShell        = "$env:AppPath\_Apps\_EnvPath_Apps\PowerShell\7.2"
+        PowerShell        = "$env:AppPath\_Apps\_EnvPath_Apps\PowerShell\7.5"
      
         #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
         #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"

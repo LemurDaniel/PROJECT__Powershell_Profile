@@ -56,6 +56,9 @@ function Add-EnvPaths {
         dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
         dotnet_Secondary  = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'dotnet').FullName
 
+        cmake             = "$env:AppPath\_EnvPath_Apps\cmake\3.24\bin"
+        gnumake           = "$env:AppPath\_EnvPath_Apps\GnuWin32\3.8\bin"
+
         java              = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
     }
 

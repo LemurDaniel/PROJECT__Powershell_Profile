@@ -26,13 +26,17 @@ catch {
   $_
 }
 
+#net user administrator /active:yes
+#net user administrator /active:no
+#>
+
 
 function Set-TerminalSettings {
 
   param()
 
   $settings_WindowsTerminal_cloud = "C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json"
-  if(Test-Path -Path "$settings_WindowsTerminal") {
+  if(Test-Path -Path "$settings_WindowsTerminal_cloud") {
 
     $folder_WindowsTerminal_local = Get-ChildItem -Directory -Filter 'Microsoft.WindowsTerminal*' -Path 'C:\Users\Daniel\AppData\Local\Packages\' 
     $settings_WindowsTerminal_local = Get-ChildItem -Path "$($folder_WindowsTerminal_local.FullName)\LocalState\settings.json"
@@ -45,12 +49,6 @@ function Set-TerminalSettings {
 
 }
 
-
-
-
-#net user administrator /active:yes
-#net user administrator /active:no
-#>
 
 # NPM config globals  npm install -g azure-functions-core-tools@4 --unsafe-perm true
 

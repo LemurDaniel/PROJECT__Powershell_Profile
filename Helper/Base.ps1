@@ -14,7 +14,7 @@ function Add-EnvPaths {
     $global:DefaultEnvPaths = @{
 
         # Some default
-        winget            = "$env:HOMEDRIVE\AppData\Local\Microsoft\WindowsApps"
+        winget            = "$env:HOMEDRIVE\$env:HOMEPATH\AppData\Local\Microsoft\WindowsApps"
         System32          = 'C:\Windows\system32'
         wbem              = 'C:\Windows;C:\Windows\System32\Wbem'
         OpenSSH           = 'C:\Windows\System32\OpenSSH\'

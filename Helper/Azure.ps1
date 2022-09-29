@@ -17,19 +17,29 @@ function Search-AzResource {
     
     $query = "
         resources 
-            | where type =~ '$ResourceType'
-            | where name contains '' 
+            | where tolower(type) =~ tolower('$ResourceType')
+            | where name == name
     "
 
     foreach ($name in $ResourceName) {
-        $query += "or name contains '$name'"
+        $query += "and name contains '$name'"
     }
     
-    $results = (Search-AzGraph -ManagementGroup (Get-AzContext).Tenant.Id -Query $query)
 
-    $resources = Get-PreferencedObject -SearchObjects $results -SearchTags $ResourceName  -Multiple
+    #-ManagementGroup ((Get-AzContext).Tenant.Id) 
+    $results = (Search-AzGraph -Query $query)
 
-    return $resources[0..($MaxReturnValues - 1)]
+    $resources = Get-PreferencedObject -SearchObjects $results -SearchTags $ResourceName -Multiple
+
+    #$resources
+
+    if ($resources[1]) {
+        return $resources[0..($MaxReturnValues - 1)]
+    }
+    else {
+        $resources[0]
+    }
+
 }
 
 function Search-AzStorageAccount {
@@ -210,7 +220,7 @@ function Backup-AzState {
     
     )
     
-    $StorageAccounts = Search-AzStorageAccount -StorageAccountName "acfstate" -MaxReturnValues 5
+    $StorageAccounts = Search-AzStorageAccount -StorageAccountName 'acfstate' -MaxReturnValues 5
   
     $TFSTATE_FOLDER = "$env:SECRET_STORE/TFSTATE"
     if (!(Test-Path $TFSTATE_FOLDER )) {
@@ -219,7 +229,7 @@ function Backup-AzState {
   
     
     $timeStamp = [DateTime]::Now
-    $hasExistingFolders_atTimeStampe = (Get-ChildItem -Path $TFSTATE_FOLDER -Filter "*$($timeStamp.ToString("yyyy-MM-dd--HH-mm"))*" ).Count -gt 0
+    $hasExistingFolders_atTimeStampe = (Get-ChildItem -Path $TFSTATE_FOLDER -Filter "*$($timeStamp.ToString('yyyy-MM-dd--HH-mm'))*" ).Count -gt 0
     if ($hasExistingFolders_atTimeStampe) {
         Write-Host -ForegroundColor RED "There was already an backup created today at: $($timeStamp.toString("HH:mm O`clock"))"
         return
@@ -230,7 +240,7 @@ function Backup-AzState {
     foreach ($StorageAccount in $StorageAccounts) {
         Write-Host -ForegroundColor GREEN "Backing up Storage Account: $($StorageAccount.name)"
   
-        $Folder = New-Item -Type Directory -Path "$TFSTATE_FOLDER/$($timeStamp.ToString("yyyy-MM-dd--HH-mm"))---$($Reason.ToUpper())---$($StorageAccount.name)"
+        $Folder = New-Item -Type Directory -Path "$TFSTATE_FOLDER/$($timeStamp.ToString('yyyy-MM-dd--HH-mm'))---$($Reason.ToUpper())---$($StorageAccount.name)"
   
         $null = Set-AzContext -Tenant $currentContext.Tenant -SubscriptionId $StorageAccount.subscriptionId
         $key = Get-AzStorageAccountKey -ResourceGroupName $StorageAccount.resourceGroup -Name $StorageAccount.name
@@ -243,7 +253,7 @@ function Backup-AzState {
             try { 
                 foreach ($blob in (Get-AzStorageBlob -Container $container.name -Context $storageContext | Where-Object { $null -eq $_.SnapshotTime })  ) {    
                     Write-Host -ForegroundColor GREEN "     Backing up Blob: $($blob.name)"
-                    $blob | Get-AzStorageBlobContent  -Context $storageContext -Destination "$($FolderContainer.FullName)/$($blob.name -replace ":", "_")" | Out-Null
+                    $blob | Get-AzStorageBlobContent -Context $storageContext -Destination "$($FolderContainer.FullName)/$($blob.name -replace ':', '_')" | Out-Null
                 }
             }
             Catch {
@@ -253,7 +263,7 @@ function Backup-AzState {
         }
     }
     $null = Set-AzContext -Context $currentContext
-    Write-Host -ForegroundColor GREEN "FIN"
+    Write-Host -ForegroundColor GREEN 'FIN'
 }
 
 
@@ -271,7 +281,7 @@ function Switch-AzTennant {
         $NoDissconnect = $false
     )
     
-    if(!$NoDissconnect) {
+    if (!$NoDissconnect) {
         Disconnect-AzAccount
     }
    

@@ -26,21 +26,27 @@ catch {
   $_
 }
 
-
 #net user administrator /active:yes
 #net user administrator /active:no
 #>
-$settings_WindowsTerminal_cloud = 'C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json'
-if (Test-Path -Path "$settings_WindowsTerminal_cloud") {
 
-  $folder_WindowsTerminal_local = Get-ChildItem -Directory -Filter 'Microsoft.WindowsTerminal*' -Path 'C:\Users\Daniel\AppData\Local\Packages\' 
-  $settings_WindowsTerminal_local = Get-ChildItem -Path "$($folder_WindowsTerminal_local.FullName)\LocalState\settings.json"
 
-  if ($settings_WindowsTerminal_local) {
-    #Write-Host 'Override local configuration'
-    #Get-Content -Path $settings_WindowsTerminal_cloud | Set-Content -Path $settings_WindowsTerminal_local.FullName
-  }
-  #Get-Item -ItemType HardLink -Path $file.FullName -Verbose
+function Set-TerminalSettings {
+
+  param()
+
+  $settings_WindowsTerminal_cloud = "C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json"
+  if(Test-Path -Path "$settings_WindowsTerminal_cloud") {
+
+    $folder_WindowsTerminal_local = Get-ChildItem -Directory -Filter 'Microsoft.WindowsTerminal*' -Path 'C:\Users\Daniel\AppData\Local\Packages\' 
+    $settings_WindowsTerminal_local = Get-ChildItem -Path "$($folder_WindowsTerminal_local.FullName)\LocalState\settings.json"
+
+    if ($settings_WindowsTerminal_local) {
+      Write-Host 'Override local configuration'
+      Get-Content -Path $settings_WindowsTerminal_cloud | Set-Content -Path $settings_WindowsTerminal_local.FullName
+    }
+ }
+
 }
 
 
@@ -65,7 +71,7 @@ $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE_PATH\Helper").Path
 ## Resolve App Path
 $env:OneDrive = $env:OneDriveConsumer ?? $env:OneDrive
 $env:AppPath = "$env:OneDrive/_Apps/"
-$env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps/"
+$env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps"
 if (!(Test-Path $env:AppPath)) {
   $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
 }
@@ -102,8 +108,8 @@ if($null -eq $env:ROLE_DEFINITIONS) {
 
 
 ### Resolve Terraform Path
-$env:TerraformDocs = (Resolve-Path "$env:AppPath/terraform-docs/").Path
-$env:TerraformPath = (Resolve-Path "$env:AppPath/terraform/").Path
+$env:TerraformDocs = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform-docs/").Path
+$env:TerraformPath = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform/").Path
 $env:TerraformDownloadSource = 'https://releases.hashicorp.com/terraform/'
 $env:TerraformNewestVersion = (Get-ChildItem -Path $env:TerraformPath | Sort-Object -Descending)[0].FullName
 $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort-Object -Descending)[0].FullName

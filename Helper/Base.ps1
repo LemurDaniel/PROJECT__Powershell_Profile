@@ -22,8 +22,8 @@ function Add-EnvPaths {
         ThinPrintx86      = 'C:\Program Files (x86)\ThinPrint Client\'
 
         # Code Editors
-        # VSCode_Primary    = 'C:\Program Files\Microsoft VS Code\bin'
         VSCode_Secondary  = "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin" 
+        VSCode_Primary    = 'C:\Program Files\Microsoft VS Code\bin'
         #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
 
         # Powershell

@@ -94,6 +94,10 @@ class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
 class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
 
+  static [string] $ALL = "ALL"
+
+
+
   static [String] GetDefaultProject() {
     return Get-PersonalSecret -SecretType DEVOPS_DEFAULT_PROJECT
   }
@@ -123,8 +127,12 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [PSCustomObject[]] GetRepositories($projectName) {
-    $project = (Get-PersonalSecret -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
-    return $project.Repositories
+    if($projectName -eq [RepoProjects]::ALL) {
+      return [RepoProjects]::GetRepositoriesAll()
+    } else {
+      $project = (Get-PersonalSecret -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
+      return $project.Repositories
+    }
   }
 
   static [PSCustomObject] GetRepository($repositoryId) {
@@ -145,7 +153,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   [String[]] GetValidValues() {
-    return   @("ALL") + (Get-PersonalSecret -SecretType DEVOPS_PROJECTS).ShortName
+    return   @([RepoProjects]::ALL) + (Get-PersonalSecret -SecretType DEVOPS_PROJECTS).ShortName
   }
 
 

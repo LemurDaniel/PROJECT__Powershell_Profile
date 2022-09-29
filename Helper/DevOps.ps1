@@ -114,7 +114,7 @@ function Get-DevOpsProjects {
     }, `
     @{Name = "Repositories"; Expression = {  
             Invoke-AzDevOpsRestORG -OrgName $Org -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
-    }, ` 
+    }, `
     visibility, id, url
 
     Update-PersonalSecret -SecretType "DEVOPS_REPOSITORIES_ALL" -SecretValue $projects.Repositories -NoLoad
@@ -260,9 +260,6 @@ function Invoke-AzDevOpsRest {
 }
 #Invoke-AzDevOpsRest -Method Get -Type vssps -API /_apis/tokens
 
-function Get-WorkItemBranch {
-
-}
 function Get-WorkItem {
     param(
         [Parameter()]
@@ -321,9 +318,7 @@ function New-BranchFromWorkitem {
         $transformedTitle = $workItem.'System.Title'.toLower().replace(':', '_').replace('!', '').replace('?', '').replace('/', '-').split(' ') -join '-'
 
         $branchName = "features/$($workItem.'System.id')-$transformedTitle"
-
-        $byteArray = [System.BitConverter]::GetBytes((Get-Random))
-        $hex = [System.Convert]::ToHexString($byteArray)
+        
         #git stash save "st-$hex" #TODO
         git checkout master
         git pull origin master

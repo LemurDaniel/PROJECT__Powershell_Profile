@@ -287,4 +287,5 @@ function Switch-AzTennant {
    
     $tenantId = [AzTenant]::GetTenantByName($TennantName).id
     Connect-AzAccount -Tenant $tenantId
+    az login --tenant $tenantId
 }

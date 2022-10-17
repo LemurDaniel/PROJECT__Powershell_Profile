@@ -48,6 +48,7 @@ function Open-RepositoryVSCode {
 
     if(($repository | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
         git -C $repository.FullName clone $ChosenRepo.remoteUrl .
+        git config --global --add safe.directory $repository.FullName
         git -C $repository.FullName config --local user.email "$env:GitMailWork"
         git -C $repository.FullName config --local user.name "$env:GitNameWork" 
     }

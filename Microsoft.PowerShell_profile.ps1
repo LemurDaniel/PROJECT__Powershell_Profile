@@ -79,7 +79,7 @@ if (!(Test-Path $env:AppPath)) {
 
 ## Resolve Repository Path
 $env:RepoPath = "$env:Userprofile/Repos"
-$env:RepoPathSecondary = "$env:OneDrive/Dokumente/Repos" #"$env:Userprofile/Documents/Repos"
+$env:RepoPathSecondary = "$env:Userprofile/Documents/Repos" #"$env:Userprofile/Documents/Repos"
 if (!(Test-Path $env:RepoPath)) {
   $env:RepoPath = (Resolve-Path $env:RepoPathSecondary).Path
 }

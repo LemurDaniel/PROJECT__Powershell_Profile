@@ -58,7 +58,7 @@ function Set-TerminalSettings {
 $env:QUIET = $true
 $env:GitMailWork = 'daniel.landau@brz.eu'
 $env:GitNameWork = 'Daniel Landau'
-$env:ActiveTFversion = '1.3.0'
+$env:ActiveTFversion = '1.3.2'
 
 
 $env:PS_PROFILE = $PROFILE

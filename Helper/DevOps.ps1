@@ -242,6 +242,7 @@ function Invoke-AzDevOpsRest {
             "Content-Type" = $Method.ToLower() -eq "get" ? "application/x-www-form-urlencoded" : "application/json"
         }
 
+        Write-Host $TargetURL
         $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:(!$Quiet)
 
         if ($Property) {

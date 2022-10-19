@@ -135,6 +135,7 @@ function Get-DevOpsProjects {
     }
    
     Update-PersonalSecret -SecretType "DEVOPS_PROJECTS" -SecretValue $projects -NoLoad
+    Update-PersonalSecret -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -NoLoad
 }
 
 

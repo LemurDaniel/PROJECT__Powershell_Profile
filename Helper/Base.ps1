@@ -28,7 +28,7 @@ function Add-EnvPaths {
 
         # Powershell
         WindowsPowerShell = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
-        PowerShell        = "$env:AppPath\_Apps\_EnvPath_Apps\PowerShell\7.5"
+        PowerShell        = "$env:AppPath\_EnvPath_Apps\PowerShell\7.5"
      
         #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
         #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
@@ -49,8 +49,8 @@ function Add-EnvPaths {
         git               = 'C:\Program Files\Git'
 
         nodejs_Secondary  = "$env:AppPath\_EnvPath_Apps\nodejs"
-        gitcmd_Secondary  = "$env:AppPath\_EnvPath_Apps\Git\cmd"
-        git_Secondary     = "$env:AppPath\_EnvPath_Apps\Git"
+        gitbin_Secondary  = "$env:AppPath\_EnvPath_Apps\Git\2.38\bin"
+        git_Secondary     = "$env:AppPath\_EnvPath_Apps\Git\2.38"
 
         vlang             = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'v')
         dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName

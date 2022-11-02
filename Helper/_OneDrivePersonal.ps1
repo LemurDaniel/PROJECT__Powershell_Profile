@@ -39,7 +39,8 @@ function Load-ONEDRIVE_SecretStore {
   )
 
   $ONEDRIVE_PERSONAL_AUTHENTICATION = Update-ONEDRIVE_TOKEN
-  $ONEDRIVE_ITEMS = Get-ODChildItems -AccessToken $env:ONEDRIVE_PERSONAL_access_token -Path '\Dokumente\_APPS\_SECRET_STORE' 
+  $ONEDRIVE_ITEMS = Get-ODChildItems -AccessToken $env:ONEDRIVE_PERSONAL_access_token -Path '\Dokumente\_APPS\_SECRET_STORE' `
+                | Where-Object { "folder" -notin $_.PSObject.Properties.name }
 
   foreach ($item in $ONEDRIVE_ITEMS) {
     $null = Get-ODItem -AccessToken $env:ONEDRIVE_PERSONAL_access_token `

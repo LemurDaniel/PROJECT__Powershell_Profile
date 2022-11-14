@@ -1,30 +1,15 @@
 
 
-function Open-RepositoryVSCodeDevOps {
-    [Alias("VCD")]
-    param (
-        [Parameter()]
-        [System.Collections.ArrayList]
-        $RepositoryName,
+function Get-RepositoryVSCode {
 
-        [Parameter()]
-        [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
-        $Project = "DC"
-    )
-
-    Open-RepositoryVSCode -RepositoryName $RepositoryName -Method devops -Project $Project
-}
-
-function Open-RepositoryVSCode {
-
-    [Alias("VC")]
+    [Alias('VC')]
     param (
         [Parameter()]
         [System.String[]]
         $RepositoryName,
 
         [Parameter()]
-        [alias("not")]
+        [alias('not')]
         [System.String[]]
         $excludeSearchTags,
 
@@ -33,67 +18,85 @@ function Open-RepositoryVSCode {
         $Project = $env:DEVOPS_DEFAULT_PROJECT,
 
         [Parameter()]
-        [ValidateSet("local", "devops")]
-        $Method = "local"
+        [ValidateSet('local', 'devops')]
+        $Method = 'local',
+
+        [Parameter()]
+        [switch]
+        $noOpenVSCode,
+
+        [Parameter()]
+        [PSCustomObject]
+        $RepositoryId
     )
 
-    $Repositories = [RepoProjects]::GetRepositories($Project)
-    $ChosenRepo = Get-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
-    if(!$ChosenRepo) {
-        Write-Host -Foreground RED "No Repository Found"
-        return;
+    $ChosenRepo
+    if ($RepositoryId) {
+        $ChosenRepo = [RepoProjects]::GetRepository($RepositoryId)
+    }
+    else {
+        $Repositories = [RepoProjects]::GetRepositories($Project)
+        $ChosenRepo = Get-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
+        if (!$ChosenRepo) {
+            Write-Host -Foreground RED 'No Repository Found'
+            return;
+        }
     }
 
-    $repository = [RepoProjects]::GetRepositoryPath($ChosenRepo.id)
+    $repositoryPath = [RepoProjects]::GetRepositoryPath($ChosenRepo.id)
 
-    if(($repository | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
-        git -C $repository.FullName clone $ChosenRepo.remoteUrl .
-        git config --global --add safe.directory $repository.FullName
-        git -C $repository.FullName config --local user.email "$env:GitMailWork"
-        git -C $repository.FullName config --local user.name "$env:GitNameWork" 
+    if (($repositoryPath | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
+        git -C $repositoryPath.FullName clone $ChosenRepo.remoteUrl .
+        git config --global --add safe.directory $repositoryPath.FullName
+        git -C $repositoryPath.FullName config --local user.email "$env:GitMailWork"
+        git -C $repositoryPath.FullName config --local user.name "$env:GitNameWork" 
     }
 
-    code $repository.FullName
-    git -C "$($repository.FullName)" config --local user.email "$env:GitMailWork"
-    git -C "$($repository.FullName)" config --local user.name "$env:GitNameWork" 
+    if (-not $noOpenVSCode) {
+        code $repositoryPath.FullName
+        git -C "$($repositoryPath.FullName)" config --local user.email "$env:GitMailWork"
+        git -C "$($repositoryPath.FullName)" config --local user.name "$env:GitNameWork" 
+    }
+
+    return $repositoryPath
 
 }
 
 function Switch-GitConfig {
 
-    [Alias("sc")]
+    [Alias('sc')]
     param(
         [Parameter()]
-        [ValidateSet("brz", "git")]
-        $config = "git"
+        [ValidateSet('brz', 'git')]
+        $config = 'git'
     )
 
-    if ($config -eq "brz") {
-        git config --global user.name  $env:GitNameWork
+    if ($config -eq 'brz') {
+        git config --global user.name $env:GitNameWork
         git config --global user.email $env:GitMailWork    
     }
-    elseif ($config -eq "git") {
-        git config --global user.name "LemurDaniel"
-        git config --global user.email "landau.daniel.1998@gmail.com"  
+    elseif ($config -eq 'git') {
+        git config --global user.name 'LemurDaniel'
+        git config --global user.email 'landau.daniel.1998@gmail.com'  
     }
 
-    Write-Host "Current Global Git Profile:"
-    Write-Host "    $(git config  --global user.name )"
-    Write-Host "    $(git config  --global user.email )"
-    Write-Host ""
+    Write-Host 'Current Global Git Profile:'
+    Write-Host "    $(git config --global user.name )"
+    Write-Host "    $(git config --global user.email )"
+    Write-Host ''
 
     git -C . rev-parse >nul 2>&1; 
-    if($?){
+    if ($?) {
 
         $localMail = git config --local user.email
         $localUser = git config --local user.name
 
-        if($localMail -AND $LocalUser) {
+        if ($localMail -AND $LocalUser) {
         
-            Write-Host "Current Local Git Profile:"
+            Write-Host 'Current Local Git Profile:'
             Write-Host "    $localUser"
             Write-Host "    $localMail"
-            Write-Host ""
+            Write-Host ''
         
         }
 

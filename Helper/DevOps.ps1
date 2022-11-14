@@ -243,7 +243,7 @@ function Invoke-AzDevOpsRest {
             'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json'
         }
 
-        Write-Host $TargetURL
+        #Write-Host $TargetURL
         $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:(!$Quiet)
 
         if ($Property) {
@@ -436,7 +436,24 @@ function New-PullRequest {
     param(
         [Parameter()]
         [System.String]
-        $PR_title = $null,
+        $PRtitle = $null,
+
+        [Parameter()]
+        [ValidateSet('dev', 'master', 'default')]
+        [System.String]
+        $Target = 'dev',
+
+        [Parameter()]
+        [System.String]
+        $repositoryId,
+
+        [Parameter()]
+        [System.String]
+        $repositoryPath,
+
+        [Parameter()]
+        [System.String]
+        $projectName,
 
         [Parameter()]
         [System.Boolean]
@@ -446,34 +463,53 @@ function New-PullRequest {
     try {
 
         # Get Repo name
-        $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
-        $preferenced_repo = Get-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repository_name -SearchProperty 'remoteUrl'
- 
+        if (-not $repositoryId -OR -not $repositoryPath -OR -not $projectName) {
+            $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
+            $preferencedRepo = Get-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repositoryName -SearchProperty 'remoteUrl'
+                
+            $repositoryId = $preferencedRepo.id
+            $projectName = $preferencedRepo.remoteUrl.split('/')[4]
+            $repositoryPath = [RepoProjects]::GetRepository($preferencedRepo.id).FullName
+        }
+        
+        
         # Search branch by name
-        $current_branch = git branch --show-current
-        git push --set-upstream origin $current_branch
-        $remote_branches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($preferenced_repo.id)/refs"
+        $repositoryName = (git -C $repositoryPath rev-parse --show-toplevel).split('/')[-1]
+        $currentBranch = git -C $repositoryPath branch --show-current
+        git -C $repositoryPath push --set-upstream origin $currentBranch
+        $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
+        $preferencedBranch = Get-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
+        # $workItem = Get-WorkItem -SearchTags $currentBbranch
 
-        $preferenced_branch = Get-PreferencedObject -SearchObjects $remote_branches -SearchTags $current_branch
-        $workItem = Get-WorkItem -SearchTags $current_branch
+        $hasDevBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('dev') } | Measure-Object).Count -gt 0
+        $hasMainBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('main') } | Measure-Object).Count -gt 0
+        $hasMasterBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('master') } | Measure-Object).Count -gt 0
+
+        if (-not $hasDevBranch -AND $Target -eq 'dev') {
+            throw 'Repository has no DEV Branch Set Up'
+        }
+
+        if ($Target -eq 'default') {
+            $Target = $hasMasterBranch ? 'master' : 'main'
+        }
+        $targetBranch = $remoteBranches | Where-Object { $_.name.toLower().contains($Target.ToLower()) }
 
         ##############################################
         ########## Prepare and create PR  ############
-
-        if ($PR_title -eq $null -or $PR_title.length -lt 3) {
-            $branch_name = $preferenced_branch.name.split('/')[-2..-1] -join ('/')
-            $PR_title = "Merge branch $branch_name into DEV"
+        if ($PRtitle -eq $null -or $PRtitle.length -lt 3) {
+            $branchName = $preferencedBranch.name.split('/')[-2..-1] -join ('/')
+            $PRtitle = "$branchName into $($targetBranch.name.split('/')[-1])"
         }
 
         $body = @{
-            sourceRefName = "$($preferenced_branch.name)"
-            targetRefName = 'refs/heads/dev'
-            title         = "$PR_title"
+            sourceRefName = $preferencedBranch.name
+            targetRefName = $targetBranch.name
+            title         = $PRtitle
             description   = $workItem.'System.Title'
             workItemRefs  = @(
                 @{
-                    id  = $workItem.'System.id'
-                    url = $workItem.'System.id'
+                    id  = ''#$workItem.'System.id'
+                    url = ''#$workItem.'System.id'
                 }
             )
             reviewers     = $()
@@ -483,17 +519,25 @@ function New-PullRequest {
             $body
         }
 
-        $pull_request_id = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property 'pullRequestId' -API "/_apis/git/repositories/$($preferenced_repo.id)/pullrequests" 
+        $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/pullrequests"
+        $chosenPullRequest = $activePullRequests | Where-Object { $_.targetRefName -eq $targetBranch.name -AND $_.sourceRefName -eq $preferencedBranch.name }
 
-        $project_name = $preferenced_repo.project.name.replace(' ', '%20')
-        $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"
+        if ($chosenPullRequest) {
+            $pullRequestId = $chosenPullRequest.pullRequestId
+        }
+        else {
+            $pullRequestId = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property 'pullRequestId' -API "/_apis/git/repositories/$($repositoryId)/pullrequests" 
+        }
+
+        $projectName = $projectName.replace(' ', '%20')
+        $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($repositoryName)/pullrequest/$pullRequestId"
 
         Write-Host -Foreground Green '      '
         Write-Host -Foreground Green ' 🎉 New Pull-Request created  🎉  '
-        Write-Host -Foreground Green "    $pull_request_url "
+        Write-Host -Foreground Green "    $pullRequestUrl "
         Write-Host -Foreground Green '      '
 
-        Start-Process $pull_request_url
+        Start-Process $pullRequestUrl
 
     } 
     catch {
@@ -566,9 +610,12 @@ function Get-RecentSubmoduleTags {
 
 }
 
-
 function Update-ModuleSourcesInPath {
 
+    [cmdletbinding(
+        SupportsShouldProcess,
+        ConfirmImpact = 'high'
+    )]
     param (
         [Parameter()]
         [System.String]
@@ -579,52 +626,119 @@ function Update-ModuleSourcesInPath {
         $forceApiCall = $false
     )
 
+    $totalReplacements = [System.Collections.ArrayList]::new()
     $taggedRepositories = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
     $replacementPath = $null -ne $replacementPath -AND $replacementPath.Length -gt 0 ? $replacementPath : ((Get-Location).Path) 
   
-    # Ask for confirmation
-    $confirmation = Read-Host "Do Regex-Operations on following Subfolder '$replacementPath' | [y/n]:"
-    if ($confirmation -ne 'y') {
-        return
-    }
-    
- 
-    # Make Regex Replace on all child-items
-    $childitems = Get-ChildItem -Recurse -Path ($replacementPath) -Filter '*.tf' 
-    foreach ($tfConfigFile in $childitems) {
+    # Implements Confirmation
+    if ($PSCmdlet.ShouldProcess("$replacementPath" , 'Do Subfolder Regex-Operations')) {
 
-        $regexMatchesCount = 0
-        $Content = Get-Content -Path $tfConfigFile.FullName
+        # Make Regex Replace on all Child-Items.
+        $childitems = Get-ChildItem -Recurse -Path ($replacementPath) -Filter '*.tf' 
+        foreach ($tfConfigFile in $childitems) {
 
-        if ($null -eq $Content -OR $Content.Length -eq 0) {
-            continue; # Skip empty files to prevent errors
-        }
+            $regexMatchesCount = 0
+            $Content = Get-Content -Path $tfConfigFile.FullName
 
-        # Parse all Repos over file
-        foreach ($repository in $taggedRepositories) {
-            $regexMatches = [regex]::Matches($Content, $repository.regexQuery)
-
-            :regexMatch foreach ($match in $regexMatches) {             
-                $sourcePath = $match.Value.replace('"', '').split('?ref=')
-
-                # Skip sources with already most current tag set.
-                if ($sourcePath[1] -eq $repository.CurrentTag) {
-                    continue regexMatch;
-                }
-
-                $regexMatchesCount += 1
-                $sourcePath[0] = $sourcePath[0].replace('source', '').replace('=', '').trim()
-                $sourceWithCurrentTag = "source = `"$($sourcePath[0])?ref=$($repository.CurrentTag)`""
-                # -replace is used, since get-content returns an array of lines of file, not a text string.
-                # And -replace works on Arrays as well, unlike .replace
-                $matcher = $match.Value.Replace('/', '\/').Replace('?', '\?').Replace('.', '\.')
-                $Content = $Content -replace $matcher, $sourceWithCurrentTag
-                
+            if ($null -eq $Content -OR $Content.Length -eq 0) {
+                continue; # Skip empty files to prevent errors
             }
+
+            # Parse all Repos over file
+            foreach ($repository in $taggedRepositories) {
+                $regexMatches = [regex]::Matches($Content, $repository.regexQuery)
+
+                :regexMatch foreach ($match in $regexMatches) {             
+                    $sourcePath = $match.Value.replace('"', '').split('?ref=')
+
+                    # Skip sources with already most current tag set.
+                    if ($sourcePath[1] -eq $repository.CurrentTag) {
+                        continue regexMatch;
+                    }
+
+                    $regexMatchesCount += 1
+                    $sourcePath[0] = $sourcePath[0].replace('source', '').replace('=', '').trim()
+                    $sourceWithCurrentTag = "source = `"$($sourcePath[0])?ref=$($repository.CurrentTag)`""
+                    # -replace is used, since get-content returns an array of lines of file, not a text string.
+                    # And -replace works on Arrays as well, unlike .replace
+                    $matcher = $match.Value.Replace('/', '\/').Replace('?', '\?').Replace('.', '\.')
+                    $Content = $Content -replace $matcher, $sourceWithCurrentTag
+                
+                }
+            }
+            # Only out-file when changes happend. Overwriting files with the same content, caused issues with VSCode git extension
+            if ($regexMatchesCount -gt 0) {
+                $totalReplacements.Add($tfConfigFile.FullName)
+                $Content | Out-File -LiteralPath $tfConfigFile.FullName
+            }
+        }  
+    }
+
+    return $totalReplacements
+}
+
+
+function Update-ModuleSourcesAllRepositories {
+    param (
+        [Parameter()]
+        [System.String]
+        $projectName = [RepoProjects]::GetDefaultProject(),
+
+        [Parameter()]
+        [switch]
+        $forceApiCall = $false
+    )
+    
+    # Peform regex on following last
+    $sortOrder = @(
+        'terraform-acf-main',
+        'terraform-acf-adds',
+        'terraform-acf-launchpad'
+    )
+
+    if ($forceApiCall) {
+        Write-Host -ForegroundColor Yellow 'Fetching Latest Tags'
+    }
+    else {
+        Write-Host -ForegroundColor Yellow 'Fetching Cached Tags'
+    }
+    $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
+    $allTerraformRepositories = [RepoProjects]::GetRepositories('__DCAzureMigration') | `
+        Where-Object { $_.name.contains('terraform') } | `
+        Sort-Object -Property { $sortOrder.IndexOf($_.name) }
+
+    foreach ($repository in $allTerraformRepositories) {
+    
+        Write-Host -ForegroundColor Yellow "Searching Respository '$($repository.name)' locally"
+        $repositoryPath = Get-RepositoryVSCode -repositoryId ($repository.id) -NoOpenVSCode
+
+        Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
+        $repoRefs = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs" | `
+            Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
+            Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
+
+        git -C $repositoryPath.FullName checkout ($repoRefs[0].name -split '/')[-1]
+        git -C $repositoryPath.FullName pull
+
+        Write-Host -ForegroundColor Yellow 'Search and Replace Submodule Source Paths'
+        $replacements = Update-ModuleSourcesInPath -replacementPath ($repositoryPath.FullName) -Confirm:$false
+
+        if ($replacements.Count -eq 0) {
+            continue;
         }
-        # Only out-file when changes happend. Overwriting files with the same content, caused issues with VSCode git extension
-        if ($regexMatchesCount -gt 0) {
-            $Content | Out-File -LiteralPath $tfConfigFile.FullName
+
+        Write-Host -ForegroundColor Yellow 'Create Branch and Pull Request'
+        git -C $repositoryPath.FullName checkout -B features/AUTO__Update-Submodule-source-path
+        git -C $repositoryPath.FullName Add -A
+        git -C $repositoryPath.FullName commit -m 'AUTO--Update Submodule Source Paths'
+        git -C $repositoryPath.FullName push origin features/AUTO__Update-Submodule-source-path
+        if ($repoRefs[0].name.contains('dev')) {
+            New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'dev' `
+                -repositoryId ($repository.id) -repositoryPath ($repositoryPath.FullName) -projectName ($repository.remoteUrl.split('/')[4])
         }
-    }  
+        else {
+            New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
+                -repositoryId ($repository.id) -repositoryPath ($repositoryPath.FullName) -projectName ($repository.remoteUrl.split('/')[4])
+        }
+    }
 }

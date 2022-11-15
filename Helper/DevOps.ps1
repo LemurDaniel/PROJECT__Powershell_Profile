@@ -336,7 +336,13 @@ function New-BranchFromWorkitem {
 
 function New-MasterPR {
 
-    New-PullRequest -Target 'default'
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $PRtitle
+    )
+
+    New-PullRequest -Target 'default' -PRtitle $PRTitle
 }
 
 function New-PullRequest {
@@ -398,16 +404,19 @@ function New-PullRequest {
         }
 
         if ($Target -eq 'default') {
-            $Target = $hasMasterBranch ? 'master' : 'main'
+            $Target = $hasMasterBranch ? 'master' : 'main'   
+            $preferencedBranch = $remoteBranches | Where-Object { $_.name.toLower().contains('dev') }
+            $branchName = 'DEV'
+        }
+        else {
+            $branchName = $preferencedBranch.name.split('/')[-2..-1] -join ('/')
         }
         $targetBranch = $remoteBranches | Where-Object { $_.name.toLower().contains($Target.ToLower()) }
 
         ##############################################
         ########## Prepare and create PR  ############
-        if ($PRtitle -eq $null -or $PRtitle.length -lt 3) {
-            $branchName = $preferencedBranch.name.split('/')[-2..-1] -join ('/')
-            $PRtitle = "$branchName into $($targetBranch.name.split('/')[-1])"
-        }
+        $PRtitle = $null -ne $PRtitle -AND $PRtitle.Length -gt 3 ? $PRtitle : ($currentBranch -replace 'features/\d*-{1}', '')
+        $PRtitle = "$branchName into $($targetBranch.name.split('/')[-1]) - $PRtitle"
 
         $body = @{
             sourceRefName = $preferencedBranch.name
@@ -482,12 +491,12 @@ function Get-RecentSubmoduleTags {
 
         # Call Api to get all tags on Repository and sort them by newest
         $sortedTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs?filter=tags" | `
-            Select-Object -Property `
-        @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
-        @{Name = 'TagIntSorting'; Expression = { 
-                return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
-            }
-        } | Sort-Object -Property TagIntSorting -Descending
+                Select-Object -Property `
+            @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
+            @{Name = 'TagIntSorting'; Expression = { 
+                    return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
+                }
+            } | Sort-Object -Property TagIntSorting -Descending
     
         # If no tag is present, skip further processing
         if ($null -eq $sortedTags -OR $sortedTags.Count -eq 0) {
@@ -612,8 +621,8 @@ function Update-ModuleSourcesAllRepositories {
     }
     $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
     $allTerraformRepositories = [RepoProjects]::GetRepositories('__DCAzureMigration') | `
-        Where-Object { $_.name.contains('terraform') } | `
-        Sort-Object -Property { $sortOrder.IndexOf($_.name) }
+            Where-Object { $_.name.contains('terraform') } | `
+            Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 
     foreach ($repository in $allTerraformRepositories) {
     
@@ -622,8 +631,8 @@ function Update-ModuleSourcesAllRepositories {
 
         Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
         $repoRefs = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs" | `
-            Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
-            Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
+                Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
+                Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
 
         git -C $repositoryPath.FullName checkout ($repoRefs[0].name -split '/')[-1]
         git -C $repositoryPath.FullName pull

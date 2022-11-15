@@ -336,99 +336,7 @@ function New-BranchFromWorkitem {
 
 function New-MasterPR {
 
-    param(
-        [Parameter()]
-        [System.String]
-        $PR_title = 'Merge DEV into MASTER',
-
-        [Parameter()]
-        [System.Boolean]
-        $Approve = $false,
-
-        [Parameter()]
-        [System.Boolean]
-        $Quiet = [System.Boolean]::parse($env:QUIET)
-    )
-
-    try {
-
-        # Get Repo name
-        $repository_name = (git rev-parse --show-toplevel).split('/')[-1]
-    
-        $preferenced_repo = Get-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repository_name -SearchProperty 'remoteUrl'
-
-        $active_pull_requests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($preferenced_repo.id)/pullrequests"
-        $chosen_pull_request = $active_pull_requests | Where-Object { $_.targetRefName -eq 'refs/heads/master' }
-
-        if (!$chosen_pull_request -or $chosen_pull_request.sourceRefName -eq 'refs/heads/hotfix') {
-
-            $body = @{
-                sourceRefName = 'refs/heads/dev'
-                targetRefName = $preferenced_repo.defaultBranch.trim()
-                title         = 'Merge branch DEV into Master'
-                description   = 'Merge branch DEV into Master' 
-                reviewers     = $(
-                    #{
-                    #  "id": "d6245f20-2af8-44f4-9451-8107cb2767db"
-                    #}
-                )
-            }
-
-            $chosen_pull_request = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property $null -API "/_apis/git/repositories/$($preferenced_repo.id)/pullrequests" 
-
-        }
-        elseif ($approve) {
-
-            $pull_request_id = $chosen_pull_request.pullRequestId
-
-            <#
-            $body = @{
-                reviewerUrl= "https://dev.azure.com/baugruppe/625cb37d-7374-4306-b7e9-98f0ef6958a5/_apis/git/repositories/264e303e-07e9-4e8b-bb65-d9f0650b4e2b/pullRequests/28290/reviewers/4a75589a-39ce-663a-92d1-15abe18cefce"
-                vote= 10
-                hasDeclined= $false
-                isFlagged= $false
-                displayName= "Daniel Landau"
-                url= "https://spsprodweu4.vssps.visualstudio.com/A54e75587-863e-4464-80fe-12ab77c3d304/_apis/Identities/4a75589a-39ce-663a-92d1-15abe18cefce"
-                links= @{
-                  avatar= @{
-                    href= "https://dev.azure.com/baugruppe/_apis/GraphProfile/MemberAvatars/aad.NGE3NTU4OWEtMzljZS03NjNhLTkyZDEtMTVhYmUxOGNlZmNl"
-                  }
-                }
-                id= "4a75589a-39ce-663a-92d1-15abe18cefce"
-                uniqueName= "daniel.landau@brz.eu"
-                imageUrl= "https://dev.azure.com/baugruppe/_api/_common/identityImage?id=4a75589a-39ce-663a-92d1-15abe18cefce"
-              }
-              
-            $body = @{
-                id = "4a75589a-39ce-663a-92d1-15abe18cefce"
-                vote = 0
-            }
-           # 4a75589a-39ce-663a-92d1-15abe18cefce
-            $body = @{
-                displayName = "Daniel Landau"
-                uniqueName="daniel.landau@brz.eu"
-                hasDeclined = $false
-                id = "4a75589a-39ce-663a-92d1-15abe18cefce"
-                vote = 10
-                url = "https://spsprodweu4.vssps.visualstudio.com/A54e75587-863e-4464-80fe-12ab77c3d304/_apis/Identities/4a75589a-39ce-663a-92d1-15abe18cefce?api-version=6.0"
-              }
-           # Invoke-AzDevOpsRest -Method POST -body $body   /_apis/userentitlements
-            $approve_pr = Invoke-AzDevOpsRest -Method POST -body $body -API_Project "/_apis/git/repositories/$repository_id/pullRequests/$pull_request_id/reviewers/4a75589a-39ce-663a-92d1-15abe18cefce?api-version=6.0"
-#>
-        }
-
-        $pull_request_id = $chosen_pull_request.pullRequestId
-        $project_name = $preferenced_repo.project.name.replace(' ', '%20')
-        $pull_request_url = "https://dev.azure.com/baugruppe/$project_name/_git/$($preferenced_repo.name)/pullrequest/$pull_request_id"
-
-        Start-Process $pull_request_url
-        
-    } 
-    catch {
-
-        $_
-
-    }
+    New-PullRequest -Target 'default'
 }
 
 function New-PullRequest {
@@ -469,7 +377,7 @@ function New-PullRequest {
                 
             $repositoryId = $preferencedRepo.id
             $projectName = $preferencedRepo.remoteUrl.split('/')[4]
-            $repositoryPath = [RepoProjects]::GetRepository($preferencedRepo.id).FullName
+            $repositoryPath = (git rev-parse --show-toplevel)
         }
         
         

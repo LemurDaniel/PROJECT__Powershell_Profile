@@ -14,52 +14,53 @@ function Add-EnvPaths {
     $global:DefaultEnvPaths = @{
 
         # Some default
-        winget            = "$env:HOMEDRIVE\$env:HOMEPATH\AppData\Local\Microsoft\WindowsApps"
-        System32          = 'C:\Windows\system32'
-        wbem              = 'C:\Windows;C:\Windows\System32\Wbem'
-        OpenSSH           = 'C:\Windows\System32\OpenSSH\'
-        ThinPrint         = 'C:\Program Files\ThinPrint Client\'
-        ThinPrintx86      = 'C:\Program Files (x86)\ThinPrint Client\'
+        winget               = "$env:HOMEDRIVE\$env:HOMEPATH\AppData\Local\Microsoft\WindowsApps"
+        System32             = 'C:\Windows\system32'
+        wbem                 = 'C:\Windows;C:\Windows\System32\Wbem'
+        OpenSSH              = 'C:\Windows\System32\OpenSSH\'
+        ThinPrint            = 'C:\Program Files\ThinPrint Client\'
+        ThinPrintx86         = 'C:\Program Files (x86)\ThinPrint Client\'
 
         # Code Editors
-        VSCode_Secondary  = "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin" 
-        VSCode_Primary    = 'C:\Program Files\Microsoft VS Code\bin'
+        VSCode_Secondary     = "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin" 
+        VSCode_Primary       = 'C:\Program Files\Microsoft VS Code\bin'
         #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
 
         # Powershell
-        WindowsPowerShell = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
-        PowerShell        = "$env:AppPath\_EnvPath_Apps\PowerShell\7.5"
-     
+        WindowsPowerShell    = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
+        PowerShell           = "$env:AppPath\_EnvPath_Apps\PowerShell\7.5"
+        PowerShell_Secondary = "C:\Program Files\PowerShell\7"
+
         #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
         #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
 
-        WindowsAppsFolder = 'C:\Users\M01947\AppData\Local\Microsoft\WindowsApps' #TODO
+        WindowsAppsFolder    = 'C:\Users\M01947\AppData\Local\Microsoft\WindowsApps' #TODO
         
         # CLI Tools
-        AzureCLI          = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
-        AzureCLI_Onedrive = "$env:AppPath\_EnvPath_Apps\CLI\Azure\CLI2\wbin"
+        AzureCLI             = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
+        AzureCLI_Onedrive    = "$env:AppPath\_EnvPath_Apps\CLI\Azure\CLI2\wbin"
 
-        sqlcmd_Onedrive   = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
+        sqlcmd_Onedrive      = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
  
-        terraform         = $env:TerraformNewestVersion 
-        terraformDocs     = $env:TerraformDocsNewestVersion
+        terraform            = $env:TerraformNewestVersion 
+        terraformDocs        = $env:TerraformDocsNewestVersion
 
-        nodejs            = 'C:\Program Files\nodejs\'
-        gitcmd            = 'C:\Program Files\Git\cmd'
-        git               = 'C:\Program Files\Git'
+        nodejs               = 'C:\Program Files\nodejs\'
+        gitcmd               = 'C:\Program Files\Git\cmd'
+        git                  = 'C:\Program Files\Git'
 
-        nodejs_Secondary  = "$env:AppPath\_EnvPath_Apps\nodejs"
-        gitbin_Secondary  = "$env:AppPath\_EnvPath_Apps\Git\2.38\bin"
-        git_Secondary     = "$env:AppPath\_EnvPath_Apps\Git\2.38"
+        nodejs_Secondary     = "$env:AppPath\_EnvPath_Apps\nodejs"
+        gitbin_Secondary     = "$env:AppPath\_EnvPath_Apps\Git\2.38\bin"
+        git_Secondary        = "$env:AppPath\_EnvPath_Apps\Git\2.38"
 
-        vlang             = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'v')
-        dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
-        dotnet_Secondary  = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'dotnet').FullName
+        vlang                = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'v')
+        dotnet               = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
+        dotnet_Secondary     = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'dotnet').FullName
 
-        cmake             = "$env:AppPath\_EnvPath_Apps\cmake\3.24\bin"
-        gnumake           = "$env:AppPath\_EnvPath_Apps\GnuWin32\3.8\bin"
+        cmake                = "$env:AppPath\_EnvPath_Apps\cmake\3.24\bin"
+        gnumake              = "$env:AppPath\_EnvPath_Apps\GnuWin32\3.8\bin"
 
-        java              = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
+        java                 = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
     }
 
     foreach ($key in $AdditionalPaths.Keys) {

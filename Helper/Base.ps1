@@ -105,6 +105,10 @@ function Get-PreferencedObject {
         $SearchProperty = 'name',
 
         [Parameter()]
+        [System.String]
+        $returnProperty,
+
+        [Parameter()]
         [System.Boolean]
         $Quiet = [bool]::Parse($env:Quiet),
 
@@ -153,33 +157,30 @@ function Get-PreferencedObject {
                 $ObjectWrapper.Hits += 1;
             }
         }
-
         if (!$Quiet) {
             Write-Host $ObjectWrapper
         }
-        
-
 
         if ($ObjectWrapper.Hits -lt 0) {
             $null = $ChosenObjects.Add($ObjectWrapper)
         }
     }
-    
-    if ($ChosenObjects[0]) {
 
-        if ($Multiple) {
-            return ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty).Object
-        }
-        else {
-            $preferedObject = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty)[0]
-            if (!$Quiet) {
-                Write-Host 
-                Write-Host $preferedObject.SearchProperty
-                Write-Host 
-            }
-            return $preferedObject.Object
-        }
+    if ($ChosenObjects.Count -eq 0) {
+        return
     }
+
+    $ChosenObjects = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty).Object
+    if($returnProperty) {
+        $ChosenObjects = $ChosenObjects."$returnProperty"
+    }
+
+    if ($Multiple) {
+        return  $ChosenObjects
+    } else {
+       return $ChosenObjects.GetType().BaseType -eq [System.Array] ? $ChosenObjects[0] : $ChosenObjects
+    }
+   
 }
 
 

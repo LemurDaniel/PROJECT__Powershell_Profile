@@ -117,7 +117,7 @@ function Get-DevOpsProjects {
     }, `
         visibility, id, url
 
-    Update-PersonalSecret -SecretType 'DEVOPS_REPOSITORIES_ALL' -SecretValue $projects.Repositories -NoLoad `
+    Update-SecretStore -SecretType 'DEVOPS_REPOSITORIES_ALL' -SecretValue $projects.Repositories -NoLoad `
                             -SecretStoreSource "ORG" -Organization $Org
 
     $projects | ForEach-Object { 
@@ -135,8 +135,8 @@ function Get-DevOpsProjects {
             }).Repository
     }
    
-    Update-PersonalSecret -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -NoLoad  -SecretStoreSource "ORG" -Organization $Org
-    Update-PersonalSecret -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -NoLoad  -SecretStoreSource "ORG" -Organization $Org
+    Update-SecretStore -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -NoLoad  -SecretStoreSource "ORG" -Organization $Org
+    Update-SecretStore -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -NoLoad  -SecretStoreSource "ORG" -Organization $Org
 }
 
 
@@ -561,7 +561,7 @@ function Get-RecentSubmoduleTags {
     }
 
     $preferencedRepos = $preferencedRepos | Where-Object { $_._TagsAssigned }
-    Update-PersonalSecret -SecretType MODULE_SOURCE_REF_CACHE -SecretValue $preferencedRepos -NoLoad
+    Update-SecretStore -SecretType MODULE_SOURCE_REF_CACHE -SecretValue $preferencedRepos -NoLoad
 
     return $preferencedRepos
 

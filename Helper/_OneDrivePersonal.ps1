@@ -25,7 +25,7 @@ function Update-ONEDRIVE_TOKEN {
       -Scope onedrive.readonly `
       -ClientId $env:ONEDRIVE_PERSONAL_CLIENT_ID 
 
-    $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
+    $null = Update-SecretStore -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
   }
 
   return $ONEDRIVE_PERSONAL_AUTHENTICATION
@@ -56,7 +56,7 @@ function Load-ONEDRIVE_SecretStore {
   }
 
   if ($null -ne $ONEDRIVE_PERSONAL_AUTHENTICATION) {
-    $null = Update-PersonalSecret -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION 
+    $null = Update-SecretStore -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION 
   }
 
   if ($ShowJson) {

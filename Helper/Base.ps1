@@ -29,7 +29,7 @@ function Add-EnvPaths {
         # Powershell
         WindowsPowerShell    = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
         PowerShell           = "$env:AppPath\_EnvPath_Apps\PowerShell\7.5"
-        PowerShell_Secondary = "C:\Program Files\PowerShell\7"
+        PowerShell_Secondary = 'C:\Program Files\PowerShell\7'
 
         #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
         #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
@@ -118,7 +118,6 @@ function Get-PreferencedObject {
     )
 
 
-
     $ChosenObjects = [System.Collections.ArrayList]::new()
     foreach ($SearchObject in $SearchObjects) {
 
@@ -171,14 +170,15 @@ function Get-PreferencedObject {
     }
 
     $ChosenObjects = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty).Object
-    if($returnProperty) {
+    if ($returnProperty) {
         $ChosenObjects = $ChosenObjects."$returnProperty"
     }
 
     if ($Multiple) {
         return  $ChosenObjects
-    } else {
-       return $ChosenObjects.GetType().BaseType -eq [System.Array] ? $ChosenObjects[0] : $ChosenObjects
+    }
+    else {
+        return $ChosenObjects.GetType().BaseType -eq [System.Array] ? $ChosenObjects[0] : $ChosenObjects
     }
    
 }

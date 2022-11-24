@@ -165,7 +165,7 @@ function Get-SecretFromStore {
 }
 
 
-function Update-PersonalSecret {
+function Update-SecretStore {
   param (
     [parameter(Mandatory = $true)]
     [System.String]
@@ -209,7 +209,11 @@ function Update-PersonalSecret {
     $SECRET_STORE._NOLOAD = @((@($SecretType) + $SECRET_STORE._NOLOAD) | Sort-Object | Get-Unique)
   }
   
-  $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP)" 
+  if($SecretStoreSource -eq "ORG") {
+    $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP)" 
+  } elseif($SecretStoreSource -eq "PERSONAL") {
+    $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP)"
+  }
 
   Get-SecretsFromStore
   
@@ -223,7 +227,7 @@ function Update-AzTenantSecret {
   
   Connect-AzAccount
   $Tenants = Get-AzTenant
-  Update-PersonalSecret -SecretType AZURE_TENANTS -SecretValue $Tenants -NoLoad 
+  Update-SecretStore -SecretType AZURE_TENANTS -SecretValue $Tenants -NoLoad 
 
 }
 

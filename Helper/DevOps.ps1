@@ -520,6 +520,8 @@ function Get-RecentSubmoduleTags {
         return $moduleSourceReference_Cached
     }
 
+    Write-Host "Get Newest Tags"
+
     # Query All Repositories in DevOps
     $devopsRepositories = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API '/_apis/git/repositories/'
     $preferencedRepos = Get-PreferencedObject -SearchObjects $devopsRepositories -SearchTags 'terraform' -SearchProperty 'name' -Multiple  

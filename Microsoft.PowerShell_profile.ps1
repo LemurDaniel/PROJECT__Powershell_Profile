@@ -35,8 +35,8 @@ function Set-TerminalSettings {
 
   param()
 
-  $settings_WindowsTerminal_cloud = "C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json"
-  if(Test-Path -Path "$settings_WindowsTerminal_cloud") {
+  $settings_WindowsTerminal_cloud = 'C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json'
+  if (Test-Path -Path "$settings_WindowsTerminal_cloud") {
 
     $folder_WindowsTerminal_local = Get-ChildItem -Directory -Filter 'Microsoft.WindowsTerminal*' -Path 'C:\Users\Daniel\AppData\Local\Packages\' 
     $settings_WindowsTerminal_local = Get-ChildItem -Path "$($folder_WindowsTerminal_local.FullName)\LocalState\settings.json"
@@ -45,7 +45,7 @@ function Set-TerminalSettings {
       Write-Host 'Override local configuration'
       Get-Content -Path $settings_WindowsTerminal_cloud | Set-Content -Path $settings_WindowsTerminal_local.FullName
     }
- }
+  }
 
 }
 
@@ -91,17 +91,16 @@ if (!(Test-Path $env:SECRET_STORE)) {
   $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
 }
 
-$env:SECRET_TOKEN_STORE = (Resolve-Path "$env:SECRET_STORE/TOKEN_STORE.json"-ErrorAction Continue)
 $env:SECRET_PERMISSIONS = (Resolve-Path "$env:SECRET_STORE/PERMISSION_ACTIONS.csv" -ErrorAction Continue)
 $env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json" -ErrorAction Continue) 
 
-if($null -eq $env:ROLE_DEFINITIONS) {
-  $roleDefinitions_DEV = Get-AzRoleDefinition -Scope "/providers/Microsoft.Management/managementGroups/acfroot-dev"
-  $roleDefinitions_PROD = Get-AzRoleDefinition -Scope "/providers/Microsoft.Management/managementGroups/acfroot-prod"
+if ($null -eq $env:ROLE_DEFINITIONS) {
+  $roleDefinitions_DEV = Get-AzRoleDefinition -Scope '/providers/Microsoft.Management/managementGroups/acfroot-dev'
+  $roleDefinitions_PROD = Get-AzRoleDefinition -Scope '/providers/Microsoft.Management/managementGroups/acfroot-prod'
   
   @{
-    PROD =  $roleDefinitions_PROD
-    DEV = $roleDefinitions_DEV 
+    PROD = $roleDefinitions_PROD
+    DEV  = $roleDefinitions_DEV 
   } | ConvertTo-Json -Depth 8 | Out-File -Path "$env:SECRET_STORE/ROLE_DEFINITONS.json"
   $env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json")
 }
@@ -134,7 +133,7 @@ function Get-DumbJoke {
 
 
 
-## Load Helper Functions  Load-PersonalSecrets
+## Load Helper Functions  Get-SecretsFromStore
 . $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
 . $env:PROFILE_HELPERS_PATH/_SecretStore.ps1
 . $env:PROFILE_HELPERS_PATH/_OneDrivePersonal
@@ -147,7 +146,7 @@ function Get-DumbJoke {
 . $env:PROFILE_HELPERS_PATH/Prompt.ps1
  
 ## Initial Script
-Load-PersonalSecrets -Show
+Get-SecretsFromStore -Show
 Update-AzDevOpsSecrets
 # Get-DevOpsProjects # Takes long
 

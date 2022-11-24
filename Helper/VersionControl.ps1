@@ -15,7 +15,7 @@ function Get-RepositoryVSCode {
 
         [Parameter()]
         [ValidateSet([RepoProjects])]  # DC-Migration, RD-Redeployment
-        $Project = $env:DEVOPS_DEFAULT_PROJECT,
+        $Project = [RepoProjects]::GetDefaultProject(),
 
         [Parameter()]
         [ValidateSet('local', 'devops')]

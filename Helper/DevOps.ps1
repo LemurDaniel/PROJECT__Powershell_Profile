@@ -2,7 +2,7 @@
 
 function Update-AzDevOpsSecrets {
 
-    $DEVOPS = Get-PersonalSecret -SecretType AZURE_DEVOPS
+    $DEVOPS = Get-SecretFromStore -SecretType AZURE_DEVOPS
     $EXPIRES = [System.DateTime] $DEVOPS.EXPIRES
     $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $EXPIRES
     if ($TIMESPAN.Days -lt 2) {
@@ -117,7 +117,8 @@ function Get-DevOpsProjects {
     }, `
         visibility, id, url
 
-    Update-PersonalSecret -SecretType 'DEVOPS_REPOSITORIES_ALL' -SecretValue $projects.Repositories -NoLoad
+    Update-PersonalSecret -SecretType 'DEVOPS_REPOSITORIES_ALL' -SecretValue $projects.Repositories -NoLoad `
+                            -SecretStoreSource "ORG" -Organization $Org
 
     $projects | ForEach-Object { 
         $_.Repositories = ($_.Repositories | Select-Object -Property `
@@ -134,8 +135,8 @@ function Get-DevOpsProjects {
             }).Repository
     }
    
-    Update-PersonalSecret -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -NoLoad
-    Update-PersonalSecret -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -NoLoad
+    Update-PersonalSecret -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -NoLoad  -SecretStoreSource "ORG" -Organization $Org
+    Update-PersonalSecret -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -NoLoad  -SecretStoreSource "ORG" -Organization $Org
 }
 
 
@@ -515,7 +516,7 @@ function Get-RecentSubmoduleTags {
         $forceApiCall = $false
     )
 
-    $moduleSourceReference_Cached = Get-PersonalSecret -SecretType MODULE_SOURCE_REF_CACHE
+    $moduleSourceReference_Cached = Get-SecretFromStore -SecretType MODULE_SOURCE_REF_CACHE
     if ($null -ne $moduleSourceReference_Cached -AND $forceApiCall -ne $true) {
         return $moduleSourceReference_Cached
     }

@@ -13,7 +13,7 @@ function Login-ONEDRIVE_Auth {
 function Update-ONEDRIVE_TOKEN {
   param ()
 
-  $ONEDRIVE = Get-PersonalSecret -SecretType ONEDRIVE_PERSONAL
+  $ONEDRIVE = Get-SecretFromStore -SecretType ONEDRIVE_PERSONAL
 
   $EXPIRES = [System.DateTime]::new(0)
   try { $EXPIRES = [System.DateTime] $ONEDRIVE.expires } catch {}
@@ -52,7 +52,7 @@ function Load-ONEDRIVE_SecretStore {
 
 
   if ($ShowJson) {
-    Load-PersonalSecrets -ShowJSON
+    Get-SecretsFromStore -ShowJSON
   }
 
   if ($null -ne $ONEDRIVE_PERSONAL_AUTHENTICATION) {
@@ -60,7 +60,7 @@ function Load-ONEDRIVE_SecretStore {
   }
 
   if ($ShowJson) {
-    Load-PersonalSecrets -ShowJSON
+    Get-SecretsFromStore -ShowJSON
   }
 
 }

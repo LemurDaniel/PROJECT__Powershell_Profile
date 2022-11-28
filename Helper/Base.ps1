@@ -45,11 +45,11 @@ function Add-EnvPaths {
         terraform            = $env:TerraformNewestVersion 
         terraformDocs        = $env:TerraformDocsNewestVersion
 
-        nodejs               = 'C:\Program Files\nodejs\'
+        nodejs               = 'C:\Program Files\nodejs'
         gitcmd               = 'C:\Program Files\Git\cmd'
         git                  = 'C:\Program Files\Git'
 
-        nodejs_Secondary     = "$env:AppPath\_EnvPath_Apps\nodejs"
+        nodejs_Secondary     = "$env:AppPath\_EnvPath_Apps\nodejs\18.12.1"
         gitbin_Secondary     = "$env:AppPath\_EnvPath_Apps\Git\2.38\bin"
         git_Secondary        = "$env:AppPath\_EnvPath_Apps\Git\2.38"
 

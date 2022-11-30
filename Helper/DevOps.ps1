@@ -118,7 +118,7 @@ function Get-DevOpsProjects {
         visibility, id, url
 
     Update-SecretStore -SecretType 'DEVOPS_REPOSITORIES_ALL' -SecretValue $projects.Repositories -NoLoad `
-                            -SecretStoreSource "ORG" -Organization $Org
+        -SecretStoreSource 'ORG' -Organization $Org
 
     $projects | ForEach-Object { 
         $_.Repositories = ($_.Repositories | Select-Object -Property `
@@ -135,8 +135,8 @@ function Get-DevOpsProjects {
             }).Repository
     }
    
-    Update-SecretStore -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -NoLoad  -SecretStoreSource "ORG" -Organization $Org
-    Update-SecretStore -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -NoLoad  -SecretStoreSource "ORG" -Organization $Org
+    Update-SecretStore -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -NoLoad -SecretStoreSource 'ORG' -Organization $Org
+    Update-SecretStore -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -NoLoad -SecretStoreSource 'ORG' -Organization $Org
 }
 
 
@@ -351,13 +351,13 @@ function New-AutomatedTag {
     param()
 
     $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-    $repositoryId = Get-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositoriesAll()) -SearchTags "$repositoryName" -returnProperty "id"
+    $repositoryId = Get-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositoriesAll()) -SearchTags "$repositoryName" -returnProperty 'id'
     $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
         ForEach-Object { return $_.name.split('/')[-1] } | `
-        ForEach-Object { return [String]::Format("{0:d4}.{1:d4}.{2:d4}", [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
+        ForEach-Object { return [String]::Format('{0:d4}.{1:d4}.{2:d4}', [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
         Sort-Object -Descending
 
-    $newTag = "1.0.0"
+    $newTag = '1.0.0'
     if ($currentTags) {
         $currentTags = $currentTags[0].split('.')
         $carry = 1;
@@ -521,7 +521,7 @@ function Get-RecentSubmoduleTags {
         return $moduleSourceReference_Cached
     }
 
-    Write-Host "Get Newest Tags"
+    Write-Host 'Get Newest Tags'
 
     # Query All Repositories in DevOps
     $devopsRepositories = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API '/_apis/git/repositories/'
@@ -653,6 +653,14 @@ function Update-ModuleSourcesAllRepositories {
         'terraform-acf-launchpad'
     )
 
+    $forceFeatureBranch = @(
+        'terraform-acf-main',
+        'terraform-acf-adds',
+        'terraform-acf-launchpad'
+    )
+
+
+
     if ($forceApiCall) {
         Write-Host -ForegroundColor Yellow 'Fetching Latest Tags'
     }
@@ -684,18 +692,39 @@ function Update-ModuleSourcesAllRepositories {
             continue;
         }
 
-        Write-Host -ForegroundColor Yellow 'Create Branch and Pull Request'
-        git -C $repositoryPath.FullName checkout -B features/AUTO__Update-Submodule-source-path
-        git -C $repositoryPath.FullName Add -A
-        git -C $repositoryPath.FullName commit -m 'AUTO--Update Submodule Source Paths'
-        git -C $repositoryPath.FullName push origin features/AUTO__Update-Submodule-source-path
-        if ($repoRefs[0].name.contains('dev')) {
-            New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'dev' `
-                -repositoryId ($repository.id) -repositoryPath ($repositoryPath.FullName) -projectName ($repository.remoteUrl.split('/')[4])
+
+
+        # Case when feature branch is needed
+        if ($forceFeatureBranch.Contains($repository.name)) {
+        
+            Write-Host -ForegroundColor Yellow 'Create Feature Branch and create Pull Request'
+            git -C $repositoryPath.FullName checkout -B features/AUTO__Update-Submodule-source-path
+            git -C $repositoryPath.FullName add -A
+            git -C $repositoryPath.FullName commit -m 'AUTO--Update Submodule Source Paths'
+            git -C $repositoryPath.FullName push origin features/AUTO__Update-Submodule-source-path
+        
+            if ($repoRefs[0].name.contains('dev')) {
+                New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'dev' `
+                    -repositoryId ($repository.id) -repositoryPath ($repositoryPath.FullName) -projectName ($repository.remoteUrl.split('/')[4])
+            }
+            else {
+                New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
+                    -repositoryId ($repository.id) -repositoryPath ($repositoryPath.FullName) -projectName ($repository.remoteUrl.split('/')[4])
+            }
+
         }
         else {
+        
+            Write-Host -ForegroundColor Yellow 'Update Dev Branch and create Pull Request'
+            git -C $repositoryPath.FullName checkout -B dev
+            git -C $repositoryPath.FullName add -A
+            git -C $repositoryPath.FullName commit -m 'AUTO--Update Submodule Source Paths'
+            git -C $repositoryPath.FullName push origin dev
+        
             New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
                 -repositoryId ($repository.id) -repositoryPath ($repositoryPath.FullName) -projectName ($repository.remoteUrl.split('/')[4])
+
         }
+
     }
 }

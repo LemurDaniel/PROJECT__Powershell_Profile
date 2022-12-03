@@ -72,12 +72,12 @@ function Switch-GitConfig {
     )
 
     if ($config -eq 'brz') {
-        git config --global user.name $env:CONFIG_GIT_CONFIG_ORG_MAIL
-        git config --global user.email $env:CONFIG_GIT_CONFIG_ORG_USER   
+        $null = git config --global user.name $env:CONFIG_GIT_CONFIG_ORG_MAIL
+        $null = git config --global user.email $env:CONFIG_GIT_CONFIG_ORG_USER   
     }
     elseif ($config -eq 'git') {
-        git config --global user.name  $env:CONFIG_GIT_MAIL
-        git config --global user.email $env:CONFIG_GIT_USER
+        $null = git config --global user.name $env:CONFIG_GIT_MAIL
+        $null = git config --global user.email $env:CONFIG_GIT_USER
     }
 
     Write-Host 'Current Global Git Profile:'

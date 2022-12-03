@@ -58,7 +58,7 @@ function Set-TerminalSettings {
 $env:QUIET = $true
 $env:GitMailWork = 'daniel.landau@brz.eu'
 $env:GitNameWork = 'Daniel Landau'
-$env:ActiveTFversion = '1.3.4'
+$env:ActiveTFversion = '1.3.5'
 
 
 $env:PS_PROFILE = $PROFILE
@@ -218,5 +218,48 @@ function Get-ScrambledText {
 
   Set-Clipboard -Value ($newText -join ' ')
   return ($newText -join ' ')
+
+}
+
+
+
+
+function Get-DailyMsRewards {
+  param()
+ 
+  Get-MsRewards -calls 20 -browser Chrome
+  Get-MsRewards -calls 4 -browser Edge
+  Get-MsRewards -calls 30 -browser Opera
+
+}
+
+
+function Get-MsRewards {
+
+  param (
+    [Parameter(Mandatory = $true)]
+    [System.Int32]
+    $calls,
+
+    [Parameter()]
+    [ValidateSet('Edge', 'Opera', 'Chrome')]
+    $browser = 'Opera'
+  )
+
+  $applicationPaths = @{
+    Edge   = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
+    Opera  = 'C:\Users\Daniel\AppData\Local\Programs\Opera GX\launcher.exe'
+    Chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+  }
+  $baseUrl = 'https://www.bing.com/search?q={0}'
+
+
+  for (; $calls -ge 0; $calls--) {
+
+    Start-Sleep -Milliseconds (Get-Random -Minimum 800 -Maximum 2000)
+    $word = Invoke-RestMethod -Method GET -Uri 'https://random-word-api.herokuapp.com/word'
+    $url = [System.String]::Format($baseUrl, $word)
+    [system.Diagnostics.Process]::Start($applicationPaths[$browser], $url)
+  }
 
 }

@@ -291,7 +291,7 @@ function Get-WorkItem {
     }
 
     $workItems = (Invoke-AzDevOpsRest -Method POST -CALL PROJ -API '/_apis/wit/workitemsbatch?api-version=7.1-preview.1' -body $body).fields `
-    | Where-Object { $_.'System.AssignedTo'.uniqueName -like $env:GitMailWork }
+    | Where-Object { $_.'System.AssignedTo'.uniqueName -like $env:CONFIG_GIT_CONFIG_ORG_MAIL }
 
     return Get-PreferencedObject -SearchObjects $workItems -SearchTags $SearchTags -SearchProperty 'System.Title'
 }

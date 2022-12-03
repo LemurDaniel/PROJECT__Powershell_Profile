@@ -83,7 +83,7 @@ class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [String] GetDefaultORG() {
-    return Get-SecretFromStore -SecretType DEVOPS_DEFAULT_ORGANIZATION
+    return (Get-SecretFromStore -SecretType _CONFIG).DEVOPS_DEFAULT_ORGANIZATION
   }
 
   [String[]] GetValidValues() {
@@ -95,8 +95,6 @@ class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [string] $ALL = "ALL"
-
-
 
   static [String] GetDefaultProject() {
     return (Get-SecretFromStore -SecretType AZURE_DEVOPS).DEVOPS_DEFAULT_PROJECT
@@ -112,7 +110,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
-    $projectPath = Join-Path -Path $env:RepoPath -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
+    $projectPath = Join-Path -Path $env:CONFIG_ORG_REPO_PATH -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
 
     if (!(Test-Path -Path $projectPath)) {
       return New-Item -ItemType Directory -Path $projectPath

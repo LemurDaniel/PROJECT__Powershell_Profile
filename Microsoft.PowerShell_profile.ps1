@@ -56,16 +56,14 @@ function Set-TerminalSettings {
 
 # Config ENVS
 $env:QUIET = $true
-$env:GitMailWork = 'daniel.landau@brz.eu'
-$env:GitNameWork = 'Daniel Landau'
 $env:ActiveTFversion = '1.3.5'
 
 
 $env:PS_PROFILE = $PROFILE
 $env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path
 $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE_PATH\Helper").Path
-#$env:PSModulePath = "$env:PS_PROFILE_PATH\Modules;$PSHOME\Modules;"
-#[Environment]::SetEnvironmentVariable("PSModulePath", $env:PSModulePath)
+
+
 
 ## Same entry also exists in ONEDRIVE/Powershell/7/profile.ps1
 ## Resolve App Path
@@ -77,19 +75,14 @@ if (!(Test-Path $env:AppPath)) {
 }
 
 
-## Resolve Repository Path
-$env:RepoPath = "$env:Userprofile/Repos"
-$env:RepoPathSecondary = "$env:Userprofile/Documents/Repos" #"$env:Userprofile/Documents/Repos"
-if (!(Test-Path $env:RepoPath)) {
-  $env:RepoPath = (Resolve-Path $env:RepoPathSecondary).Path
-}
-
 ## ENV Variables
 $env:SECRET_STORE = "$env:AppPath/_SECRET_STORE/"
 $env:Secondary_SECRET_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/"
 if (!(Test-Path $env:SECRET_STORE)) {
   $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
 }
+
+
 
 $env:SECRET_PERMISSIONS = (Resolve-Path "$env:SECRET_STORE/PERMISSION_ACTIONS.csv" -ErrorAction Continue)
 $env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json" -ErrorAction Continue) 
@@ -106,14 +99,13 @@ if ($null -eq $env:ROLE_DEFINITIONS) {
 }
 
 
+
 ### Resolve Terraform Path
 $env:TerraformDocs = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform-docs/").Path
 $env:TerraformPath = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform/").Path
 $env:TerraformDownloadSource = 'https://releases.hashicorp.com/terraform/'
 $env:TerraformNewestVersion = (Get-ChildItem -Path $env:TerraformPath | Sort-Object -Descending)[0].FullName
 $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort-Object -Descending)[0].FullName
-
-
 
 ########################################################################################################################
 ########################################################################################################################
@@ -134,6 +126,7 @@ function Get-DumbJoke {
 
 
 ## Load Helper Functions  Get-SecretsFromStore
+. $env:PROFILE_HELPERS_PATH/_Utils.ps1
 . $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
 . $env:PROFILE_HELPERS_PATH/_SecretStore.ps1
 . $env:PROFILE_HELPERS_PATH/_OneDrivePersonal
@@ -173,93 +166,3 @@ Write-Host '  🤓 Joke of the Session 🤓'
 Write-Host "  🎉 $(Get-DumbJoke)"
 Write-Host '  👾 !!! Go Go Programming !!! 👾'
 Write-Host ''
-
-
-
-
-
-
-function Get-ScrambledText {
-
-  param(
-    [Parameter()]
-    [System.String]
-    $text = (Get-Clipboard)
-  )
-
-  $newText = [System.Collections.ArrayList]::new()
-
-  foreach ($word in ($text -split ' ')) {
-    $word = $word.trim()
-
-    $startLetter = ($word -split '')[1]
-    $endLetter = ($word -split '')[-2]
-
-    if ($word.length -le 3) {
-      $null = $newText.Add($word)
-    }
-    else {
-      $letters = ($word -split '')[2..($word.length - 1)]
-      
-      $count = Get-Random -Minimum 2 -Maximum 5
-      for ($i = 0; $i -lt $count; $i++) {
-        $rand = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
-        $rand2 = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
-        $temp = $letters[$rand]
-        $letters[$rand] = $letters[$rand2]
-        $letters[$rand2] = $temp
-      }
-
-      $letters = $letters -join ''
-
-      $null = $newText.Add("$startLetter" + "$letters" + "$endLetter")
-    }
-  }
-
-  Set-Clipboard -Value ($newText -join ' ')
-  return ($newText -join ' ')
-
-}
-
-
-
-
-function Get-DailyMsRewards {
-  param()
- 
-  Get-MsRewards -calls 20 -browser Chrome
-  Get-MsRewards -calls 4 -browser Edge
-  Get-MsRewards -calls 30 -browser Opera
-
-}
-
-
-function Get-MsRewards {
-
-  param (
-    [Parameter(Mandatory = $true)]
-    [System.Int32]
-    $calls,
-
-    [Parameter()]
-    [ValidateSet('Edge', 'Opera', 'Chrome')]
-    $browser = 'Opera'
-  )
-
-  $applicationPaths = @{
-    Edge   = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
-    Opera  = 'C:\Users\Daniel\AppData\Local\Programs\Opera GX\launcher.exe'
-    Chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
-  }
-  $baseUrl = 'https://www.bing.com/search?q={0}'
-
-
-  for (; $calls -gt 0; $calls--) {
-
-    Start-Sleep -Milliseconds (Get-Random -Minimum 800 -Maximum 2000)
-    $word = Invoke-RestMethod -Method GET -Uri 'https://random-word-api.herokuapp.com/word'
-    $url = [System.String]::Format($baseUrl, $word)
-    [system.Diagnostics.Process]::Start($applicationPaths[$browser], $url)
-  }
-
-}

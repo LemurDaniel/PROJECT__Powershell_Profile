@@ -15,16 +15,18 @@ function Get-SecretsFromStore {
     $ShowJSON,
 
     [parameter()]
-    [validateSet("ALL", "ORG", "PERSONAL")]
-    $SecretStoreSource = "ALL"
+    [validateSet('ALL', 'ORG', 'PERSONAL')]
+    $SecretStoreSource = 'ALL'
   )
 
-  $SECRET_STORE = ""
-  if($SecretStoreSource -eq "PERSONAL") {
+  $SECRET_STORE = ''
+  if ($SecretStoreSource -eq 'PERSONAL') {
     $SECRET_STORE = Get-PersonalSecretStore
-  } elseif($SecretStoreSource -eq "ORG") {
+  }
+  elseif ($SecretStoreSource -eq 'ORG') {
     $SECRET_STORE = Get-OrgSecretStore
-  } else {
+  }
+  else {
     $SECRET_STORE = Get-UnifiedSecretStore
   }
 
@@ -42,7 +44,6 @@ function Get-SecretsFromStore {
     if ($_NOLOAD.contains($BaseSecret.Name)) {
       continue
     }
-
 
     $SECRET_BASE_NAME = $BaseSecret.name
     $SECRET_TYPE = $BaseSecret.value.GetType()
@@ -84,13 +85,16 @@ function Get-SecretsFromStore {
 
       # Iterate over Subsecrets
       foreach ($Secret in $BaseSecretProperties ) {
-  
-        if (@('_ORDER', '_NOLOAD').contains($SecretName.Name)) {
+
+        if ($null -ne $BaseSecretProperties['_NOLOAD'] -AND $BaseSecretProperties['_NOLOAD'].value.contains($Secret.name)) {
           continue
         }
+
         $SecretName = "$($SECRET_BASE_NAME)_$($Secret.name)"
-        # Write-Host "Loading '$($SecretName)' from Secret Store"
-  
+        if ($null -eq $BaseSecretProperties['_SILENT'] -OR !$BaseSecretProperties['_SILENT'].value.contains($Secret.name)) {
+           Write-Host "Loading '$($SecretName)' from Secret Store"
+        }
+   
         if ($Secret.value[0] -eq '´') {
           $value = Invoke-Expression -Command $Secret.value.substring(1)
           $null = New-Item -Path "env:$($SecretName)" -Value $value -Force
@@ -113,26 +117,29 @@ function Get-SecretsFromStore {
 
 function Get-PersonalSecretStore {
 
-  $tokenstore = "$env:SECRET_STORE.private.tokenstore.json"
-  return Get-Content -Path $tokenstore | `
-      ConvertFrom-Json -Depth 6 | `
-      Add-Member  -MemberType NoteProperty -Name "SECRET_STORE_PER__FILEPATH___TEMP" `
-      -Value $tokenstore -PassThru -Force
+  $tokenStore = Get-Content -Path "$env:SECRET_STORE.private.tokenstore.json" | `
+    ConvertFrom-Json -Depth 6 | `
+    Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_PER__FILEPATH___TEMP' `
+    -Value "$env:SECRET_STORE.private.tokenstore.json" -PassThru -Force
 
+
+  $env:DEVOPS_CURRENT_ORGANIZATION_CONTEXT = $tokenStore.CONFIG.DEVOPS_CURRENT_ORGANIZATION
+
+  return $tokenStore
 }
 
-if(!$env:LOADED_PERSONAL_SECRETS) {
-  Get-SecretsFromStore -SecretStoreSource "PERSONAL"
+if (!$env:LOADED_PERSONAL_SECRETS) {
+  Get-SecretsFromStore -SecretStoreSource 'PERSONAL'
   $env:LOADED_PERSONAL_SECRETS = $true
 }
 
 function Get-OrgSecretStore {
 
-  $tokenstore = "$env:SECRET_STORE.$env:DEVOPS_CURRENT_ORGANIZATION.tokenstore.json"
+  $tokenstore = "$env:SECRET_STORE.$env:DEVOPS_CURRENT_ORGANIZATION_CONTEXT.tokenstore.json"
   return Get-Content -Path $tokenstore | `
-      ConvertFrom-Json -Depth 6 | `
-      Add-Member  -MemberType NoteProperty -Name "SECRET_STORE_ORG__FILEPATH___TEMP" `
-      -Value $tokenstore  -PassThru -Force
+    ConvertFrom-Json -Depth 6 | `
+    Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_ORG__FILEPATH___TEMP' `
+    -Value $tokenstore -PassThru -Force
 
 }
 
@@ -140,14 +147,8 @@ function Get-UnifiedSecretStore {
 
   $SECRETS_PER = Get-PersonalSecretStore
   $SECRETS_ORG = Get-OrgSecretStore
-  foreach($Property in $SECRETS_ORG.PSObject.Properties) {
-    if($Property.name -like "_*") {
-      $SECRETS_PER."$($Property.name)" = ($SECRETS_PER."$($Property.name)" + $Property.Value) | Sort-Object | Get-Unique
-    } elseif ($SECRETS_PER."$($Property.name)" -eq $null){
-      $SECRETS_PER | Add-Member -MemberType $Property.MemberType -Name $Property.Name -Value $Property.Value    
-    }
-  }
-  return $SECRETS_PER
+
+  return  Get-UnifiedObject -Object1 $SECRETS_PER -Object2 $SECRETS_ORG
 
 }
 
@@ -180,21 +181,23 @@ function Update-SecretStore {
     $NoLoad = $false,
 
     [parameter()]
-    [validateSet("ALL", "ORG", "PERSONAL")]
-    $SecretStoreSource = "ORG",
+    [validateSet('ALL', 'ORG', 'PERSONAL')]
+    $SecretStoreSource = 'ORG',
 
     # TODO
     [parameter()]
     [System.String]
-    $Organization = "ORG"
+    $Organization = 'ORG'
   )
 
-  $SECRET_STORE = ""
-  if($SecretStoreSource -eq "PERSONAL") {
+  $SECRET_STORE = ''
+  if ($SecretStoreSource -eq 'PERSONAL') {
     $SECRET_STORE = Get-PersonalSecretStore
-  } elseif($SecretStoreSource -eq "ORG") {
+  }
+  elseif ($SecretStoreSource -eq 'ORG') {
     $SECRET_STORE = Get-OrgSecretStore
-  } else {
+  }
+  else {
     $SECRET_STORE = Get-UnifiedSecretStore
   }
   
@@ -209,9 +212,10 @@ function Update-SecretStore {
     $SECRET_STORE._NOLOAD = @((@($SecretType) + $SECRET_STORE._NOLOAD) | Sort-Object | Get-Unique)
   }
   
-  if($SecretStoreSource -eq "ORG") {
+  if ($SecretStoreSource -eq 'ORG') {
     $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP)" 
-  } elseif($SecretStoreSource -eq "PERSONAL") {
+  }
+  elseif ($SecretStoreSource -eq 'PERSONAL') {
     $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP)"
   }
 

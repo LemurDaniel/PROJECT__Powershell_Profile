@@ -48,14 +48,14 @@ function Get-RepositoryVSCode {
     if (($repositoryPath | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
         git -C $repositoryPath.FullName clone $ChosenRepo.remoteUrl .
         git config --global --add safe.directory $repositoryPath.FullName
-        git -C $repositoryPath.FullName config --local user.email "$env:GitMailWork"
-        git -C $repositoryPath.FullName config --local user.name "$env:GitNameWork" 
+        git -C $repositoryPath.FullName config --local user.email "$env:CONFIG_GIT_CONFIG_ORG_MAIL"
+        git -C $repositoryPath.FullName config --local user.name "$env:CONFIG_GIT_CONFIG_ORG_USER" 
     }
 
     if (-not $noOpenVSCode) {
         code $repositoryPath.FullName
-        git -C "$($repositoryPath.FullName)" config --local user.email "$env:GitMailWork"
-        git -C "$($repositoryPath.FullName)" config --local user.name "$env:GitNameWork" 
+        git -C "$($repositoryPath.FullName)" config --local user.email "$env:CONFIG_GIT_CONFIG_ORG_MAIL"
+        git -C "$($repositoryPath.FullName)" config --local user.name "$env:CONFIG_GIT_CONFIG_ORG_USER" 
     }
 
     return $repositoryPath
@@ -72,12 +72,12 @@ function Switch-GitConfig {
     )
 
     if ($config -eq 'brz') {
-        git config --global user.name $env:GitNameWork
-        git config --global user.email $env:GitMailWork    
+        git config --global user.name $env:CONFIG_GIT_CONFIG_ORG_MAIL
+        git config --global user.email $env:CONFIG_GIT_CONFIG_ORG_USER   
     }
     elseif ($config -eq 'git') {
-        git config --global user.name 'LemurDaniel'
-        git config --global user.email 'landau.daniel.1998@gmail.com'  
+        git config --global user.name  $env:CONFIG_GIT_MAIL
+        git config --global user.email $env:CONFIG_GIT_USER
     }
 
     Write-Host 'Current Global Git Profile:'
@@ -121,7 +121,7 @@ function Push-Profile {
 function Find-PrivateRepos {
 
     $PrivateRepos = [System.Collections.ArrayList]::new()
-    Get-ChildItem $env:PRIVATE_REPO_PATH -Recurse -Directory -Filter '.git' -Hidden | `
+    Get-ChildItem $env:CONFIG_PRIVATE_REPO_PATH -Recurse -Directory -Filter '.git' -Hidden | `
     ForEach-Object {
         $null = $PrivateRepos.Add([PSCustomObject]@{
             Name = $_.Parent.Name

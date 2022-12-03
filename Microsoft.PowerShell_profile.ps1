@@ -254,7 +254,7 @@ function Get-MsRewards {
   $baseUrl = 'https://www.bing.com/search?q={0}'
 
 
-  for (; $calls -ge 0; $calls--) {
+  for (; $calls -gt 0; $calls--) {
 
     Start-Sleep -Milliseconds (Get-Random -Minimum 800 -Maximum 2000)
     $word = Invoke-RestMethod -Method GET -Uri 'https://random-word-api.herokuapp.com/word'

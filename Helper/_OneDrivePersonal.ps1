@@ -13,7 +13,7 @@ function Login-ONEDRIVE_Auth {
 function Update-ONEDRIVE_TOKEN {
   param ()
 
-  $ONEDRIVE = Get-SecretFromStore -SecretType ONEDRIVE_PERSONAL
+  $ONEDRIVE = (Get-SecretFromStore -SecretType CONFIG).ONEDRIVE_PERSONAL
 
   $EXPIRES = [System.DateTime]::new(0)
   try { $EXPIRES = [System.DateTime] $ONEDRIVE.expires } catch {}
@@ -25,7 +25,7 @@ function Update-ONEDRIVE_TOKEN {
       -Scope onedrive.readonly `
       -ClientId $env:CONFIG_ONEDRIVE_PERSONAL_CLIENT_ID 
 
-    $null = Update-SecretStore -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
+    $null = Update-SecretStore -SecretStoreSource 'PERSONAL' -SecretType CONFIG -SubSecret 'ONEDRIVE_PERSONAL' -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
   }
 
   return $ONEDRIVE_PERSONAL_AUTHENTICATION

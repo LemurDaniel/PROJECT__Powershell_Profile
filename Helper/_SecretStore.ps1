@@ -92,7 +92,7 @@ function Get-SecretsFromStore {
 
         $SecretName = "$($SECRET_BASE_NAME)_$($Secret.name)"
         if ($null -eq $BaseSecretProperties['_SILENT'] -OR !$BaseSecretProperties['_SILENT'].value.contains($Secret.name)) {
-           Write-Host "Loading '$($SecretName)' from Secret Store"
+          Write-Host "Loading '$($SecretName)' from Secret Store"
         }
    
         if ($Secret.value[0] -eq '´') {
@@ -158,10 +158,25 @@ function Get-SecretFromStore {
   param (
     [parameter(Mandatory = $true)]
     [System.String]
-    $SecretType
+    $SecretType,
+
+    [parameter()]
+    [validateSet('ALL', 'ORG', 'PERSONAL')]
+    $SecretStoreSource = 'ORG'
   )
+
+  $SECRET_STORE = ''
+  if ($SecretStoreSource -eq 'PERSONAL') {
+    $SECRET_STORE = Get-PersonalSecretStore
+  }
+  elseif ($SecretStoreSource -eq 'ORG') {
+    $SECRET_STORE = Get-OrgSecretStore
+  }
+  else {
+    $SECRET_STORE = Get-UnifiedSecretStore
+  }
   
-  return (Get-UnifiedSecretStore)."$SecretType"
+  return $SECRET_STORE."$SecretType"
 
 }
 
@@ -175,6 +190,10 @@ function Update-SecretStore {
     [parameter(Mandatory = $true)]
     [PSCustomObject]
     $SecretValue,
+
+    [parameter()]
+    [System.String]
+    $SubSecret,
 
     [parameter()]
     [Switch]
@@ -201,12 +220,22 @@ function Update-SecretStore {
     $SECRET_STORE = Get-UnifiedSecretStore
   }
   
-  $SECRET_STORE = $SECRET_STORE | `
-    Add-Member `
-    -MemberType NoteProperty `
-    -Name $SecretType `
-    -Value $SecretValue  `
-    -PassThru -Force
+  if ($SubSecret.length -gt 0) {
+    $SECRET_STORE."$SecretType" | `
+      Add-Member `
+      -MemberType NoteProperty `
+      -Name $SubSecret `
+      -Value $SecretValue `
+      -Force
+  }
+  else {
+    $SECRET_STORE | `
+      Add-Member `
+      -MemberType NoteProperty `
+      -Name $SecretType `
+      -Value $SecretValue `
+      -Force
+  }
 
   if ($NoLoad) {
     $SECRET_STORE._NOLOAD = @((@($SecretType) + $SECRET_STORE._NOLOAD) | Sort-Object | Get-Unique)
@@ -217,9 +246,7 @@ function Update-SecretStore {
   }
   elseif ($SecretStoreSource -eq 'PERSONAL') {
     $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP)"
-  }
-
-  Get-SecretsFromStore
+  } 
   
 }
 

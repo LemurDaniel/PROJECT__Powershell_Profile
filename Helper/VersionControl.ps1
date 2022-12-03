@@ -147,8 +147,24 @@ function Get-RepositoryVSCodePrivate {
         $excludeSearchTags
     )
 
-    $PrivateRepos = Get-SecretFromStore 'GIT_PRIVATE_REPOS'
-    $ChosenRepo = Get-PreferencedObject -SearchObjects $PrivateRepos -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
+    $PrivateRepos = (Get-SecretFromStore -SecretStoreSource PERSONAL 'GITHUB').repositories
+    $preferencedRepository = Get-PreferencedObject -SearchObjects $PrivateRepos -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
 
-    code $ChosenRepo.path
+    if (!$preferencedRepository) {
+        Write-Host -Foreground RED 'No Repository Found'
+        return;
+    }
+
+    $repositoryPath = "$env:CONFIG_PRIVATE_REPO_PATH\$($preferencedRepository.login)\$($preferencedRepository.name)"
+    if (!(Test-Path -Path $repositoryPath)) {
+        $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath
+        git -C $repositoryPath.FullName clone $preferencedRepository.clone_url .
+        git config --global --add safe.directory $preferencedRepository.name
+    } else {
+        $repositoryPath = Get-Item -Path $repositoryPath
+    }
+        
+    $repositoryPath
+
+    code $repositoryPath.FullName
 }

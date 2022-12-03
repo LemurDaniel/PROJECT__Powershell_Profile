@@ -159,7 +159,7 @@ function Get-RepositoryVSCodePrivate {
     if (!(Test-Path -Path $repositoryPath)) {
         $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath
         git -C $repositoryPath.FullName clone $preferencedRepository.clone_url .
-        git config --global --add safe.directory $preferencedRepository.name
+        git config --global --add safe.directory $repositoryPath.FullName
     } else {
         $repositoryPath = Get-Item -Path $repositoryPath
     }

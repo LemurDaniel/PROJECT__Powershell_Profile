@@ -54,10 +54,7 @@ function Set-TerminalSettings {
 
 ###################################################################################
 
-# Config ENVS
-$env:QUIET = $true
 $env:ActiveTFversion = '1.3.5'
-
 
 $env:PS_PROFILE = $PROFILE
 $env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path

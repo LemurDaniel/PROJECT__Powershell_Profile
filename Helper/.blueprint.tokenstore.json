@@ -1,0 +1,21 @@
+{
+    "_ORDER": [
+        "CONFIG",
+        "AZURE_DEVOPS"
+    ],
+    "_SILENT": [],
+    "CONFIG": {
+        "GIT_ORG": {
+            "REPO_PATH": "´\"$home\\Documents\\Repos\\${{ORGANIZATION}}\"",
+            "USER": null,
+            "MAIL": null
+        }
+    },
+    "AZURE_DEVOPS": {
+        "DEVOPS_DEFAULT_PROJECT": null,
+        "USER": null,
+        "PAT": null,
+        "HEADER": "´[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$((Get-SecretFromStore -SecretType AZURE_DEVOPS).USER):$((Get-SecretFromStore -SecretType AZURE_DEVOPS).PAT)\"))",
+        "EXPIRES": null
+    }
+}

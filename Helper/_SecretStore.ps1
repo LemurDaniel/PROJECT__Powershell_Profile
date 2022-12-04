@@ -7,11 +7,11 @@ function Load-SecretObject {
 
     [parameter()]
     [System.String]
-    $SecretPrefix,
+    $indendation,
 
     [parameter()]
     [System.String]
-    $indendation,
+    $SecretPrefixGlobal,
 
     [parameter()]
     [switch]
@@ -32,7 +32,7 @@ function Load-SecretObject {
 
 
   $_OMITPREFIX = $SecretObject.'_OMITPREFIX' ?? @() 
-  $_ORDER = $SecretObject.'_ORDER' ?? @() 
+  $_ORDER = $SecretObject.'_ORDER' ?? @() #TODO Order nit working anymore when merging secret stores
   $_SILENT = $SecretObject.'_SILENT' ?? @()
   $_LOAD = $_ORDER + $_SILENT 
   $SecretObject = $SecretObject | Sort-Object -Property { $_ORDER.IndexOf($_.Name) } 
@@ -48,7 +48,7 @@ function Load-SecretObject {
 
     $envFlaggedLocal = $Secret.name.length -gt 5 -AND $Secret.name.substring(0, 5).ToUpper() -eq '$ENV:'
     $cleanedName = $envFlaggedLocal ? $Secret.name.substring(5) : $secret.name
-    $secretPrefixedName = $SecretPrefix + $cleanedName
+    $secretPrefixedName = $SecretPrefixGlobal + $cleanedName
     $envFlagged = $envFlaggedGlobal -OR $envFlaggedLocal
 
     # A load flag sets load for all subobjects, and searches for envs
@@ -56,7 +56,7 @@ function Load-SecretObject {
 
     # $Secret.value.GetType() -eq [PSCustomObject] doesn't work
     if ($Secret.value.GetType().Name -eq 'PSCustomObject' -AND ($envFlagged -OR $loadFlagged)) {
-      $SecretPrefix = $SecretPrefix + ($_OMITPREFIX.contains($cleanedName) ? '' : "$cleanedName`_")
+      $SecretPrefix = $SecretPrefixGlobal + ($_OMITPREFIX.contains($cleanedName) ? '' : "$cleanedName`_")
       $verboseStuff = Load-SecretObject -show:$($show) -recursionDepth ($recursionDepth + 1) -envFlagged:$($envFlagged) -loadFlaggedGlobal:$($loadFlagged) `
         -SecretObject $Secret.value -SecretPrefix ($SecretPrefix ) -indendation ($indendation + '   ')
 
@@ -101,7 +101,7 @@ function Get-SecretsFromStore {
     $SecretStoreSource = 'ALL'
   )
 
-  Load-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource) -show:($Show)
+  Load-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames) -show:($Show)
 
 }
 
@@ -109,35 +109,64 @@ function Get-SecretsFromStore {
 
 function Get-PersonalSecretStore {
 
-  $tokenStore = Get-Content -Path "$env:SECRET_STORE.private.tokenstore.json" | `
-    ConvertFrom-Json -Depth 6 | `
-    Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_PER__FILEPATH___TEMP' `
-    -Value "$env:SECRET_STORE.private.tokenstore.json" -PassThru -Force
+  param (
+    [parameter()]
+    [switch]
+    $noCleanNames
+  )
 
-  return $tokenStore
+  $path = "$env:SECRET_STORE.private.tokenstore.json" 
+  $content = Get-Content -Path $path 
+  $content = $noCleanNames ? $content : $content.replace('$env:', '')
+        
+  return $content | ConvertFrom-Json -Depth 6 | `
+    Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_PER__FILEPATH___TEMP' `
+    -Value $path -PassThru -Force
 }
 
 function Get-OrgSecretStore {
-  
-  if ($env:DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
-    $env:DEVOPS_CURRENT_ORGANIZATION = (Get-PersonalSecretStore).CONFIG.DEVOPS.DEFAULT_ORGANIZATION
-  }
-  if ($env:DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
+
+  param (
+    [parameter()]
+    [switch]
+    $noCleanNames,
+
+    [parameter()]
+    [ValidateSet([DevOpsORG])]
+    $Organization = $env:DEVOPS_DEFAULT_ORGANIZATION
+  )
+
+  # TODO Implement Supress Error Option
+  if ($Organization.length -eq 0) {
     return [PSCustomObject]@{}
   }
 
-  $tokenstore = "$env:SECRET_STORE.$env:DEVOPS_CURRENT_ORGANIZATION.tokenstore.json"
-  return Get-Content -Path $tokenstore | `
+  $path = "$env:SECRET_STORE.$Organization.tokenstore.json"
+
+  if (!(Test-Path $path)) {
+    (Get-Content -Path "$env:PROFILE_HELPERS_PATH\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization)
+  } 
+
+  $content = Get-Content -Path $path 
+  $content = $noCleanNames ? $content : $content.replace('$env:', '')
+
+  return $content | `
     ConvertFrom-Json -Depth 6 | `
     Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_ORG__FILEPATH___TEMP' `
-    -Value $tokenstore -PassThru -Force
+    -Value $path -PassThru -Force
 
 }
 
 function Get-UnifiedSecretStore {
 
-  $SECRETS_PER = Get-PersonalSecretStore
-  $SECRETS_ORG = Get-OrgSecretStore
+  param (
+    [parameter()]
+    [switch]
+    $noCleanNames
+  )
+
+  $SECRETS_PER = Get-PersonalSecretStore -noCleanNames:$($noCleanNames)
+  $SECRETS_ORG = Get-OrgSecretStore -noCleanNames:$($noCleanNames)
 
   return  Get-UnifiedObject -Object1 $SECRETS_PER -Object2 $SECRETS_ORG
 
@@ -147,18 +176,23 @@ function Get-SecretStore {
   param (
     [parameter()]
     [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ALL'
+    $SecretStoreSource = 'ALL',
+
+    [parameter()]
+    [switch]
+    $noCleanNames
   )
 
   if ($SecretStoreSource -eq 'PERSONAL') {
-    return Get-PersonalSecretStore
+    return Get-PersonalSecretStore -noCleanNames:$($noCleanNames)
   }
   elseif ($SecretStoreSource -eq 'ORG') {
-    return Get-OrgSecretStore
+    return Get-OrgSecretStore -noCleanNames:$($noCleanNames)
   }
   else {
-    return Get-UnifiedSecretStore
+    return Get-UnifiedSecretStore -noCleanNames:$($noCleanNames)
   }
+
 }
 
 #############################################################################
@@ -180,6 +214,8 @@ function Get-SecretFromStore {
 
 
 function Update-SecretStore {
+
+  [cmdletbinding()]
   param (
     [parameter(Mandatory = $true)]
     [System.String]
@@ -193,55 +229,28 @@ function Update-SecretStore {
     [System.String]
     $SubSecret,
 
-    [parameter()]
-    [Switch]
-    $LoadVerbose = $false,
+    [parameter(Mandatory = $true)]
+    [validateSet('ORG', 'PERSONAL')]
+    $SecretStoreSource,
 
     [parameter()]
-    [Switch]
-    $LoadSilent = $false,
-
-    [parameter()]
-    [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ORG'
+    [ValidateSet([DevOpsORG])]
+    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION
   )
 
-  if ($LoadVerbose -AND $LoadSilent) {
-    Throw 'Both Flags Silent and Verbose Set'
-  }
-
-  $SecretObject = Get-SecretStore -SecretStoreSource $SecretStoreSource
-  if ($SubSecret.length -gt 0) {
-    $SecretObject = $SecretObject."$SecretType"
-  }
-
-
-  $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretType -Value $SecretValue -Force
-  if ($LoadVerbose) {
-    $_LOADVERBOSE = @((@($SecretType) + $SecretObject._LOADVERBOSE) | Sort-Object | Get-Unique)
-    $SecretObject | Add-Member -MemberType NoteProperty -Name '_LOADVERBOSE' -Value $_LOADVERBOSE -Force
-  }
-  elseif ($LoadSilent) {
-    $_LOADSILENT = @((@($SecretType) + $SecretObject._LOADSILENT) | Sort-Object | Get-Unique)
-    $SecretObject | Add-Member -MemberType NoteProperty -Name '_LOADSILENT' -Value $_LOADSILENT -Force
-  }
-
+  $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -Organization $Organization
   
+  $SecretObject = $SubSecret.length -gt 0 ? $SecretObject."$SecretType" : $SECRET_STORE
+  $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretType -Value $SecretValue -Force
+
+
   if ($SecretStoreSource -eq 'ORG') {
-    $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP)" 
+    Write-Verbose $SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP
+    $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP)"
   }
   elseif ($SecretStoreSource -eq 'PERSONAL') {
+    Write-Verbose $SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP
     $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP)"
   } 
   
-}
-
-
-function Update-AzTenantSecret {
-  param ()
-  
-  Connect-AzAccount
-  $Tenants = Get-AzTenant
-  Update-SecretStore -SecretType AZURE_TENANTS -SecretValue $Tenants
-
 }

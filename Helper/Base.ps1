@@ -87,6 +87,8 @@ function Add-EnvPaths {
 
 
 function Get-PreferencedObject {
+
+    [cmdletbinding()]
     param (
         [Parameter(Mandatory = $true)]
         [System.Object[]]
@@ -109,10 +111,6 @@ function Get-PreferencedObject {
         $returnProperty,
 
         [Parameter()]
-        [System.Boolean]
-        $Quiet = [bool]::Parse($env:Quiet),
-
-        [Parameter()]
         [Switch]
         $Multiple
     )
@@ -132,12 +130,10 @@ function Get-PreferencedObject {
         }
         foreach ($Tag in $SearchTags) {
 
-            if (!$Quiet) {
-                Write-Host "Search Property: $SearchProperty"
-                Write-Host "Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
-                Write-Host $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
-                Write-Host -Foreground yellow '###############################################################################################'
-            }
+            Write-Verbose "Search Property: $SearchProperty"
+            Write-Verbose "Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
+            Write-Verbose $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+            Write-Verbose '###############################################################################################'
 
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
                 $ObjectWrapper.Hits -= 1;
@@ -145,20 +141,17 @@ function Get-PreferencedObject {
         }
         foreach ($Tag in $ExcludeSearchTags) {
 
-            if (!$Quiet) {
-                Write-Host "Search Property: $SearchProperty"
-                Write-Host "Exclude Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
-                Write-Host $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
-                Write-Host -Foreground yellow '###############################################################################################'
-            }
+            Write-Verbose "Search Property: $SearchProperty"
+            Write-Verbose "Exclude Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
+            Write-Verbose $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+            Write-Verbose -Foreground yellow '###############################################################################################'
 
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
                 $ObjectWrapper.Hits += 1;
             }
         }
-        if (!$Quiet) {
-            Write-Host $ObjectWrapper
-        }
+
+        Write-Verbose $ObjectWrapper
 
         if ($ObjectWrapper.Hits -lt 0) {
             $null = $ChosenObjects.Add($ObjectWrapper)

@@ -1,9 +1,9 @@
 
 class HTTPMethods : System.Management.Automation.IValidateSetValuesGenerator {
 
-    [String[]] GetValidValues() {
-        return [System.Net.Http.HttpMethod].GetProperties().Name
-    }
+  [String[]] GetValidValues() {
+    return [System.Net.Http.HttpMethod].GetProperties().Name
+  }
 }
 
 
@@ -27,14 +27,14 @@ class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
   }
   #>
 
-  static [string] $ALL = "ALL"
+  static [string] $ALL = 'ALL'
 
   static [PSCustomObject[]] GetPermissionsByProvider($Provider) {
     if ($Provider -eq [AzPermission]::ALL) {
       return [AzPermission]::GetAllPermissions()
     }
     else {      
-      return ((Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv | Group-Object -Property "Resource Provider") | Where-Object { $_.Name -eq "Microsoft.Compute" }).Group
+      return ((Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv | Group-Object -Property 'Resource Provider') | Where-Object { $_.Name -eq 'Microsoft.Compute' }).Group
     }
   }
 
@@ -47,7 +47,7 @@ class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
 
   [String[]] GetValidValues() {
 
-    $Providers = (Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv | Group-Object "Resource Provider" | Where-Object { [regex]::Match($_.Name, "^[A-Za-z1-9]+.{1}[A-Za-z1-9]+$").Success }) | Sort-Object -Property Count -Descending
+    $Providers = (Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv | Group-Object 'Resource Provider' | Where-Object { [regex]::Match($_.Name, '^[A-Za-z1-9]+.{1}[A-Za-z1-9]+$').Success }) | Sort-Object -Property Count -Descending
     return @([AzPermission]::ALL) + $Providers.Name
   }
 
@@ -56,9 +56,9 @@ class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
 class PsProfile : System.Management.Automation.IValidateSetValuesGenerator {
   [String[]] GetValidValues() {
     return @(
-      "Profile",
-      "All"
-    ) + (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "*.ps1").Name.replace('.ps1', '')
+      'Profile',
+      'All'
+    ) + (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter '*.ps1').Name.replace('.ps1', '')
   }
 }
 
@@ -72,14 +72,14 @@ class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [PSCustomObject[]] $Tenants = (Get-SecretFromStore -SecretType AZURE_TENANTS)
 
-  static [PSCustomObject[]] $Default = ([AzTenant]::Tenants | Where-Object { $_.Name -like "*baugruppe*" })
+  static [PSCustomObject[]] $Default = ([AzTenant]::Tenants | Where-Object { $_.Name -like '*baugruppe*' })
 
   static [PSCustomObject] GetTenantByName ($name) {
-    return [AzTenant]::Tenants | Where-Object { $_.Name -like ($name -replace "_", " ") }
+    return [AzTenant]::Tenants | Where-Object { $_.Name -like ($name -replace '_', ' ') }
   }
 
   [String[]] GetValidValues() {
-    return   [AzTenant]::Tenants.Name -replace " ", "_"
+    return   [AzTenant]::Tenants.Name -replace ' ', '_'
   }
 
 }
@@ -88,22 +88,22 @@ class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [String[]] GetAllORG() {
-    return Get-SecretFromStore -SecretType DEVOPS_ORGANIZATIONS
+    return  (Get-SecretFromStore -SecretType CONFIG).DEVOPS.ORGANIZATIONS
   }
 
   static [String] GetDefaultORG() {
-    return (Get-SecretFromStore -SecretType _CONFIG).DEVOPS_DEFAULT_ORGANIZATION
+    return  (Get-SecretFromStore -SecretType CONFIG).DEVOPS.DEFAULT_ORGANIZATION
   }
 
   [String[]] GetValidValues() {
-    return   @(Get-SecretFromStore -SecretType DEVOPS_ORGANIZATIONS)
+    return   (Get-SecretFromStore -SecretType CONFIG).DEVOPS.ORGANIZATIONS
   }
   
 }
 
 class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
 
-  static [string] $ALL = "ALL"
+  static [string] $ALL = 'ALL'
 
   static [String] GetDefaultProject() {
     return (Get-SecretFromStore -SecretType AZURE_DEVOPS).DEVOPS_DEFAULT_PROJECT
@@ -134,9 +134,10 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [PSCustomObject[]] GetRepositories($projectName) {
-    if($projectName -eq [RepoProjects]::ALL) {
+    if ($projectName -eq [RepoProjects]::ALL) {
       return [RepoProjects]::GetRepositoriesAll()
-    } else {
+    }
+    else {
       $project = (Get-SecretFromStore -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
       return $project.Repositories
     }

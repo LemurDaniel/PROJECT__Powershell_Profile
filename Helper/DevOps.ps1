@@ -1,5 +1,111 @@
 
 
+
+function Invoke-AzDevOpsRest {
+
+    [cmdletbinding()]
+    param(
+        # Parameter help description
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        [ValidateSet([HttpMethods])]
+        $Method,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('dev', 'vssps', 'vsaex.dev', 'app.vssps.visualstudio')]
+        $Type = 'dev',
+
+        [Parameter()]
+        [ValidateSet('ORG', 'PROJ', 'TEAM', 'URI', 'NONE')]
+        [System.String]
+        $CALL = 'ORG',
+
+        [Parameter()]
+        [System.String]
+        $API,
+
+        [Parameter()]
+        [PSCustomObject]
+        $body,
+
+        [Parameter()]
+        [System.String]
+        $Property = 'value',
+
+        [Parameter()]
+        [System.String]
+        $Uri,
+
+        [Parameter()]
+        [System.String[]]
+        $TeamQuery = @('Azure', 'Migration'),
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
+        $ProjectName = [RepoProjects]::GetDefaultProject(),
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet([DevOpsORG])]
+        $OrgName = [DevOpsORG]::GetDefaultORG()
+    )
+
+    switch ($CALL) {
+        'NONE' {
+            $TargetURL = "https://$Type.com/$API"
+        }
+        'ORG' { 
+            $TargetURL = "https://$Type.com/$OrgName/$API"
+            continue
+        }
+        'PROJ' { 
+            $project = ([RepoProjects]::GetProject($ProjectName))
+            $TargetURL = "https://$Type.com/$OrgName/$($project.id)/$API"
+        }
+        'TEAM' { 
+            $project = ([RepoProjects]::GetProject($ProjectName))
+            $team = Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
+            $TargetURL = "https://$Type.com/$OrgName/$($project.id)/$($team.id)/$API"
+        }
+    }
+
+    $Request = @{
+        Method  = $Method
+        Body    = $body | ConvertTo-Json -Compress
+        Headers = @{ 
+            username       = 'O.o'
+            password       = "Basic $env:AZURE_DEVOPS_HEADER"
+            Authorization  = "Basic $env:AZURE_DEVOPS_HEADER"
+            'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
+        }
+        Uri     = $Uri.Length -gt 0 ? $Uri : ($TargetURL -replace '/+', '/' -replace '/$', '' -replace ':/', '://')
+    }
+
+    if (!$Request.Uri.contains('api-version')) {
+        $Request.Uri += ($Request.Uri.contains('?') ? '&' : '?') + 'api-version=7.1-preview.1'
+    }
+
+    Write-Verbose 'BODY START'
+    Write-Verbose ($Request | ConvertTo-Json)
+    Write-Verbose 'BODY END'
+
+
+    $response = Invoke-RestMethod @Request
+
+    if ($Property) {
+        return ($response.PSObject.Properties `
+            | Where-Object { $_.Name.toLower() -like $Property.toLower() }).Value 
+    }
+    else {
+        return $response
+    }
+}
+
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
 function Update-AzDevOpsSecrets {
 
     $DEVOPS = Get-SecretFromStore -SecretType AZURE_DEVOPS
@@ -9,71 +115,6 @@ function Update-AzDevOpsSecrets {
         Load-ONEDRIVE_SecretStore
     }
     
-}
-
-
-function Invoke-AzDevOpsRestORG {
-
-    param(
-        # Parameter help description
-        [Parameter()]
-        [System.String]
-        [ValidateSet('dev', 'vssps', 'vsaex.dev')]
-        $Type = 'dev',
-
-        [Parameter()]
-        [System.String]
-        $API,
-
-        [Parameter()]
-        [System.String]
-        [ValidateSet([DevOpsORG])]
-        $OrgName = [DevOpsORG]::GetDefaultORG(),
-
-        [Parameter()]
-        [System.String]
-        $Property = 'value',
-
-        [Parameter()]
-        [System.Boolean]
-        $Quiet = [System.Boolean]::parse($env:QUIET)
-    )
-
-
-    $TargetUri = "https:///$(Join-Path -Path "$Type.azure.com/baugruppe/" -ChildPath $API)".Replace('\', '/').Replace('//', '/')
-
-    Write-Host '    '$TargetUri
-
-    try {
-        $headers = @{ 
-            username       = 'my-user-name'
-            password       = "Basic $env:AZURE_DEVOPS_HEADER"
-            Authorization  = "Basic $env:AZURE_DEVOPS_HEADER"
-            'Content-Type' = 'application/x-www-form-urlencoded'
-        }
-
-        $response = ''
-        if ($Quiet) {
-            $response = Invoke-RestMethod -Method GET -Uri $TargetUri -Headers $headers
-        }
-        else {
-            $response = Invoke-RestMethod -Method GET -Uri $TargetUri -Headers $headers
-        }
-
-        if ($Property) {
-            return ($response.PSObject.Properties | Where-Object { $_.Name -like $Property }).Value 
-        }
-        else {
-            return $response
-        }
-
-
-    }
-    catch {
-        Write-Host 'ERROR'
-        throw $_
-    }
-   
 }
 
 function Get-DevOpsProjectsORG {
@@ -94,17 +135,15 @@ function Get-DevOpsProjectsORG {
 
 function Get-DevOpsProjects {
 
+    [cmdletbinding()]
     param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Org,
-
         [Parameter()]
-        [System.Boolean]
-        $Quiet = [System.Boolean]::parse($env:QUIET)
+        [System.String]
+        $Org = [DevOpsORG]::GetDefaultORG()
     )
-    Invoke-AzDevOpsRestORG -API '_apis/teams?mine={true}&api-version=6.0-preview.3'
 
+    Connect-AzAccount
+      
     $projects = Invoke-AzDevOpsRestORG -OrgName $Org -API _apis/projects?api-version=6.0 `
     | Select-Object -Property name, `
     @{Name = 'ShortName'; Expression = { "__$($_.Name)".replace(' ', '') } }, `
@@ -118,7 +157,7 @@ function Get-DevOpsProjects {
         visibility, id, url
 
     Update-SecretStore -SecretType 'DEVOPS_REPOSITORIES_ALL' -SecretValue $projects.Repositories `
-        -SecretStoreSource 'ORG' -Organization $Org
+        -SecretStoreSource 'ORG' -Organization $Org #TODO
 
     $projects | ForEach-Object { 
         $_.Repositories = ($_.Repositories | Select-Object -Property `
@@ -136,132 +175,12 @@ function Get-DevOpsProjects {
     }
    
     Update-SecretStore -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -SecretStoreSource 'ORG' -Organization $Org
-    Update-SecretStore -SecretType AZURE_TENANTS -SecretValue (Get-AzTenant) -SecretStoreSource 'ORG' -Organization $Org
+    Update-SecretStore -SecretType 'AZURE_TENANTS' -SecretValue (Get-AzTenant) -SecretStoreSource 'ORG' -Organization $Org
 }
 
-
 ##############################################################################################################
 ##############################################################################################################
 ##############################################################################################################
-
-function Invoke-AzDevOpsRest {
-
-    param(
-        # Parameter help description
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        [ValidateSet('GET', 'POST', 'PUT', 'UPDATE', 'DELETE')]
-        $Method,
-
-        [Parameter()]
-        [System.String]
-        [ValidateSet('dev', 'vssps', 'vsaex.dev', 'app.vssps.visualstudio')]
-        $Type = 'dev',
-
-        [Parameter()]
-        [System.String]
-        $API,
-
-        [Parameter()]
-        [ValidateSet('ORG', 'PROJ', 'TEAM', 'URI', 'NONE')]
-        [System.String]
-        $CALL = 'ORG',
-
-        [Parameter()]
-        [System.String[]]
-        $TeamQuery = @('Azure', 'Migration'),
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $body = @{},
-
-        [Parameter()]
-        [System.String]
-        $Property = 'value',
-
-        [Parameter()]
-        [System.String]
-        [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
-        $ProjectShort = [RepoProjects]::GetDefaultProject(),
-
-        [Parameter()]
-        [System.String]
-        [ValidateSet([DevOpsORG])]
-        $OrgName = [DevOpsORG]::GetDefaultORG(),
-
-        [Parameter()]
-        [System.Boolean]
-        $Quiet = [System.Boolean]::parse($env:QUIET)
-    )
-
-    $project = [RepoProjects]::GetProject($ProjectShort)
-    $team = Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
-
-    $TargetURL = $null
-    switch ($CALL) {
-        'NONE' {
-            $TargetURL = 'https:///' + (Join-Path -Path "$Type.com/" -ChildPath $API) 
-        }
-        'ORG' { 
-            $TargetURL = 'https:///' + (Join-Path -Path "$Type.azure.com/$OrgName/" -ChildPath $API) 
-        }
-        'PROJ' { 
-            $TargetURL = 'https:///' + (Join-Path -Path "$Type.azure.com/$OrgName/$($project.id)" -ChildPath $API) 
-        }
-        'TEAM' { 
-            $TargetURL = 'https:///' + (Join-Path -Path "$Type.azure.com/$OrgName/$($project.id)/$($team.id)" -ChildPath $API) 
-        }
-        Default {
-            $TargetURL = $URI
-        }
-    }
-
-    $TargetURL = $TargetURL.Replace('\', '/').Replace('//', '/') 
-    if (!$TargetURL.contains('api-version')) {
-        if ($TargetURL.contains('?')) {
-            $TargetURL += '&api-version=7.1-preview.1'
-        }
-        else {
-            $TargetURL += '?api-version=7.1-preview.1'
-            $TargetURL = $TargetURL.Replace('/?', '?')
-        }
-    }
-
-    if (!$Quiet) {
-        #Write-Host ($project | ConvertTo-Json)
-        #Write-Host ($team | ConvertTo-Json)
-        Write-Host 'URL ==> '$TargetURL
-        Write-Host 'BODY START'
-        Write-Host $body | ConvertTo-Json
-        Write-Host 'BODY END'
-    }
-
-    try {
-        $headers = @{ 
-            username       = 'my-user-name'
-            password       = "Basic $env:AZURE_DEVOPS_HEADER"
-            Authorization  = "Basic $env:AZURE_DEVOPS_HEADER"
-            'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json'
-        }
-
-        #Write-Host $TargetURL
-        $response = Invoke-RestMethod -Method $Method -Uri $TargetURL -Headers $headers -Body ($body | ConvertTo-Json -Compress) -Verbose:(!$Quiet)
-
-        if ($Property) {
-            return ($response.PSObject.Properties | Where-Object { $_.Name.toLower() -like $Property.toLower() }).Value 
-        }
-        else {
-            return $response
-        }
-
-    }
-    catch {
-        Write-Host 'ERROR'
-        throw $_
-    }
-   
-}
-#Invoke-AzDevOpsRest -Method Get -Type vssps -API /_apis/tokens
 
 function Get-WorkItem {
     param(
@@ -405,11 +324,7 @@ function New-PullRequest {
 
         [Parameter()]
         [System.String]
-        $projectName,
-
-        [Parameter()]
-        [System.Boolean]
-        $Quiet = [System.Boolean]::parse($env:QUIET)
+        $projectName
     )
 
     try {
@@ -468,10 +383,6 @@ function New-PullRequest {
                 }
             )
             reviewers     = $()
-        }
-
-        if (!$Quiet) {
-            $body
         }
 
         $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/pullrequests"

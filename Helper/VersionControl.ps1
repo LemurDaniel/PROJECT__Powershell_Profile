@@ -172,6 +172,7 @@ function Get-RepositoryVSCodePrivate {
         return;
     }
 
+    $env:GIT_REPO_PATH = "C:\Users\Daniel\Documents\Repos\___PRIVATE"
     $repositoryPath = "$env:GIT_REPO_PATH\$($preferencedRepository.login)\$($preferencedRepository.name)"
     if (!(Test-Path -Path $repositoryPath)) {
         $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath

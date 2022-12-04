@@ -116,7 +116,10 @@ function Get-PersonalSecretStore {
 }
 
 function Get-OrgSecretStore {
-
+  
+  if ($env:CONFIG_DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
+    $env:CONFIG_DEVOPS_CURRENT_ORGANIZATION = (Get-PersonalSecretStore).CONFIG.DEVOPS.DEFAULT_ORGANIZATION
+  }
   if ($env:CONFIG_DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
     return [PSCustomObject]@{}
   }
@@ -232,8 +235,6 @@ function Update-SecretStore {
 }
 
 
-
-
 function Update-AzTenantSecret {
   param ()
   
@@ -241,11 +242,4 @@ function Update-AzTenantSecret {
   $Tenants = Get-AzTenant
   Update-SecretStore -SecretType AZURE_TENANTS -SecretValue $Tenants
 
-}
-
-if (!$env:LOADED_PERSONAL_SECRETS) {
-  Write-Host 'ssss'
-  Get-SecretStore ALL
-  Get-SecretsFromStore -SecretStoreSource 'PERSONAL'
-  $env:LOADED_PERSONAL_SECRETS = $true
 }

@@ -11,39 +11,82 @@ function Load-SecretObject {
 
     [parameter()]
     [System.String]
-    $indendation
+    $indendation,
+
+    [parameter()]
+    [switch]
+    $envFlaggedGlobal,
+
+    [parameter()]
+    [switch]
+    $loadFlaggedGlobal,
+
+    [parameter()]
+    [Switch]
+    $show,
+
+    [Parameter()]
+    [System.int32]
+    $recursionDepth = 0
   )
 
 
-  $_LOADORDER = $SecretObject.'_LOADORDER' ?? @() 
-  $_LOADSILENT = $SecretObject.'_LOADSILENT' ?? @()
-  $_LOAD = $_LOADORDER + $_LOADSILENT 
-  $SecretObject = $SecretObject | Sort-Object -Property { $_LOADORDER.IndexOf($_.Name) } 
+  $_ORDER = $SecretObject.'_ORDER' ?? @() 
+  $_SILENT = $SecretObject.'_SILENT' ?? @()
+  $_LOAD = $_ORDER + $_SILENT 
+  $SecretObject = $SecretObject | Sort-Object -Property { $_ORDER.IndexOf($_.Name) } 
+
+
+  $verbosing = ''
 
   foreach ($Secret in $SecretObject.PSObject.Properties) {
 
-    if (!$_LOAD.contains($Secret.Name)) {
-      continue
-    } 
-    if (!$_LOADSILENT.contains($Secret.Name)) {
-      Write-Host "$indendation + Loading '$($SecretPrefix+$Secret.name)' from Secret Store" # Verbosing
+    if (@('_ORDER', '_SILENT').contains($Secret.Name.ToUpper())) {
+      continue;
     }
 
-    # Convert to ENV if String or Value
-    if ($Secret.value.GetType() -eq [System.String]) {
-      $SecretValue = $Secret.value[0] -eq '´' ? (Invoke-Expression -Command $Secret.value.substring(1)) : $Secret.value
-      $null = New-Item -Path "env:$($Secret.name)" -Value $SecretValue -Force  
+    $envFlaggedLocal = $Secret.name.length -gt 5 -AND $Secret.name.substring(0, 5).ToUpper() -eq '$ENV:'
+    $cleanedName = $envFlaggedLocal ? $Secret.name.substring(5) : $secret.name
+    $secretPrefixedName = $SecretPrefix + $cleanedName
+    $envFlagged = $envFlaggedGlobal -OR $envFlaggedLocal
+
+    # A load flag sets load for all subobjects, and searches for envs
+    $loadFlagged = $_LOAD.contains($Secret.Name) -OR $loadFlaggedGlobal
+
+    # $Secret.value.GetType() -eq [PSCustomObject] doesn't work
+    if ($Secret.value.GetType().Name -eq 'PSCustomObject' -AND ($envFlagged -OR $loadFlagged)) {
+      $verboseStuff = Load-SecretObject -show:$($show) -recursionDepth ($recursionDepth + 1) -envFlagged:$($envFlagged) -loadFlaggedGlobal:$($loadFlagged) `
+        -SecretObject $Secret.value -SecretPrefix ($SecretPrefix + $cleanedName + '_') -indendation ($indendation + '   ')
+
+      if ($verboseStuff.length -gt 0) {
+        $verbosing = $verbosing + "`n$indendation + Loading '$($secretPrefixedName)' from Secret Store" + $verboseStuff
+      }
+
     }
-    elseif ($Secret.value.GetType().BaseType -eq [System.Array]) {
+    elseif ($envFlagged -AND $Secret.value.GetType() -eq [System.String]) {
+      $SecretValue = $Secret.value[0] -eq '´' ? (Invoke-Expression -Command $Secret.value.substring(1)) : $Secret.value
+      $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
+      $verbosing += "`n$indendation + Loading '$($secretPrefixedName)' from Secret Store"
+    }
+    elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.ValueType]) {
+      $SecretValue = $Secret.value.toString()
+      $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
+      $verbosing += "`n$indendation + Loading '$($secretPrefixedName)' from Secret Store"
+    }
+    elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
       Throw "Can't Load 'System.Array' to ENV"
     }
-    else {
-      Load-SecretObject -SecretObject $Secret.value -SecretPrefix ($SecretPrefix + $Secret.Name + '_') -indendation ($indendation+'   ')
-    }
 
+    if ($recursionDepth -eq 0 -AND $verbosing.Length -gt 0 -AND $show) {
+      Write-Host $verbosing.Substring(1)
+      $verbosing = ''
+    }
   }
 
+  return $show ? $verbosing : '' 
 }
+
+
 function Get-SecretsFromStore {
 
   param ( 
@@ -52,19 +95,11 @@ function Get-SecretsFromStore {
     $Show,
 
     [parameter()]
-    [Switch]
-    $ShowFull,
-
-    [parameter()]
-    [Switch]
-    $ShowJSON,
-
-    [parameter()]
     [validateSet('ALL', 'ORG', 'PERSONAL')]
     $SecretStoreSource = 'ALL'
   )
 
-  Load-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource)
+  Load-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource) -show:($Show)
 
 }
 
@@ -77,15 +112,16 @@ function Get-PersonalSecretStore {
     Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_PER__FILEPATH___TEMP' `
     -Value "$env:SECRET_STORE.private.tokenstore.json" -PassThru -Force
 
-
-  $env:DEVOPS_CURRENT_ORGANIZATION_CONTEXT = $tokenStore.CONFIG.DEVOPS_CURRENT_ORGANIZATION
-
   return $tokenStore
 }
 
 function Get-OrgSecretStore {
 
-  $tokenstore = "$env:SECRET_STORE.$env:DEVOPS_CURRENT_ORGANIZATION_CONTEXT.tokenstore.json"
+  if ($env:CONFIG_DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
+    return [PSCustomObject]@{}
+  }
+
+  $tokenstore = "$env:SECRET_STORE.$env:CONFIG_DEVOPS_CURRENT_ORGANIZATION.tokenstore.json"
   return Get-Content -Path $tokenstore | `
     ConvertFrom-Json -Depth 6 | `
     Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_ORG__FILEPATH___TEMP' `

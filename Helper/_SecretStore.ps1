@@ -26,7 +26,7 @@ function Load-SecretObject {
       continue
     } 
     if (!$_LOADSILENT.contains($Secret.Name)) {
-      Write-Host "$indendation" + "Loading '$($SecretPrefix+$Secret.name)' from Secret Store" # Verbosing
+      Write-Host "$indendation + Loading '$($SecretPrefix+$Secret.name)' from Secret Store" # Verbosing
     }
 
     # Convert to ENV if String or Value

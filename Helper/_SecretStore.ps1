@@ -64,8 +64,6 @@ function Get-SecretsFromStore {
     $SecretStoreSource = 'ALL'
   )
 
-  Write-host "sss"
-  Write-Host (Get-SecretStore -SecretStoreSource $SecretStoreSource)
   Load-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource)
 
 }

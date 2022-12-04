@@ -141,10 +141,11 @@ function Get-OrgSecretStore {
     return [PSCustomObject]@{}
   }
 
+  # TODO Implement Check Onedrive before creating secret store
   $path = "$env:SECRET_STORE.$Organization.tokenstore.json"
-
   if (!(Test-Path $path)) {
-    (Get-Content -Path "$env:PROFILE_HELPERS_PATH\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization)
+    $null = (Get-Content -Path "$env:PROFILE_HELPERS_PATH\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization) | `
+      Out-File -FilePath $path
   } 
 
   $content = Get-Content -Path $path 
@@ -172,11 +173,16 @@ function Get-UnifiedSecretStore {
 
 }
 
+
 function Get-SecretStore {
   param (
     [parameter()]
     [validateSet('ALL', 'ORG', 'PERSONAL')]
     $SecretStoreSource = 'ALL',
+
+    [parameter()]
+    [ValidateSet([DevOpsORG])]
+    $Organization,
 
     [parameter()]
     [switch]
@@ -187,7 +193,7 @@ function Get-SecretStore {
     return Get-PersonalSecretStore -noCleanNames:$($noCleanNames)
   }
   elseif ($SecretStoreSource -eq 'ORG') {
-    return Get-OrgSecretStore -noCleanNames:$($noCleanNames)
+    return Get-OrgSecretStore -noCleanNames:$($noCleanNames) -Organization $Organization
   }
   else {
     return Get-UnifiedSecretStore -noCleanNames:$($noCleanNames)

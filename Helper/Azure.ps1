@@ -29,7 +29,7 @@ function Search-AzResource {
     #-ManagementGroup ((Get-AzContext).Tenant.Id) 
     $results = (Search-AzGraph -Query $query)
 
-    $resources = Get-PreferencedObject -SearchObjects $results -SearchTags $ResourceName -Multiple
+    $resources = Search-PreferencedObject -SearchObjects $results -SearchTags $ResourceName -Multiple
 
     #$resources
 
@@ -91,7 +91,7 @@ function Search-AzFunctionAppConfiguration {
         $response = Invoke-AzRestMethod -Method POST -Uri "https://management.azure.com$($FunctionApp.ResourceId)/config/appsettings/list?api-version=2021-02-01"
         $AppSettings = [System.Collections.ArrayList]::new()
         ($response.Content | ConvertFrom-Json).properties.PSObject.Properties | ForEach-Object { $null = $AppSettings.Add($_) }
-        return Get-PreferencedObject -SearchObjects $Appsettings -SearchTags $ConfigName
+        return Search-PreferencedObject -SearchObjects $Appsettings -SearchTags $ConfigName
     }
 
 }
@@ -174,7 +174,7 @@ function Search-AzPermission {
 
     $permissionsToSearch = [AzPermission]::GetPermissionsByProvider($Provider)
 
-    return (Get-PreferencedObject -SearchObjects $permissionsToSearch -SearchTags $Keys -SearchProperty 'Operation Name' -Multiple)[0..($Limit - 1)]
+    return (Search-PreferencedObject -SearchObjects $permissionsToSearch -SearchTags $Keys -SearchProperty 'Operation Name' -Multiple)[0..($Limit - 1)]
 }
 
 function Search-AzRoleDefinitions {

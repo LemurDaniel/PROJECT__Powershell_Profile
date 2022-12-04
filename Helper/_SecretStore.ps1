@@ -1,5 +1,5 @@
 
-function Load-SecretObject {
+function Convert-SecretObject {
   param (
     [parameter()]
     [PSObject]
@@ -57,7 +57,7 @@ function Load-SecretObject {
     # $Secret.value.GetType() -eq [PSCustomObject] doesn't work
     if ($Secret.value.GetType().Name -eq 'PSCustomObject' -AND ($envFlagged -OR $loadFlagged)) {
       $SecretPrefix = $SecretPrefixGlobal + ($_OMITPREFIX.contains($cleanedName) ? '' : "$cleanedName`_")
-      $verboseStuff = Load-SecretObject -show:$($show) -recursionDepth ($recursionDepth + 1) -envFlagged:$($envFlagged) -loadFlaggedGlobal:$($loadFlagged) `
+      $verboseStuff = Convert-SecretObject -show:$($show) -recursionDepth ($recursionDepth + 1) -envFlagged:$($envFlagged) -loadFlaggedGlobal:$($loadFlagged) `
         -SecretObject $Secret.value -SecretPrefix ($SecretPrefix ) -indendation ($indendation + '   ')
 
       if ($verboseStuff.length -gt 0) {
@@ -101,7 +101,7 @@ function Get-SecretsFromStore {
     $SecretStoreSource = 'ALL'
   )
 
-  Load-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames) -show:($Show)
+  Convert-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames) -show:($Show)
 
 }
 
@@ -138,6 +138,7 @@ function Get-OrgSecretStore {
 
   # TODO Implement Supress Error Option
   if ($Organization.length -eq 0) {
+    Throw "Not Found"
     return [PSCustomObject]@{}
   }
 
@@ -169,7 +170,7 @@ function Get-UnifiedSecretStore {
   $SECRETS_PER = Get-PersonalSecretStore -noCleanNames:$($noCleanNames)
   $SECRETS_ORG = Get-OrgSecretStore -noCleanNames:$($noCleanNames)
 
-  return  Get-UnifiedObject -Object1 $SECRETS_PER -Object2 $SECRETS_ORG
+  return  Join-PsObject -Object1 $SECRETS_PER -Object2 $SECRETS_ORG
 
 }
 

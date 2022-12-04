@@ -66,7 +66,7 @@ function Invoke-AzDevOpsRest {
         }
         'TEAM' { 
             $project = ([RepoProjects]::GetProject($ProjectName))
-            $team = Get-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
+            $team = Search-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
             $TargetURL = "https://$Type.com/$OrgName/$($project.id)/$($team.id)/$API"
         }
     }
@@ -212,7 +212,7 @@ function Get-WorkItem {
     $workItems = (Invoke-AzDevOpsRest -Method POST -CALL PROJ -API '/_apis/wit/workitemsbatch?api-version=7.1-preview.1' -body $body).fields `
     | Where-Object { $_.'System.AssignedTo'.uniqueName -like $env:GIT_CONFIG_ORG_MAIL }
 
-    return Get-PreferencedObject -SearchObjects $workItems -SearchTags $SearchTags -SearchProperty 'System.Title'
+    return Search-PreferencedObject -SearchObjects $workItems -SearchTags $SearchTags -SearchProperty 'System.Title'
 }
 
 function New-BranchFromWorkitem {
@@ -270,7 +270,7 @@ function New-AutomatedTag {
     param()
 
     $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-    $repositoryId = Get-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositoriesAll()) -SearchTags "$repositoryName" -returnProperty 'id'
+    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositoriesAll()) -SearchTags "$repositoryName" -returnProperty 'id'
     $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
         ForEach-Object { return $_.name.split('/')[-1] } | `
         ForEach-Object { return [String]::Format('{0:d4}.{1:d4}.{2:d4}', [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
@@ -332,7 +332,7 @@ function New-PullRequest {
         # Get Repo name
         if (-not $repositoryId -OR -not $repositoryPath -OR -not $projectName) {
             $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-            $preferencedRepo = Get-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repositoryName -SearchProperty 'remoteUrl'
+            $preferencedRepo = Search-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repositoryName -SearchProperty 'remoteUrl'
                 
             $repositoryId = $preferencedRepo.id
             $projectName = $preferencedRepo.remoteUrl.split('/')[4]
@@ -345,7 +345,7 @@ function New-PullRequest {
         $currentBranch = git -C $repositoryPath branch --show-current
         git -C $repositoryPath push --set-upstream origin $currentBranch
         $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
-        $preferencedBranch = Get-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
+        $preferencedBranch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
         # $workItem = Get-WorkItem -SearchTags $currentBbranch
 
         $hasDevBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('dev') } | Measure-Object).Count -gt 0
@@ -436,7 +436,7 @@ function Get-RecentSubmoduleTags {
 
     # Query All Repositories in DevOps
     $devopsRepositories = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API '/_apis/git/repositories/'
-    $preferencedRepos = Get-PreferencedObject -SearchObjects $devopsRepositories -SearchTags 'terraform' -SearchProperty 'name' -Multiple  
+    $preferencedRepos = Search-PreferencedObject -SearchObjects $devopsRepositories -SearchTags 'terraform' -SearchProperty 'name' -Multiple  
 
     foreach ($repository in $preferencedRepos) {
 

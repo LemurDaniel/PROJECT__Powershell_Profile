@@ -36,7 +36,7 @@ function Get-RepositoryVSCode {
     }
     else {
         $Repositories = [RepoProjects]::GetRepositories($Project)
-        $ChosenRepo = Get-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
+        $ChosenRepo = Search-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
         if (!$ChosenRepo) {
             Write-Host -Foreground RED 'No Repository Found'
             return;
@@ -165,7 +165,7 @@ function Get-RepositoryVSCodePrivate {
     )
 
     $PrivateRepos = (Get-SecretFromStore -SecretStoreSource PERSONAL 'GITHUB').repositories
-    $preferencedRepository = Get-PreferencedObject -SearchObjects $PrivateRepos -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
+    $preferencedRepository = Search-PreferencedObject -SearchObjects $PrivateRepos -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
 
     if (!$preferencedRepository) {
         Write-Host -Foreground RED 'No Repository Found'

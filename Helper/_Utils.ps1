@@ -1,5 +1,5 @@
 
-function Get-UnifiedObject {
+function Join-PsObject {
 
     param ( 
         [parameter()]
@@ -39,96 +39,222 @@ function Get-UnifiedObject {
             $Object1."$($PropertyName)" = (@($Object1."$($PropertyName)") + @($Object2."$($PropertyName)")) | Sort-Object | Get-Unique
         }
         else {
-            $Object1."$($PropertyName)" = Get-UnifiedObject -Object1 ($Object1."$($PropertyName)") -Object2 ($Object2."$($PropertyName)") 
+            $Object1."$($PropertyName)" = Join-PsObject -Object1 ($Object1."$($PropertyName)") -Object2 ($Object2."$($PropertyName)") 
         }
 
     }
     return $Object1
 }
 
+################################################################################################
+
+function Search-PreferencedObject {
+
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $SearchObjects,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $SearchTags,
+
+        [Parameter(Mandatory = $false)]
+        [System.Object[]]
+        $ExcludeSearchTags,
+
+        [Parameter()]
+        [System.String]
+        $SearchProperty = 'name',
+
+        [Parameter()]
+        [System.String]
+        $returnProperty,
+
+        [Parameter()]
+        [Switch]
+        $Multiple
+    )
 
 
-function Get-ScrambledText {
+    $ChosenObjects = [System.Collections.ArrayList]::new()
+    foreach ($SearchObject in $SearchObjects) {
+
+        if (!($SearchObject."$SearchProperty")) {
+            continue
+        }
+
+        $ObjectWrapper = [PSCustomObject]@{
+            Hits           = 0
+            SearchProperty = $SearchObject."$SearchProperty"
+            Object         = $SearchObject
+        }
+        foreach ($Tag in $SearchTags) {
+
+            Write-Verbose "Search Property: $SearchProperty"
+            Write-Verbose "Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
+            Write-Verbose $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+            Write-Verbose '###############################################################################################'
+
+            if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
+                $ObjectWrapper.Hits -= 1;
+            }
+        }
+        foreach ($Tag in $ExcludeSearchTags) {
+
+            Write-Verbose "Search Property: $SearchProperty"
+            Write-Verbose "Exclude Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
+            Write-Verbose $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+            Write-Verbose -Foreground yellow '###############################################################################################'
+
+            if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
+                $ObjectWrapper.Hits += 1;
+            }
+        }
+
+        Write-Verbose $ObjectWrapper
+
+        if ($ObjectWrapper.Hits -lt 0) {
+            $null = $ChosenObjects.Add($ObjectWrapper)
+        }
+    }
+
+    if ($ChosenObjects.Count -eq 0) {
+        return
+    }
+
+    $ChosenObjects = ($ChosenObjects | Sort-Object -Property Hits, $SearchProperty).Object
+    if ($returnProperty) {
+        $ChosenObjects = $ChosenObjects."$returnProperty"
+    }
+
+    if ($Multiple) {
+        return  $ChosenObjects
+    }
+    else {
+        return $ChosenObjects.GetType().BaseType -eq [System.Array] ? $ChosenObjects[0] : $ChosenObjects
+    }
+   
+}
+
+
+################################################################################################
+
+function Edit-PSProfile {
 
     param(
         [Parameter()]
         [System.String]
-        $text = (Get-Clipboard)
+        [ValidateSet([PsProfile])] 
+        $PsProfile = 'Profile'
     )
 
-    $newText = [System.Collections.ArrayList]::new()
-
-    foreach ($word in ($text -split ' ')) {
-        $word = $word.trim()
-
-        $startLetter = ($word -split '')[1]
-        $endLetter = ($word -split '')[-2]
-
-        if ($word.length -le 3) {
-            $null = $newText.Add($word)
-        }
-        else {
-            $letters = ($word -split '')[2..($word.length - 1)]
-      
-            $count = Get-Random -Minimum 2 -Maximum 5
-            for ($i = 0; $i -lt $count; $i++) {
-                $rand = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
-                $rand2 = Get-Random -Minimum 0 -Maximum ($letters.Length - 1)
-                $temp = $letters[$rand]
-                $letters[$rand] = $letters[$rand2]
-                $letters[$rand2] = $temp
-            }
-
-            $letters = $letters -join ''
-
-            $null = $newText.Add("$startLetter" + "$letters" + "$endLetter")
-        }
+    if ($PsProfile -eq 'Profile') {
+        code $env:PS_PROFILE
     }
-
-    Set-Clipboard -Value ($newText -join ' ')
-    return ($newText -join ' ')
-
+    elseif ($PsProfile -eq 'All') {
+        code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter '*.ps1')      
+    }
+    else {
+        code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "$PsProfile.ps1") 
+    }
 }
 
+################################################################################################
 
+function Update-VSCodeSettings {
 
-
-function Get-DailyMsRewards {
     param()
- 
-    Get-MsRewards -calls 20 -browser Chrome
-    Get-MsRewards -calls 4 -browser Edge
-    Get-MsRewards -calls 30 -browser Opera
+
+    git -C "$env:APPDATA\Code\User\" pull origin master
+    git -C "$env:APPDATA\Code\User\" push origin master
 
 }
 
+################################################################################################
 
-function Get-MsRewards {
+function Add-EnvPaths {
 
     param (
-        [Parameter(Mandatory = $true)]
-        [System.Int32]
-        $calls,
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $AdditionalPaths = [System.Collections.Hashtable]::new(),
 
         [Parameter()]
-        [ValidateSet('Edge', 'Opera', 'Chrome')]
-        $browser = 'Opera'
+        [System.Collections.ArrayList]
+        $RemovePaths = [System.Collections.ArrayList]::new()
     )
 
-    $applicationPaths = @{
-        Edge   = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
-        Opera  = 'C:\Users\Daniel\AppData\Local\Programs\Opera GX\launcher.exe'
-        Chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+
+    $global:DefaultEnvPaths = @{
+
+        # Some default
+        winget               = "$env:HOMEDRIVE\$env:HOMEPATH\AppData\Local\Microsoft\WindowsApps"
+        System32             = 'C:\Windows\system32'
+        wbem                 = 'C:\Windows;C:\Windows\System32\Wbem'
+        OpenSSH              = 'C:\Windows\System32\OpenSSH\'
+        ThinPrint            = 'C:\Program Files\ThinPrint Client\'
+        ThinPrintx86         = 'C:\Program Files (x86)\ThinPrint Client\'
+
+        # Code Editors
+        VSCode_Secondary     = "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin" 
+        VSCode_Primary       = 'C:\Program Files\Microsoft VS Code\bin'
+        #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
+
+        # Powershell
+        WindowsPowerShell    = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
+        PowerShell           = "$env:AppPath\_EnvPath_Apps\PowerShell\7.5"
+        PowerShell_Secondary = 'C:\Program Files\PowerShell\7'
+
+        #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
+        #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
+
+        WindowsAppsFolder    = 'C:\Users\M01947\AppData\Local\Microsoft\WindowsApps' #TODO
+        
+        # CLI Tools
+        AzureCLI             = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
+        AzureCLI_Onedrive    = "$env:AppPath\_EnvPath_Apps\CLI\Azure\CLI2\wbin"
+
+        sqlcmd_Onedrive      = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
+ 
+        terraform            = $env:TerraformNewestVersion 
+        terraformDocs        = $env:TerraformDocsNewestVersion
+
+        nodejs               = 'C:\Program Files\nodejs'
+        gitcmd               = 'C:\Program Files\Git\cmd'
+        git                  = 'C:\Program Files\Git'
+
+        nodejs_Secondary     = "$env:AppPath\_EnvPath_Apps\nodejs\18.12.1"
+        gitbin_Secondary     = "$env:AppPath\_EnvPath_Apps\Git\2.38\bin"
+        git_Secondary        = "$env:AppPath\_EnvPath_Apps\Git\2.38"
+
+        vlang                = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'v')
+        dotnet               = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
+        dotnet_Secondary     = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'dotnet').FullName
+
+        cmake                = "$env:AppPath\_EnvPath_Apps\cmake\3.24\bin"
+        gnumake              = "$env:AppPath\_EnvPath_Apps\GnuWin32\3.8\bin"
+
+        java                 = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
     }
-    $baseUrl = 'https://www.bing.com/search?q={0}'
 
-
-    for (; $calls -gt 0; $calls--) {
-
-        Start-Sleep -Milliseconds (Get-Random -Minimum 800 -Maximum 2000)
-        $word = Invoke-RestMethod -Method GET -Uri 'https://random-word-api.herokuapp.com/word'
-        $url = [System.String]::Format($baseUrl, $word)
-        [system.Diagnostics.Process]::Start($applicationPaths[$browser], $url)
+    foreach ($key in $AdditionalPaths.Keys) {
+        $global:DefaultEnvPaths.Remove($key)
+        $global:DefaultEnvPaths.Add($key, $AdditionalPaths[$key])
     }
+
+    $processedPaths = [System.Collections.ArrayList]::new()
+    foreach ($path in $env:InitialEnvsPaths -split ';' ) {
+
+        if ( ($RemovePaths | Where-Object { $path.contains($_) }).length -eq 0) {
+            $processedPaths += $path
+        }
+    }
+
+    $UniquePathsMap = [System.Collections.Hashtable]::new()
+    $processedPaths + $global:DefaultEnvPaths.Values | Where-Object { $_.length -gt 0 } | Where-Object { $UniquePathsMap[$_] = $_ } 
+
+    $env:Path = ($UniquePathsMap.Values -join ';')
 
 }

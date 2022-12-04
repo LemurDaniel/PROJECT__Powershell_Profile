@@ -38,7 +38,7 @@ function Load-SecretObject {
       Throw "Can't Load 'System.Array' to ENV"
     }
     else {
-      Load-SecretObject -SecretObject $Secret.value -SecretPrefix ($SecretPrefix + $Secret.Name + '_') -indendation '   '
+      Load-SecretObject -SecretObject $Secret.value -SecretPrefix ($SecretPrefix + $Secret.Name + '_') -indendation ($indendation+'   ')
     }
 
   }

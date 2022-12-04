@@ -47,7 +47,7 @@ function Invoke-ApiGit {
         header = @{
             Accept                 = $contentType
             'X-GitHub-Api-Version' = $apiVersion
-            Authorization          = "Bearer $env:CONFIG_GIT_PAT"
+            Authorization          = "Bearer $env:GIT_PAT"
         }
         uri    = 'https://api.github.com/' + $joinedPath + '?' + $queryString.Substring(1)
     }

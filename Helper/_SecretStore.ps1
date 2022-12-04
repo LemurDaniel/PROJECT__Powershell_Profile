@@ -31,6 +31,7 @@ function Load-SecretObject {
   )
 
 
+  $_OMITPREFIX = $SecretObject.'_OMITPREFIX' ?? @() 
   $_ORDER = $SecretObject.'_ORDER' ?? @() 
   $_SILENT = $SecretObject.'_SILENT' ?? @()
   $_LOAD = $_ORDER + $_SILENT 
@@ -55,8 +56,9 @@ function Load-SecretObject {
 
     # $Secret.value.GetType() -eq [PSCustomObject] doesn't work
     if ($Secret.value.GetType().Name -eq 'PSCustomObject' -AND ($envFlagged -OR $loadFlagged)) {
+      $SecretPrefix = $SecretPrefix + ($_OMITPREFIX.contains($cleanedName) ? '' : "$cleanedName`_")
       $verboseStuff = Load-SecretObject -show:$($show) -recursionDepth ($recursionDepth + 1) -envFlagged:$($envFlagged) -loadFlaggedGlobal:$($loadFlagged) `
-        -SecretObject $Secret.value -SecretPrefix ($SecretPrefix + $cleanedName + '_') -indendation ($indendation + '   ')
+        -SecretObject $Secret.value -SecretPrefix ($SecretPrefix ) -indendation ($indendation + '   ')
 
       if ($verboseStuff.length -gt 0) {
         $verbosing = $verbosing + "`n$indendation + Loading '$($secretPrefixedName)' from Secret Store" + $verboseStuff
@@ -117,14 +119,14 @@ function Get-PersonalSecretStore {
 
 function Get-OrgSecretStore {
   
-  if ($env:CONFIG_DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
-    $env:CONFIG_DEVOPS_CURRENT_ORGANIZATION = (Get-PersonalSecretStore).CONFIG.DEVOPS.DEFAULT_ORGANIZATION
+  if ($env:DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
+    $env:DEVOPS_CURRENT_ORGANIZATION = (Get-PersonalSecretStore).CONFIG.DEVOPS.DEFAULT_ORGANIZATION
   }
-  if ($env:CONFIG_DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
+  if ($env:DEVOPS_CURRENT_ORGANIZATION.length -eq 0) {
     return [PSCustomObject]@{}
   }
 
-  $tokenstore = "$env:SECRET_STORE.$env:CONFIG_DEVOPS_CURRENT_ORGANIZATION.tokenstore.json"
+  $tokenstore = "$env:SECRET_STORE.$env:DEVOPS_CURRENT_ORGANIZATION.tokenstore.json"
   return Get-Content -Path $tokenstore | `
     ConvertFrom-Json -Depth 6 | `
     Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_ORG__FILEPATH___TEMP' `

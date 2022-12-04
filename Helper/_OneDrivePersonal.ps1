@@ -5,7 +5,7 @@ function Login-ONEDRIVE_Auth {
 
   param ()
 
-  Get-ODAuthentication -ClientId $env:CONFIG_ONEDRIVE_CLIENT_ID -Scope onedrive.readonly 
+  Get-ODAuthentication -ClientId $env:ONEDRIVE_CLIENT_ID -Scope onedrive.readonly 
 
 }
 
@@ -23,7 +23,7 @@ function Update-ONEDRIVE_TOKEN {
     #Write-Host "Updated Token"
     $TOKEN = Get-ODAuthentication `
       -Scope onedrive.readonly `
-      -ClientId $env:CONFIG_ONEDRIVE_CLIENT_ID
+      -ClientId $env:ONEDRIVE_CLIENT_ID
 
     $null = Update-SecretStore -SecretStoreSource 'PERSONAL' -SecretType 'CONFIG' -SubSecret 'ONEDRIVE_TOKEN' -SecretValue $TOKEN
   }

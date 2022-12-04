@@ -119,7 +119,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
-    $projectPath = Join-Path -Path $env:CONFIG_ORG_REPO_PATH -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
+    $projectPath = Join-Path -Path $env:ORG_REPO_PATH -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
 
     if (!(Test-Path -Path $projectPath)) {
       return New-Item -ItemType Directory -Path $projectPath

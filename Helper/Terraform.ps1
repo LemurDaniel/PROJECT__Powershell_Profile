@@ -8,6 +8,15 @@ function Get-TerraformNewestVersion {
     if ($Version -eq 'latest' -AND (!(terraform --version --json | ConvertFrom-Json).terraform_outdated)) {
         return
     }
+
+    $currentVersion = [regex]::Matches($str, '\d+\.{1}\d+\.{1}\d+')[1].Value
+    $isInstalled = (Get-ChildItem -Path $env:TerraformPath -Filter "*$currentVersion" | Measure-Object).Count -gt 0
+
+    if ($isInstalled) {
+        return
+    }
+
+
     
     $versions = (Invoke-WebRequest -Method GET -Uri $env:TerraformDownloadSource).Links.href `
     | Where-Object { $_ -match '^\/terraform\/\d{1,2}.\d{1,2}.\d{1,2}\/' }
@@ -52,15 +61,14 @@ function Switch-Terraform {
     $TerraformFolder = $null
 
     if ($Version -and $Version.ToLower() -ne 'latest') {
-        Write-Host (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
         $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
     }
     else {
         $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory | Sort-Object -Property Name -Descending)[0]
     }
 
-    if ( $null -eq $TerraformFolder) {
-        Get-TerraformNewestVersion -Version ($Version[1..$Version.Length] -join '')
+    if ($null -eq $TerraformFolder) {
+        $null = Get-TerraformNewestVersion -Version ($Version[1..$Version.Length] -join '')
         $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
     }
 

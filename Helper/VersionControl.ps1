@@ -107,20 +107,22 @@ function Switch-GitConfig {
 
 function Push-Profile {
 
+    $fileItem = Get-RepositoryVSCodePrivate -RepositoryName 'PROJECT__Powershell_Profile' -noCode
+
+    if ($fileItem) {
+        $byteArray = [System.BitConverter]::GetBytes((Get-Random))
+        $hex = [System.Convert]::ToHexString($byteArray)
+
+        git -C $fileItem.FullName pull origin
+        git -C $fileItem.FullName add -A
+        git -C $fileItem.FullName commit -m "$hex"
+        git -C $fileItem.FullName push
+    
+    }
+        
     $byteArray = [System.BitConverter]::GetBytes((Get-Random))
     $hex = [System.Convert]::ToHexString($byteArray)
 
-    try {
-        $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-        if ($repositoryName -eq 'PROJECT__Powershell_Profile') {
-            git pull origin
-            git add -A
-            git commit -m "$hex"
-            git push
-        }
-    }
-    catch {}
-        
     git -C $env:PS_PROFILE_PATH pull origin
     git -C $env:PS_PROFILE_PATH add -A
     git -C $env:PS_PROFILE_PATH commit -m "$hex"
@@ -155,7 +157,11 @@ function Get-RepositoryVSCodePrivate {
         [Parameter()]
         [alias('not')]
         [System.String[]]
-        $excludeSearchTags
+        $excludeSearchTags,
+
+        [Parameter()]
+        [switch]
+        $noCode
     )
 
     $PrivateRepos = (Get-SecretFromStore -SecretStoreSource PERSONAL 'GITHUB').repositories
@@ -175,8 +181,10 @@ function Get-RepositoryVSCodePrivate {
     else {
         $repositoryPath = Get-Item -Path $repositoryPath
     }
-        
-    $repositoryPath
 
-    code $repositoryPath.FullName
+    if (!$noCode) {
+        code $repositoryPath.FullName
+    }
+
+    return $repositoryPath
 }

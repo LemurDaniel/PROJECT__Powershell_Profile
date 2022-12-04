@@ -5,7 +5,7 @@ function Login-ONEDRIVE_Auth {
 
   param ()
 
-  Get-ODAuthentication -ClientId $env:ONEDRIVE_PERSONAL_CLIENT_ID -Scope onedrive.readonly 
+  Get-ODAuthentication -ClientId $env:CONFIG_ONEDRIVE_CLIENT_ID -Scope onedrive.readonly 
 
 }
 
@@ -13,55 +13,37 @@ function Login-ONEDRIVE_Auth {
 function Update-ONEDRIVE_TOKEN {
   param ()
 
-  $ONEDRIVE = (Get-SecretFromStore -SecretType CONFIG).ONEDRIVE_PERSONAL
+  $TOKEN = (Get-SecretFromStore -SecretType CONFIG).ONEDRIVE_TOKEN
 
   $EXPIRES = [System.DateTime]::new(0)
-  try { $EXPIRES = [System.DateTime] $ONEDRIVE.expires } catch {}
+  try { $EXPIRES = [System.DateTime] $TOKEN.expires } catch {}
   $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::Now) -End $EXPIRES
   if ($TIMESPAN.Minutes -lt 2) {
 
     #Write-Host "Updated Token"
-    $ONEDRIVE_PERSONAL_AUTHENTICATION = Get-ODAuthentication `
+    $TOKEN = Get-ODAuthentication `
       -Scope onedrive.readonly `
-      -ClientId $env:CONFIG_ONEDRIVE_PERSONAL_CLIENT_ID 
+      -ClientId $env:CONFIG_ONEDRIVE_CLIENT_ID
 
-    $null = Update-SecretStore -SecretStoreSource 'PERSONAL' -SecretType CONFIG -SubSecret 'ONEDRIVE_PERSONAL' -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION
+    $null = Update-SecretStore -SecretStoreSource 'PERSONAL' -SecretType 'CONFIG' -SubSecret 'ONEDRIVE_TOKEN' -SecretValue $TOKEN
   }
 
-  return $ONEDRIVE_PERSONAL_AUTHENTICATION
+  return $TOKEN.access_token
 }
 
 function Load-ONEDRIVE_SecretStore {
-  param (
-    [Parameter()]
-    [Switch]
-    $ShowJSON
-  )
+  param ()
 
-  $ONEDRIVE_PERSONAL_AUTHENTICATION = Update-ONEDRIVE_TOKEN
-  $ONEDRIVE_ITEMS = Get-ODChildItems -AccessToken $env:ONEDRIVE_PERSONAL_access_token -Path '\Dokumente\_APPS\_SECRET_STORE' `
-                | Where-Object { "folder" -notin $_.PSObject.Properties.name }
+  $accessToken = Update-ONEDRIVE_TOKEN
+  $ONEDRIVE_ITEMS = Get-ODChildItems -AccessToken $accessToken -Path $env:SECRET_STORE `
+  | Where-Object { 'folder' -notin $_.PSObject.Properties.name }
 
   foreach ($item in $ONEDRIVE_ITEMS) {
-    $null = Get-ODItem -AccessToken $env:ONEDRIVE_PERSONAL_access_token `
+    $null = Get-ODItem -AccessToken $accessToken `
       -ElementId $item.id -LocalPath $env:SECRET_STORE -LocalFileName $item.name
 
     # $SecretStoreItem.PSParentPath.Replace('Microsoft.PowerShell.Core\FileSystem::', '') `
   }
   
-
-
-  if ($ShowJson) {
-    Get-SecretsFromStore -ShowJSON
-  }
-
-  if ($null -ne $ONEDRIVE_PERSONAL_AUTHENTICATION) {
-    $null = Update-SecretStore -SecretType ONEDRIVE_PERSONAL -SecretValue $ONEDRIVE_PERSONAL_AUTHENTICATION 
-  }
-
-  if ($ShowJson) {
-    Get-SecretsFromStore -ShowJSON
-  }
-
 }
 

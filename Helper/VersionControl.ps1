@@ -109,6 +109,17 @@ function Push-Profile {
 
     $byteArray = [System.BitConverter]::GetBytes((Get-Random))
     $hex = [System.Convert]::ToHexString($byteArray)
+
+    try {
+        $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
+        if ($repositoryName -eq 'PROJECT__Powershell_Profile') {
+            git pull origin
+            git add -A
+            git commit -m "$hex"
+            git push
+        }
+    }
+    catch {}
         
     git -C $env:PS_PROFILE_PATH pull origin
     git -C $env:PS_PROFILE_PATH add -A
@@ -122,15 +133,15 @@ function Find-PrivateRepos {
 
     $PrivateRepos = [System.Collections.ArrayList]::new()
     Get-ChildItem $env:CONFIG_PRIVATE_REPO_PATH -Recurse -Directory -Filter '.git' -Hidden | `
-    ForEach-Object {
+        ForEach-Object {
         $null = $PrivateRepos.Add([PSCustomObject]@{
-            Name = $_.Parent.Name
-            path = $_.Parent.FullName
-        })
+                Name = $_.Parent.Name
+                path = $_.Parent.FullName
+            })
 
         $null = git config --global --add safe.directory $_.Parent.FullName
     }
-    Update-SecretStore -SecretType 'GIT_PRIVATE_REPOS' -SecretValue $PrivateRepos -SecretStoreSource 'PERSONAL' -NOLOAD
+    Update-SecretStore -SecretType 'GIT_PRIVATE_REPOS' -SecretValue $PrivateRepos -SecretStoreSource 'PERSONAL'
 
 }
 function Get-RepositoryVSCodePrivate {
@@ -160,7 +171,8 @@ function Get-RepositoryVSCodePrivate {
         $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath
         git -C $repositoryPath.FullName clone $preferencedRepository.clone_url .
         git config --global --add safe.directory $repositoryPath.FullName
-    } else {
+    }
+    else {
         $repositoryPath = Get-Item -Path $repositoryPath
     }
         

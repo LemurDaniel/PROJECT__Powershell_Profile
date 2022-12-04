@@ -1,4 +1,49 @@
 
+function Load-SecretObject {
+  param (
+    [parameter()]
+    [PSObject]
+    $SecretObject,
+
+    [parameter()]
+    [System.String]
+    $SecretPrefix,
+
+    [parameter()]
+    [System.String]
+    $indendation
+  )
+
+
+  $_LOADORDER = $SecretObject.'_LOADORDER' ?? @() 
+  $_LOADSILENT = $SecretObject.'_LOADSILENT' ?? @()
+  $_LOAD = $_LOADORDER + $_LOADSILENT 
+  $SecretObject = $SecretObject | Sort-Object -Property { $_LOADORDER.IndexOf($_.Name) } 
+
+  foreach ($Secret in $SecretObject.PSObject.Properties) {
+
+    if (!$_LOAD.contains($Secret.Name)) {
+      continue
+    } 
+    if (!$_LOADSILENT.contains($Secret.Name)) {
+      Write-Host "$indendation" + "Loading '$($SecretPrefix+$Secret.name)' from Secret Store" # Verbosing
+    }
+
+    # Convert to ENV if String or Value
+    if ($Secret.value.GetType() -eq [System.String]) {
+      $SecretValue = $Secret.value[0] -eq '´' ? (Invoke-Expression -Command $Secret.value.substring(1)) : $Secret.value
+      $null = New-Item -Path "env:$($Secret.name)" -Value $SecretValue -Force  
+    }
+    elseif ($Secret.value.GetType().BaseType -eq [System.Array]) {
+      Throw "Can't Load 'System.Array' to ENV"
+    }
+    else {
+      Load-SecretObject -SecretObject $Secret.value -SecretPrefix ($SecretPrefix + $Secret.Name + '_') -indendation '   '
+    }
+
+  }
+
+}
 function Get-SecretsFromStore {
 
   param ( 
@@ -19,98 +64,10 @@ function Get-SecretsFromStore {
     $SecretStoreSource = 'ALL'
   )
 
-  $SECRET_STORE = ''
-  if ($SecretStoreSource -eq 'PERSONAL') {
-    $SECRET_STORE = Get-PersonalSecretStore
-  }
-  elseif ($SecretStoreSource -eq 'ORG') {
-    $SECRET_STORE = Get-OrgSecretStore
-  }
-  else {
-    $SECRET_STORE = Get-UnifiedSecretStore
-  }
+  Write-host "sss"
+  Write-Host (Get-SecretStore -SecretStoreSource $SecretStoreSource)
+  Load-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource)
 
-
-  $_NOLOAD = $SECRET_STORE.'_NOLOAD'
-  $_SILENT = $SECRET_STORE.'_SILENT'
-  if ($SECRET_STORE.'_ORDER') {
-    $SECRET_STORE = $SECRET_STORE `
-    | Sort-Object -Property { $SECRET_STORE.'_ORDER'.IndexOf($_.Name) } 
-  }
-
-  # Load Secrets
-  foreach ($BaseSecret in $SECRET_STORE.PSObject.Properties) {
-    
-    if ($_NOLOAD.contains($BaseSecret.Name)) {
-      continue
-    }
-
-    $SECRET_BASE_NAME = $BaseSecret.name
-    $SECRET_TYPE = $BaseSecret.value.GetType()
-    
-    # Convert to ENV if String or Value
-    if ($SECRET_TYPE -eq [System.String] -OR $SECRET_TYPE.BaseType -eq [System.Array]) {
-      if ($ShowFull -or ($Show -and !($_SILENT.contains($BaseSecret.Name)))) {
-        Write-Host "Loading '$($SECRET_BASE_NAME)' from Secret Store" # Verbosing
-      }
-
-      # Evaluate if expression
-      if ($BaseSecret.value[0] -eq '´') {
-        $value = Invoke-Expression -Command $BaseSecret.value.substring(1)
-        $null = New-Item -Path "env:$($SECRET_BASE_NAME)" -Value $value -Force
-      }
-      # Load Secret
-      else {
-        $null = New-Item -Path "env:$($SECRET_BASE_NAME)" -Value $BaseSecret.Value -Force  
-      }
-
-      if ($ShowFull) {
-        Write-Host "  => $( (Get-ChildItem -Path "env:$SECRET_BASE_NAME").value )" # Verbosing
-      }
-    }
-
-
-    # Parse further if Object
-    else {
-
-      if ($ShowFull -or ($Show -and !($_SILENT.contains($BaseSecret.Name)))) {
-        Write-Host "Loading '$($SECRET_BASE_NAME)' Secrets from Secret Store" # Verbosing
-      }
-
-      # Load Sub-Secrets
-      $BaseSecretProperties = $BaseSecret.Value.PSObject.Properties
-      if ($BaseSecret['_ORDER']) {
-        $BaseSecret = $BaseSecret | Sort-Object -Property { $BaseSecret['_ORDER'].Value.IndexOf($_.Name) }
-      }
-
-      # Iterate over Subsecrets
-      foreach ($Secret in $BaseSecretProperties ) {
-
-        if ($null -ne $BaseSecretProperties['_NOLOAD'] -AND $BaseSecretProperties['_NOLOAD'].value.contains($Secret.name)) {
-          continue
-        }
-
-        $SecretName = "$($SECRET_BASE_NAME)_$($Secret.name)"
-        if ($null -eq $BaseSecretProperties['_SILENT'] -OR !$BaseSecretProperties['_SILENT'].value.contains($Secret.name)) {
-          Write-Host "Loading '$($SecretName)' from Secret Store"
-        }
-   
-        if ($Secret.value[0] -eq '´') {
-          $value = Invoke-Expression -Command $Secret.value.substring(1)
-          $null = New-Item -Path "env:$($SecretName)" -Value $value -Force
-        }
-        else {
-          $null = New-Item -Path "env:$($SecretName)" -Value $Secret.Value -Force  
-        }
-
-        if ($ShowFull) {
-          Write-Host "  => $( (Get-ChildItem -Path "env:$SecretName").value )"
-        }
-
-      }
-    } 
-
-  }
 }
 
 ######################################################################################
@@ -126,11 +83,6 @@ function Get-PersonalSecretStore {
   $env:DEVOPS_CURRENT_ORGANIZATION_CONTEXT = $tokenStore.CONFIG.DEVOPS_CURRENT_ORGANIZATION
 
   return $tokenStore
-}
-
-if (!$env:LOADED_PERSONAL_SECRETS) {
-  Get-SecretsFromStore -SecretStoreSource 'PERSONAL'
-  $env:LOADED_PERSONAL_SECRETS = $true
 }
 
 function Get-OrgSecretStore {
@@ -152,6 +104,24 @@ function Get-UnifiedSecretStore {
 
 }
 
+function Get-SecretStore {
+  param (
+    [parameter()]
+    [validateSet('ALL', 'ORG', 'PERSONAL')]
+    $SecretStoreSource = 'ALL'
+  )
+
+  if ($SecretStoreSource -eq 'PERSONAL') {
+    return Get-PersonalSecretStore
+  }
+  elseif ($SecretStoreSource -eq 'ORG') {
+    return Get-OrgSecretStore
+  }
+  else {
+    return Get-UnifiedSecretStore
+  }
+}
+
 #############################################################################
 
 function Get-SecretFromStore {
@@ -162,21 +132,10 @@ function Get-SecretFromStore {
 
     [parameter()]
     [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ORG'
+    $SecretStoreSource = 'ALL'
   )
 
-  $SECRET_STORE = ''
-  if ($SecretStoreSource -eq 'PERSONAL') {
-    $SECRET_STORE = Get-PersonalSecretStore
-  }
-  elseif ($SecretStoreSource -eq 'ORG') {
-    $SECRET_STORE = Get-OrgSecretStore
-  }
-  else {
-    $SECRET_STORE = Get-UnifiedSecretStore
-  }
-  
-  return $SECRET_STORE."$SecretType"
+  return (Get-SecretStore -SecretStoreSource $SecretStoreSource)."$SecretType"
 
 }
 
@@ -197,49 +156,37 @@ function Update-SecretStore {
 
     [parameter()]
     [Switch]
-    $NoLoad = $false,
+    $LoadVerbose = $false,
+
+    [parameter()]
+    [Switch]
+    $LoadSilent = $false,
 
     [parameter()]
     [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ORG',
-
-    # TODO
-    [parameter()]
-    [System.String]
-    $Organization = 'ORG'
+    $SecretStoreSource = 'ORG'
   )
 
-  $SECRET_STORE = ''
-  if ($SecretStoreSource -eq 'PERSONAL') {
-    $SECRET_STORE = Get-PersonalSecretStore
-  }
-  elseif ($SecretStoreSource -eq 'ORG') {
-    $SECRET_STORE = Get-OrgSecretStore
-  }
-  else {
-    $SECRET_STORE = Get-UnifiedSecretStore
-  }
-  
-  if ($SubSecret.length -gt 0) {
-    $SECRET_STORE."$SecretType" | `
-      Add-Member `
-      -MemberType NoteProperty `
-      -Name $SubSecret `
-      -Value $SecretValue `
-      -Force
-  }
-  else {
-    $SECRET_STORE | `
-      Add-Member `
-      -MemberType NoteProperty `
-      -Name $SecretType `
-      -Value $SecretValue `
-      -Force
+  if ($LoadVerbose -AND $LoadSilent) {
+    Throw 'Both Flags Silent and Verbose Set'
   }
 
-  if ($NoLoad) {
-    $SECRET_STORE._NOLOAD = @((@($SecretType) + $SECRET_STORE._NOLOAD) | Sort-Object | Get-Unique)
+  $SecretObject = Get-SecretStore -SecretStoreSource $SecretStoreSource
+  if ($SubSecret.length -gt 0) {
+    $SecretObject = $SecretObject."$SecretType"
   }
+
+
+  $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretType -Value $SecretValue -Force
+  if ($LoadVerbose) {
+    $_LOADVERBOSE = @((@($SecretType) + $SecretObject._LOADVERBOSE) | Sort-Object | Get-Unique)
+    $SecretObject | Add-Member -MemberType NoteProperty -Name '_LOADVERBOSE' -Value $_LOADVERBOSE -Force
+  }
+  elseif ($LoadSilent) {
+    $_LOADSILENT = @((@($SecretType) + $SecretObject._LOADSILENT) | Sort-Object | Get-Unique)
+    $SecretObject | Add-Member -MemberType NoteProperty -Name '_LOADSILENT' -Value $_LOADSILENT -Force
+  }
+
   
   if ($SecretStoreSource -eq 'ORG') {
     $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP)" 
@@ -258,7 +205,13 @@ function Update-AzTenantSecret {
   
   Connect-AzAccount
   $Tenants = Get-AzTenant
-  Update-SecretStore -SecretType AZURE_TENANTS -SecretValue $Tenants -NoLoad 
+  Update-SecretStore -SecretType AZURE_TENANTS -SecretValue $Tenants
 
 }
 
+if (!$env:LOADED_PERSONAL_SECRETS) {
+  Write-Host 'ssss'
+  Get-SecretStore ALL
+  Get-SecretsFromStore -SecretStoreSource 'PERSONAL'
+  $env:LOADED_PERSONAL_SECRETS = $true
+}

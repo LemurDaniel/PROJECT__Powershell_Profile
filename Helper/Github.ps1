@@ -74,6 +74,6 @@ function Get-AllRepositores {
      #'Group-Object -Property 'login' | `
      #ForEach-Object { $repositoryOwners[$_.Name] | Add-Member -MemberType NoteProperty -Name 'Repositories' -Value ($_.Group) -Force }
 
-    Update-SecretStore -NoLoad -SecretStoreSource PERSONAL -SecretType 'GITHUB' -SecretValue $githubData
+    Update-SecretStore -SecretStoreSource PERSONAL -SecretType 'GITHUB' -SecretValue $githubData
 
 }

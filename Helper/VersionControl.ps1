@@ -172,7 +172,7 @@ function Get-RepositoryVSCodePrivate {
         return;
     }
 
-    $repositoryPath = "$env:PRIVATE_REPO_PATH\$($preferencedRepository.login)\$($preferencedRepository.name)"
+    $repositoryPath = "$env:GIT_REPO_PATH\$($preferencedRepository.login)\$($preferencedRepository.name)"
     if (!(Test-Path -Path $repositoryPath)) {
         $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath
         git -C $repositoryPath.FullName clone $preferencedRepository.clone_url .

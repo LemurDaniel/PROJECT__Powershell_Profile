@@ -94,7 +94,7 @@ function Search-PreferencedObject {
 
             Write-Verbose "Search Property: $SearchProperty"
             Write-Verbose "Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
-            Write-Verbose $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+            Write-Verbose "$Tag $($SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()))"
             Write-Verbose '###############################################################################################'
 
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {
@@ -105,7 +105,7 @@ function Search-PreferencedObject {
 
             Write-Verbose "Search Property: $SearchProperty"
             Write-Verbose "Exclude Search Property Value: $($SearchObject."$SearchProperty".ToLower())"
-            Write-Verbose $Tag $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower())
+            Write-Verbose "$Tag $($SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()))"
             Write-Verbose -Foreground yellow '###############################################################################################'
 
             if ($SearchObject."$SearchProperty" -and $SearchObject."$SearchProperty".ToLower().Contains($Tag.ToLower()) ) {

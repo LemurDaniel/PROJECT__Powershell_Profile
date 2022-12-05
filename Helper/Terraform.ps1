@@ -1,29 +1,42 @@
-function Get-TerraformNewestVersion {
+function Get-TerraformVersion {
 
-    param ( [Parameter()]
+    param ( 
+        [Parameter()]
         [System.String]
-        $Version = 'latest'
+        $Version,
+
+        [Parameter()]
+        [switch]
+        $Latest
     )
 
-    if ($Version -eq 'latest' -AND (!(terraform --version --json | ConvertFrom-Json).terraform_outdated)) {
-        return
+    if ($Latest) {
+
+        if (!(terraform --version --json | ConvertFrom-Json).terraform_outdated) {
+            return (Get-ChildItem -Path $env:TerraformPath -Directory | Sort-Object)[-1]
+        } 
+        else {
+            $tfOutput = terraform --version
+            $version = [regex]::Matches($tfOutput, '\d+\.{1}\d+\.{1}\d+')[1].Value
+        }
     }
 
-    $currentVersion = [regex]::Matches($str, '\d+\.{1}\d+\.{1}\d+')[1].Value
-    $isInstalled = (Get-ChildItem -Path $env:TerraformPath -Filter "*$currentVersion" | Measure-Object).Count -gt 0
+    Write-Verbose "Check Installation of v$version"
+    $version = $Version.toLower()[0] -eq 'v' ? $version.Substring(1) : $version
+    $TerraformFolder = Get-ChildItem -Path $env:TerraformPath -Filter "v$version"
 
-    if ($isInstalled) {
-        return
+    if ($TerraformFolder) {
+        return $TerraformFolder
     }
 
 
-    
-    $versions = (Invoke-WebRequest -Method GET -Uri $env:TerraformDownloadSource).Links.href `
-    | Where-Object { $_ -match '^\/terraform\/\d{1,2}.\d{1,2}.\d{1,2}\/' }
+    Write-Verbose "Get Downloadlink for Terraform Version v$version"
+    $versions = (Invoke-WebRequest -Method GET -Uri $env:TerraformDownloadSource).Links.href | `
+        Where-Object { $_ -match '^\/terraform\/\d{1,2}.\d{1,2}.\d{1,2}\/' }
+
 
     $newVersion = $versions[0].split('/')[2]
     if ($Version -ne 'latest') {
-        Write-Host $Version
         $newVersion = ($versions | Where-Object { $_ -match $Version }).split('/')[2]
     }
 
@@ -31,13 +44,12 @@ function Get-TerraformNewestVersion {
     Invoke-WebRequest -Method GET -Uri "$env:TerraformDownloadSource$newVersion/terraform_$newVersion`_windows_amd64.zip" -OutFile $downloadZipFile
 
     $newTerraformFolder = Join-Path -Path $env:TerraformPath -ChildPath "/v$newVersion"
-    if (!(Test-Path -Path $newTerraformFolder)) {
-        New-Item -ItemType directory $newTerraformFolder -Force
-    }
+    $TerraformFolder = New-Item -ItemType directory $newTerraformFolder -Force
 
     $terraformZip = [System.IO.Compression.ZipFile]::OpenRead($downloadZipFile)
     [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$newTerraformFolder\terraform.exe", $true)
 
+    return $TerraformFolder
 }
 
 function Switch-Terraform {
@@ -57,22 +69,7 @@ function Switch-Terraform {
         $Version = "v1.1.$($Version[1])"
     }
 
-    # Latest
-    $TerraformFolder = $null
-
-    if ($Version -and $Version.ToLower() -ne 'latest') {
-        $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
-    }
-    else {
-        $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory | Sort-Object -Property Name -Descending)[0]
-    }
-
-    if ($null -eq $TerraformFolder) {
-        $null = Get-TerraformNewestVersion -Version ($Version[1..$Version.Length] -join '')
-        $TerraformFolder = (Get-ChildItem -Path $env:TerraformPath -Directory -Filter $Version)
-    }
-
-    # Write-Host $TerraformFolder
+    $TerraformFolder = Get-TerraformVersion -Version $Version
     Add-EnvPaths -RemovePaths @($env:TerraformPath) -AdditionalPaths @{
         Terraform = $($TerraformFolder.FullName)
     } 
@@ -80,4 +77,18 @@ function Switch-Terraform {
     Write-Host
     terraform --version
     Write-Host
+}
+
+
+function Set-VersionActiveTF {
+
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [System.String]
+        $version
+    )
+
+    Update-SecretStore -ENV -SecretType CONFIG -SubSecret TF_VERSION_ACTIVE -SecretValue $version -SecretStoreSource ORG
+
 }

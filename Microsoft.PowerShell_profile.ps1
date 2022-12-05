@@ -54,8 +54,6 @@ function Set-TerminalSettings {
 
 ###################################################################################
 
-$env:ActiveTFversion = '1.3.5'
-
 $env:PS_PROFILE = $PROFILE
 $env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path
 $env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE_PATH\Helper").Path
@@ -145,8 +143,8 @@ Add-EnvPaths
 
 Start-Sleep -Milliseconds 250
 
-Get-TerraformNewestVersion
-Switch-Terraform -Version $env:ActiveTFversion
+$null = Get-TerraformVersion -Latest
+Switch-Terraform -Version $env:TF_VERSION_ACTIVE
 
 
 

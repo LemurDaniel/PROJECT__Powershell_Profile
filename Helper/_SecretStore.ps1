@@ -138,7 +138,7 @@ function Get-OrgSecretStore {
 
   # TODO Implement Supress Error Option
   if ($Organization.length -eq 0) {
-    Throw "Not Found"
+    Throw 'Not Found'
     return [PSCustomObject]@{}
   }
 
@@ -242,14 +242,21 @@ function Update-SecretStore {
 
     [parameter()]
     [ValidateSet([DevOpsORG])]
-    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION
+    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION,
+
+    [parameter()]
+    [switch]
+    $ENV
   )
 
-  $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -Organization $Organization
-  
-  $SecretObject = $SubSecret.length -gt 0 ? $SecretObject."$SecretType" : $SECRET_STORE
-  $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretType -Value $SecretValue -Force
+  $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -Organization $Organization -noCleanNames
 
+
+  $SecretObject = $SubSecret.length -gt 0 ? $SECRET_STORE."$SecretType" : $SECRET_STORE
+  $SecretName = $SubSecret.Length -gt 0 ? $SubSecret : $SecretType
+  $SecretName = $ENV ? "`$env:$SecretName" : $SecretName
+  
+  $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretName -Value $SecretValue -Force
 
   if ($SecretStoreSource -eq 'ORG') {
     Write-Verbose $SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP

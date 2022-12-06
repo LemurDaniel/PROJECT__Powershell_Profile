@@ -72,7 +72,7 @@ function Convert-SecretObject {
         -SecretObject $Secret.value -SecretPrefix ($SecretPrefix ) -indendation ($indendation + '   ')
 
       if ($verboseStuff.length -gt 0) {
-        $verbosing = $verbosing + "`n$indendation + Loading '$($secretPrefixedName)' from Secret Store" + $verboseStuff
+        $verbosing = $verbosing + "`n$indendation + Loading '$($secretPrefixedName)'" + $verboseStuff
       }
 
     }
@@ -80,19 +80,19 @@ function Convert-SecretObject {
     elseif ($envFlagged -AND $Secret.value.GetType() -eq [System.String]) {
       $SecretValue = $Secret.value[0] -eq '´' ? (Invoke-Expression -Command $Secret.value.substring(1)) : $Secret.value
       $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
-      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)' from Secret Store"
+      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)'"
     }
     # If env-flagged and valutetype convert to env string (Like Dates will throw Errors)
     elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.ValueType]) {
       $SecretValue = $Secret.value.toString()
       $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
-      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)' from Secret Store"
+      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)'"
     }
     elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
       Throw "Can't Load 'System.Array' to ENV"
     }
     elseif ($enumFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
-      $verbosing += "`n$indendation + Loading ENUM:'$($cleanedName)' from Secret Store"
+      $verbosing += "`n$indendation + Loading ENUM:'$($cleanedName)'"
       $enumString = @"
           enum $($cleanedName) { 
             $($Secret.Value -join '; ') 

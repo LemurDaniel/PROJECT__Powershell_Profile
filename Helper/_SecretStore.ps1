@@ -103,7 +103,6 @@ function Convert-SecretObject {
       & $global:GlobalScope {
         param($params)
         # Splatting doesn't
-        Write-Host "Execute Global $($Params.Command)"
         $null = Invoke-Expression @params
       } @{
         Command = $enumString

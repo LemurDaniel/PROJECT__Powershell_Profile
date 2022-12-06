@@ -97,10 +97,11 @@ function Convert-SecretObject {
             $($Secret.Value -join '; ') 
           }
 "@
+      $GlobalScope = [psmoduleinfo]::new($true)
 
-$env:Test = $enumString
-      Write-Host $enumString
-      Invoke-Expression -Verbose -Command $enumString
+      & $GlobalScope {
+        Invoke-Expression -Command $enumString
+      }
 
       <#
       # Check if the enum exists, if it doesn't, create it.

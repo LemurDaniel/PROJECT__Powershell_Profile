@@ -95,7 +95,7 @@ class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [String[]] GetAllORG() {
-    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATIONS
+    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATION
   }
 
   static [String] GetDefaultORG() {
@@ -103,7 +103,7 @@ class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   [String[]] GetValidValues() {
-    return   Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATIONS
+    return   Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATION
   }
   
 }

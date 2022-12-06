@@ -1,3 +1,4 @@
+$global:PWSHCurrentProcess = [System.Diagnostics.Process]::GetCurrentProcess()
 
 function Convert-SecretObject {
   param (
@@ -97,10 +98,15 @@ function Convert-SecretObject {
             $($Secret.Value -join '; ') 
           }
 "@
-      $GlobalScope = [psmoduleinfo]::new($true)
 
-      & $GlobalScope {
-        Invoke-Expression -Command $enumString
+#TODO Not working yet
+      & $global:GlobalScope {
+        param($params)
+        # Splatting doesn't
+        Write-Host "Execute Global $($Params.Command)"
+        $null = Invoke-Expression @params
+      } @{
+        Command = $enumString
       }
 
       <#
@@ -248,13 +254,13 @@ function Get-SecretStore {
 function Get-SecretFromStore {
 
   param (
-    [parameter()]
-    [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ALL',
-
     [parameter(Mandatory = $true)]
     [System.String]
     $SecretPath,
+
+    [parameter()]
+    [validateSet('ALL', 'ORG', 'PERSONAL')]
+    $SecretStoreSource = 'ALL',
 
     [parameter()]
     [switch]
@@ -306,8 +312,8 @@ function Update-SecretStore {
 
     [parameter()]
     [AllowNull()]
-    [ORGANIZATION]
-    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION,
+    [ValidateSet([DevOpsORG])]
+    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION, #TODO
 
     [parameter(Mandatory = $true)]
     [System.String]

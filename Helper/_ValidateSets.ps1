@@ -1,9 +1,16 @@
 
+enum SecretScope {
+  ALL
+  ORG
+  PERSONAL
+}
+
 class HTTPMethods : System.Management.Automation.IValidateSetValuesGenerator {
 
   [String[]] GetValidValues() {
     return [System.Net.Http.HttpMethod].GetProperties().Name
   }
+
 }
 
 

@@ -19,7 +19,7 @@
             "DEVOPS_DEFAULT_PROJECT": null,
             "USER": null,
             "PAT": null,
-            "HEADER": "´[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$((Get-SecretFromStore -SecretType AZURE_DEVOPS).USER):$((Get-SecretFromStore -SecretType AZURE_DEVOPS).PAT)\"))",
+            "HEADER": "´[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$(Get-SecretFromStore CONFIG/AZURE_DEVOPS.USER):$(Get-SecretFromStore CONFIG/AZURE_DEVOPS.PAT)\"))",
             "EXPIRES": null
         }
     },

@@ -89,6 +89,6 @@ function Set-VersionActiveTF {
         $version
     )
 
-    Update-SecretStore -ENV -SecretType CONFIG -SubSecret TF_VERSION_ACTIVE -SecretValue $version -SecretStoreSource ORG
+    Update-SecretStore ORG -ENV -SecretPath CONFIG.TF_VERSION_ACTIVE -SecretValue $version
 
 }

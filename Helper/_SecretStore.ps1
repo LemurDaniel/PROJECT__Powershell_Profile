@@ -47,7 +47,16 @@ function Convert-SecretObject {
     }
 
     $envFlaggedLocal = $Secret.name.length -gt 5 -AND $Secret.name.substring(0, 5).ToUpper() -eq '$ENV:'
-    $cleanedName = $envFlaggedLocal ? $Secret.name.substring(5) : $secret.name
+    $enumFlagged = $Secret.name.length -gt 6 -AND $Secret.name.substring(0, 6).ToUpper() -eq '$ENUM:'
+
+    $cleanedName = $secret.name
+    if ($envFlaggedLocal) {
+      $cleanedName = $Secret.name.substring(5)
+    }
+    elseif ($enumFlagged) {
+      $cleanedName = $Secret.name.substring(6)
+    }
+
     $secretPrefixedName = $SecretPrefixGlobal + $cleanedName
     $envFlagged = $envFlaggedGlobal -OR $envFlaggedLocal
 
@@ -55,6 +64,7 @@ function Convert-SecretObject {
     $loadFlagged = $_LOAD.contains($Secret.Name) -OR $loadFlaggedGlobal
 
     # $Secret.value.GetType() -eq [PSCustomObject] doesn't work
+    # Search all Subsequent Objects if load or env flagged
     if ($Secret.value.GetType().Name -eq 'PSCustomObject' -AND ($envFlagged -OR $loadFlagged)) {
       $SecretPrefix = $SecretPrefixGlobal + ($_OMITPREFIX.contains($cleanedName) ? '' : "$cleanedName`_")
       $verboseStuff = Convert-SecretObject -show:$($show) -recursionDepth ($recursionDepth + 1) -envFlagged:$($envFlagged) -loadFlaggedGlobal:$($loadFlagged) `
@@ -65,18 +75,43 @@ function Convert-SecretObject {
       }
 
     }
+    # If env-flagged and string convert to env
     elseif ($envFlagged -AND $Secret.value.GetType() -eq [System.String]) {
       $SecretValue = $Secret.value[0] -eq '´' ? (Invoke-Expression -Command $Secret.value.substring(1)) : $Secret.value
       $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
-      $verbosing += "`n$indendation + Loading '$($secretPrefixedName)' from Secret Store"
+      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)' from Secret Store"
     }
+    # If env-flagged and valutetype convert to env string (Like Dates will throw Errors)
     elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.ValueType]) {
       $SecretValue = $Secret.value.toString()
       $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
-      $verbosing += "`n$indendation + Loading '$($secretPrefixedName)' from Secret Store"
+      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)' from Secret Store"
     }
     elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
       Throw "Can't Load 'System.Array' to ENV"
+    }
+    elseif ($enumFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
+      $verbosing += "`n$indendation + Loading ENUM:'$($secretPrefixedName)' from Secret Store"
+      Invoke-Expression @"
+          enum $($cleanedName) { 
+            $($Secret.Value -join '; ') 
+          }
+"@
+      <#
+      # Check if the enum exists, if it doesn't, create it.
+      if (!($cleanedName -as [Type])) {
+        Add-Type -TypeDefinition "
+            public enum $($cleanedName){
+                anonymousAuthentication,
+                basicAuthentication,
+                clientCertificateMappingAuthentication,
+                digestAuthentication,
+                iisClientCertificateMappingAuthentication,
+                windowsAuthentication    
+            }
+        "
+      }
+      #>
     }
 
     if ($recursionDepth -eq 0 -AND $verbosing.Length -gt 0 -AND $show) {
@@ -117,7 +152,7 @@ function Get-PersonalSecretStore {
 
   $path = "$env:SECRET_STORE.private.tokenstore.json" 
   $content = Get-Content -Path $path 
-  $content = $noCleanNames ? $content : $content.replace('$env:', '')
+  $content = $noCleanNames ? $content : ($content -replace '[$]{1}[A-Za-z]+:{1}')
         
   return $content | ConvertFrom-Json -Depth 6 | `
     Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_PER__FILEPATH___TEMP' `
@@ -147,10 +182,10 @@ function Get-OrgSecretStore {
   if (!(Test-Path $path)) {
     $null = (Get-Content -Path "$env:PROFILE_HELPERS_PATH\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization) | `
       Out-File -FilePath $path
-  } 
+  }
 
   $content = Get-Content -Path $path 
-  $content = $noCleanNames ? $content : $content.replace('$env:', '')
+  $content = $noCleanNames ? $content : ($content -replace '[$]{1}[A-Za-z]+:{1}')
 
   return $content | `
     ConvertFrom-Json -Depth 6 | `
@@ -205,25 +240,25 @@ function Get-SecretStore {
 #############################################################################
 
 function Get-SecretFromStore {
+
   param (
+    [parameter()]
+    [validateSet('ALL', 'ORG', 'PERSONAL')]
+    $SecretStoreSource = 'ALL',
+
     [parameter(Mandatory = $true)]
     [System.String]
     $SecretPath,
 
     [parameter()]
-    [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ALL'
+    [switch]
+    $Unprocessed
   )
 
   $splitPath = $SecretPath -split '[\/\.]+'
 
   $SecretObject = (Get-SecretStore -SecretStoreSource $SecretStoreSource) # Gets Cleaned Names 
   foreach ($segment in $splitPath) {
-  
-    # TODO Convert to switch Statement
-    if ($segment.length -eq 0) {
-      continue
-    }
 
     if ($null -eq $SecretObject) {
       Throw "Path: $SecretPath - Error at Segment $segment - Object is NULL"
@@ -233,7 +268,7 @@ function Get-SecretFromStore {
       Throw "Path: $SecretPath - Error at Segment $segment - Object is $($SecretObject.GetType().Name)"
     }
 
-    if($null -eq $SecretObject."$segment") {
+    if ($null -eq $SecretObject."$segment") {
       Throw "Path: $SecretPath - Error at Segment $segment - Segment does not exist "
     }
 
@@ -241,55 +276,118 @@ function Get-SecretFromStore {
   
   }
 
-  return $SecretObject
+  if (!$Unprocessed -AND $SecretObject.GetType() -eq [System.String] -AND $SecretObject[0] -eq '´') {
+    Write-Verbose $SecretObject
+    return (Invoke-Expression -Command $SecretObject.substring(1))
+  }
+  else {
+    return $SecretObject  
+  }
+
 }
 
 
 function Update-SecretStore {
 
-  [cmdletbinding()]
+  [cmdletbinding(
+    SupportsShouldProcess,
+    ConfirmImpact = 'high'
+  )]
   param (
     [parameter(Mandatory = $true)]
+    [SecretScope]
+    $SecretStoreSource,
+
+    [parameter()]
+    [AllowNull()]
+    [ORGANIZATION]
+    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION,
+
+    [parameter(Mandatory = $true)]
     [System.String]
-    $SecretType,
+    $SecretPath,
 
     [parameter(Mandatory = $true)]
     [PSCustomObject]
     $SecretValue,
 
     [parameter()]
-    [System.String]
-    $SubSecret,
-
-    [parameter(Mandatory = $true)]
-    [validateSet('ORG', 'PERSONAL')]
-    $SecretStoreSource,
-
-    [parameter()]
-    [ValidateSet([DevOpsORG])]
-    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION,
+    [switch]
+    $ENV,
 
     [parameter()]
     [switch]
-    $ENV
+    $ENUM
   )
-
-  $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -Organization $Organization -noCleanNames
-
-
-  $SecretObject = $SubSecret.length -gt 0 ? $SECRET_STORE."$SecretType" : $SECRET_STORE
-  $SecretName = $SubSecret.Length -gt 0 ? $SubSecret : $SecretType
-  $SecretName = $ENV ? "`$env:$SecretName" : $SecretName
-  
-  $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretName -Value $SecretValue -Force
-
-  if ($SecretStoreSource -eq 'ORG') {
-    Write-Verbose $SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP
-    $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP)"
+         
+  if ($ENUM -AND $ENV) {
+    Throw 'Both ENUM and ENV set'
   }
-  elseif ($SecretStoreSource -eq 'PERSONAL') {
-    Write-Verbose $SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP
-    $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath "$($SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP)"
-  } 
+
+  $SECRET_STORE;
+  switch ($SecretStoreSource) {
+    'ORG' {
+      $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -Organization $Organization -noCleanNames
+    }
+    'PERSONAL' {
+      $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames
+    }
+    default {
+      Throw 'Not supported'
+    }
+  }
+
+  $OUT_PATH = $SecretStoreSource -eq 'ORG' ? $SECRET_STORE.SECRET_STORE_ORG__FILEPATH___TEMP : $SECRET_STORE.SECRET_STORE_PER__FILEPATH___TEMP
+
+
+  $splitPath = $SecretPath -split '[\/\.]+'
+
+  $SecretObject = $SECRET_STORE
+  $secretName = $splitPath[-1]
+  $parentPath = $splitPath.Length -eq 1 ? @(): $splitPath[0..($splitPath.Length - 2)]
+
+  Write-Verbose "SecretName $SecretName"
+  Write-Verbose "ParentPath $parentPath"
+
+  # Only iterate to Parent, last element of path is Secret Name
+  foreach ($segment in $parentPath) {
+
+    if ($SecretObject.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
+      Throw "Path: $SecretPath - Error at Segment $segment - Object is $($SecretObject.GetType().Name)"
+    }
+
+    $candidate = $SecretObject.PSObject.Properties | `
+      Where-Object { $_.Name -like "*$segment" }
+
+    if ($candidate.GetType().BaseType -eq [System.Array]) {
+      Throw "Path: $SecretPath - Error at Segment $segment - Multiple Candidates found"
+    }
+
+    if ($null -eq $candidate) {
+      $SecretObject = $SecretObject | Add-Member -MemberType NoteProperty -Name $segment -Value ([PSCustomObject]::new()) -PassThru
+    }
+    # Automatically takes care of Keys having keywords ($:env) before name, by passing value of noteproperty found
+    else {
+      $SecretObject = $candidate.value
+    }
+  
+  }
+
+  Write-Verbose "Write Secret '$SecretName' to Path '$SecretPath'"
+  if ($PSCmdlet.ShouldProcess("$SecretPath" , 'Write Secret to Path')) {
+
+    # Delete Property with same name
+    # In case if ENV is enabled and same Property exists without $env: prefix, it gets deleted so not appearing twice!
+    if ($null -ne $SecretObject."$SecretName") {
+      $SecretObject.PSObject.Properties.Remove($SecretName)
+    }
+
+    $SecretName = $ENV ? "`$env:$SecretName" : ($ENUM ? "`$enum:$SecretName" : $SecretName)
+    $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretName -Value $SecretValue
+
+    Write-Verbose $OUT_PATH
+    $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath $OUT_PATH
+
+  }
   
 }

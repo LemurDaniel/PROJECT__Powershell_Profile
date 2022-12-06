@@ -76,8 +76,8 @@ function Invoke-AzDevOpsRest {
         Body    = $body | ConvertTo-Json -Compress
         Headers = @{ 
             username       = 'O.o'
-            password       = "Basic $env:AZURE_DEVOPS_HEADER"
-            Authorization  = "Basic $env:AZURE_DEVOPS_HEADER"
+            password       = ''
+            Authorization  = "Basic $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header)"
             'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
         }
         Uri     = $Uri.Length -gt 0 ? $Uri : ($TargetURL -replace '/+', '/' -replace '/$', '' -replace ':/', '://')
@@ -156,8 +156,7 @@ function Get-DevOpsProjects {
     }, `
         visibility, id, url
 
-    Update-SecretStore -SecretType 'DEVOPS_REPOSITORIES_ALL' -SecretValue $projects.Repositories `
-        -SecretStoreSource 'ORG' -Organization $Org #TODO
+    Update-SecretStore ORG $ORG -SecretPath DEVOPS_REPOSITORIES_ALL -SecretValue $projects.Repositories
 
     $projects | ForEach-Object { 
         $_.Repositories = ($_.Repositories | Select-Object -Property `
@@ -174,8 +173,9 @@ function Get-DevOpsProjects {
             }).Repository
     }
    
-    Update-SecretStore -SecretType 'DEVOPS_PROJECTS' -SecretValue $projects -SecretStoreSource 'ORG' -Organization $Org
-    Update-SecretStore -SecretType 'AZURE_TENANTS' -SecretValue (Get-AzTenant) -SecretStoreSource 'ORG' -Organization $Org
+    Update-SecretStore ORG $ORG -SecretPath DEVOPS_PROJECTS -SecretValue $projects
+    Update-SecretStore ORG $ORG -SecretPath AZURE_TENANTS -SecretValue (Get-AzTenant)
+
 }
 
 ##############################################################################################################
@@ -472,7 +472,7 @@ function Get-RecentSubmoduleTags {
     }
 
     $preferencedRepos = $preferencedRepos | Where-Object { $_._TagsAssigned }
-    Update-SecretStore -SecretType MODULE_SOURCE_REF_CACHE -SecretValue $preferencedRepos
+    Update-SecretStore ORG -SecretPath MODULE_SOURCE_REF_CACHE -SecretValue $preferencedRepos
 
     return $preferencedRepos
 

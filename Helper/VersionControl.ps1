@@ -130,22 +130,6 @@ function Push-Profile {
 
 }
 
-
-function Find-PrivateRepos {
-
-    $PrivateRepos = [System.Collections.ArrayList]::new()
-    Get-ChildItem $env:PRIVATE_REPO_PATH -Recurse -Directory -Filter '.git' -Hidden | `
-        ForEach-Object {
-        $null = $PrivateRepos.Add([PSCustomObject]@{
-                Name = $_.Parent.Name
-                path = $_.Parent.FullName
-            })
-
-        $null = git config --global --add safe.directory $_.Parent.FullName
-    }
-    Update-SecretStore -SecretType 'GIT_PRIVATE_REPOS' -SecretValue $PrivateRepos -SecretStoreSource 'PERSONAL'
-
-}
 function Get-RepositoryVSCodePrivate {
 
     [Alias('VCP')]
@@ -164,7 +148,7 @@ function Get-RepositoryVSCodePrivate {
         $noCode
     )
 
-    $PrivateRepos = Get-SecretFromStore PERSONAL GITHUB.repositories
+    $PrivateRepos = Get-SecretFromStore PERSONAL CACHE/GITHUB.repositories
     $preferencedRepository = Search-PreferencedObject -SearchObjects $PrivateRepos -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
 
     if (!$preferencedRepository) {

@@ -92,18 +92,16 @@ function Convert-SecretObject {
     }
     elseif ($enumFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
       $verbosing += "`n$indendation + Loading ENUM:'$($cleanedName)' from Secret Store"
-
-      Write-Host @"
+      $enumString = @"
           enum $($cleanedName) { 
             $($Secret.Value -join '; ') 
           }
 "@
 
-      Invoke-Expression @"
-          enum $($cleanedName) { 
-            $($Secret.Value -join '; ') 
-          }
-"@
+$env:Test = $enumString
+      Write-Host $enumString
+      Invoke-Expression -Verbose -Command $enumString
+
       <#
       # Check if the enum exists, if it doesn't, create it.
       if (!($cleanedName -as [Type])) {

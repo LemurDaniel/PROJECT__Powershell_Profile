@@ -1,4 +1,4 @@
-$global:PWSHCurrentProcess = [System.Diagnostics.Process]::GetCurrentProcess()
+$global:GlobalScope = [psmoduleinfo]::new($true)
 
 function Convert-SecretObject {
   param (

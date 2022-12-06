@@ -133,8 +133,10 @@ function Get-DumbJoke {
 . $env:PROFILE_HELPERS_PATH/Azure.ps1
 . $env:PROFILE_HELPERS_PATH/Prompt.ps1
  
+
 ## Initial Script
 Write-Host
+Get-SecretsFromStore PERSONAL
 Get-SecretsFromStore -Show
 Update-AzDevOpsSecrets
 # Get-DevOpsProjects # Takes long

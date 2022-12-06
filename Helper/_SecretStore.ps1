@@ -179,7 +179,7 @@ function Get-OrgSecretStore {
 
     [parameter()]
     [ValidateSet([DevOpsORG])]
-    $Organization = $env:DEVOPS_DEFAULT_ORGANIZATION
+    $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
   )
 
   # TODO Implement Supress Error Option
@@ -312,7 +312,7 @@ function Update-SecretStore {
     [parameter()]
     [AllowNull()]
     [ValidateSet([DevOpsORG])]
-    $Organization = $env:DEVOPS_CURRENT_ORGANIZATION, #TODO
+    $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT, #TODO
 
     [parameter(Mandatory = $true)]
     [System.String]

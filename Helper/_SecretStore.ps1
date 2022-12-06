@@ -91,7 +91,8 @@ function Convert-SecretObject {
       Throw "Can't Load 'System.Array' to ENV"
     }
     elseif ($enumFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
-      $verbosing += "`n$indendation + Loading ENUM:'$($secretPrefixedName)' from Secret Store"
+      $verbosing += "`n$indendation + Loading ENUM:'$($cleanedName)' from Secret Store"
+
       Invoke-Expression @"
           enum $($cleanedName) { 
             $($Secret.Value -join '; ') 

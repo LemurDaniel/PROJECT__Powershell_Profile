@@ -392,10 +392,10 @@ function Update-SecretStore {
       $SecretObject.PSObject.Properties.Remove($SecretName)
     }
     if ($null -ne $SecretObject."`$env:$SecretName") {
-      $SecretObject.PSObject.Properties.Remove($SecretName)
+      $SecretObject.PSObject.Properties.Remove("`$env:$SecretName")
     }
     if ($null -ne $SecretObject."`$enum:$SecretName") {
-      $SecretObject.PSObject.Properties.Remove($SecretName)
+      $SecretObject.PSObject.Properties.Remove("`$enum:$SecretName")
     }
 
     $SecretName = $ENV ? "`$env:$SecretName" : ($ENUM ? "`$enum:$SecretName" : $SecretName)

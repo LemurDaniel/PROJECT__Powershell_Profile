@@ -93,6 +93,12 @@ function Convert-SecretObject {
     elseif ($enumFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
       $verbosing += "`n$indendation + Loading ENUM:'$($cleanedName)' from Secret Store"
 
+      Write-Host @"
+          enum $($cleanedName) { 
+            $($Secret.Value -join '; ') 
+          }
+"@
+
       Invoke-Expression @"
           enum $($cleanedName) { 
             $($Secret.Value -join '; ') 

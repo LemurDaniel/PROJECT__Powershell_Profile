@@ -99,7 +99,7 @@ function Convert-SecretObject {
           }
 "@
 
-#TODO Not working yet
+      #TODO Not working yet
       & $global:GlobalScope {
         param($params)
         # Splatting doesn't
@@ -387,14 +387,19 @@ function Update-SecretStore {
   Write-Verbose "Write Secret '$SecretName' to Path '$SecretPath'"
   if ($PSCmdlet.ShouldProcess("$SecretPath" , 'Write Secret to Path')) {
 
-    # Delete Property with same name
-    # In case if ENV is enabled and same Property exists without $env: prefix, it gets deleted so not appearing twice!
+    # Delete Property with same name TODO
     if ($null -ne $SecretObject."$SecretName") {
+      $SecretObject.PSObject.Properties.Remove($SecretName)
+    }
+    if ($null -ne $SecretObject."`$env:$SecretName") {
+      $SecretObject.PSObject.Properties.Remove($SecretName)
+    }
+    if ($null -ne $SecretObject."`$enum:$SecretName") {
       $SecretObject.PSObject.Properties.Remove($SecretName)
     }
 
     $SecretName = $ENV ? "`$env:$SecretName" : ($ENUM ? "`$enum:$SecretName" : $SecretName)
-    $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretName -Value $SecretValue -Force
+    $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretName -Value $SecretValue
 
     Write-Verbose $OUT_PATH
     $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath $OUT_PATH

@@ -394,7 +394,7 @@ function Update-SecretStore {
     }
 
     $SecretName = $ENV ? "`$env:$SecretName" : ($ENUM ? "`$enum:$SecretName" : $SecretName)
-    $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretName -Value $SecretValue
+    $SecretObject | Add-Member -MemberType NoteProperty -Name $SecretName -Value $SecretValue -Force
 
     Write-Verbose $OUT_PATH
     $SECRET_STORE | ConvertTo-Json -Depth 6 | Out-File -FilePath $OUT_PATH

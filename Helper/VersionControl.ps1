@@ -164,7 +164,7 @@ function Get-RepositoryVSCodePrivate {
         $noCode
     )
 
-    $PrivateRepos = (Get-SecretFromStore -SecretStoreSource PERSONAL 'GITHUB').repositories
+    $PrivateRepos = Get-SecretFromStore PERSONAL GITHUB.repositories
     $preferencedRepository = Search-PreferencedObject -SearchObjects $PrivateRepos -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
 
     if (!$preferencedRepository) {

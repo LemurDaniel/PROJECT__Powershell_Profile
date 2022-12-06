@@ -208,15 +208,40 @@ function Get-SecretFromStore {
   param (
     [parameter(Mandatory = $true)]
     [System.String]
-    $SecretType,
+    $SecretPath,
 
     [parameter()]
     [validateSet('ALL', 'ORG', 'PERSONAL')]
     $SecretStoreSource = 'ALL'
   )
 
-  return (Get-SecretStore -SecretStoreSource $SecretStoreSource)."$SecretType"
+  $splitPath = $SecretPath -split '[\/\.]+'
 
+  $SecretObject = (Get-SecretStore -SecretStoreSource $SecretStoreSource) # Gets Cleaned Names 
+  foreach ($segment in $splitPath) {
+  
+    # TODO Convert to switch Statement
+    if ($segment.length -eq 0) {
+      continue
+    }
+
+    if ($null -eq $SecretObject) {
+      Throw "Path: $SecretPath - Error at Segment $segment - Object is NULL"
+    }
+
+    if ($SecretObject.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
+      Throw "Path: $SecretPath - Error at Segment $segment - Object is $($SecretObject.GetType().Name)"
+    }
+
+    if($null -eq $SecretObject."$segment") {
+      Throw "Path: $SecretPath - Error at Segment $segment - Segment does not exist "
+    }
+
+    $SecretObject = $SecretObject."$segment"
+  
+  }
+
+  return $SecretObject
 }
 
 

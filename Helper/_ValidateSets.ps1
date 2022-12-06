@@ -70,7 +70,7 @@ class DevOpsDefaultCalls : System.Management.Automation.IValidateSetValuesGenera
 
 class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 
-  static [PSCustomObject[]] $Tenants = (Get-SecretFromStore -SecretType AZURE_TENANTS)
+  static [PSCustomObject[]] $Tenants = (Get-SecretFromStore AZURE_TENANTS)
 
   static [PSCustomObject[]] $Default = ([AzTenant]::Tenants | Where-Object { $_.Name -like '*baugruppe*' })
 
@@ -88,15 +88,15 @@ class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [String[]] GetAllORG() {
-    return  (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.ORGANIZATIONS
+    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATIONS
   }
 
   static [String] GetDefaultORG() {
-    return  (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.DEFAULT_ORGANIZATION
+    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.DEFAULT_ORGANIZATION
   }
 
   [String[]] GetValidValues() {
-    return   (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.ORGANIZATIONS
+    return   Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATIONS
   }
   
 }
@@ -106,15 +106,15 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   static [string] $ALL = 'ALL'
 
   static [String] GetDefaultProject() {
-    return (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.DEVOPS_DEFAULT_PROJECT
+    return Get-SecretFromStore CONFIG.AZURE_DEVOPS.DEVOPS_DEFAULT_PROJECT
   }
 
   static [PSCustomObject] GetProject($projectName) {
-    return (Get-SecretFromStore -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
+    return Get-SecretFromStore DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
   }
 
   static [System.IO.DirectoryInfo] GetProjectPathById($projectId) {
-    $projectRelative = (Get-SecretFromStore -SecretType DEVOPS_PROJECTS) | Where-Object { $_.id -eq $projectId }
+    $projectRelative = Get-SecretFromStore DEVOPS_PROJECTS | Where-Object { $_.id -eq $projectId }
     return [RepoProjects]::GetProjectPath($projectRelative.ShortName)
   }
 
@@ -130,7 +130,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [PSCustomObject[]] GetRepositoriesAll() {
-    return (Get-SecretFromStore -SecretType DEVOPS_REPOSITORIES_ALL)
+    return Get-SecretFromStore DEVOPS_REPOSITORIES_ALL
   }
 
   static [PSCustomObject[]] GetRepositories($projectName) {
@@ -138,13 +138,13 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
       return [RepoProjects]::GetRepositoriesAll()
     }
     else {
-      $project = (Get-SecretFromStore -SecretType DEVOPS_PROJECTS) | Where-Object { $_.ShortName -eq $projectName }
+      $project = Get-SecretFromStore DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
       return $project.Repositories
     }
   }
 
   static [PSCustomObject] GetRepository($repositoryId) {
-    return (Get-SecretFromStore -SecretType DEVOPS_REPOSITORIES_ALL) | Where-Object { $_.id -eq $repositoryId }
+    return Get-SecretFromStore DEVOPS_REPOSITORIES_ALL | Where-Object { $_.id -eq $repositoryId }
   }
 
   static [System.IO.DirectoryInfo] GetRepositoryPath($repositoryId) {
@@ -161,7 +161,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   [String[]] GetValidValues() {
-    return   @([RepoProjects]::ALL) + (Get-SecretFromStore -SecretType DEVOPS_PROJECTS).ShortName
+    return   @([RepoProjects]::ALL) + (Get-SecretFromStore DEVOPS_PROJECTS).ShortName
   }
 
 

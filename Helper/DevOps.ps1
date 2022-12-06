@@ -108,7 +108,7 @@ function Invoke-AzDevOpsRest {
 ##############################################################################################################
 function Update-AzDevOpsSecrets {
 
-    $DEVOPS = (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS
+    $DEVOPS = Get-SecretFromStore CONFIG.AZURE_DEVOPS
     $EXPIRES = [System.DateTime] $DEVOPS.EXPIRES
     $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $EXPIRES
     if ($TIMESPAN.Days -lt 2) {
@@ -427,7 +427,7 @@ function Get-RecentSubmoduleTags {
         $forceApiCall = $false
     )
 
-    $moduleSourceReference_Cached = Get-SecretFromStore -SecretType MODULE_SOURCE_REF_CACHE
+    $moduleSourceReference_Cached = Get-SecretFromStore MODULE_SOURCE_REF_CACHE
     if ($null -ne $moduleSourceReference_Cached -AND $forceApiCall -ne $true) {
         return $moduleSourceReference_Cached
     }

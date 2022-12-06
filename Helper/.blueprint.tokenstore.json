@@ -1,21 +1,27 @@
 {
-    "_ORDER": [
-        "CONFIG",
-        "AZURE_DEVOPS"
-    ],
     "_SILENT": [],
+    "_ORDER": [
+        "CONFIG"
+    ],
+    "_OMITPREFIX": [
+        "CONFIG"
+    ],
     "CONFIG": {
-        "GIT_ORG": {
-            "REPO_PATH": "´\"$home\\Documents\\Repos\\${{ORGANIZATION}}\"",
+        "ORG": {
+            "MODE": "AZURE_DEVOPS",
+            "$env:GIT": {
+                "REPO_PATH": "´\"$home\\Documents\\Repos\\${{ORGANIZATION}}\"",
+                "USER": null,
+                "MAIL": null
+            }
+        },
+        "AZURE_DEVOPS": {
+            "DEVOPS_DEFAULT_PROJECT": null,
             "USER": null,
-            "MAIL": null
+            "PAT": null,
+            "HEADER": "´[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$((Get-SecretFromStore -SecretType AZURE_DEVOPS).USER):$((Get-SecretFromStore -SecretType AZURE_DEVOPS).PAT)\"))",
+            "EXPIRES": null
         }
     },
-    "AZURE_DEVOPS": {
-        "DEVOPS_DEFAULT_PROJECT": null,
-        "USER": null,
-        "PAT": null,
-        "HEADER": "´[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$((Get-SecretFromStore -SecretType AZURE_DEVOPS).USER):$((Get-SecretFromStore -SecretType AZURE_DEVOPS).PAT)\"))",
-        "EXPIRES": null
-    }
+    "CACHE": {}
 }

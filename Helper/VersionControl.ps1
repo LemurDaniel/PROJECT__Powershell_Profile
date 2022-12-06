@@ -48,14 +48,14 @@ function Get-RepositoryVSCode {
     if (($repositoryPath | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
         git -C $repositoryPath.FullName clone $ChosenRepo.remoteUrl .
         git config --global --add safe.directory $repositoryPath.FullName
-        git -C "$($repositoryPath.FullName)" config --local user.name "$env:GIT_ORG_USER" 
-        git -C "$($repositoryPath.FullName)" config --local user.email "$env:GIT_ORG_MAIL"
+        git -C "$($repositoryPath.FullName)" config --local user.name "$env:ORG_GIT_USER" 
+        git -C "$($repositoryPath.FullName)" config --local user.email "$env:ORG_GIT_MAIL"
     }
 
     if (-not $noOpenVSCode) {
         code $repositoryPath.FullName
-        git -C "$($repositoryPath.FullName)" config --local user.name "$env:GIT_ORG_USER" 
-        git -C "$($repositoryPath.FullName)" config --local user.email "$env:GIT_ORG_MAIL"
+        git -C "$($repositoryPath.FullName)" config --local user.name "$env:ORG_GIT_USER" 
+        git -C "$($repositoryPath.FullName)" config --local user.email "$env:ORG_GIT_MAIL"
     }
 
     return $repositoryPath
@@ -72,8 +72,8 @@ function Switch-GitConfig {
     )
 
     if ($config -eq 'brz') {
-        $null = git config --global user.name $env:GIT_ORG_USER   
-        $null = git config --global user.email $env:GIT_ORG_MAIL
+        $null = git config --global user.name $env:ORG_GIT_USER   
+        $null = git config --global user.email $env:ORG_GIT_MAIL
     }
     elseif ($config -eq 'git') {
         $null = git config --global user.name $env:GIT_USER

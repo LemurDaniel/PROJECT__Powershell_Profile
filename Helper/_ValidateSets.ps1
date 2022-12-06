@@ -88,15 +88,15 @@ class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [String[]] GetAllORG() {
-    return  (Get-SecretFromStore -SecretType CONFIG).DEVOPS.ORGANIZATIONS
+    return  (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.ORGANIZATIONS
   }
 
   static [String] GetDefaultORG() {
-    return  (Get-SecretFromStore -SecretType CONFIG).DEVOPS.DEFAULT_ORGANIZATION
+    return  (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.DEFAULT_ORGANIZATION
   }
 
   [String[]] GetValidValues() {
-    return   (Get-SecretFromStore -SecretType CONFIG).DEVOPS.ORGANIZATIONS
+    return   (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.ORGANIZATIONS
   }
   
 }
@@ -106,7 +106,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   static [string] $ALL = 'ALL'
 
   static [String] GetDefaultProject() {
-    return (Get-SecretFromStore -SecretType AZURE_DEVOPS).DEVOPS_DEFAULT_PROJECT
+    return (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS.DEVOPS_DEFAULT_PROJECT
   }
 
   static [PSCustomObject] GetProject($projectName) {
@@ -119,7 +119,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
-    $projectPath = Join-Path -Path $env:ORG_REPO_PATH -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
+    $projectPath = Join-Path -Path $env:ORG_GIT_REPO_PATH -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
 
     if (!(Test-Path -Path $projectPath)) {
       return New-Item -ItemType Directory -Path $projectPath

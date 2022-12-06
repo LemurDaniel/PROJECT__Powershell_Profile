@@ -108,7 +108,7 @@ function Invoke-AzDevOpsRest {
 ##############################################################################################################
 function Update-AzDevOpsSecrets {
 
-    $DEVOPS = Get-SecretFromStore -SecretType AZURE_DEVOPS
+    $DEVOPS = (Get-SecretFromStore -SecretType CONFIG).AZURE_DEVOPS
     $EXPIRES = [System.DateTime] $DEVOPS.EXPIRES
     $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $EXPIRES
     if ($TIMESPAN.Days -lt 2) {

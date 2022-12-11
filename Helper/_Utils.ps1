@@ -237,6 +237,8 @@ function Add-EnvPaths {
         gnumake              = "$env:AppPath\_EnvPath_Apps\GnuWin32\3.8\bin"
 
         java                 = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
+
+        docker               = "C:\Program Files\Docker\Docker\resources\bin"
     }
 
     foreach ($key in $AdditionalPaths.Keys) {

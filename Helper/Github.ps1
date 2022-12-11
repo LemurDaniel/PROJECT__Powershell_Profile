@@ -56,7 +56,7 @@ function Invoke-ApiGit {
 }
 
 
-function Get-AllRepositores {
+function Get-AllRepositories {
 
     param()
 

@@ -76,7 +76,7 @@ function Get-MsRewards {
         Start-Sleep -Milliseconds (Get-Random -Minimum 800 -Maximum 2000)
         # $word = Invoke-RestMethod -Method GET -Uri 'https://random-word-api.herokuapp.com/word'
        
-
+        $word = $words[(Get-Random -Minimum 0 -Maximum $words.Length)]
 
         $url = [System.String]::Format($baseUrl, $word)
         [system.Diagnostics.Process]::Start($applicationPaths[$browser], $url)

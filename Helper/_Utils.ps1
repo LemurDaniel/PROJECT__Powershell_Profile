@@ -186,61 +186,6 @@ function Add-EnvPaths {
         $RemovePaths = [System.Collections.ArrayList]::new()
     )
 
-
-    $global:DefaultEnvPaths = @{
-
-        # Some default
-        winget               = "$env:HOMEDRIVE\$env:HOMEPATH\AppData\Local\Microsoft\WindowsApps"
-        System32             = 'C:\Windows\system32'
-        wbem                 = 'C:\Windows;C:\Windows\System32\Wbem'
-        OpenSSH              = 'C:\Windows\System32\OpenSSH\'
-        ThinPrint            = 'C:\Program Files\ThinPrint Client\'
-        ThinPrintx86         = 'C:\Program Files (x86)\ThinPrint Client\'
-
-        # Code Editors
-        VSCode_Secondary     = "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin" 
-        VSCode_Primary       = 'C:\Program Files\Microsoft VS Code\bin'
-        #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
-
-        # Powershell
-        WindowsPowerShell    = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
-        PowerShell           = "$env:AppPath\_EnvPath_Apps\PowerShell\7.5"
-        PowerShell_Secondary = 'C:\Program Files\PowerShell\7'
-
-        #PowerShell_Onedrive        = "$env:AppPath\PowerShell\7\"
-        #initialProfile_Onedrive    = "$env:AppPath\PowerShell\7\profile.ps1"
-
-        WindowsAppsFolder    = 'C:\Users\M01947\AppData\Local\Microsoft\WindowsApps' #TODO
-        
-        # CLI Tools
-        AzureCLI             = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
-        AzureCLI_Onedrive    = "$env:AppPath\_EnvPath_Apps\CLI\Azure\CLI2\wbin"
-
-        sqlcmd_Onedrive      = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
- 
-        terraform            = $env:TerraformNewestVersion 
-        terraformDocs        = $env:TerraformDocsNewestVersion
-
-        nodejs               = 'C:\Program Files\nodejs'
-        gitcmd               = 'C:\Program Files\Git\cmd'
-        git                  = 'C:\Program Files\Git'
-
-        nodejs_Secondary     = "$env:AppPath\_EnvPath_Apps\nodejs\18.12.1"
-        gitbin_Secondary     = "$env:AppPath\_EnvPath_Apps\Git\2.38\bin"
-        git_Secondary        = "$env:AppPath\_EnvPath_Apps\Git\2.38"
-
-        vlang                = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'v')
-        dotnet               = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
-        dotnet_Secondary     = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'dotnet').FullName
-
-        cmake                = "$env:AppPath\_EnvPath_Apps\cmake\3.24\bin"
-        gnumake              = "$env:AppPath\_EnvPath_Apps\GnuWin32\3.8\bin"
-
-        java                 = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
-
-        docker               = "C:\Program Files\Docker\Docker\resources\bin"
-    }
-
     foreach ($key in $AdditionalPaths.Keys) {
         $global:DefaultEnvPaths.Remove($key)
         $global:DefaultEnvPaths.Add($key, $AdditionalPaths[$key])
@@ -260,3 +205,158 @@ function Add-EnvPaths {
     $env:Path = ($UniquePathsMap.Values -join ';')
 
 }
+
+################################################################################################
+
+$global:DefaultEnvPaths = @{
+
+    WindowsAppsFolder = 'C:\Users\M01947\AppData\Local\Microsoft\WindowsApps' #TODO
+
+    # Some default
+    winget            = "$env:HOMEDRIVE\$env:HOMEPATH\AppData\Local\Microsoft\WindowsApps"
+    System32          = 'C:\Windows\system32'
+    wbem              = 'C:\Windows;C:\Windows\System32\Wbem'
+    OpenSSH           = 'C:\Windows\System32\OpenSSH\'
+    ThinPrint         = 'C:\Program Files\ThinPrint Client\'
+    ThinPrintx86      = 'C:\Program Files (x86)\ThinPrint Client\'
+
+    # Code Editors
+    VSCode            = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin" -ErrorAction SilentlyContinue).Path `
+        ?? 'C:\Program Files\Microsoft VS Code\bin'
+    #"C:\Users\Daniel\AppData\Local\Programs\Microsoft VS Code\bin"
+
+    # Powershell
+    WindowsPowerShell = 'C:\Windows\System32\WindowsPowerShell\v1.0\'
+    PowerShell        = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\PowerShell\7.5" -ErrorAction SilentlyContinue).Path `
+        ?? 'C:\Program Files\PowerShell\7'
+
+
+    # CLI Tools
+    AzureCLI          = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\CLI\Azure\CLI2\wbin" -ErrorAction SilentlyContinue).Path `
+        ?? 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
+    sqlcmd            = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
+ 
+    terraform         = $env:TerraformNewestVersion 
+    terraformDocs     = $env:TerraformDocsNewestVersion
+
+
+    # TODO - Sort for newest Version
+    nodejs            = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\nodejs\18.12.1" -ErrorAction SilentlyContinue).Path `
+        ?? 'C:\Program Files\nodejs'
+
+    gitbin            = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.38\bin" -ErrorAction SilentlyContinue).Path 
+    gitcmd            = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.38\cmd" -ErrorAction SilentlyContinue).Path `
+        ?? 'C:\Program Files\Git\cmd'
+    git               = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.38" -ErrorAction SilentlyContinue).Path `
+        ?? 'C:\Program Files\Git'
+
+    dotnet            = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName
+    dotnet_1Drv       = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'dotnet').FullName
+
+    vlang             = (Get-ChildItem -Path "$env:AppPath\_EnvPath_Apps" -Directory -Filter 'v')
+    clang             = 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx86\x86'
+    cinlude           = 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include'
+    cmake             = "$env:AppPath\_EnvPath_Apps\cmake\3.24\bin"
+    gnumake           = "$env:AppPath\_EnvPath_Apps\GnuWin32\3.8\bin"
+
+    java              = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
+
+    docker            = 'C:\Program Files\Docker\Docker\resources\bin'
+}
+
+
+$SettingsJsonDefaults = [PSCustomObject]@{
+    'workbench.iconTheme'                        = 'vscode-icons'
+    'terminal.integrated.fontFamily'             = "Jetbrains Mono, Consolas, 'Courier New', monospace"
+    'editor.fontFamily'                          = "Jetbrains Mono, Consolas, 'Courier New', monospace"
+    'editor.fontLigatures'                       = $true
+
+    'workbench.colorTheme'                       = 'Default Dark+'
+    'scm.alwaysShowRepositories'                 = $true
+    'git.enabled'                                = $true
+    'git.path'                                   = "$($global:DefaultEnvPaths['GITCMD'])/git.exe"
+    'gitlens.advanced.repositorySearchDepth'     = 5
+
+    'terminal.integrated.defaultProfile.windows' = 'PS 7'
+    'terminal.integrated.profiles.windows'       = @{
+        'Git Bash'                       = $null
+        'Azure Cloud Shell (Bash)'       = $null
+        'Azure Cloud Shell (PowerShell)' = $null
+        'JavaScript Debug Terminal'      = $null
+        'Command Prompt'                 = $null
+        'PowerShell'                     = $null
+        'PS 7'                           = @{
+            'icon' = 'terminal-powershell'
+            'path' = @(
+                "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
+            )
+            'args' = @()
+        }
+        'Dev CMD'                        = @{
+            'path' = @(
+                "${env:windir}/Sysnative/cmd.exe",
+                "${env:windir}/System32/cmd.exe"
+            )
+            'args' = @(
+                '/k',
+                'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat'
+            )
+            'icon' = 'terminal-cmd'
+        }
+        #'CMD'                            = @{
+        #    'path' = @(
+        #        "${env:windir}/Sysnative/cmd.exe",
+        #        "${env:windir}/System32/cmd.exe"
+        #    )
+        #    'args' = @()
+        #    'icon' = 'terminal-cmd'
+        #}
+        'Node'                           = @{
+            'path' = @(
+                "$($global:DefaultEnvPaths['NodeJs'])/node.exe"
+            )
+            'args' = @()
+            'icon' = 'terminal-cmd'
+        }
+    }
+}
+
+
+
+
+
+#$settingsJsonBkpPath = "$env:USERPROFILE\.bkp"
+#if (!(Test-Path -Path $settingsJsonBkpPath)) {
+#    New-Item -Path $settingsJsonBkpPath -ItemType Directory
+#}
+#$settingsJsonContent | ConvertTo-Json -Depth 8 | `
+#    Out-File -FilePath "$settingsJsonBkpPath/settings.json.$(([System.DateTime]::Now).ToString('yyyy-MM--HH-mm')).bkp"
+#
+
+$settingsJsonItems = @(
+    Get-Item -Path "$env:APPDATA\Code\User\settings.json"
+    Get-ChildItem -Path "$env:APPDATA\Code\User\Profiles" -Filter 'settings.json' -Recurse | ForEach-Object { $_ }
+)
+
+
+foreach ($settingsItem in $settingsJsonItems) {
+
+
+    $settingsJsonContent = Get-Content -Path $settingsItem.FullName | ConvertFrom-Json
+
+    foreach ($setting in $SettingsJsonDefaults.PSObject.Properties) {
+
+        $settingsJsonContent | Add-Member -MemberType $setting.MemberType `
+            -Name $setting.Name -Value $setting.Value -Force
+
+    }
+
+    $settingsJsonContent | ConvertTo-Json -Depth 8 | `
+        Out-File -FilePath $settingsItem.FullName
+
+}
+
+
+
+
+

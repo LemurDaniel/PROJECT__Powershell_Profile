@@ -191,7 +191,7 @@ function Get-OrgSecretStore {
   # TODO Implement Check Onedrive before creating secret store
   $path = "$env:SECRET_STORE.$Organization.tokenstore.json"
   if (!(Test-Path $path)) {
-    $null = (Get-Content -Path "$env:PROFILE_HELPERS_PATH\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization) | `
+    $null = (Get-Content -Path "$env:PS_PROFILE_PATH\.resources\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization) | `
       Out-File -FilePath $path
   }
 

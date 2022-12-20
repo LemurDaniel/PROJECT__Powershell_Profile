@@ -266,19 +266,33 @@ $global:DefaultEnvPaths = @{
 
 
 $SettingsJsonDefaults = [PSCustomObject]@{
-    'workbench.iconTheme'                        = 'vscode-icons'
-    'terminal.integrated.fontFamily'             = "Jetbrains Mono, Consolas, 'Courier New', monospace"
-    'editor.fontFamily'                          = "Jetbrains Mono, Consolas, 'Courier New', monospace"
-    'editor.fontLigatures'                       = $true
 
-    'workbench.colorTheme'                       = 'Default Dark+'
-    'scm.alwaysShowRepositories'                 = $true
-    'git.enabled'                                = $true
-    'git.path'                                   = "$($global:DefaultEnvPaths['GITCMD'])/git.exe"
-    'gitlens.advanced.repositorySearchDepth'     = 5
+    # Blockman
+    'blockman.n04ColorComboPreset'                             = 'Classic Dark 1 (Super gradients)'
+    'blockman.n04Sub04RightSideBaseOfBlocks'                   = 'Rightmost Edge Of Viewport'
+    'blockman.n23AnalyzeSquareBrackets'                        = $true
+    'blockman.n28TimeToWaitBeforeRerenderAfterLastChangeEvent' = 1.1
+    'blockman.n30TimeToWaitBeforeRerenderAfterLastScrollEvent' = 0.2
+    'blockman.n33A01B2FromDepth0ToInwardForAllBackgrounds'     = '45,0,0,2; none'
+    'blockman.n21BorderRadius'                                 = 4
+    'blockman.n31RenderIncrementBeforeAndAfterVisibleRange'    = 50
+    'blockman.n20CustomColorOfDepth0Border'                    = 'none'
 
-    'terminal.integrated.defaultProfile.windows' = 'PS 7'
-    'terminal.integrated.profiles.windows'       = @{
+
+    ############################################
+    'workbench.iconTheme'                                      = 'vscode-icons'
+    'terminal.integrated.fontFamily'                           = "Jetbrains Mono, Consolas, 'Courier New', monospace"
+    'editor.fontFamily'                                        = "Jetbrains Mono, Consolas, 'Courier New', monospace"
+    'editor.fontLigatures'                                     = $true
+
+    'workbench.colorTheme'                                     = 'Default Dark+'
+    'scm.alwaysShowRepositories'                               = $true
+    'git.enabled'                                              = $true
+    'git.path'                                                 = "$($global:DefaultEnvPaths['GITCMD'])/git.exe"
+    'gitlens.advanced.repositorySearchDepth'                   = 5
+
+    'terminal.integrated.defaultProfile.windows'               = 'PS 7'
+    'terminal.integrated.profiles.windows'                     = @{
         'Git Bash'                       = $null
         'Azure Cloud Shell (Bash)'       = $null
         'Azure Cloud Shell (PowerShell)' = $null

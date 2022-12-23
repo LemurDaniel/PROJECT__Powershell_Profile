@@ -79,11 +79,19 @@ function Switch-GitConfig {
         $null = git config --global user.name $env:GIT_USER
         $null = git config --global user.email $env:GIT_MAIL
 
+
         $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
         $null = git config --global --unset gpg.format
         $null = git config --global user.signingkey $env:GIT_GPG_ID      
         $null = git config --global commit.gpgsign true
-        $null = gpg-preset-passphrase -c -P $env:GIT_GPG_PHRASE
+
+        $gpgFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
+
+        # Overwrite settings for gpg-agent to set passphrase
+        # Then Reload agent and set acutal Passphrase
+        "default-cache-ttl 31537000`r`nnmax-cache-ttl 31536000`r`nnallow-preset-passphrase" | Out-File -FilePath "$($gpgFolder.FullName)/gpg-agent.conf"
+        $null = gpg-connect-agent reloadagent /bye
+        $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase -c $env:GIT_GPG_GRIP
     }
 
     Write-Host 'Current Global Git Profile:'

@@ -78,6 +78,12 @@ function Switch-GitConfig {
     elseif ($config -eq 'git') {
         $null = git config --global user.name $env:GIT_USER
         $null = git config --global user.email $env:GIT_MAIL
+
+        $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
+        $null = git config --global --unset gpg.format
+        $null = git config --global user.signingkey $env:GIT_GPG_ID      
+        $null = git config --global commit.gpgsign true
+        $null = gpg-preset-passphrase -c -P $env:GIT_GPG_PHRASE
     }
 
     Write-Host 'Current Global Git Profile:'
@@ -115,7 +121,7 @@ function Push-Profile {
 
         git -C $fileItem.FullName pull origin
         git -C $fileItem.FullName add -A
-        git -C $fileItem.FullName commit -m "$hex"
+        git -C $fileItem.FullName commit -S -m "$hex"
         git -C $fileItem.FullName push
     
     }
@@ -125,9 +131,8 @@ function Push-Profile {
 
     git -C $env:PS_PROFILE_PATH pull origin
     git -C $env:PS_PROFILE_PATH add -A
-    git -C $env:PS_PROFILE_PATH commit -m "$hex"
+    git -C $env:PS_PROFILE_PATH commit -S -m "$hex"
     git -C $env:PS_PROFILE_PATH push
-
 }
 
 function Get-RepositoryVSCodePrivate {

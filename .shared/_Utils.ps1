@@ -262,6 +262,9 @@ $global:DefaultEnvPaths = @{
     java              = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
 
     docker            = 'C:\Program Files\Docker\Docker\resources\bin'
+
+
+    gpg               = 'C:\Program Files (x86)\GnuPG\bin'
 }
 
 

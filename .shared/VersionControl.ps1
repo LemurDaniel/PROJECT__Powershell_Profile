@@ -85,11 +85,19 @@ function Switch-GitConfig {
         $null = git config --global user.signingkey $env:GIT_GPG_ID      
         $null = git config --global commit.gpgsign true
 
-        $gpgFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
+
+        $gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
+        $gpgKeysFolder = Get-ChildItem $gpgMainFolder -Filter 'private-keys*'
+        $gpgKeys = Get-ChildItem $gpgKeysFolder | Get-ChildItem
+        $gpg1Drv = Get-Item "$env:SECRET_STORE/_gpgkeys"
+
+        # Copy local keys to 1Drive
+        $gpgKeys | Copy-Item -Destination $gpg1Drv
+        Get-ChildItem $gpg1Drv | Copy-Item -Destination $gpgKeysFolder
 
         # Overwrite settings for gpg-agent to set passphrase
         # Then Reload agent and set acutal Passphrase
-        "default-cache-ttl 31537000`r`nnmax-cache-ttl 31536000`r`nnallow-preset-passphrase" | Out-File -FilePath "$($gpgFolder.FullName)/gpg-agent.conf"
+        "default-cache-ttl 31537000`r`nnmax-cache-ttl 31536000`r`nnallow-preset-passphrase" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
         $null = gpg-connect-agent reloadagent /bye
         $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase -c $env:GIT_GPG_GRIP
     }

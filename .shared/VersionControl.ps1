@@ -132,7 +132,7 @@ function Push-Profile {
     $fileItem = Get-RepositoryVSCodePrivate -RepositoryName 'PROJECT__Powershell_Profile' -noCode
 
     if ($fileItem) {
-        $byteArray = [System.BitConverter]::GetBytes((Get-Random))
+        $byteArray = (1..8 | ForEach-Object { [byte](Get-Random -Max 256) })
         $hex = [System.Convert]::ToHexString($byteArray)
 
         git -C $fileItem.FullName pull origin
@@ -142,8 +142,8 @@ function Push-Profile {
     
     }
         
-    $byteArray = [System.BitConverter]::GetBytes((Get-Random))
-    $hex = [System.Convert]::ToHexString($byteArray)
+    $byteArray = (1..8 | ForEach-Object { [byte](Get-Random -Max 256) })
+    $hex = [Convert]::ToHexString($byteArray)
 
     git -C $env:PS_PROFILE_PATH pull origin
     git -C $env:PS_PROFILE_PATH add -A

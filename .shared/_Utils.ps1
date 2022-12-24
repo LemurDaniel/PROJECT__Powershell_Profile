@@ -270,6 +270,12 @@ $global:DefaultEnvPaths = @{
 
 $SettingsJsonDefaults = [PSCustomObject]@{
 
+    # Git
+    'git.enableCommitSigning'                                  = $env:USERNAME -ne 'M01947'
+    'git-graph.repository.commits.showSignatureStatus'         = $env:USERNAME -ne 'M01947'
+    'git-graph.repository.sign.tags'                           = $env:USERNAME -ne 'M01947'
+    'git-graph.repository.sign.commits'                        = $env:USERNAME -ne 'M01947'
+
     # Blockman
     'blockman.n04ColorComboPreset'                             = 'Classic Dark 1 (Super gradients)'
     'blockman.n04Sub04RightSideBaseOfBlocks'                   = 'Rightmost Edge Of Viewport'

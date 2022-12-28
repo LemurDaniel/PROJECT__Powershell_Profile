@@ -370,7 +370,7 @@ function Update-SecretStore {
     $candidate = $SecretObject.PSObject.Properties | `
       Where-Object { $_.Name -like "*$segment" }
 
-    if ($candidate.GetType().BaseType -eq [System.Array]) {
+    if ($null -ne $candidate -AND $candidate.GetType().BaseType -eq [System.Array]) {
       Throw "Path: $SecretPath - Error at Segment $segment - Multiple Candidates found"
     }
 

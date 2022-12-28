@@ -99,7 +99,7 @@ class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [String] GetDefaultORG() {
-    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.DEFAULT_ORGANIZATION
+    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATION.DEFAULT
   }
 
   [String[]] GetValidValues() {
@@ -113,15 +113,15 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   static [string] $ALL = 'ALL'
 
   static [String] GetDefaultProject() {
-    return Get-SecretFromStore CONFIG.AZURE_DEVOPS.DEVOPS_DEFAULT_PROJECT
+    return Get-SecretFromStore CONFIG.AZURE_DEVOPS.DEFAULT_PROJECT
   }
 
   static [PSCustomObject] GetProject($projectName) {
-    return Get-SecretFromStore DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
+    return Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
   }
 
   static [System.IO.DirectoryInfo] GetProjectPathById($projectId) {
-    $projectRelative = Get-SecretFromStore DEVOPS_PROJECTS | Where-Object { $_.id -eq $projectId }
+    $projectRelative = Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.id -eq $projectId }
     return [RepoProjects]::GetProjectPath($projectRelative.ShortName)
   }
 
@@ -137,7 +137,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [PSCustomObject[]] GetRepositoriesAll() {
-    return Get-SecretFromStore DEVOPS_REPOSITORIES_ALL
+    return Get-SecretFromStore CACHE.DEVOPS_REPOSITORIES_ALL
   }
 
   static [PSCustomObject[]] GetRepositories($projectName) {
@@ -145,13 +145,13 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
       return [RepoProjects]::GetRepositoriesAll()
     }
     else {
-      $project = Get-SecretFromStore DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
+      $project = Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
       return $project.Repositories
     }
   }
 
   static [PSCustomObject] GetRepository($repositoryId) {
-    return Get-SecretFromStore DEVOPS_REPOSITORIES_ALL | Where-Object { $_.id -eq $repositoryId }
+    return Get-SecretFromStore CACHE.DEVOPS_REPOSITORIES_ALL | Where-Object { $_.id -eq $repositoryId }
   }
 
   static [System.IO.DirectoryInfo] GetRepositoryPath($repositoryId) {

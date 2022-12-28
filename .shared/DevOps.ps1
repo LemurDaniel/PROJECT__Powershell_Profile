@@ -13,8 +13,8 @@ function Invoke-AzDevOpsRest {
 
         [Parameter()]
         [System.String]
-        [ValidateSet('dev', 'vssps', 'vsaex.dev', 'app.vssps.visualstudio')]
-        $Type = 'dev',
+        [ValidateSet('dev', 'dev.azure', 'vssps', 'vsaex.dev', 'app.vssps.visualstudio')]
+        $Type = 'dev.azure',
 
         [Parameter()]
         [ValidateSet('ORG', 'PROJ', 'TEAM', 'URI', 'NONE')]
@@ -139,24 +139,24 @@ function Get-DevOpsProjects {
     param(
         [Parameter()]
         [System.String]
-        $Org = [DevOpsORG]::GetDefaultORG()
+        $Org = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
     )
 
     Connect-AzAccount
       
-    $projects = Invoke-AzDevOpsRestORG -OrgName $Org -API _apis/projects?api-version=6.0 `
+    $projects = Invoke-AzDevOpsRest -Call ORG -Type dev.azure -Method GET -OrgName $Org -API _apis/projects?api-version=6.0 `
     | Select-Object -Property name, `
     @{Name = 'ShortName'; Expression = { "__$($_.Name)".replace(' ', '') } }, `
     @{Name = 'ReposLocation'; Expression = { $_.Name.replace(' ', '') } }, `
     @{Name = 'Teams'; Expression = {  
-            Invoke-AzDevOpsRestORG -OrgName $Org -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
+            Invoke-AzDevOpsRest -Call ORG -Type dev.azure -Method GET -OrgName $Org -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
     }, `
     @{Name = 'Repositories'; Expression = {  
-            Invoke-AzDevOpsRestORG -OrgName $Org -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
+            Invoke-AzDevOpsRest -Call ORG -Type dev.azure -Method GET -OrgName $Org -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
     }, `
         visibility, id, url
 
-    Update-SecretStore ORG $ORG -SecretPath DEVOPS_REPOSITORIES_ALL -SecretValue $projects.Repositories
+    Update-SecretStore ORG $ORG -SecretPath CACHE.DEVOPS_REPOSITORIES_ALL -SecretValue $projects.Repositories
 
     $projects | ForEach-Object { 
         $_.Repositories = ($_.Repositories | Select-Object -Property `
@@ -173,8 +173,8 @@ function Get-DevOpsProjects {
             }).Repository
     }
    
-    Update-SecretStore ORG $ORG -SecretPath DEVOPS_PROJECTS -SecretValue $projects
-    Update-SecretStore ORG $ORG -SecretPath AZURE_TENANTS -SecretValue (Get-AzTenant)
+    Update-SecretStore ORG $ORG -SecretPath CACHE.DEVOPS_PROJECTS -SecretValue $projects
+    Update-SecretStore ORG $ORG -SecretPath CACHE.AZURE_TENANTS -SecretValue (Get-AzTenant)
 
 }
 
@@ -189,7 +189,7 @@ function Get-WorkItem {
         $SearchTags
     )
 
-    $currentIteration = Invoke-AzDevOpsRest -Method GET -CALL TEAM -API "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=6.0"
+    $currentIteration = Invoke-AzDevOpsRest -Method GET -CALL TEAM -API "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=7.0"
     $workItems = Invoke-AzDevOpsRest -Method GET -CALL TEAM -Property 'WorkItemRelations' -API "/_apis/work/teamsettings/iterations/$($currentIteration.Id)/workitems?api-version=7.1-preview.1"
 
     $body = @{
@@ -427,7 +427,7 @@ function Get-RecentSubmoduleTags {
         $forceApiCall = $false
     )
 
-    $moduleSourceReference_Cached = Get-SecretFromStore MODULE_SOURCE_REF_CACHE
+    $moduleSourceReference_Cached = Get-SecretFromStore CACHE.MODULE_SOURCE_REF
     if ($null -ne $moduleSourceReference_Cached -AND $forceApiCall -ne $true) {
         return $moduleSourceReference_Cached
     }
@@ -472,7 +472,7 @@ function Get-RecentSubmoduleTags {
     }
 
     $preferencedRepos = $preferencedRepos | Where-Object { $_._TagsAssigned }
-    Update-SecretStore ORG -SecretPath MODULE_SOURCE_REF_CACHE -SecretValue $preferencedRepos
+    Update-SecretStore ORG -SecretPath CACHE.MODULE_SOURCE_REF -SecretValue $preferencedRepos
 
     return $preferencedRepos
 

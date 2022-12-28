@@ -97,7 +97,7 @@ function Switch-GitConfig {
 
         # Overwrite settings for gpg-agent to set passphrase
         # Then Reload agent and set acutal Passphrase
-        "default-cache-ttl 31537000`r`nnmax-cache-ttl 31536000`r`nnallow-preset-passphrase" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
+        "default-cache-ttl 34560000`r`nmax-cache-ttl 34560000`r`nallow-preset-passphrase" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
         $null = gpg-connect-agent reloadagent /bye
         $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase -c $env:GIT_GPG_GRIP
     }

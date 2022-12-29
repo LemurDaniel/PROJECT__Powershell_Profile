@@ -202,8 +202,8 @@ function Add-EnvPaths {
     $UniquePathsMap = [System.Collections.Hashtable]::new()
     $processedPaths + $global:DefaultEnvPaths.Values | Where-Object { $_.length -gt 0 } | Where-Object { $UniquePathsMap[$_] = $_ } 
 
-    $env:Path = ($UniquePathsMap.Values -join ';')
-
+    #Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
+    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value ($UniquePathsMap.Values -join ';')
 }
 
 ################################################################################################
@@ -265,6 +265,7 @@ $global:DefaultEnvPaths = @{
 
 
     gpg               = 'C:\Program Files (x86)\GnuPG\bin'
+    tflint            = "$env:AppPath\_EnvPath_Apps\tflint\v0.44.0"
 }
 
 
@@ -375,7 +376,7 @@ foreach ($settingsItem in $settingsJsonItems) {
     }
 
     $settingsJsonContent | ConvertTo-Json -Depth 8 | `
-        Out-File -FilePath $settingsItem.FullName
+            Out-File -FilePath $settingsItem.FullName
 
 }
 

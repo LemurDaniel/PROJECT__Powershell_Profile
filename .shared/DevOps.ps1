@@ -331,12 +331,19 @@ function New-PullRequest {
 
         # Get Repo name
         if (-not $repositoryId -OR -not $repositoryPath -OR -not $projectName) {
+            $repositoryPath = (git rev-parse --show-toplevel)
             $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-            $preferencedRepo = Search-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) -SearchTags $repositoryName -SearchProperty 'remoteUrl'
+            $projectName = (git rev-parse --show-toplevel).split('/')[-2]
+            $projectName = [RepoProjects]::GetProject($projectName).name
+
+
+            $preferencedRepo = Search-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) `
+                -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
                 
+            $preferencedRepo = $preferencedRepo | Where-Object { $_.project.name -eq $projectName }
+
             $repositoryId = $preferencedRepo.id
             $projectName = $preferencedRepo.remoteUrl.split('/')[4]
-            $repositoryPath = (git rev-parse --show-toplevel)
         }
         
         

@@ -434,7 +434,7 @@ function Get-RecentSubmoduleTags {
         $forceApiCall = $false
     )
 
-    $moduleSourceReference_Cached = Get-SecretFromStore CACHE.MODULE_SOURCE_REF
+    $moduleSourceReference_Cached = Get-SecretFromStore CACHE.MODULE_SOURCE_REF -ErrorAction SilentlyContinue
     if ($null -ne $moduleSourceReference_Cached -AND $forceApiCall -ne $true) {
         return $moduleSourceReference_Cached
     }

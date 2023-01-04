@@ -27,6 +27,7 @@ function Get-OneDriveSecretStore {
   param ()
 
   $oneDriveItems = Get-OneDriveElementsAt -Path '/Dokumente/_Apps/_SECRET_STORE' -FileOnly
+  $accessToken = Update-OneDriveToken
 
   foreach ($item in $oneDriveItems) {
     $null = Get-ODItem -AccessToken $accessToken `

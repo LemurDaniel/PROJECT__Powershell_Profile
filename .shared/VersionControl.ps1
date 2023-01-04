@@ -130,6 +130,12 @@ function Switch-GitConfig {
 
 function Push-Profile {
 
+    param(
+        [Parameter()]
+        [switch]
+        $noGPG
+    )
+
     $fileItem = Get-RepositoryVSCodePrivate -RepositoryName 'PROJECT__Powershell_Profile' -noCode
 
     if ($fileItem) {
@@ -138,7 +144,12 @@ function Push-Profile {
 
         git -C $fileItem.FullName pull origin
         git -C $fileItem.FullName add -A
-        git -C $fileItem.FullName commit -S -m "$hex"
+        if ($noGPG) {
+            git -C $fileItem.FullName commit -S -m "$hex"
+        }
+        else {
+            git -C $fileItem.FullName commit -m "$hex"
+        }
         git -C $fileItem.FullName push
     
     }
@@ -148,7 +159,12 @@ function Push-Profile {
 
     git -C $env:PS_PROFILE_PATH pull origin
     git -C $env:PS_PROFILE_PATH add -A
-    git -C $env:PS_PROFILE_PATH commit -S -m "$hex"
+    if ($noGPG) {
+        git -C $env:PS_PROFILE_PATH commit -S -m "$hex"
+    }
+    else {
+        git -C $env:PS_PROFILE_PATH commit -m "$hex"
+    }
     git -C $env:PS_PROFILE_PATH push
 }
 

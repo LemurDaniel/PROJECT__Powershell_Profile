@@ -203,7 +203,9 @@ function Add-EnvPaths {
     $processedPaths + $global:DefaultEnvPaths.Values | Where-Object { $_.length -gt 0 } | Where-Object { $UniquePathsMap[$_] = $_ } 
 
     #Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
-    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value ($UniquePathsMap.Values -join ';')
+    #Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value ($UniquePathsMap.Values -join ';')
+
+    $env:Path = ($UniquePathsMap.Values -join ';')
 }
 
 ################################################################################################
@@ -264,12 +266,15 @@ $global:DefaultEnvPaths = @{
     docker            = 'C:\Program Files\Docker\Docker\resources\bin'
 
 
-    gpg               = 'C:\Program Files (x86)\GnuPG\bin'
+    gpg               = (Resolve-Path -Path 'C:\Program Files (x86)\GnuPG\bin' -ErrorAction SilentlyContinue).Path `
+        ?? 'C:\Users\M01947\AppData\Local\Programs\GnuPG\bin'
     tflint            = "$env:AppPath\_EnvPath_Apps\tflint\v0.44.0"
 }
 
-
 $SettingsJsonDefaults = [PSCustomObject]@{
+
+    # Profiles
+    'workbench.experimental.settingsProfiles.enabled'          = $true
 
     # Git
     'git.enableCommitSigning'                                  = $env:USERNAME -ne 'M01947'
@@ -379,8 +384,3 @@ foreach ($settingsItem in $settingsJsonItems) {
             Out-File -FilePath $settingsItem.FullName
 
 }
-
-
-
-
-

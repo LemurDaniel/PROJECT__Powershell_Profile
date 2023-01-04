@@ -112,7 +112,7 @@ function Update-AzDevOpsSecrets {
     $EXPIRES = [System.DateTime] $DEVOPS.EXPIRES
     $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $EXPIRES
     if ($TIMESPAN.Days -lt 2) {
-        Load-ONEDRIVE_SecretStore
+        Get-OneDriveSecretStore
     }
     
 }

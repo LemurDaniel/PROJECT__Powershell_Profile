@@ -73,35 +73,36 @@ function Switch-GitConfig {
 
     if ($config -eq 'brz') {
         $null = git config --global user.name $env:ORG_GIT_USER   
-        $null = git config --global user.email $env:ORG_GIT_MAIL
+        $null = git config --global user.email $env:ORG_GIT_MAIL     
     }
     elseif ($config -eq 'git') {
         $null = git config --global user.name $env:GIT_USER
         $null = git config --global user.email $env:GIT_MAIL
-
-
-        $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
-        $null = git config --global --unset gpg.format
-        $null = git config --global user.signingkey $env:GIT_GPG_ID      
-        $null = git config --global commit.gpgsign true
-
-
-        $gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
-        $gpgKeysFolder = Get-ChildItem $gpgMainFolder -Filter 'private-keys*'
-        $gpgKeys = Get-ChildItem $gpgKeysFolder | Get-ChildItem
-        $gpg1Drv = Get-Item "$env:SECRET_STORE/_gpgkeys"
-
-        # Copy local keys to 1Drive
-        $gpgKeys | Copy-Item -Destination $gpg1Drv
-        Get-ChildItem $gpg1Drv | Copy-Item -Destination $gpgKeysFolder
-
-        # Overwrite settings for gpg-agent to set passphrase
-        # Then Reload agent and set acutal Passphrase
-        "default-cache-ttl 34560000`r`nmax-cache-ttl 34560000`r`nallow-preset-passphrase" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
-        $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
-        $null = gpgconf --launch gpg-agent
-        $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase -c $env:GIT_GPG_GRIP
     }
+
+    $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
+    $null = git config --global --unset gpg.format
+    $null = git config --global user.signingkey $env:GIT_GPG_ID      
+    $null = git config --global commit.gpgsign true
+
+    #$gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
+    #$gpgKeysFolder = Get-ChildItem $gpgMainFolder -Filter 'private-keys*'
+    #$gpgKeys = Get-ChildItem $gpgKeysFolder | Get-ChildItem
+    #$gpg1Drv = Get-Item "$env:SECRET_STORE/_gpgkeys"
+
+    #$gpgKey1drv = Get-OneDriveElementsAt -Path '/Dokumente/_Apps/_SECRET_STORE/_gpgkeys' | Get-OneDriveItems
+    foreach ($privKey in $gpgKey1drv) {
+        #$null = gpg --import $privKey
+    }
+    # Remove-Item -Path $gpgKey1drv.FullName -Recurse
+
+    # Overwrite settings for gpg-agent to set passphrase
+    # Then Reload agent and set acutal Passphrase
+    "default-cache-ttl 34560000`r`nmax-cache-ttl 34560000`r`nallow-preset-passphrase" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
+    $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
+    $null = gpgconf --launch gpg-agent
+    $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase -c $env:GIT_GPG_GRIP
+        
 
     Write-Host 'Current Global Git Profile:'
     Write-Host "    $(git config --global user.name )"

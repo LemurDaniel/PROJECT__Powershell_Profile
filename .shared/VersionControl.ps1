@@ -114,7 +114,6 @@ function Switch-GitConfig {
     $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
     $null = gpgconf --launch gpg-agent
     $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase -c $env:GIT_GPG_GRIP
-        
 
     Write-Host 'Current Global Git Profile:'
     Write-Host "    $(git config --global user.name )"
@@ -143,11 +142,7 @@ function Switch-GitConfig {
 
 function Push-Profile {
 
-    param(
-        [Parameter()]
-        [switch]
-        $noGPG
-    )
+    param()
 
     $fileItem = Get-RepositoryVSCodePrivate -RepositoryName 'PROJECT__Powershell_Profile' -noCode
 
@@ -157,12 +152,7 @@ function Push-Profile {
 
         git -C $fileItem.FullName pull origin
         git -C $fileItem.FullName add -A
-        if ($noGPG) {
-            git -C $fileItem.FullName commit -S -m "$hex"
-        }
-        else {
-            git -C $fileItem.FullName commit -S -m "$hex"
-        }
+        git -C $fileItem.FullName commit -S -m "$hex"
         git -C $fileItem.FullName push
     
     }
@@ -172,12 +162,7 @@ function Push-Profile {
 
     git -C $env:PS_PROFILE_PATH pull origin
     git -C $env:PS_PROFILE_PATH add -A
-    if ($noGPG) {
-        git -C $env:PS_PROFILE_PATH commit -S -m "$hex"
-    }
-    else {
-        git -C $env:PS_PROFILE_PATH commit -S -m "$hex"
-    }
+    git -C $env:PS_PROFILE_PATH commit -S -m "$hex"
     git -C $env:PS_PROFILE_PATH push
 }
 

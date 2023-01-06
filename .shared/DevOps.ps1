@@ -483,12 +483,14 @@ function Get-RecentSubmoduleTags {
         $forceApiCall = $false
     )
 
+
     $moduleSourceReference_Cached = Get-SecretFromStore CACHE.MODULE_SOURCE_REF -ErrorAction SilentlyContinue
     if ($null -ne $moduleSourceReference_Cached -AND $forceApiCall -ne $true) {
+        Write-Host -ForegroundColor Yellow 'Fetching Cached Tags'
         return $moduleSourceReference_Cached
     }
 
-    Write-Host 'Get Newest Tags'
+    Write-Host -ForegroundColor Yellow 'Fetching Latest Tags'
 
     # Query All Repositories in DevOps
     $devopsRepositories = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API '/_apis/git/repositories/'
@@ -628,14 +630,8 @@ function Update-ModuleSourcesAllRepositories {
 
 
 
-    if ($forceApiCall) {
-        Write-Host -ForegroundColor Yellow 'Fetching Latest Tags'
-    }
-    else {
-        Write-Host -ForegroundColor Yellow 'Fetching Cached Tags'
-    }
     $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
-    $allTerraformRepositories = [RepoProjects]::GetRepositories('__DCAzureMigration') | `
+    $allTerraformRepositories = [RepoProjects]::GetRepositories($projectName) | `
             Where-Object { $_.name.contains('terraform') } | `
             Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 

@@ -49,7 +49,11 @@ function Invoke-AzDevOpsRest {
         [Parameter()]
         [System.String]
         [ValidateSet([DevOpsORG])]
-        $OrgName = [DevOpsORG]::GetDefaultORG()
+        $OrgName = [DevOpsORG]::GetDefaultORG(),
+
+        [Parameter()]
+        [switch]
+        $AsArray
     )
 
     switch ($CALL) {
@@ -73,7 +77,7 @@ function Invoke-AzDevOpsRest {
 
     $Request = @{
         Method  = $Method
-        Body    = $body | ConvertTo-Json -Compress
+        Body    = $body | ConvertTo-Json -Compress -AsArray:$AsArray
         Headers = @{ 
             username       = 'O.o'
             password       = ''
@@ -90,7 +94,6 @@ function Invoke-AzDevOpsRest {
     Write-Verbose 'BODY START'
     Write-Verbose ($Request | ConvertTo-Json)
     Write-Verbose 'BODY END'
-
 
     $response = Invoke-RestMethod @Request
 
@@ -265,16 +268,58 @@ function New-MasterPR {
     New-PullRequest -Target 'default' -PRtitle $PRTitle
 }
 
-function New-AutomatedTag {
 
-    param()
+# Remove Automated tags created for testing again.
+function Remove-AutomatedTags {
+
+    param(
+        [System.String]
+        $projectName = [RepoProjects]::GetDefaultProject()
+    )
 
     $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositoriesAll()) -SearchTags "$repositoryName" -returnProperty 'id'
+    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
+    $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags"
+
+    $createdTags = $currentTags | Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL }
+
+    $Request = @{
+        Method  = 'POST'
+        CALL    = 'PROJ'
+        API     = "/_apis/git/repositories/$($repositoryId)/refs?api-version=6.1-preview.1"
+        AsArray = $true
+        Body    = @(
+            $currentTags | `
+                    Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
+                    ForEach-Object {
+                    @{
+                        repositoryId = $repositoryId
+                        name         = $_.name
+                        oldObjectId  = $_.objectId
+                        newObjectId  = '0000000000000000000000000000000000000000'  
+                    }
+                }
+        ) 
+    }
+
+    Invoke-AzDevOpsRest @Request 
+}
+
+function New-AutomatedTag {
+
+    param(
+        [System.String]
+        $projectName = [RepoProjects]::GetDefaultProject()
+    )
+
+    $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
+    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
     $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
-        ForEach-Object { return $_.name.split('/')[-1] } | `
-        ForEach-Object { return [String]::Format('{0:d4}.{1:d4}.{2:d4}', [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
-        Sort-Object -Descending
+            ForEach-Object { return $_.name.split('/')[-1] } | `
+            ForEach-Object { return [String]::Format('{0:d4}.{1:d4}.{2:d4}', [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
+            Sort-Object -Descending
+
+    $env:ORG_GIT_MAIL
 
     $newTag = '1.0.0'
     if ($currentTags) {
@@ -288,15 +333,19 @@ function New-AutomatedTag {
         $newTag = $currentTags -join '.'
     }   
 
-    $body = @{
-        name         = $newTag
-        taggedObject = @{
-            objectId = git rev-parse HEAD
+    $Request = @{
+        Method = 'POST'
+        CALL   = 'PROJ'
+        API    = "/_apis/git/repositories/$($repositoryId)/annotatedtags"
+        Body   = @{
+            name         = $newTag
+            taggedObject = @{
+                objectId = git rev-parse HEAD
+            }
+            message      = "Automated Test Tag ==> $newTag"
         }
-        message      = "Automated Test Tag ==> $newTag"
     }
-
-    Invoke-AzDevOpsRest -Method POST -Body $body -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/annotatedtags"
+    Invoke-AzDevOpsRest @Request
 
     Write-Host "🎉 New Tag '$newTag' created  🎉"
 
@@ -449,12 +498,12 @@ function Get-RecentSubmoduleTags {
 
         # Call Api to get all tags on Repository and sort them by newest
         $sortedTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs?filter=tags" | `
-            Select-Object -Property `
-        @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
-        @{Name = 'TagIntSorting'; Expression = { 
-                return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
-            }
-        } | Sort-Object -Property TagIntSorting -Descending
+                Select-Object -Property `
+            @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
+            @{Name = 'TagIntSorting'; Expression = { 
+                    return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
+                }
+            } | Sort-Object -Property TagIntSorting -Descending
     
         # If no tag is present, skip further processing
         if ($null -eq $sortedTags -OR $sortedTags.Count -eq 0) {
@@ -587,8 +636,8 @@ function Update-ModuleSourcesAllRepositories {
     }
     $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
     $allTerraformRepositories = [RepoProjects]::GetRepositories('__DCAzureMigration') | `
-        Where-Object { $_.name.contains('terraform') } | `
-        Sort-Object -Property { $sortOrder.IndexOf($_.name) }
+            Where-Object { $_.name.contains('terraform') } | `
+            Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 
     foreach ($repository in $allTerraformRepositories) {
     
@@ -597,8 +646,8 @@ function Update-ModuleSourcesAllRepositories {
 
         Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
         $repoRefs = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs" | `
-            Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
-            Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
+                Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
+                Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
 
         git -C $repositoryPath.FullName checkout ($repoRefs[0].name -split '/')[-1]
         git -C $repositoryPath.FullName pull

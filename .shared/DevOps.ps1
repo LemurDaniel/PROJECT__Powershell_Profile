@@ -13,7 +13,7 @@ function Invoke-AzDevOpsRest {
 
     [Parameter()]
     [System.String]
-    [ValidateSet('dev', 'dev.azure', 'vssps', 'vsaex.dev', 'app.vssps.visualstudio')]
+    [ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev', 'app.vssps.visualstudio')]
     $Type = 'dev.azure',
 
     [Parameter()]
@@ -43,7 +43,7 @@ function Invoke-AzDevOpsRest {
 
     [Parameter()]
     [System.String]
-    [ValidateSet([RepoProjects])] # DC-Migration, RD-Redeployment
+    [ValidateSet([RepoProjects])]
     $ProjectName = [RepoProjects]::GetDefaultProject(),
 
     [Parameter()]
@@ -80,7 +80,7 @@ function Invoke-AzDevOpsRest {
     Body    = $body | ConvertTo-Json -Compress -AsArray:$AsArray
     Headers = @{ 
       username       = 'O.o'
-      password       = ''
+      password       = $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header)
       Authorization  = "Basic $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header)"
       'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
     }
@@ -109,6 +109,7 @@ function Invoke-AzDevOpsRest {
 ##############################################################################################################
 ##############################################################################################################
 ##############################################################################################################
+
 function Update-AzDevOpsSecrets {
 
   $DEVOPS = Get-SecretFromStore CONFIG.AZURE_DEVOPS
@@ -120,24 +121,12 @@ function Update-AzDevOpsSecrets {
     
 }
 
-function Get-DevOpsProjectsORG {
-
-  param()
-
-  Get-DevOpsProjects -Org 'baugruppe' #TODO
-
-  <#
-  foreach($org in [DevOpsORG]::GetAllORG) {}
-  #>
-
-}
-
 function Get-DevOpsProjects {
 
   [cmdletbinding()]
   param(
     [Parameter()]
-    [System.String]
+    [ValidateSet([DevOpsORG])]
     $Org = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
   )
 
@@ -200,15 +189,15 @@ function Remove-AutomatedTags {
     AsArray = $true
     Body    = @(
       $currentTags | `
-          Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
-          ForEach-Object {
-          @{
-            repositoryId = $repositoryId
-            name         = $_.name
-            oldObjectId  = $_.objectId
-            newObjectId  = '0000000000000000000000000000000000000000'  
-          }
+        Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
+        ForEach-Object {
+        @{
+          repositoryId = $repositoryId
+          name         = $_.name
+          oldObjectId  = $_.objectId
+          newObjectId  = '0000000000000000000000000000000000000000'  
         }
+      }
     ) 
   }
 
@@ -225,12 +214,12 @@ function New-AutomatedTag {
   $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
   $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
   $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
-      ForEach-Object { return $_.name.split('/')[-1] } | `
-      ForEach-Object { 
-      return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
-        [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
-        [int32]::parse($_.split('.')[2]))
-    } | Sort-Object -Descending
+    ForEach-Object { return $_.name.split('/')[-1] } | `
+    ForEach-Object { 
+    return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
+      [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
+      [int32]::parse($_.split('.')[2]))
+  } | Sort-Object -Descending
 
   $newTag = '1.0.0'
   if ($currentTags) {
@@ -345,6 +334,27 @@ function New-BranchFromWorkitem {
 
 }
 
+function Get-RepositoryRefs {
+
+  param ( )
+ 
+  $repositoryPath = (git rev-parse --show-toplevel)
+  $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
+  $projectName = (git rev-parse --show-toplevel).split('/')[-2]
+  $preferencedRepo = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) `
+    -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
+              
+  $repositoryId = $preferencedRepo.id
+  $projectName = [RepoProjects]::GetProject($projectName).name
+  $projectName = $preferencedRepo.remoteUrl.split('/')[4]
+
+  # Search branch by name
+  $repositoryName = (git -C $repositoryPath rev-parse --show-toplevel).split('/')[-1]
+  $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
+  
+  return $remoteBranches 
+}
+
 function New-PullRequest {
 
   param(
@@ -372,31 +382,10 @@ function New-PullRequest {
 
   try {
 
-    # Get Repo name
-    if (-not $repositoryId -OR -not $repositoryPath -OR -not $projectName) {
-      $repositoryPath = (git rev-parse --show-toplevel)
-      $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-      $projectName = (git rev-parse --show-toplevel).split('/')[-2]
-      $projectName = [RepoProjects]::GetProject($projectName).name
-
-
-      $preferencedRepo = Search-PreferencedObject -SearchObjects ([Repoprojects]::GetRepositoriesAll()) `
-        -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
-                
-      $preferencedRepo = $preferencedRepo | Where-Object { $_.project.name -eq $projectName }
-
-      $repositoryId = $preferencedRepo.id
-      $projectName = $preferencedRepo.remoteUrl.split('/')[4]
-    }
-        
-        
-    # Search branch by name
-    $repositoryName = (git -C $repositoryPath rev-parse --show-toplevel).split('/')[-1]
+    $remoteBranches = Get-RepositoryRefs
     $currentBranch = git -C $repositoryPath branch --show-current
     git -C $repositoryPath push --set-upstream origin $currentBranch
-    $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
     $preferencedBranch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
-    # $workItem = Get-WorkItem -SearchTags $currentBbranch
 
     $hasDevBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('dev') } | Measure-Object).Count -gt 0
     $hasMainBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('main') } | Measure-Object).Count -gt 0
@@ -503,12 +492,12 @@ function Get-RecentSubmoduleTags {
 
     # Call Api to get all tags on Repository and sort them by newest
     $sortedTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs?filter=tags" | `
-        Select-Object -Property `
-      @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
-      @{Name = 'TagIntSorting'; Expression = { 
-          return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
-        }
-      } | Sort-Object -Property TagIntSorting -Descending
+      Select-Object -Property `
+    @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
+    @{Name = 'TagIntSorting'; Expression = { 
+        return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
+      }
+    } | Sort-Object -Property TagIntSorting -Descending
     
     # If no tag is present, skip further processing
     if ($null -eq $sortedTags -OR $sortedTags.Count -eq 0) {
@@ -635,8 +624,8 @@ function Update-ModuleSourcesAllRepositories {
 
   $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
   $allTerraformRepositories = [RepoProjects]::GetRepositories($projectName) | `
-      Where-Object { $_.name.contains('terraform') } | `
-      Sort-Object -Property { $sortOrder.IndexOf($_.name) }
+    Where-Object { $_.name.contains('terraform') } | `
+    Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 
   foreach ($repository in $allTerraformRepositories) {
     
@@ -645,8 +634,8 @@ function Update-ModuleSourcesAllRepositories {
 
     Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
     $repoRefs = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs" | `
-        Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
-        Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
+      Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
+      Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
 
     git -C $repositoryPath.FullName checkout ($repoRefs[0].name -split '/')[-1]
     git -C $repositoryPath.FullName pull
@@ -727,12 +716,12 @@ function Edit-RegexOnFiles {
 
     # Make Regex Replace on all Child-Items.
     $childFiles = Get-ChildItem -Recurse -Path ($replacementPath) -Filter '*.tf' | `
-        ForEach-Object { 
-        [PSCustomObject]@{
-          FullName = $_.FullName
-          Content  = (Get-Content -Path $_.FullName -Raw)
-        } 
-      } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
+      ForEach-Object { 
+      [PSCustomObject]@{
+        FullName = $_.FullName
+        Content  = (Get-Content -Path $_.FullName -Raw)
+      } 
+    } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
 
 
     foreach ($file in $childFiles) {

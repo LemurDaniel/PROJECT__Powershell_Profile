@@ -163,7 +163,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   [String[]] GetValidValues() {
-    return   @([RepoProjects]::ALL) + (Get-SecretFromStore DEVOPS_PROJECTS).ShortName
+    return   @([RepoProjects]::ALL) + (Get-SecretFromStore CACHE/DEVOPS_PROJECTS).ShortName
   }
 
 

@@ -98,7 +98,7 @@ class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   [String[]] GetValidValues() {
-    return   @("baugruppe") # Get-SecretFromStore "baugruppe" CONFIG.AZURE_DEVOPS.ORGANIZATION
+    return   [DevOpsORG]::GetAllORG()
   }
   
 }

@@ -150,6 +150,21 @@ function Get-SecretsFromStore {
   Convert-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames) -show:($Show)
 
 }
+######################################################################################
+
+function Switch-CurrentOrganization {
+  [CmdletBinding()]
+  param (
+    [parameter()]
+    [ValidateSet([DevOpsORG])]
+    $Organization
+  )
+    
+  Update-SecretStore -ENV -SecretStoreSource PERSONAL -SecretPath CONFIG/AZURE_DEVOPS/ORGANIZATION.CURRENT -SecretValue $Organization
+  $env:AZURE_DEVOPS_ORGANIZATION_CURRENT = $Organization
+  Get-SecretsFromStore
+
+}
 
 ######################################################################################
 
@@ -166,8 +181,8 @@ function Get-PersonalSecretStore {
   $content = $noCleanNames ? $content : ($content -replace '[$]{1}[A-Za-z]+:{1}')
         
   return $content | ConvertFrom-Json -Depth 6 | `
-    Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_PER__FILEPATH___TEMP' `
-    -Value $path -PassThru -Force
+      Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_PER__FILEPATH___TEMP' `
+      -Value $path -PassThru -Force
 }
 
 function Get-OrgSecretStore {
@@ -192,16 +207,16 @@ function Get-OrgSecretStore {
   $path = "$env:SECRET_STORE.$Organization.tokenstore.json"
   if (!(Test-Path $path)) {
     $null = (Get-Content -Path "$env:PS_PROFILE_PATH\.resources\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization) | `
-      Out-File -FilePath $path
+        Out-File -FilePath $path
   }
 
   $content = Get-Content -Path $path 
   $content = $noCleanNames ? $content : ($content -replace '[$]{1}[A-Za-z]+:{1}')
 
   return $content | `
-    ConvertFrom-Json -Depth 6 | `
-    Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_ORG__FILEPATH___TEMP' `
-    -Value $path -PassThru -Force
+      ConvertFrom-Json -Depth 6 | `
+      Add-Member -MemberType NoteProperty -Name 'SECRET_STORE_ORG__FILEPATH___TEMP' `
+      -Value $path -PassThru -Force
 
 }
 
@@ -368,7 +383,7 @@ function Update-SecretStore {
     }
 
     $candidate = $SecretObject.PSObject.Properties | `
-      Where-Object { $_.Name -like "*$segment" }
+        Where-Object { $_.Name -like "*$segment" }
 
     if ($null -ne $candidate -AND $candidate.GetType().BaseType -eq [System.Array]) {
       Throw "Path: $SecretPath - Error at Segment $segment - Multiple Candidates found"

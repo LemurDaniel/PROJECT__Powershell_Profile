@@ -146,7 +146,7 @@ function Get-DevOpsProjects {
     )
 
     Connect-AzAccount
-      
+
     $projects = Invoke-AzDevOpsRest -Call ORG -Type dev.azure -Method GET -OrgName $Org -API _apis/projects?api-version=6.0 `
     | Select-Object -Property name, `
     @{Name = 'ShortName'; Expression = { "__$($_.Name)".replace(' ', '') } }, `
@@ -184,6 +184,88 @@ function Get-DevOpsProjects {
 ##############################################################################################################
 ##############################################################################################################
 ##############################################################################################################
+
+# Remove Automated tags created for testing again.
+function Remove-AutomatedTags {
+
+    param(
+        [System.String]
+        $projectName = [RepoProjects]::GetDefaultProject()
+    )
+
+    $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
+    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
+    $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags"
+
+    $Request = @{
+        Method  = 'POST'
+        CALL    = 'PROJ'
+        API     = "/_apis/git/repositories/$($repositoryId)/refs?api-version=6.1-preview.1"
+        AsArray = $true
+        Body    = @(
+            $currentTags | `
+                    Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
+                    ForEach-Object {
+                    @{
+                        repositoryId = $repositoryId
+                        name         = $_.name
+                        oldObjectId  = $_.objectId
+                        newObjectId  = '0000000000000000000000000000000000000000'  
+                    }
+                }
+        ) 
+    }
+
+    Invoke-AzDevOpsRest @Request 
+}
+
+function New-AutomatedTag {
+
+    param(
+        [System.String]
+        $projectName = [RepoProjects]::GetDefaultProject()
+    )
+
+    $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
+    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
+    $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
+            ForEach-Object { return $_.name.split('/')[-1] } | `
+            ForEach-Object { return [String]::Format('{0:d4}.{1:d4}.{2:d4}', [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
+            Sort-Object -Descending
+
+    $newTag = '1.0.0'
+    if ($currentTags) {
+        $currentTags = $currentTags[0].split('.')
+        $carry = 1;
+        for ($i = $currentTags.length - 1; $i -ge 0; $i--) {
+            $nextNum = [int32]::parse($currentTags[$i]) + $carry
+            $carry = [math]::floor($nextNum / 10)
+            $currentTags[$i] = $nextNum % 10
+        }
+        $newTag = $currentTags -join '.'
+    }   
+
+    $Request = @{
+        Method = 'POST'
+        CALL   = 'PROJ'
+        API    = "/_apis/git/repositories/$($repositoryId)/annotatedtags"
+        Body   = @{
+            name         = $newTag
+            taggedObject = @{
+                objectId = git rev-parse HEAD
+            }
+            message      = "Automated Test Tag ==> $newTag"
+        }
+    }
+    Invoke-AzDevOpsRest @Request
+
+    Write-Host "🎉 New Tag '$newTag' created  🎉"
+
+}
+
+
+########################################################################################################
+########################################################################################################
 
 function Get-WorkItem {
     param(
@@ -253,101 +335,6 @@ function New-BranchFromWorkitem {
         # git stash pop #TODO
 
     }
-
-}
-
-
-function New-MasterPR {
-
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PRtitle
-    )
-
-    New-PullRequest -Target 'default' -PRtitle $PRTitle
-}
-
-
-# Remove Automated tags created for testing again.
-function Remove-AutomatedTags {
-
-    param(
-        [System.String]
-        $projectName = [RepoProjects]::GetDefaultProject()
-    )
-
-    $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
-    $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags"
-
-    $createdTags = $currentTags | Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL }
-
-    $Request = @{
-        Method  = 'POST'
-        CALL    = 'PROJ'
-        API     = "/_apis/git/repositories/$($repositoryId)/refs?api-version=6.1-preview.1"
-        AsArray = $true
-        Body    = @(
-            $currentTags | `
-                    Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
-                    ForEach-Object {
-                    @{
-                        repositoryId = $repositoryId
-                        name         = $_.name
-                        oldObjectId  = $_.objectId
-                        newObjectId  = '0000000000000000000000000000000000000000'  
-                    }
-                }
-        ) 
-    }
-
-    Invoke-AzDevOpsRest @Request 
-}
-
-function New-AutomatedTag {
-
-    param(
-        [System.String]
-        $projectName = [RepoProjects]::GetDefaultProject()
-    )
-
-    $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-    $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
-    $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
-            ForEach-Object { return $_.name.split('/')[-1] } | `
-            ForEach-Object { return [String]::Format('{0:d4}.{1:d4}.{2:d4}', [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
-            Sort-Object -Descending
-
-    $env:ORG_GIT_MAIL
-
-    $newTag = '1.0.0'
-    if ($currentTags) {
-        $currentTags = $currentTags[0].split('.')
-        $carry = 1;
-        for ($i = $currentTags.length - 1; $i -ge 0; $i--) {
-            $nextNum = [int32]::parse($currentTags[$i]) + $carry
-            $carry = [math]::floor($nextNum / 10)
-            $currentTags[$i] = $nextNum % 10
-        }
-        $newTag = $currentTags -join '.'
-    }   
-
-    $Request = @{
-        Method = 'POST'
-        CALL   = 'PROJ'
-        API    = "/_apis/git/repositories/$($repositoryId)/annotatedtags"
-        Body   = @{
-            name         = $newTag
-            taggedObject = @{
-                objectId = git rev-parse HEAD
-            }
-            message      = "Automated Test Tag ==> $newTag"
-        }
-    }
-    Invoke-AzDevOpsRest @Request
-
-    Write-Host "🎉 New Tag '$newTag' created  🎉"
 
 }
 
@@ -470,7 +457,16 @@ function New-PullRequest {
 
 }
 
+function New-MasterPR {
 
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $PRtitle
+    )
+
+    New-PullRequest -Target 'default' -PRtitle $PRTitle
+}
 
 ########################################################################################################
 ########################################################################################################

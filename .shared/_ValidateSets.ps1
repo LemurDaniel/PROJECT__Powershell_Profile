@@ -69,11 +69,6 @@ class PsProfile : System.Management.Automation.IValidateSetValuesGenerator {
   }
 }
 
-<#
-class DevOpsDefaultCalls : System.Management.Automation.IValidateSetValuesGenerator {
-
-}
-#>
 
 class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 
@@ -95,11 +90,11 @@ class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [String[]] GetAllORG() {
-    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATIONS
+    return  Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.LIST
   }
 
   static [String] GetDefaultORG() {
-    return  Get-SecretFromStore CONFIG.AZURE_DEVOPS.ORGANIZATION.DEFAULT
+    return  Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.DEFAULT
   }
 
   [String[]] GetValidValues() {

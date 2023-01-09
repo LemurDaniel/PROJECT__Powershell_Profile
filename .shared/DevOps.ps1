@@ -755,3 +755,91 @@ function Remove-MovedBlocks {
   Edit-RegexOnFiles -regexQuery 'moved\s*{[a-zA-Z=_.\-\s]*}'
   
 }
+
+
+
+########################################################################################################
+########################################################################################################
+
+function Start-Pipeline {
+  param (
+    [Parameter()]
+    [System.int32]
+    $id,
+
+    [Parameter()]
+    [System.String]
+    $ref
+  )
+  
+  # Run Pipeline.
+  $Request = @{
+    ProjectName = $projectName
+    Method      = 'POST'
+    Type        = 'dev.azure'
+    CALL        = 'PROJ'
+    API         = '/_apis/build/builds?api-version=6.0'
+    Body        = @{
+      definition   = @{ id = $_.id }
+      sourceBranch = $ref
+    }
+  }
+  return Invoke-AzDevOpsRest @Request
+
+}
+
+
+function Start-PipelineOnBranch {
+  [cmdletbinding()]
+  param (
+    [Parameter()]
+    [System.String[]]
+    $SearchTags,
+
+    [Parameter()]
+    [ValidateSet('Branch', 'Dev', 'Master', 'Both')]
+    [System.String]
+    $environment = 'Branch'
+  )
+
+  $organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
+  $projectName = (git rev-parse --show-toplevel).split('/')[-2]
+  $projectNameUrlEncoded = [RepoProjects]::GetProject($projectName).name -replace ' ', '%20'
+  
+  # Get Pipelines.
+  $Request = @{
+    ProjectName = $projectName
+    Method      = 'GET'
+    Type        = 'dev.azure'
+    CALL        = 'PROJ'
+    API         = '_apis/pipelines?api-version=7.0'
+  }
+  $Pipelines = Invoke-AzDevOpsRest @Request
+  
+  # Search Pipelines by tags.
+  $Pipelines = Search-PreferencedObject -SearchObjects $Pipelines -SearchTags $SearchTags -Multiple
+
+  # Action for each Pipeline.
+  $Pipelines | ForEach-Object { 
+
+    # Run Pipeline from Branch, dev or master
+    if ($environment -eq 'Branch') {
+      $remoteBranches = Get-RepositoryRefs -projectName $projectName
+      $currentBranch = git branch --show-current
+      $branch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
+      Run-Pipeline -id $_.id -ref $branch.name
+    }
+
+    if ($environment -eq 'dev' -OR $environment -eq 'both') {
+      Run-Pipeline -id $_.id -ref 'refs/heads/dev'
+    }
+
+    if ($environment -eq 'master' -OR $environment -eq 'both') {
+      Run-Pipeline -id $_.id -ref 'refs/heads/master'
+    }
+
+    # Open in Browser.
+    Start-Process "https://dev.azure.com/$organization/$projectNameUrlEncoded/_build?definitionId=$($_.id)"
+  }
+
+}

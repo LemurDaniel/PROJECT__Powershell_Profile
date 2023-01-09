@@ -827,15 +827,15 @@ function Start-PipelineOnBranch {
       $remoteBranches = Get-RepositoryRefs -projectName $projectName
       $currentBranch = git branch --show-current
       $branch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
-      Run-Pipeline -id $_.id -ref $branch.name
+      Start-Pipeline -id $_.id -ref $branch.name
     }
 
     if ($environment -eq 'dev' -OR $environment -eq 'both') {
-      Run-Pipeline -id $_.id -ref 'refs/heads/dev'
+      Start-Pipeline -id $_.id -ref 'refs/heads/dev'
     }
 
     if ($environment -eq 'master' -OR $environment -eq 'both') {
-      Run-Pipeline -id $_.id -ref 'refs/heads/master'
+      Start-Pipeline -id $_.id -ref 'refs/heads/master'
     }
 
     # Open in Browser.

@@ -127,12 +127,8 @@ function Get-DevOpsProjectsORG {
   Get-DevOpsProjects -Org 'baugruppe' #TODO
 
   <#
-        foreach($org in [DevOpsORG]::GetAllORG) {
-        
-
-    }
-    #>
-
+  foreach($org in [DevOpsORG]::GetAllORG) {}
+  #>
 
 }
 
@@ -230,8 +226,11 @@ function New-AutomatedTag {
   $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
   $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
       ForEach-Object { return $_.name.split('/')[-1] } | `
-      ForEach-Object { return [String]::Format('{0:d4}.{1:d4}.{2:d4}', [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), [int32]::parse($_.split('.')[2])) } | `
-      Sort-Object -Descending
+      ForEach-Object { 
+      return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
+        [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
+        [int32]::parse($_.split('.')[2]))
+    } | Sort-Object -Descending
 
   $newTag = '1.0.0'
   if ($currentTags) {
@@ -274,8 +273,19 @@ function Get-WorkItem {
     $SearchTags
   )
 
-  $currentIteration = Invoke-AzDevOpsRest -Method GET -CALL TEAM -API "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=7.0"
-  $workItems = Invoke-AzDevOpsRest -Method GET -CALL TEAM -Property 'WorkItemRelations' -API "/_apis/work/teamsettings/iterations/$($currentIteration.Id)/workitems?api-version=7.1-preview.1"
+  $Request = @{
+    Method = 'GET'
+    CALL   = 'PROJ'
+    API    = "/_apis/work/teamsettings/iterations?`$timeframe=current&api-version=7.0"
+  }
+  $currentIteration = Invoke-AzDevOpsRest @Request
+  $Request = @{
+    Method   = 'GET'
+    CALL     = 'PROJ'
+    Property = 'WorkItemRelations'
+    API      = "/_apis/work/teamsettings/iterations/$($currentIteration.Id)/workitems?api-version=7.1-preview.1"
+  }
+  $workItems = Invoke-AzDevOpsRest @Request
 
   $body = @{
     ids    = $workItems.target.id
@@ -322,17 +332,14 @@ function New-BranchFromWorkitem {
       return;
     }
 
-    $transformedTitle = $workItem.'System.Title'.toLower().replace(':', '_').replace('!', '').replace('?', '').replace('/', '-').split(' ') -join '-'
-
+    $transformedTitle = $workItem.'System.Title'.toLower() -replace '[?!:\/\\\-]+', ''
     $branchName = "features/$($workItem.'System.id')-$transformedTitle"
         
-    #git stash save "st-$hex" #TODO
     git checkout master
     git pull origin master
     git checkout dev
     git pull origin dev
     git checkout -b "$branchName"
-    # git stash pop #TODO
 
   }
 

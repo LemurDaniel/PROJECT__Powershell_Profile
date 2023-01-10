@@ -336,17 +336,20 @@ function New-BranchFromWorkitem {
 
 function Get-RepositoryRefs {
 
-  param ( )
+  param ( 
+    [Parameter()]
+    [System.String]
+    $repositoryPath = (git rev-parse --show-toplevel)
+  )
  
-  $repositoryPath = (git rev-parse --show-toplevel)
-  $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-  $projectName = (git rev-parse --show-toplevel).split('/')[-2]
+  $repositoryPath = $repositoryPath
+  $repositoryName = $repositoryPath.split('/')[-1]
+  $projectName = $repositoryPath.split('/')[-2]
   $preferencedRepo = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) `
     -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
               
   $repositoryId = $preferencedRepo.id
   $projectName = [RepoProjects]::GetProject($projectName).name
-  $projectName = $preferencedRepo.remoteUrl.split('/')[4]
 
   # Search branch by name
   $repositoryName = (git -C $repositoryPath rev-parse --show-toplevel).split('/')[-1]
@@ -369,20 +372,24 @@ function New-PullRequest {
 
     [Parameter()]
     [System.String]
-    $repositoryId,
-
-    [Parameter()]
-    [System.String]
-    $repositoryPath,
-
-    [Parameter()]
-    [System.String]
-    $projectName
+    $repositoryPath = (git rev-parse --show-toplevel)
   )
 
   try {
 
-    $remoteBranches = Get-RepositoryRefs
+    $repositoryPath = $repositoryPath
+    $repositoryName = $repositoryPath.split('/')[-1]
+    $projectName = $repositoryPath.split('/')[-2]
+    $preferencedRepo = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) `
+      -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
+              
+    $repositoryId = $preferencedRepo.id
+    $projectName = [RepoProjects]::GetProject($projectName).name
+
+    # Search branch by name
+    $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
+
+
     $currentBranch = git -C $repositoryPath branch --show-current
     git -C $repositoryPath push --set-upstream origin $currentBranch
     $preferencedBranch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch

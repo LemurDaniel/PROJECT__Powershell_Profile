@@ -375,88 +375,85 @@ function New-PullRequest {
     $repositoryPath = (git rev-parse --show-toplevel)
   )
 
-  try {
-
-    $repositoryPath = $repositoryPath
-    $repositoryName = $repositoryPath.split('/')[-1]
-    $projectName = $repositoryPath.split('/')[-2]
-    $preferencedRepo = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) `
-      -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
+  $repositoryPath = $repositoryPath
+  $repositoryName = $repositoryPath.split('/')[-1]
+  $projectName = $repositoryPath.split('/')[-2]
+  $preferencedRepo = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) `
+    -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
               
-    $repositoryId = $preferencedRepo.id
-    $projectName = [RepoProjects]::GetProject($projectName).name
+  $repositoryId = $preferencedRepo.id
+  $projectName = [RepoProjects]::GetProject($projectName).name
 
-    # Search branch by name
-    $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
+  # Search branch by name
+  $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
 
 
-    $currentBranch = git -C $repositoryPath branch --show-current
-    git -C $repositoryPath push --set-upstream origin $currentBranch
-    $preferencedBranch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
+  $currentBranch = git -C $repositoryPath branch --show-current
+  git -C $repositoryPath push --set-upstream origin $currentBranch
+  $preferencedBranch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
 
-    $hasDevBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('dev') } | Measure-Object).Count -gt 0
-    $hasMainBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('main') } | Measure-Object).Count -gt 0
-    $hasMasterBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('master') } | Measure-Object).Count -gt 0
+  $hasDevBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('dev') } | Measure-Object).Count -gt 0
+  $hasMainBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('main') } | Measure-Object).Count -gt 0
+  $hasMasterBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('master') } | Measure-Object).Count -gt 0
 
-    if (-not $hasDevBranch -AND $Target -eq 'dev') {
-      throw 'Repository has no DEV Branch Set Up'
-    }
-
-    if ($Target -eq 'default') {
-      $Target = $hasMasterBranch ? 'master' : 'main'   
-      $preferencedBranch = $remoteBranches | Where-Object { $_.name.toLower().contains('dev') }
-      $branchName = 'DEV'
-    }
-    else {
-      $branchName = $preferencedBranch.name.split('/')[-2..-1] -join ('/')
-    }
-    $targetBranch = $remoteBranches | Where-Object { $_.name.toLower().contains($Target.ToLower()) }
-
-    ##############################################
-    ########## Prepare and create PR  ############
-    $PRtitle = $null -ne $PRtitle -AND $PRtitle.Length -gt 3 ? $PRtitle : ($currentBranch -replace 'features/\d*-{1}', '')
-    $PRtitle = "$branchName into $($targetBranch.name.split('/')[-1]) - $PRtitle"
-
-    $body = @{
-      sourceRefName = $preferencedBranch.name
-      targetRefName = $targetBranch.name
-      title         = $PRtitle
-      description   = $workItem.'System.Title'
-      workItemRefs  = @(
-        @{
-          id  = ''#$workItem.'System.id'
-          url = ''#$workItem.'System.id'
-        }
-      )
-      reviewers     = $()
-    }
-
-    $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/pullrequests"
-    $chosenPullRequest = $activePullRequests | Where-Object { $_.targetRefName -eq $targetBranch.name -AND $_.sourceRefName -eq $preferencedBranch.name }
-
-    if ($chosenPullRequest) {
-      $pullRequestId = $chosenPullRequest.pullRequestId
-    }
-    else {
-      $pullRequestId = Invoke-AzDevOpsRest -Method POST -body $body -CALL PROJ -Property 'pullRequestId' -API "/_apis/git/repositories/$($repositoryId)/pullrequests" 
-    }
-
-    $projectName = $projectName.replace(' ', '%20')
-    $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($repositoryName)/pullrequest/$pullRequestId"
-
-    Write-Host -Foreground Green '      '
-    Write-Host -Foreground Green ' 🎉 New Pull-Request created  🎉  '
-    Write-Host -Foreground Green "    $pullRequestUrl "
-    Write-Host -Foreground Green '      '
-
-    Start-Process $pullRequestUrl
-
-  } 
-  catch {
-
-    $_
-
+  if (-not $hasDevBranch -AND $Target -eq 'dev') {
+    throw 'Repository has no DEV Branch Set Up'
   }
+
+  if ($Target -eq 'default') {
+    $Target = $hasMasterBranch ? 'master' : 'main'   
+    $preferencedBranch = $remoteBranches | Where-Object { $_.name.toLower().contains('dev') }
+    $branchName = 'DEV'
+  }
+  else {
+    $branchName = $preferencedBranch.name.split('/')[-2..-1] -join ('/')
+  }
+  $targetBranch = $remoteBranches | Where-Object { $_.name.toLower().contains($Target.ToLower()) }
+
+  ##############################################
+  ########## Prepare and create PR  ############
+  $PRtitle = $null -ne $PRtitle -AND $PRtitle.Length -gt 3 ? $PRtitle : ($currentBranch -replace 'features/\d*-{1}', '')
+  $PRtitle = "$branchName into $($targetBranch.name.split('/')[-1]) - $PRtitle"
+
+  $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/pullrequests"
+  $chosenPullRequest = $activePullRequests | Where-Object { $_.targetRefName -eq $targetBranch.name -AND $_.sourceRefName -eq $preferencedBranch.name }
+
+  if ($chosenPullRequest) {
+    $pullRequestId = $chosenPullRequest.pullRequestId
+  }
+  else {
+    # Request for creating new Pull Request
+    $Request = @{
+      Method   = 'POST'
+      CALL     = 'PROJ'
+      Property = 'pullRequestId'
+      API      = "/_apis/git/repositories/$($repositoryId)/pullrequests"
+      Body     = @{
+        sourceRefName = $preferencedBranch.name
+        targetRefName = $targetBranch.name
+        title         = $PRtitle
+        description   = $workItem.'System.Title'
+        workItemRefs  = @(
+          @{
+            id  = ''#$workItem.'System.id'
+            url = ''#$workItem.'System.id'
+          }
+        )
+        reviewers     = $()
+      }
+    }
+    $pullRequestId = Invoke-AzDevOpsRest @Request
+  }
+
+  $projectName = $projectName.replace(' ', '%20')
+  $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($repositoryName)/pullrequest/$pullRequestId"
+
+  Write-Host -Foreground Green '      '
+  Write-Host -Foreground Green ' 🎉 New Pull-Request created  🎉  '
+  Write-Host -Foreground Green "    $pullRequestUrl "
+  Write-Host -Foreground Green '      '
+
+  Start-Process $pullRequestUrl
 
 }
 

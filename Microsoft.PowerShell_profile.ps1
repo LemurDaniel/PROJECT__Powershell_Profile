@@ -139,11 +139,11 @@ function Get-DumbJoke {
 Write-Host
 Get-SecretsFromStore PERSONAL
 Get-SecretsFromStore -Show
-Update-AzDevOpsSecrets
+Update-PatExpiration
 
 Add-EnvPaths
 
-Start-Sleep -Milliseconds 250
+#Start-Sleep -Milliseconds 250
 
 $null = Get-TerraformVersion -Latest
 Switch-Terraform -Version $env:TF_VERSION_ACTIVE

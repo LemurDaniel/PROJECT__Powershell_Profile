@@ -14,8 +14,8 @@ function Get-RepositoryVSCode {
         $excludeSearchTags,
 
         [Parameter()]
-        [ValidateSet([RepoProjects])]  # DC-Migration, RD-Redeployment
-        $Project = [RepoProjects]::GetDefaultProject(),
+        [ValidateSet([Projects])]  # DC-Migration, RD-Redeployment
+        $Project = [Projects]::GetDefaultProject(),
 
         [Parameter()]
         [ValidateSet('local', 'devops')]
@@ -32,10 +32,10 @@ function Get-RepositoryVSCode {
 
     $ChosenRepo
     if ($RepositoryId) {
-        $ChosenRepo = [RepoProjects]::GetRepository($RepositoryId)
+        $ChosenRepo = [Projects]::GetRepository($RepositoryId)
     }
     else {
-        $Repositories = [RepoProjects]::GetRepositories($Project)
+        $Repositories = [Projects]::GetRepositories($Project)
         $ChosenRepo = Search-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
         if (!$ChosenRepo) {
             Write-Host -Foreground RED 'No Repository Found'
@@ -43,7 +43,7 @@ function Get-RepositoryVSCode {
         }
     }
 
-    $repositoryPath = [RepoProjects]::GetRepositoryPath($ChosenRepo.id)
+    $repositoryPath = [Projects]::GetRepositoryPath($ChosenRepo.id)
 
     if (($repositoryPath | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
         git -C $repositoryPath.FullName clone $ChosenRepo.remoteUrl .

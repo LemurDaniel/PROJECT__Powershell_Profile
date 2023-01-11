@@ -353,34 +353,26 @@ $SettingsJsonDefaults = [PSCustomObject]@{
 
 
 
-
-#$settingsJsonBkpPath = "$env:USERPROFILE\.bkp"
-#if (!(Test-Path -Path $settingsJsonBkpPath)) {
-#    New-Item -Path $settingsJsonBkpPath -ItemType Directory
-#}
-#$settingsJsonContent | ConvertTo-Json -Depth 8 | `
-#    Out-File -FilePath "$settingsJsonBkpPath/settings.json.$(([System.DateTime]::Now).ToString('yyyy-MM--HH-mm')).bkp"
-#
-
-$settingsJsonItems = @(
-    Get-Item -Path "$env:APPDATA\Code\User\settings.json"
-    Get-ChildItem -Path "$env:APPDATA\Code\User\Profiles" -Filter 'settings.json' -Recurse | ForEach-Object { $_ }
-)
+Start-Job -ArgumentList $SettingsJsonDefaults -ScriptBlock {
+    
+        
+    $settingsJsonItems = @(
+        Get-Item -Path "$env:APPDATA\Code\User\settings.json"
+        Get-ChildItem -Path "$env:APPDATA\Code\User\Profiles" -Filter 'settings.json' -Recurse | ForEach-Object { $_ }
+    )
 
 
-foreach ($settingsItem in $settingsJsonItems) {
+    foreach ($settingsItem in $settingsJsonItems) {
 
+        $settingsJsonContent = Get-Content -Path $settingsItem.FullName | ConvertFrom-Json
 
-    $settingsJsonContent = Get-Content -Path $settingsItem.FullName | ConvertFrom-Json
+        foreach ($setting in $args[0].PSObject.Properties) {
 
-    foreach ($setting in $SettingsJsonDefaults.PSObject.Properties) {
-
-        $settingsJsonContent | Add-Member -MemberType $setting.MemberType `
-            -Name $setting.Name -Value $setting.Value -Force
+            $settingsJsonContent | Add-Member -MemberType $setting.MemberType `
+                -Name $setting.Name -Value $setting.Value -Force
+        }
+        $settingsJsonContent | ConvertTo-Json -Depth 8 | Out-File -FilePath $settingsItem.FullName
 
     }
-
-    $settingsJsonContent | ConvertTo-Json -Depth 8 | `
-            Out-File -FilePath $settingsItem.FullName
-
+        
 }

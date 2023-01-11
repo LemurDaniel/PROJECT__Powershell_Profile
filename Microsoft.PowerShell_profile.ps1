@@ -70,7 +70,6 @@ if ($null -eq $env:ROLE_DEFINITIONS) {
 ### Resolve Terraform Path
 $env:TerraformDocs = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform-docs/").Path
 $env:TerraformPath = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform/").Path
-$env:TerraformDownloadSource = 'https://releases.hashicorp.com/terraform/'
 $env:TerraformNewestVersion = (Get-ChildItem -Path $env:TerraformPath | Sort-Object -Descending)[0].FullName
 $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort-Object -Descending)[0].FullName
 

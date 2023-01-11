@@ -29,7 +29,7 @@ class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
   }
   #>
 
-  static [string] $ALL = 'ALL'
+  static [PSCustomObject[]] $ALL = [AzPermission]::GetAllPermissions()
 
   static [PSCustomObject[]] GetPermissionsByProvider($Provider) {
     if ($Provider -eq [AzPermission]::ALL) {
@@ -42,9 +42,6 @@ class AzPermission : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [PSCustomObject[]] GetAllPermissions() {   
     return (Get-Content -Path $env:SECRET_PERMISSIONS | ConvertFrom-Csv) 
-    # | Select-Object -Property {Name="AzPermission";Expression={ 
-    #  return [AzPermission]::new($_."Resource Provider", $_."Resource Type", $_."Operation Name", $_."Operation Display Name", $_."Operation Description", $_."Data Action")
-    # }}).AzPermission
   }
 
   [String[]] GetValidValues() {
@@ -85,7 +82,7 @@ class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [String[]] GetAllORG() {
-    return  Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.LIST
+    return  Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.ORGANIZATION
   }
 
   static [String] GetDefaultORG() {
@@ -98,9 +95,9 @@ class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
   
 }
 
-class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
+class Projects : System.Management.Automation.IValidateSetValuesGenerator {
 
-  static [string] $ALL = 'ALL'
+  static [PSCustomObject[]] $ALL = [Projects]::GetRepositoriesAll()
 
   static [String] GetDefaultProject() {
     return Get-SecretFromStore CONFIG.AZURE_DEVOPS.DEFAULT_PROJECT
@@ -112,11 +109,11 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
 
   static [System.IO.DirectoryInfo] GetProjectPathById($projectId) {
     $projectRelative = Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.id -eq $projectId }
-    return [RepoProjects]::GetProjectPath($projectRelative.ShortName)
+    return [Projects]::GetProjectPath($projectRelative.ShortName)
   }
 
   static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
-    $projectPath = Join-Path -Path $env:ORG_GIT_REPO_PATH -ChildPath ([RepoProjects]::GetProject($projectName).ShortName)
+    $projectPath = Join-Path -Path $env:ORG_GIT_REPO_PATH -ChildPath ([Projects]::GetProject($projectName).ShortName)
 
     if (!(Test-Path -Path $projectPath)) {
       return New-Item -ItemType Directory -Path $projectPath
@@ -131,8 +128,8 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [PSCustomObject[]] GetRepositories($projectName) {
-    if ($projectName -eq [RepoProjects]::ALL) {
-      return [RepoProjects]::GetRepositoriesAll()
+    if ($projectName -eq [Projects]::ALL) {
+      return [Projects]::GetRepositoriesAll()
     }
     else {
       $project = Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
@@ -145,8 +142,8 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   static [System.IO.DirectoryInfo] GetRepositoryPath($repositoryId) {
-    $repository = [RepoProjects]::GetRepository($repositoryId)
-    $projectPath = [RepoProjects]::GetProjectPathById($repository.project.id)
+    $repository = [Projects]::GetRepository($repositoryId)
+    $projectPath = [Projects]::GetProjectPathById($repository.project.id)
     $repositoryPath = Join-Path -Path $projectPath -ChildPath $repository.Name
 
     if (!(Test-Path -Path $repositoryPath)) {
@@ -158,7 +155,7 @@ class RepoProjects : System.Management.Automation.IValidateSetValuesGenerator {
   }
 
   [String[]] GetValidValues() {
-    return   @([RepoProjects]::ALL) + (Get-SecretFromStore CACHE/DEVOPS_PROJECTS).ShortName
+    return   @([Projects]::ALL) + (Get-SecretFromStore CACHE/DEVOPS_PROJECTS).ShortName
   }
 
 

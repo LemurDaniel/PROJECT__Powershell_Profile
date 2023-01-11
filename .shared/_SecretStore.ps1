@@ -234,7 +234,7 @@ function Get-SecretStore {
     $SecretStoreSource = 'ALL',
 
     [parameter()]
-    [ORGANIZATION]
+    [ValidateSet([DevOpsORG])]
     $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT,
 
     [parameter()]

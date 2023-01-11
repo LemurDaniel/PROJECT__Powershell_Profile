@@ -152,12 +152,8 @@ Switch-Terraform -Version $env:TF_VERSION_ACTIVE
 
 
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
-if ($env:USERNAME -eq 'M01947') {
-  Switch-GitConfig -config brz
-}
-else {
-  Switch-GitConfig -config git
-}
+
+Switch-GitConfig -config ($env:USERNAME -eq 'M01947' ? 'brz' : 'git')
 
 
 Write-Host ''

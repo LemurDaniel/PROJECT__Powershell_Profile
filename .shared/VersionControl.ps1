@@ -1,5 +1,4 @@
 
-
 function Get-RepositoryVSCode {
 
     [Alias('VC')]
@@ -14,8 +13,8 @@ function Get-RepositoryVSCode {
         $excludeSearchTags,
 
         [Parameter()]
-        [ValidateSet([Projects])]  # DC-Migration, RD-Redeployment
-        $Project = [Projects]::GetDefaultProject(),
+        [ValidateSet([Project])]
+        $Project = [Project]::DEFAULT,
 
         [Parameter()]
         [ValidateSet('local', 'devops')]
@@ -23,28 +22,30 @@ function Get-RepositoryVSCode {
 
         [Parameter()]
         [switch]
-        $noOpenVSCode,
+        $onlyDownload,
 
         [Parameter()]
         [PSCustomObject]
         $RepositoryId
     )
 
-    $ChosenRepo
+
+    $ChosenRepo = $null
     if ($RepositoryId) {
-        $ChosenRepo = [Projects]::GetRepository($RepositoryId)
+        $ChosenRepo = [Repository]::GetById($RepositoryId)
     }
     else {
-        $Repositories = [Projects]::GetRepositories($Project)
-        $ChosenRepo = Search-PreferencedObject -SearchObjects $Repositories -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
-        if (!$ChosenRepo) {
-            Write-Host -Foreground RED 'No Repository Found'
-            return;
-        }
+        $Repositories = [Repository]::GetByProjectName($Project)
+        $ChosenRepo = Search-In $Repositories -where 'name' -is $RepositoryName -not $excludeSearchTags
     }
 
-    $repositoryPath = [Projects]::GetRepositoryPath($ChosenRepo.id)
 
+    if (!$ChosenRepo) {
+        Write-Host -Foreground RED 'No Repository Found'
+        return;
+    }
+
+    $repositoryPath = [Repository]::GetRepositoryPath($ChosenRepo.id)
     if (($repositoryPath | Get-ChildItem -Hidden | Measure-Object).Count -eq 0) {
         git -C $repositoryPath.FullName clone $ChosenRepo.remoteUrl .
         git config --global --add safe.directory $repositoryPath.FullName
@@ -52,7 +53,7 @@ function Get-RepositoryVSCode {
         git -C "$($repositoryPath.FullName)" config --local user.email "$env:ORG_GIT_MAIL"
     }
 
-    if (-not $noOpenVSCode) {
+    if (-not $onlyDownload) {
         code $repositoryPath.FullName
         git -C "$($repositoryPath.FullName)" config --local user.name "$env:ORG_GIT_USER" 
         git -C "$($repositoryPath.FullName)" config --local user.email "$env:ORG_GIT_MAIL"
@@ -66,14 +67,10 @@ function Import-GPGKeys {
 
     param()
 
-    $gpgKey1drv = Get-OneDriveElementsAt -Path '/Dokumente/_Apps/_SECRET_STORE/_gpgkeys' | Get-OneDriveItems
-    foreach ($privKey in $gpgKey1drv) {
-        $null = gpg --import $privKey
-    }
-    $null = Remove-Item -Path $gpgKey1drv.FullName -Recurse
-
-
-    # gpg --export-secret-keys --armor "D27575926A842A92CE1A038AB040212E2ADE59A9" | Out-File "D27575926A842A92CE1A038AB040212E2ADE59A9.key"
+    $gpgKey1drv = Get-OneDriveElementsAt -Path '/Dokumente/_Apps/_SECRET_STORE/_gpgkeys' | `
+        Get-OneDriveItems | ForEach-Object { $null = gpg --import $privKey }
+    
+    $null = Remove-Item -Path $gpgKey1drv.Directory -Recurse
 }
 
 function Switch-GitConfig {
@@ -101,11 +98,6 @@ function Switch-GitConfig {
    
         $null = git config --global commit.gpgsign true
     }
-
-    #$gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
-    #$gpgKeysFolder = Get-ChildItem $gpgMainFolder -Filter 'private-keys*'
-    #$gpgKeys = Get-ChildItem $gpgKeysFolder | Get-ChildItem
-    #$gpg1Drv = Get-Item "$env:SECRET_STORE/_gpgkeys"
 
     # Overwrite settings for gpg-agent to set passphrase
     # Then Reload agent and set acutal Passphrase
@@ -189,8 +181,8 @@ function Get-RepositoryVSCodePrivate {
     )
 
     $PrivateRepos = Get-SecretFromStore CACHE/GITHUB.repositories PERSONAL
-    $preferencedRepository = Search-PreferencedObject -SearchObjects $PrivateRepos -SearchTags $RepositoryName -ExcludeSearchTags $excludeSearchTags
-
+    $preferencedRepository = Search-In $PrivateRepos -where 'name' -is $RepositoryName -not $excludeSearchTags
+    
     if (!$preferencedRepository) {
         Write-Host -Foreground RED 'No Repository Found'
         return;

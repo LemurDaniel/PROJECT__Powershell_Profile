@@ -184,7 +184,7 @@ function Get-OrgSecretStore {
     $noCleanNames,
 
     [parameter()]
-    [ORGANIZATION]
+    [ValidateSet([DevOpsOrganization])]
     $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
   )
 
@@ -234,7 +234,7 @@ function Get-SecretStore {
     $SecretStoreSource = 'ALL',
 
     [parameter()]
-    [ValidateSet([DevOpsORG])]
+    [ValidateSet([DevOpsOrganization])]
     $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT,
 
     [parameter()]
@@ -285,26 +285,9 @@ function Get-SecretFromStore {
     $CustomPath 
   )
 
-  $splitPath = $SecretPath -split '[\/\.]+'
 
   $SecretObject = (Get-SecretStore -SecretStoreSource $SecretStoreSource -CustomPath $CustomPath) # Gets Cleaned Names 
-  foreach ($segment in $splitPath) {
-
-    if ($null -eq $SecretObject) {
-      Throw "Path: $SecretPath - Error at Segment $segment - Object is NULL"
-    }
-
-    if ($SecretObject.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
-      Throw "Path: $SecretPath - Error at Segment $segment - Object is $($SecretObject.GetType().Name)"
-    }
-
-    if ($null -eq $SecretObject."$segment") {
-      Throw "Path: $SecretPath - Error at Segment $segment - Segment does not exist "
-    }
-
-    $SecretObject = $SecretObject."$segment"
-  
-  }
+  $SecretObject = Get-Property -Object $SecretObject -PropertyPath $SecretPath
 
   if (!$Unprocessed -AND $SecretObject.GetType() -eq [System.String] -AND $SecretObject[0] -eq '´') {
     Write-Verbose $SecretObject

@@ -43,13 +43,13 @@ function Invoke-AzDevOpsRest {
 
     [Parameter()]
     [System.String]
-    [ValidateSet([Projects])]
-    $ProjectName = [Projects]::GetDefaultProject(),
+    [ValidateSet([Project])]
+    $ProjectName = [Project]::Default,
 
     [Parameter()]
     [System.String]
-    [ORGANIZATION]
-    $OrgName = [DevOpsORG]::GetDefaultORG(),
+    [ValidateSet([DevOpsOrganization])]
+    $OrgName = [DevOpsOrganization]::Default,
 
     [Parameter()]
     [switch]
@@ -69,23 +69,24 @@ function Invoke-AzDevOpsRest {
       continue
     }
     'PROJ' { 
-      $project = ([Projects]::GetProject($ProjectName))
+      $project = ([Project]::GetByName($ProjectName))
       $TargetURL = "https://$Type.com/$OrgName/$($project.id)/$API"
     }
     'TEAM' { 
-      $project = ([Projects]::GetProject($ProjectName))
-      $team = Search-PreferencedObject -SearchObjects $project.teams -SearchTags $TeamQuery
+      $project = ([Project]::GetByName($ProjectName))
+      $team = Search-Int $project.teams -is $TeamQuery
       $TargetURL = "https://$Type.com/$OrgName/$($project.id)/$($team.id)/$API"
     }
   }
 
+  $token = [System.String]::IsNullOrEmpty($PatOverride) ? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header) : $PatOverride
   $Request = @{
     Method  = $Method
     Body    = $body | ConvertTo-Json -Compress -AsArray:$AsArray
     Headers = @{ 
       username       = 'O.o'
-      password       = $PatOverride ?? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header)
-      Authorization  = "Basic $($PatOverride ?? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header))"
+      password       = $token
+      Authorization  = "Basic $token"
       'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
     }
     Uri     = $Uri.Length -gt 0 ? $Uri : ($TargetURL -replace '/+', '/' -replace '/$', '' -replace ':/', '://')
@@ -176,6 +177,11 @@ function Update-PatExpiration {
 
 }
 
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+
+
 function Get-DevOpsProjects {
 
   [cmdletbinding()]
@@ -225,22 +231,58 @@ function Get-DevOpsProjects {
 ##############################################################################################################
 ##############################################################################################################
 
+function Get-RepositoryInfo {
+
+  param ( 
+    [Parameter()]
+    [System.String]
+    $repositoryPath
+  )    
+
+  $repositoryPath = [System.String]::IsNullOrEmpty($repositoryPath) ? (Get-Location) : $repositoryPath
+  $repositoryPath = (git -C $repositoryPath rev-parse --show-toplevel)
+  $project = [Project]::GetByPath($repositoryPath)
+  $repositoryName = $repositoryPath.split('/')[-1]
+  $preferencedRepo = Search-In ([Repository]::GetByProjectName($project.name)) -where 'name' -is $repositoryName  
+  
+  return [PSCustomObject]@{
+    Project        = $project
+    Repository     = $preferencedRepo
+    RepositoryPath = $repositoryPath
+  }
+}
+
+function Get-RepositoryRefs {
+
+  param ( 
+    [Parameter()]
+    [System.String]
+    $repositoryPath,
+
+    [Parameter()]
+    [System.String]
+    $repositoryId
+  )  
+
+  $repositoryId = [System.String]::IsNullOrEmpty($repositoryId) ? ((Get-RepositoryInfo -repositoryPath $repositoryPath).Repository.id) : $repositoryId
+  $Request = @{
+    METHOD = 'GET'
+    CALL   = 'PROJ'
+    API    = "/_apis/git/repositories/$($repositoryId)/refs"
+  }
+  return Invoke-AzDevOpsRest @Request 
+}
+
 # Remove Automated tags created for testing again.
 function Remove-AutomatedTags {
 
-  param(
-    [System.String]
-    $projectName = [Projects]::GetDefaultProject()
-  )
+  param()
 
-  $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-  $repositoryId = Search-PreferencedObject -SearchObjects ([Projects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
-  $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags"
-
+  $currentTags = Get-RepositoryRefs | Where-Object { $_.name.contains('tags') }
   $Request = @{
     Method  = 'POST'
     CALL    = 'PROJ'
-    API     = "/_apis/git/repositories/$($repositoryId)/refs?api-version=6.1-preview.1"
+    API     = "/_apis/git/repositories/$((Get-RepositoryInfo).Repository.id)/refs?api-version=6.1-preview.1"
     AsArray = $true
     Body    = @(
       $currentTags | `
@@ -261,20 +303,15 @@ function Remove-AutomatedTags {
 
 function New-AutomatedTag {
 
-  param(
-    [System.String]
-    $projectName = [Projects]::GetDefaultProject()
-  )
+  param()
 
-  $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
-  $repositoryId = Search-PreferencedObject -SearchObjects ([Projects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
-  $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
-    ForEach-Object { return $_.name.split('/')[-1] } | `
-    ForEach-Object { 
-    return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
-      [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
-      [int32]::parse($_.split('.')[2]))
-  } | Sort-Object -Descending
+  $currentTags = Get-RepositoryRefs | Where-Object { $_.name.contains('tags') | `
+      ForEach-Object { return $_.name.split('/')[-1] } | `
+      ForEach-Object { 
+      return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
+        [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
+        [int32]::parse($_.split('.')[2]))
+    } } | Sort-Object -Descending
 
   $newTag = '1.0.0'
   if ($currentTags) {
@@ -291,7 +328,7 @@ function New-AutomatedTag {
   $Request = @{
     Method = 'POST'
     CALL   = 'PROJ'
-    API    = "/_apis/git/repositories/$($repositoryId)/annotatedtags"
+    API    = "/_apis/git/repositories/$((Get-RepositoryInfo).Repository.id)/annotatedtags"
     Body   = @{
       name         = $newTag
       taggedObject = @{
@@ -303,9 +340,7 @@ function New-AutomatedTag {
   Invoke-AzDevOpsRest @Request
 
   Write-Host "🎉 New Tag '$newTag' created  🎉"
-
 }
-
 
 ########################################################################################################
 ########################################################################################################
@@ -331,27 +366,30 @@ function Get-WorkItem {
   }
   $workItems = Invoke-AzDevOpsRest @Request
 
-  $body = @{
-    ids    = $workItems.target.id
-    fields = @(
-      'System.Id',
-      'System.Title',
-      'System.AssignedTo',
-      'System.WorkItemType',
-      'System.Parent',
-      'System.PersonId',
-      'System.ProjectId',
-      'System.Reason',
-      'System.RelatedLinkCount',
-      'System.RelatedLinks',
-      'Microsoft.VSTS.Scheduling.RemainingWork'
-    )
+  $Request = @{
+    Method = 'POST'
+    CALL   = 'PROJ'
+    API    = '/_apis/wit/workitemsbatch?api-version=7.1-preview.1'
+    Body   = @{
+      ids    = $workItems.target.id
+      fields = @(
+        'System.Id',
+        'System.Title',
+        'System.AssignedTo',
+        'System.WorkItemType',
+        'System.Parent',
+        'System.PersonId',
+        'System.ProjectId',
+        'System.Reason',
+        'System.RelatedLinkCount',
+        'System.RelatedLinks',
+        'Microsoft.VSTS.Scheduling.RemainingWork'
+      )
+    }
   }
-
-  $workItems = (Invoke-AzDevOpsRest -Method POST -CALL PROJ -API '/_apis/wit/workitemsbatch?api-version=7.1-preview.1' -body $body).fields `
-  | Where-Object { $_.'System.AssignedTo'.uniqueName -like $env:ORG_GIT_MAIL }
-
-  return Search-PreferencedObject -SearchObjects $workItems -SearchTags $SearchTags -SearchProperty 'System.Title'
+  $workItems = (Invoke-AzDevOpsRest @Request).fields | Where-Object { $_.'System.AssignedTo'.uniqueName -like $env:ORG_GIT_MAIL }
+  return Search-In $workItems -where '(System.Title)' -is $SearchTags 
+  
 }
 
 function New-BranchFromWorkitem {
@@ -376,7 +414,7 @@ function New-BranchFromWorkitem {
       return;
     }
 
-    $transformedTitle = $workItem.'System.Title'.toLower() -replace '[?!:\/\\\-]+', ''
+    $transformedTitle = $workItem.'System.Title'.toLower() -replace '[?!:\/\\\-]+', '_'
     $branchName = "features/$($workItem.'System.id')-$transformedTitle"
         
     git checkout master
@@ -387,30 +425,6 @@ function New-BranchFromWorkitem {
 
   }
 
-}
-
-function Get-RepositoryRefs {
-
-  param ( 
-    [Parameter()]
-    [System.String]
-    $repositoryPath = (git rev-parse --show-toplevel)
-  )
- 
-  $repositoryPath = $repositoryPath
-  $repositoryName = $repositoryPath.split('/')[-1]
-  $projectName = $repositoryPath.split('/')[-2]
-  $preferencedRepo = Search-PreferencedObject -SearchObjects ([Projects]::GetRepositories($projectName)) `
-    -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
-              
-  $repositoryId = $preferencedRepo.id
-  $projectName = [Projects]::GetProject($projectName).name
-
-  # Search branch by name
-  $repositoryName = (git -C $repositoryPath rev-parse --show-toplevel).split('/')[-1]
-  $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
-  
-  return $remoteBranches 
 }
 
 function New-PullRequest {
@@ -427,25 +441,17 @@ function New-PullRequest {
 
     [Parameter()]
     [System.String]
-    $repositoryPath = (git rev-parse --show-toplevel)
+    $repositoryPath
   )
 
-  $repositoryPath = $repositoryPath
-  $repositoryName = $repositoryPath.split('/')[-1]
-  $projectName = $repositoryPath.split('/')[-2]
-  $preferencedRepo = Search-PreferencedObject -SearchObjects ([Projects]::GetRepositories($projectName)) `
-    -SearchTags $repositoryName -SearchProperty 'remoteUrl' -Multiple
-              
-  $repositoryId = $preferencedRepo.id
-  $projectName = [Projects]::GetProject($projectName).name
-
-  # Search branch by name
-  $remoteBranches = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs"
+  $info = Get-RepositoryInfo -repositoryPath $repositoryPath
+  $repositoryPath = $info.RepositoryPath
+  $remoteBranches = Get-RepositoryRefs -repositoryPath $repositoryPath
 
 
   $currentBranch = git -C $repositoryPath branch --show-current
   git -C $repositoryPath push --set-upstream origin $currentBranch
-  $preferencedBranch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
+  $preferencedBranch = Search-In $remoteBranches -is $currentBranch
 
   $hasDevBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('dev') } | Measure-Object).Count -gt 0
   $hasMainBranch = ($remoteBranches | Where-Object { $_.name.toLower().contains('main') } | Measure-Object).Count -gt 0
@@ -470,7 +476,7 @@ function New-PullRequest {
   $PRtitle = $null -ne $PRtitle -AND $PRtitle.Length -gt 3 ? $PRtitle : ($currentBranch -replace 'features/\d*-{1}', '')
   $PRtitle = "$branchName into $($targetBranch.name.split('/')[-1]) - $PRtitle"
 
-  $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/pullrequests"
+  $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($info.Repository.id)/pullrequests"
   $chosenPullRequest = $activePullRequests | Where-Object { $_.targetRefName -eq $targetBranch.name -AND $_.sourceRefName -eq $preferencedBranch.name }
 
   if ($chosenPullRequest) {
@@ -482,7 +488,7 @@ function New-PullRequest {
       Method   = 'POST'
       CALL     = 'PROJ'
       Property = 'pullRequestId'
-      API      = "/_apis/git/repositories/$($repositoryId)/pullrequests"
+      API      = "/_apis/git/repositories/$($info.Repository.id)/pullrequests"
       Body     = @{
         sourceRefName = $preferencedBranch.name
         targetRefName = $targetBranch.name
@@ -501,7 +507,7 @@ function New-PullRequest {
   }
 
   $projectName = $projectName.replace(' ', '%20')
-  $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($repositoryName)/pullrequest/$pullRequestId"
+  $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($info.Repository.name)/pullrequest/$pullRequestId"
 
   Write-Host -Foreground Green '      '
   Write-Host -Foreground Green ' 🎉 New Pull-Request created  🎉  '
@@ -545,12 +551,12 @@ function Get-RecentSubmoduleTags {
 
   # Query All Repositories in DevOps
   $devopsRepositories = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API '/_apis/git/repositories/'
-  $preferencedRepos = Search-PreferencedObject -SearchObjects $devopsRepositories -SearchTags 'terraform' -SearchProperty 'name' -Multiple  
+  $preferencedRepos = Search-In -$devopsRepositories -is 'terraform' -Multiple  
 
   foreach ($repository in $preferencedRepos) {
 
     # Call Api to get all tags on Repository and sort them by newest
-    $sortedTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs?filter=tags" | `
+    $sortedTags = Get-RepositoryRefs -repositoryId $repository.id | Where-Object { $_.name.contains('tags') } | `
       Select-Object -Property `
     @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
     @{Name = 'TagIntSorting'; Expression = { 
@@ -659,7 +665,7 @@ function Update-ModuleSourcesAllRepositories {
   param (
     [Parameter()]
     [System.String]
-    $projectName = [Projects]::GetDefaultProject(),
+    $projectName = [Projects]::Default(),
 
     [Parameter()]
     [switch]
@@ -682,14 +688,14 @@ function Update-ModuleSourcesAllRepositories {
 
 
   $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
-  $allTerraformRepositories = [Projects]::GetRepositories($projectName) | `
+  $allTerraformRepositories = [Repository]::GetByProjectName($projectName) | `
     Where-Object { $_.name.contains('terraform') } | `
     Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 
   foreach ($repository in $allTerraformRepositories) {
     
     Write-Host -ForegroundColor Yellow "Searching Respository '$($repository.name)' locally"
-    $repositoryPath = Get-RepositoryVSCode -repositoryId ($repository.id) -NoOpenVSCode
+    $repositoryPath = Get-RepositoryVSCode -repositoryId ($repository.id) -onlyDownload
 
     Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
     $repoRefs = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs" | `
@@ -861,9 +867,10 @@ function Start-PipelineOnBranch {
     $environment = 'Branch'
   )
 
+  $info = Get-RepositoryInfo
   $organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
-  $projectName = (git rev-parse --show-toplevel).split('/')[-2]
-  $projectNameUrlEncoded = [Projects]::GetProject($projectName).name -replace ' ', '%20'
+  $projectName = $info.Project.name
+  $projectNameUrlEncoded = $info.Project.name -replace ' ', '%20'
   
   # Get Pipelines.
   $Request = @{
@@ -876,14 +883,14 @@ function Start-PipelineOnBranch {
   $Pipelines = Invoke-AzDevOpsRest @Request
   
   # Search Pipelines by tags.
-  $Pipelines = Search-PreferencedObject -SearchObjects $Pipelines -SearchTags $SearchTags -Multiple
+  $Pipelines = Search-In $Pipelines -is $SearchTags -Multiple
 
   # Action for each Pipeline.
   $Pipelines | ForEach-Object { 
 
     # Run Pipeline from Branch, dev or master
     if ($environment -eq 'Branch') {
-      $remoteBranches = Get-RepositoryRefs -projectName $projectName
+      $remoteBranches = Get-RepositoryRefs -repositoryId $info.Repository.id
       $currentBranch = git branch --show-current
       $branch = Search-PreferencedObject -SearchObjects $remoteBranches -SearchTags $currentBranch
       Start-Pipeline -id $_.id -ref $branch.name

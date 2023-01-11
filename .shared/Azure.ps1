@@ -29,9 +29,8 @@ function Search-AzResource {
     #-ManagementGroup ((Get-AzContext).Tenant.Id) 
     $results = (Search-AzGraph -Query $query)
 
-    $resources = Search-PreferencedObject -SearchObjects $results -SearchTags $ResourceName -Multiple
+    $resources = Search-In $results -where 'name' -is $ResourceName -Multiple
 
-    #$resources
 
     if ($resources[1]) {
         return $resources[0..($MaxReturnValues - 1)]
@@ -154,7 +153,6 @@ function Search-AzStorageAccountKey {
 
 ################################################################################
 
-
 function Search-AzPermission {
 
     param (
@@ -191,75 +189,60 @@ function Search-AzRoleDefinitions {
 }
 
 
-
-
-
-
-
-
-
-
 #######################################################
 ############## Backup State
 
-
-
-
-
 function Backup-AzState {
     param (
-  
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Reason,
 
         [Parameter()]
         [System.String]
         [ValidateSet([AzTenant])]
         $Tenant = [AzTenant]::Default.Name
-    
-    )
-    
-    $StorageAccounts = Search-AzStorageAccount -StorageAccountName 'acfstate' -MaxReturnValues 5
   
+    )
+  
+    Connect-AzAccount -Tenant $([AzTenant]::GetByName($Tenant).id)
+    $StorageAccounts = Search-AzStorageAccount -StorageAccountName 'acfstate' -MaxReturnValues 5
+
     $TFSTATE_FOLDER = "$env:SECRET_STORE/TFSTATE"
     if (!(Test-Path $TFSTATE_FOLDER )) {
         New-Item -Type Directory -Path $TFSTATE_FOLDER 
     }
+
   
-    
     $timeStamp = [DateTime]::Now
-    $hasExistingFolders_atTimeStampe = (Get-ChildItem -Path $TFSTATE_FOLDER -Filter "*$($timeStamp.ToString('yyyy-MM-dd--HH-mm'))*" ).Count -gt 0
+    $hasExistingFolders_atTimeStampe = (Get-ChildItem -Path $TFSTATE_FOLDER -Filter "*$($timeStamp.ToString('yyyy-MM-dd--HH-mm'))" ).Count -gt 0
     if ($hasExistingFolders_atTimeStampe) {
         Write-Host -ForegroundColor RED "There was already an backup created today at: $($timeStamp.toString("HH:mm O`clock"))"
         return
     }
+
   
-    
     $currentContext = Get-AzContext
     foreach ($StorageAccount in $StorageAccounts) {
         Write-Host -ForegroundColor GREEN "Backing up Storage Account: $($StorageAccount.name)"
-  
-        $Folder = New-Item -Type Directory -Path "$TFSTATE_FOLDER/$($timeStamp.ToString('yyyy-MM-dd--HH-mm'))---$($Reason.ToUpper())---$($StorageAccount.name)"
-  
+
+        $Folder = New-Item -Type Directory -Path "$TFSTATE_FOLDER/$($StorageAccount.name)-$($timeStamp.ToString('yyyy-MM-dd--HH-mm'))"
+
         $null = Set-AzContext -Tenant $currentContext.Tenant -SubscriptionId $StorageAccount.subscriptionId
         $key = Get-AzStorageAccountKey -ResourceGroupName $StorageAccount.resourceGroup -Name $StorageAccount.name
         $storageContext = New-AzStorageContext -StorageAccountName $StorageAccount.name -StorageAccountKey $key[0].Value
-  
+
         foreach ($container in Get-AzStorageContainer -Context $storageContext) {
             Write-Host -ForegroundColor GREEN "   Backing up Container: $($container.name)"
             $FolderContainer = New-Item -Type Directory -Path "$($Folder.FullName)/$($container.Name)"
-  
+
             try { 
-                foreach ($blob in (Get-AzStorageBlob -Container $container.name -Context $storageContext | Where-Object { $null -eq $_.SnapshotTime })  ) {    
+                foreach ($blob in (Get-AzStorageBlob -Container $ct[2].name -Context $stctx | Where-Object { $null -eq $_.SnapshotTime })  ) {    
                     Write-Host -ForegroundColor GREEN "     Backing up Blob: $($blob.name)"
-                    $blob | Get-AzStorageBlobContent -Context $storageContext -Destination "$($FolderContainer.FullName)/$($blob.name -replace ':', '_')" | Out-Null
+                    $null = Out-File -FilePath "$($FolderContainer.FullName)/$($blob.name)"
                 }
             }
             Catch {
                 Write-Host -ForegroundColor RED $_
             }
-    
+  
         }
     }
     $null = Set-AzContext -Context $currentContext
@@ -274,7 +257,7 @@ function Switch-AzTennant {
         [Parameter(Mandatory = $true)]
         [ValidateSet([AzTenant])]
         [System.String]
-        $TennantName,
+        $Tennant,
 
         [Parameter()]
         [switch]
@@ -285,7 +268,7 @@ function Switch-AzTennant {
         Disconnect-AzAccount
     }
    
-    $tenantId = [AzTenant]::GetTenantByName($TennantName).id
+    $tenantId = [AzTenant]::GetByName($Tennant).id
     Connect-AzAccount -Tenant $tenantId
     az login --tenant $tenantId
 }

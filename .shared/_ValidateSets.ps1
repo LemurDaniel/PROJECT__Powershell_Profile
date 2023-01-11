@@ -64,56 +64,56 @@ class PsProfile : System.Management.Automation.IValidateSetValuesGenerator {
 
 class AzTenant : System.Management.Automation.IValidateSetValuesGenerator {
 
-  static [PSCustomObject[]] $Tenants = (Get-SecretFromStore CACHE.AZURE_TENANTS)
+  static [PSCustomObject[]] $ALL = (Get-SecretFromStore CACHE.AZURE_TENANTS)
+  static [PSCustomObject[]] $DEFAULT = (Get-SecretFromStore CONFIG/AZURE_DEVOPS/DEFAULT.TENNANT)
 
-  static [PSCustomObject[]] $Default = ([AzTenant]::Tenants | Where-Object { $_.Name -like '*baugruppe*' })
-
-  static [PSCustomObject] GetTenantByName ($name) {
-    return [AzTenant]::Tenants | Where-Object { $_.Name -like ($name -replace '_', ' ') }
+  static [PSCustomObject] GetByName ($name) {
+    return [AzTenant]::Tenants | Where-Object { $_.Name -like $name }
   }
 
   [String[]] GetValidValues() {
-    return   [AzTenant]::Tenants.Name -replace ' ', '_'
+    return   [AzTenant]::ALL.Name
   }
 
 }
 
 
-class DevOpsORG : System.Management.Automation.IValidateSetValuesGenerator {
+class DevOpsOrganization : System.Management.Automation.IValidateSetValuesGenerator {
 
-  static [String[]] GetAllORG() {
-    return  Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.ORGANIZATION
-  }
-
-  static [String] GetDefaultORG() {
-    return  Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.DEFAULT
-  }
+  static [String[]] $ALL = (Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.ORGANIZATION)
+  static [String] $DEFAULT = (Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.DEFAULT)
+  static [String] $CURRENT = (Get-SecretFromStore CONFIG/AZURE_DEVOPS/ORGANIZATION.CURRENT)
 
   [String[]] GetValidValues() {
-    return   [DevOpsORG]::GetAllORG()
+    return   [DevOpsOrganization]::ALL
   }
   
 }
 
-class Projects : System.Management.Automation.IValidateSetValuesGenerator {
+class Project : System.Management.Automation.IValidateSetValuesGenerator {
 
-  static [PSCustomObject[]] $ALL = [Projects]::GetRepositoriesAll()
+  static [PSCustomObject[]] $ALL = (Get-SecretFromStore CACHE.DEVOPS_PROJECTS)
+  static [String] $DEFAULT = (Get-SecretFromStore CONFIG/AZURE_DEVOPS/DEFAULT.PROJECT)
 
-  static [String] GetDefaultProject() {
-    return Get-SecretFromStore CONFIG.AZURE_DEVOPS.DEFAULT_PROJECT
+  static [PSCustomObject] GetByName($projectName) {
+    return [Project]::ALL | Where-Object { $_.Name -like "*$projectName*" }
   }
 
-  static [PSCustomObject] GetProject($projectName) {
-    return Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
+  static [PSCustomObject] GetById($projectId) {
+    return [Project]::ALL | Where-Object { $_.id -eq $projectId }
   }
 
-  static [System.IO.DirectoryInfo] GetProjectPathById($projectId) {
-    $projectRelative = Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.id -eq $projectId }
-    return [Projects]::GetProjectPath($projectRelative.ShortName)
+  static [PSCustomObject] GetByPath($repositoryPath) {
+    $repositoryPath = (git -C $repositoryPath rev-parse --show-toplevel)
+    $repositoryName = $repositoryPath.split('/')[-1]
+    $projectShortName = $repositoryPath.split('/')[-2]
+    $organization = $repositoryPath.split('/')[-3]
+    return [Project]::ALL | Where-Object { $_.shortName -eq $projectShortName }
   }
 
-  static [System.IO.DirectoryInfo] GetProjectPath($projectName) {
-    $projectPath = Join-Path -Path $env:ORG_GIT_REPO_PATH -ChildPath ([Projects]::GetProject($projectName).ShortName)
+  static [System.IO.DirectoryInfo] GetPathByName($projectName) {
+    $project = [Project]::GetByName($projectName).ShortName
+    $projectPath = Join-Path -Path $env:ORG_GIT_REPO_PATH -ChildPath $project
 
     if (!(Test-Path -Path $projectPath)) {
       return New-Item -ItemType Directory -Path $projectPath
@@ -123,27 +123,29 @@ class Projects : System.Management.Automation.IValidateSetValuesGenerator {
     }
   }
 
-  static [PSCustomObject[]] GetRepositoriesAll() {
-    return Get-SecretFromStore CACHE.DEVOPS_REPOSITORIES_ALL
+  [String[]] GetValidValues() {
+    return   @([Project]::ALL.Name)
   }
 
-  static [PSCustomObject[]] GetRepositories($projectName) {
-    if ($projectName -eq [Projects]::ALL) {
-      return [Projects]::GetRepositoriesAll()
-    }
-    else {
-      $project = Get-SecretFromStore CACHE.DEVOPS_PROJECTS | Where-Object { $_.ShortName -eq $projectName }
-      return $project.Repositories
-    }
+}
+
+
+class Repository {
+
+  static [PSCustomObject[]] $ALL = (Get-SecretFromStore CACHE.DEVOPS_REPOSITORIES_ALL)
+
+  static [PSCustomObject[]] GetByProjectName($projectName) {
+    $project = [Project]::GetByName($projectName)
+    return [Repository]::ALL | Where-Object { $_.project.id -eq $project.id }
   }
 
-  static [PSCustomObject] GetRepository($repositoryId) {
-    return Get-SecretFromStore CACHE.DEVOPS_REPOSITORIES_ALL | Where-Object { $_.id -eq $repositoryId }
+  static [PSCustomObject] GetById($repositoryId) {
+    return [Repository]::ALL | Where-Object { $_.id -eq $repositoryId }
   }
 
   static [System.IO.DirectoryInfo] GetRepositoryPath($repositoryId) {
-    $repository = [Projects]::GetRepository($repositoryId)
-    $projectPath = [Projects]::GetProjectPathById($repository.project.id)
+    $repository = [Repository]::GetById($repositoryId)
+    $projectPath = [Project]::GetPathByName($repository.project.name)
     $repositoryPath = Join-Path -Path $projectPath -ChildPath $repository.Name
 
     if (!(Test-Path -Path $repositoryPath)) {
@@ -153,10 +155,4 @@ class Projects : System.Management.Automation.IValidateSetValuesGenerator {
       return Get-Item -Path $repositoryPath
     }
   }
-
-  [String[]] GetValidValues() {
-    return   @([Projects]::ALL) + (Get-SecretFromStore CACHE/DEVOPS_PROJECTS).ShortName
-  }
-
-
 }

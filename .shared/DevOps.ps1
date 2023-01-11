@@ -53,7 +53,11 @@ function Invoke-AzDevOpsRest {
 
     [Parameter()]
     [switch]
-    $AsArray
+    $AsArray,
+
+    [Parameter()]
+    [System.String]
+    $PatOverride
   )
 
   switch ($CALL) {
@@ -80,8 +84,8 @@ function Invoke-AzDevOpsRest {
     Body    = $body | ConvertTo-Json -Compress -AsArray:$AsArray
     Headers = @{ 
       username       = 'O.o'
-      password       = $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header)
-      Authorization  = "Basic $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header)"
+      password       = $PatOverride ?? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header)
+      Authorization  = "Basic $($PatOverride ?? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header))"
       'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
     }
     Uri     = $Uri.Length -gt 0 ? $Uri : ($TargetURL -replace '/+', '/' -replace '/$', '' -replace ':/', '://')
@@ -110,15 +114,66 @@ function Invoke-AzDevOpsRest {
 ##############################################################################################################
 ##############################################################################################################
 
-function Update-AzDevOpsSecrets {
+function Is-PatExpired {
+
+  param()
 
   $DEVOPS = Get-SecretFromStore CONFIG.AZURE_DEVOPS
   $EXPIRES = [System.DateTime] $DEVOPS.EXPIRES
   $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $EXPIRES
-  if ($TIMESPAN.Days -lt 2) {
+  return $TIMESPAN.Days -lt 1
+
+}
+
+function Update-PatToken {
+
+  Write-Host -ForegroundColor RED 'PAT has expired. Please Enter new:'
+  $patToken = Read-Host -Prompt '   PAT' -AsSecureString
+  $expiration = Read-Host -Prompt '   Expires'
+
+  $AzureDevops = Get-SecretFromStore ORG -SecretPath CONFIG/AZURE_DEVOPS
+  $AzureDevops.PAT = [System.Net.NetworkCredential]::new('', $patToken).Password
+  $AzureDevops.EXPIRES = [System.DateTime]$expiration
+
+  try {
+    $Request = @{
+      METHOD      = 'GET'
+      CALL        = 'PROJ'
+      API         = '/_apis/git/repositories'
+      PatOverride = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$($AzureDevops.USER):$($AzureDevops.PAT)"))
+    }
+    $null = Invoke-AzDevOpsRest @Request
+  }
+  catch {
+    if (401 -eq $_.Exception.Response.StatusCode) {
+      Write-Host -ForegroundColor RED 'Something Went wrong: Request not Authorized. 401'
+
+      return Update-PatToken
+    }
+    else {
+      throw $_
+    }
+  }
+
+  Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS -SecretValue $AzureDevops
+}
+
+function Update-PatExpiration {
+
+  param()
+
+  if (Is-PatExpired) {
+    Write-Host -ForegroundColor RED 'PAT has expired. Download newer Version of tokenstore from Onedrive.'
     Get-OneDriveSecretStore
   }
-    
+
+  if ((Is-PatExpired)) {
+    Update-PatToken
+    $pathLocal = Get-SecretFromStore SECRET_STORE_ORG__FILEPATH___TEMP
+    $fileLocal = Get-Item -Path $pathLocal
+    $fileLocal | Set-OneDriveItems -Path '/Dokumente/_Apps/_SECRET_STORE'
+  }
+
 }
 
 function Get-DevOpsProjects {
@@ -189,15 +244,15 @@ function Remove-AutomatedTags {
     AsArray = $true
     Body    = @(
       $currentTags | `
-          Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
-          ForEach-Object {
-          @{
-            repositoryId = $repositoryId
-            name         = $_.name
-            oldObjectId  = $_.objectId
-            newObjectId  = '0000000000000000000000000000000000000000'  
-          }
+        Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
+        ForEach-Object {
+        @{
+          repositoryId = $repositoryId
+          name         = $_.name
+          oldObjectId  = $_.objectId
+          newObjectId  = '0000000000000000000000000000000000000000'  
         }
+      }
     ) 
   }
 
@@ -214,12 +269,12 @@ function New-AutomatedTag {
   $repositoryName = (git rev-parse --show-toplevel).split('/')[-1]
   $repositoryId = Search-PreferencedObject -SearchObjects ([RepoProjects]::GetRepositories($projectName)) -SearchTags "$repositoryName" -returnProperty 'id'
   $currentTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repositoryId)/refs?filter=tags" | `
-      ForEach-Object { return $_.name.split('/')[-1] } | `
-      ForEach-Object { 
-      return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
-        [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
-        [int32]::parse($_.split('.')[2]))
-    } | Sort-Object -Descending
+    ForEach-Object { return $_.name.split('/')[-1] } | `
+    ForEach-Object { 
+    return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
+      [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
+      [int32]::parse($_.split('.')[2]))
+  } | Sort-Object -Descending
 
   $newTag = '1.0.0'
   if ($currentTags) {
@@ -496,12 +551,12 @@ function Get-RecentSubmoduleTags {
 
     # Call Api to get all tags on Repository and sort them by newest
     $sortedTags = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs?filter=tags" | `
-        Select-Object -Property `
-      @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
-      @{Name = 'TagIntSorting'; Expression = { 
-          return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
-        }
-      } | Sort-Object -Property TagIntSorting -Descending
+      Select-Object -Property `
+    @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
+    @{Name = 'TagIntSorting'; Expression = { 
+        return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
+      }
+    } | Sort-Object -Property TagIntSorting -Descending
     
     # If no tag is present, skip further processing
     if ($null -eq $sortedTags -OR $sortedTags.Count -eq 0) {
@@ -628,8 +683,8 @@ function Update-ModuleSourcesAllRepositories {
 
   $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
   $allTerraformRepositories = [RepoProjects]::GetRepositories($projectName) | `
-      Where-Object { $_.name.contains('terraform') } | `
-      Sort-Object -Property { $sortOrder.IndexOf($_.name) }
+    Where-Object { $_.name.contains('terraform') } | `
+    Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 
   foreach ($repository in $allTerraformRepositories) {
     
@@ -638,8 +693,8 @@ function Update-ModuleSourcesAllRepositories {
 
     Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
     $repoRefs = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs" | `
-        Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
-        Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
+      Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
+      Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
 
     git -C $repositoryPath.FullName checkout ($repoRefs[0].name -split '/')[-1]
     git -C $repositoryPath.FullName pull
@@ -720,12 +775,12 @@ function Edit-RegexOnFiles {
 
     # Make Regex Replace on all Child-Items.
     $childFiles = Get-ChildItem -Recurse -Path ($replacementPath) -Filter '*.tf' | `
-        ForEach-Object { 
-        [PSCustomObject]@{
-          FullName = $_.FullName
-          Content  = (Get-Content -Path $_.FullName -Raw)
-        } 
-      } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
+      ForEach-Object { 
+      [PSCustomObject]@{
+        FullName = $_.FullName
+        Content  = (Get-Content -Path $_.FullName -Raw)
+      } 
+    } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
 
 
     foreach ($file in $childFiles) {

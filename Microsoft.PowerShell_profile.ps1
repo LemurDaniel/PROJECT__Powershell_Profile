@@ -116,8 +116,8 @@ Add-EnvPaths
 
 #Start-Sleep -Milliseconds 250
 
-$null = Get-TerraformVersion -Latest
-Switch-Terraform -Version $env:TF_VERSION_ACTIVE
+$null = Switch-Terraform
+Switch-Terraform -TFVersion $env:TF_VERSION_ACTIVE
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 Switch-GitConfig -config ($env:USERNAME -eq 'M01947' ? 'brz' : 'git')
 

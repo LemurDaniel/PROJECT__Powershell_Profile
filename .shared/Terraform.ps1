@@ -1,4 +1,4 @@
-function Switch-Terraformss {
+function Switch-Terraform {
     
     [Alias('tf')]
     param ()
@@ -42,7 +42,7 @@ function Switch-Terraformss {
         } |
         Where-Object Version -Is [Version] |
         Where-Object Version -GE ([Version]'1.0.0') |
-        Sort-Object version -Descending
+        Sort-Object version
 
         $ValidateSetOptions = [string[]]($remoteVersions.Version | ForEach-Object { $_.toString() })
         $AttributCollection.Add((New-Object System.Management.Automation.ValidateSetAttribute($ValidateSetOptions)))
@@ -60,10 +60,12 @@ function Switch-Terraformss {
         $TerraformTarget = ''
     }
     Process {
+        Write-Host $TFVersion
         if ([string]::IsNullOrEmpty($TFVersion)) {
             $TFVersion = $ValidateSetOptions | Sort-Object | Select-Object -Last 1
         }
-
+        Write-Host $TFVersion
+        
         $TerraformTarget = Join-Path -Path $TerraformFolder -ChildPath "v$($TFVersion)"
         if ("v$($TFVersion)" -notin $TerraformInstallations.Name) {
            
@@ -78,16 +80,14 @@ function Switch-Terraformss {
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$TerraformTarget\terraform.exe", $true)
         }
 
-    }
-    End {
-        Add-EnvPaths -RemovePaths @($TerraformFolder) -AdditionalPaths @{
-            Terraform = $($TerraformTarget)
-        } 
+        Add-EnvPaths -AdditionalPath Terraform -AdditionalValue $TerraformTarget
 
         Write-Host
         terraform --version
         Write-Host
+
     }
+    End {}
 }
 
 

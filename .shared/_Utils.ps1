@@ -132,8 +132,8 @@ function Search-PreferencedObject {
             Object   = $_
         }
     } | `
-    Where-Object { $_.Hits -gt 0 } | `
-    Sort-Object -Property Hits -Descending
+        Where-Object { $_.Hits -gt 0 } | `
+        Sort-Object -Property Hits -Descending
 
     if ($ChosenObjects.Count -eq 0) {
         return
@@ -187,33 +187,17 @@ function Add-EnvPaths {
 
     param (
         [Parameter()]
-        [System.Collections.Hashtable]
-        $AdditionalPaths = [System.Collections.Hashtable]::new(),
+        [System.String]
+        $AdditionalPath,
 
         [Parameter()]
-        [System.Collections.ArrayList]
-        $RemovePaths = [System.Collections.ArrayList]::new()
+        [System.String]
+        $AdditionalValue
     )
 
-    foreach ($key in $AdditionalPaths.Keys) {
-        $global:DefaultEnvPaths.Remove($key)
-        $global:DefaultEnvPaths.Add($key, $AdditionalPaths[$key])
-    }
-
-    $processedPaths = [System.Collections.ArrayList]::new()
-    foreach ($path in $env:InitialEnvsPaths -split ';' ) {
-
-        if ( ($RemovePaths | Where-Object { $path.contains($_) }).length -eq 0) {
-            $processedPaths += $path
-        }
-    }
-
+    $global:DefaultEnvPaths[$AdditionalPath] = $AdditionalValue
     $UniquePathsMap = [System.Collections.Hashtable]::new()
     $processedPaths + $global:DefaultEnvPaths.Values | Where-Object { $_.length -gt 0 } | Where-Object { $UniquePathsMap[$_] = $_ } 
-
-    #Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
-    #Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value ($UniquePathsMap.Values -join ';')
-
     $env:Path = ($UniquePathsMap.Values -join ';')
 }
 

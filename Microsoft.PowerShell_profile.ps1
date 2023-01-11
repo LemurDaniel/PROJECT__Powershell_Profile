@@ -1,35 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
-#Hardlinks
-<#
-try{
-
-  $settings_WindowsTerminal = "C:\Users\Daniel\OneDrive\Dokumente\_Apps\_Settings\WindowsTerminal\settings.json"
-  if(Test-Path -Path "$settings_WindowsTerminal") {
-
-    $folder_WindowsTerminal = Get-ChildItem -Directory -Filter "Microsoft.WindowsTerminal*" -Path "C:\Users\Daniel\AppData\Local\Packages\" 
-    $file = Get-ChildItem -Path "$($folder_WindowsTerminal.FullName)\LocalState\settings.json"
-
-    if($file.LinkType -ne "Hardlink") {
-      Write-Host "Create Hardlink for Terminal-App"
-      Remove-Item -Path $file.FullName -Verbose
-      $test = New-Item -ItemType HardLink `
-        -Path "$($file.Fullname)" `
-        -Target "$settings_WindowsTerminal" `
-        -Verbose
-    }
-    #Get-Item -ItemType HardLink -Path $file.FullName -Verbose
-  }
-
-} 
-catch {
-  $_
-}
-
 #net user administrator /active:yes
 #net user administrator /active:no
-#>
-
 
 function Set-TerminalSettings {
 

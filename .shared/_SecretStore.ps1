@@ -1,4 +1,9 @@
-$global:GlobalScope = [psmoduleinfo]::new($true)
+
+enum SecretScope {
+  ALL
+  ORG
+  PERSONAL
+}
 
 function Convert-SecretObject {
   param (
@@ -43,6 +48,10 @@ function Convert-SecretObject {
 
   foreach ($Secret in $SecretObject.PSObject.Properties) {
 
+    if ($null -eq $Secret.Value ) {
+      continue;
+    }
+
     if (@('_ORDER', '_SILENT').contains($Secret.Name.ToUpper())) {
       continue;
     }
@@ -80,51 +89,27 @@ function Convert-SecretObject {
     elseif ($envFlagged -AND $Secret.value.GetType() -eq [System.String]) {
       $SecretValue = $Secret.value[0] -eq '´' ? (Invoke-Expression -Command $Secret.value.substring(1)) : $Secret.value
       $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
-      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)'"
+      $verbosing += "`n$indendation + Loading 'ENV:$($secretPrefixedName)'"
     }
     # If env-flagged and valutetype convert to env string (Like Dates will throw Errors)
     elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.ValueType]) {
       $SecretValue = $Secret.value.toString()
       $null = New-Item -Path "env:$secretPrefixedName" -Value $SecretValue -Force  
-      $verbosing += "`n$indendation + Loading ENV:'$($secretPrefixedName)'"
+      $verbosing += "`n$indendation + Loading 'ENV:$($secretPrefixedName)'"
     }
     elseif ($envFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
       Throw "Can't Load 'System.Array' to ENV"
     }
     elseif ($enumFlagged -AND $Secret.value.GetType().BaseType -eq [System.Array]) {
-      $verbosing += "`n$indendation + Loading ENUM:'$($cleanedName)'"
-      $enumString = @"
-          enum $($cleanedName) { 
-            $($Secret.Value -join '; ') 
-          }
+      $verbosing += "`n$indendation + Loading 'ENUM:$($cleanedName)'"
+
+      Add-Type -TypeDefinition @"
+    public enum $($cleanedName) {
+        $($Secret.Value -join ', ') 
+    }
 "@
 
-      #TODO Not working yet
-      & $global:GlobalScope {
-        param($params)
-        # Splatting doesn't
-        $null = Invoke-Expression @params
-      } @{
-        Command = $enumString
-      }
-
-      <#
-      # Check if the enum exists, if it doesn't, create it.
-      if (!($cleanedName -as [Type])) {
-        Add-Type -TypeDefinition "
-            public enum $($cleanedName){
-                anonymousAuthentication,
-                basicAuthentication,
-                clientCertificateMappingAuthentication,
-                digestAuthentication,
-                iisClientCertificateMappingAuthentication,
-                windowsAuthentication    
-            }
-        "
-      }
-      #>
     }
-
     if ($recursionDepth -eq 0 -AND $verbosing.Length -gt 0 -AND $show) {
       Write-Host $verbosing.Substring(1)
       $verbosing = ''
@@ -143,20 +128,26 @@ function Get-SecretsFromStore {
     $Show,
 
     [parameter()]
-    [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ALL'
+    [AllowNull()]
+    [SecretScope]
+    $SecretStoreSource = [System.Enum]::GetNames([SecretScope])[0],
+
+    # Test
+    [Parameter()]
+    $CustomPath 
   )
 
-  Convert-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames) -show:($Show)
+  Convert-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames -CustomPath $CustomPath) -show:($Show)
 
 }
+
 ######################################################################################
 
 function Switch-CurrentOrganization {
   [CmdletBinding()]
   param (
     [parameter()]
-    [ValidateSet([DevOpsORG])]
+    [ORGANIZATION]
     $Organization
   )
     
@@ -193,7 +184,7 @@ function Get-OrgSecretStore {
     $noCleanNames,
 
     [parameter()]
-    [ValidateSet([DevOpsORG])]
+    [ORGANIZATION]
     $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
   )
 
@@ -206,7 +197,7 @@ function Get-OrgSecretStore {
   # TODO Implement Check Onedrive before creating secret store
   $path = "$env:SECRET_STORE.$Organization.tokenstore.json"
   if (!(Test-Path $path)) {
-    $null = (Get-Content -Path "$env:PS_PROFILE_PATH\.resources\.blueprint.tokenstore.json").Replace('${{ORGANIZATION}}', $Organization) | `
+    $null = (Get-Content -Path "$env:PS_PROFILE_PATH\.resources\.blueprint.tokenstore.json").Replace('~PLACEHOLDER~', $Organization) | `
       Out-File -FilePath $path
   }
 
@@ -239,17 +230,26 @@ function Get-UnifiedSecretStore {
 function Get-SecretStore {
   param (
     [parameter()]
-    [validateSet('ALL', 'ORG', 'PERSONAL')]
+    [SecretScope]
     $SecretStoreSource = 'ALL',
 
     [parameter()]
-    [ValidateSet([DevOpsORG])]
+    [ORGANIZATION]
     $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT,
 
     [parameter()]
     [switch]
-    $noCleanNames
+    $noCleanNames,
+
+    # Test
+    [Parameter()]
+    $CustomPath 
   )
+
+  if ($null -ne $CustomPath -And $CustomPath.length -gt 0) {
+    $content = Get-Content -Path $CustomPath
+    return ($noCleanNames ? $content : ($content -replace '[$]{1}[A-Za-z]+:{1}')) | ConvertFrom-Json
+  }
 
   if ($SecretStoreSource -eq 'PERSONAL') {
     return Get-PersonalSecretStore -noCleanNames:$($noCleanNames)
@@ -273,17 +273,21 @@ function Get-SecretFromStore {
     $SecretPath,
 
     [parameter()]
-    [validateSet('ALL', 'ORG', 'PERSONAL')]
-    $SecretStoreSource = 'ALL',
+    [SecretScope]
+    $SecretStoreSource = [System.Enum]::GetNames([SecretScope])[0],
 
     [parameter()]
     [switch]
-    $Unprocessed
+    $Unprocessed,
+
+    # Test
+    [Parameter()]
+    $CustomPath 
   )
 
   $splitPath = $SecretPath -split '[\/\.]+'
 
-  $SecretObject = (Get-SecretStore -SecretStoreSource $SecretStoreSource) # Gets Cleaned Names 
+  $SecretObject = (Get-SecretStore -SecretStoreSource $SecretStoreSource -CustomPath $CustomPath) # Gets Cleaned Names 
   foreach ($segment in $splitPath) {
 
     if ($null -eq $SecretObject) {
@@ -326,7 +330,7 @@ function Update-SecretStore {
 
     [parameter()]
     [AllowNull()]
-    [ValidateSet([DevOpsORG])]
+    [ORGANIZATION]
     $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT, #TODO
 
     [parameter(Mandatory = $true)]

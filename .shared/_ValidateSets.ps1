@@ -1,9 +1,4 @@
 
-enum SecretScope {
-  ALL
-  ORG
-  PERSONAL
-}
 
 class HTTPMethods : System.Management.Automation.IValidateSetValuesGenerator {
 

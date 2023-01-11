@@ -48,7 +48,7 @@ function Invoke-AzDevOpsRest {
 
     [Parameter()]
     [System.String]
-    [ValidateSet([DevOpsORG])]
+    [ORGANIZATION]
     $OrgName = [DevOpsORG]::GetDefaultORG(),
 
     [Parameter()]
@@ -181,7 +181,7 @@ function Get-DevOpsProjects {
   [cmdletbinding()]
   param(
     [Parameter()]
-    [ValidateSet([DevOpsORG])]
+    [ORGANIZATION]
     $Org = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
   )
 

@@ -7,18 +7,23 @@
         "CONFIG"
     ],
     "CONFIG": {
+        "$enum:SOME_VALUES": [
+            "First",
+            "Second",
+            "Third"
+        ],
         "ORG": {
             "MODE": "AZURE_DEVOPS",
             "$env:GIT": {
-                "REPO_PATH": "´\"$home\\Documents\\Repos\\${{ORGANIZATION}}\"",
-                "USER": null,
-                "MAIL": null
+                "REPO_PATH": "´\"$home\\Documents\\Repos\\_BAUGRUPPE\"",
+                "USER": "",
+                "MAIL": ""
             }
         },
         "AZURE_DEVOPS": {
             "DEVOPS_DEFAULT_PROJECT": null,
-            "USER": null,
-            "PAT": null,
+            "USER": "",
+            "PAT": "",
             "HEADER": "´[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$(Get-SecretFromStore CONFIG/AZURE_DEVOPS.USER):$(Get-SecretFromStore CONFIG/AZURE_DEVOPS.PAT)\"))",
             "EXPIRES": null
         }

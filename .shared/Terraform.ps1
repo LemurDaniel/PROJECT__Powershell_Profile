@@ -1,6 +1,7 @@
 function Switch-Terraform {
     
     [Alias('tf')]
+    [CmdletBinding()]
     param ()
 
     <#
@@ -41,10 +42,10 @@ function Switch-Terraform {
             }
         } |
         Where-Object Version -Is [Version] |
-        Where-Object Version -GE ([Version]'1.0.0') |
-        Sort-Object version
+        Where-Object Version -GE ([Version]'1.0.0') 
 
         $ValidateSetOptions = [string[]]($remoteVersions.Version | ForEach-Object { $_.toString() })
+        $ValidateSetOptions = $ValidateSetOptions | Sort-Object -Descending
         $AttributCollection.Add((New-Object System.Management.Automation.ValidateSetAttribute($ValidateSetOptions)))
         $RunTimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::new('TFVersion', [version], $AttributCollection)
         $RuntimeParamDic = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
@@ -54,17 +55,16 @@ function Switch-Terraform {
     }
 
     Begin {
-        $PsBoundParameters.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value -ErrorAction 'SilentlyContinue' }
+        $null = $PsBoundParameters.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value -ErrorAction 'SilentlyContinue' }
         $TerraformFolder = $env:TerraformPath
         $TerraformInstallations = Get-ChildItem -Path $env:TerraformPath
         $TerraformTarget = ''
     }
     Process {
-        Write-Host $TFVersion
+
         if ([string]::IsNullOrEmpty($TFVersion)) {
             $TFVersion = $ValidateSetOptions | Sort-Object | Select-Object -Last 1
         }
-        Write-Host $TFVersion
         
         $TerraformTarget = Join-Path -Path $TerraformFolder -ChildPath "v$($TFVersion)"
         if ("v$($TFVersion)" -notin $TerraformInstallations.Name) {
@@ -80,14 +80,14 @@ function Switch-Terraform {
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$TerraformTarget\terraform.exe", $true)
         }
 
+    }
+    End {
         Add-EnvPaths -AdditionalPath Terraform -AdditionalValue $TerraformTarget
 
         Write-Host
         terraform --version
         Write-Host
-
     }
-    End {}
 }
 
 

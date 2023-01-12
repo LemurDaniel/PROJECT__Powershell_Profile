@@ -234,10 +234,6 @@ function Get-SecretStore {
     $SecretStoreSource = 'ALL',
 
     [parameter()]
-    [ValidateSet([DevOpsOrganization])]
-    $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT,
-
-    [parameter()]
     [switch]
     $noCleanNames,
 
@@ -255,7 +251,7 @@ function Get-SecretStore {
     return Get-PersonalSecretStore -noCleanNames:$($noCleanNames)
   }
   elseif ($SecretStoreSource -eq 'ORG') {
-    return Get-OrgSecretStore -noCleanNames:$($noCleanNames) -Organization $Organization
+    return Get-OrgSecretStore -noCleanNames:$($noCleanNames)
   }
   else {
     return Get-UnifiedSecretStore -noCleanNames:$($noCleanNames)

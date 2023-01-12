@@ -117,12 +117,16 @@ function Search-PreferencedObject {
     )
 
 
+    $ExcludeSearchTags = $ExcludeSearchTags ?? @()
     $ChosenObjects = $SearchObjects | ForEach-Object {
     
         Write-Verbose "Search Property: $SearchProperty"
         $Property = Get-Property -Object $_ -PropertyPath $SearchProperty
-        $positiveHits = ($SearchTags | Where-Object { $Property.contains($_) } | Measure-Object).Count
-        $negativeHits = ($ExcludeSearchTags | Where-Object { !($Property.contains($_)) } | Measure-Object).Count
+        Write-Verbose $Property
+        Write-Verbose ($SearchTags -join ',')
+        Write-Verbose ($ExcludeSearchTags -join ',')
+        $positiveHits = ($SearchTags | Where-Object { $Property.toLower().contains($_.toLower()) } | Measure-Object).Count
+        $negativeHits = ($ExcludeSearchTags | Where-Object { !($Property.toLower().contains($_.toLower())) } | Measure-Object).Count
 
         $returnValue = [String]::IsNullOrEmpty($returnProperty) ? $_ : (Get-Property -Object $_ -PropertyPath $returnProperty)
 
@@ -409,7 +413,7 @@ $SettingsJsonDefaults = [PSCustomObject]@{
 
 
 
-Start-Job -ArgumentList $SettingsJsonDefaults -ScriptBlock {
+$null = Start-Job -ArgumentList $SettingsJsonDefaults -ScriptBlock {
     
         
     $settingsJsonItems = @(

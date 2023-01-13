@@ -479,6 +479,7 @@ function New-PullRequest {
   $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($info.Repository.id)/pullrequests"
   $chosenPullRequest = $activePullRequests | Where-Object { $_.targetRefName -eq $targetBranch.name -AND $_.sourceRefName -eq $preferencedBranch.name }
 
+  Write-Verbose  $chosenPullRequest.pullRequestId
   if ($chosenPullRequest) {
     $pullRequestId = $chosenPullRequest.pullRequestId
   }
@@ -506,7 +507,7 @@ function New-PullRequest {
     $pullRequestId = Invoke-AzDevOpsRest @Request
   }
 
-  $projectName = $projectName.replace(' ', '%20')
+  $projectName = $info.Project.name.replace(' ', '%20')
   $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($info.Repository.name)/pullrequest/$pullRequestId"
 
   Write-Host -Foreground Green '      '

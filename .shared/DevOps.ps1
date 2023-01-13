@@ -286,15 +286,15 @@ function Remove-AutomatedTags {
     AsArray = $true
     Body    = @(
       $currentTags | `
-        Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
-        ForEach-Object {
-        @{
-          repositoryId = $repositoryId
-          name         = $_.name
-          oldObjectId  = $_.objectId
-          newObjectId  = '0000000000000000000000000000000000000000'  
+          Where-Object { $_.creator.uniqueName -eq $env:ORG_GIT_MAIL } | `
+          ForEach-Object {
+          @{
+            repositoryId = $repositoryId
+            name         = $_.name
+            oldObjectId  = $_.objectId
+            newObjectId  = '0000000000000000000000000000000000000000'  
+          }
         }
-      }
     ) 
   }
 
@@ -306,12 +306,12 @@ function New-AutomatedTag {
   param()
 
   $currentTags = Get-RepositoryRefs | Where-Object { $_.name.contains('tags') | `
-      ForEach-Object { return $_.name.split('/')[-1] } | `
-      ForEach-Object { 
-      return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
-        [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
-        [int32]::parse($_.split('.')[2]))
-    } } | Sort-Object -Descending
+        ForEach-Object { return $_.name.split('/')[-1] } | `
+        ForEach-Object { 
+        return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
+          [int32]::parse($_.split('.')[0]), [int32]::parse($_.split('.')[1]), 
+          [int32]::parse($_.split('.')[2]))
+      } } | Sort-Object -Descending
 
   $newTag = '1.0.0'
   if ($currentTags) {
@@ -479,7 +479,7 @@ function New-PullRequest {
   $activePullRequests = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($info.Repository.id)/pullrequests"
   $chosenPullRequest = $activePullRequests | Where-Object { $_.targetRefName -eq $targetBranch.name -AND $_.sourceRefName -eq $preferencedBranch.name }
 
-  Write-Verbose  $chosenPullRequest.pullRequestId
+  Write-Verbose $chosenPullRequest.pullRequestId
   if ($chosenPullRequest) {
     $pullRequestId = $chosenPullRequest.pullRequestId
   }
@@ -558,12 +558,12 @@ function Get-RecentSubmoduleTags {
 
     # Call Api to get all tags on Repository and sort them by newest
     $sortedTags = Get-RepositoryRefs -repositoryId $repository.id | Where-Object { $_.name.contains('tags') } | `
-      Select-Object -Property `
-    @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
-    @{Name = 'TagIntSorting'; Expression = { 
-        return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
-      }
-    } | Sort-Object -Property TagIntSorting -Descending
+        Select-Object -Property `
+      @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
+      @{Name = 'TagIntSorting'; Expression = { 
+          return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
+        }
+      } | Sort-Object -Property TagIntSorting -Descending
     
     # If no tag is present, skip further processing
     if ($null -eq $sortedTags -OR $sortedTags.Count -eq 0) {
@@ -690,8 +690,8 @@ function Update-ModuleSourcesAllRepositories {
 
   $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
   $allTerraformRepositories = [Repository]::GetByProjectName($projectName) | `
-    Where-Object { $_.name.contains('terraform') } | `
-    Sort-Object -Property { $sortOrder.IndexOf($_.name) }
+      Where-Object { $_.name.contains('terraform') } | `
+      Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 
   foreach ($repository in $allTerraformRepositories) {
     
@@ -700,8 +700,8 @@ function Update-ModuleSourcesAllRepositories {
 
     Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
     $repoRefs = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API "/_apis/git/repositories/$($repository.id)/refs" | `
-      Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
-      Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
+        Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
+        Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
 
     git -C $repositoryPath.FullName checkout ($repoRefs[0].name -split '/')[-1]
     git -C $repositoryPath.FullName pull
@@ -782,12 +782,12 @@ function Edit-RegexOnFiles {
 
     # Make Regex Replace on all Child-Items.
     $childFiles = Get-ChildItem -Recurse -Path ($replacementPath) -Filter '*.tf' | `
-      ForEach-Object { 
-      [PSCustomObject]@{
-        FullName = $_.FullName
-        Content  = (Get-Content -Path $_.FullName -Raw)
-      } 
-    } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
+        ForEach-Object { 
+        [PSCustomObject]@{
+          FullName = $_.FullName
+          Content  = (Get-Content -Path $_.FullName -Raw)
+        } 
+      } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
 
 
     foreach ($file in $childFiles) {
@@ -859,13 +859,23 @@ function Start-PipelineOnBranch {
   [cmdletbinding()]
   param (
     [Parameter()]
+    [Alias('is')]
     [System.String[]]
     $SearchTags,
 
     [Parameter()]
+    [Alias('not')]
+    [System.String[]]
+    $excludedTags = @(),
+
+    [Parameter()]
     [ValidateSet('Branch', 'Dev', 'Master', 'Both')]
     [System.String]
-    $environment = 'Branch'
+    $environment = 'Branch',
+
+    [Parameter()]
+    [switch]
+    $Multiple
   )
 
   $info = Get-RepositoryInfo
@@ -884,7 +894,7 @@ function Start-PipelineOnBranch {
   $Pipelines = Invoke-AzDevOpsRest @Request
   
   # Search Pipelines by tags.
-  $Pipelines = Search-In $Pipelines -is $SearchTags -Multiple
+  $Pipelines = Search-In $Pipelines -where 'name' -is $SearchTags -not $excludedTags -Multiple:$Multiple
 
   # Action for each Pipeline.
   $Pipelines | ForEach-Object { 

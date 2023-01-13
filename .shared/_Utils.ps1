@@ -131,7 +131,7 @@ function Search-PreferencedObject {
         $returnValue = [String]::IsNullOrEmpty($returnProperty) ? $_ : (Get-Property -Object $_ -PropertyPath $returnProperty)
 
         return [PSCustomObject]@{
-            Hits     = $positiveHits + $negativeHits
+            Hits     = $positiveHits - $negativeHits
             Property = $returnValue
             Object   = $_
         }

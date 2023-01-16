@@ -10,7 +10,7 @@ function Get-MsRewards {
         $browser = 'Opera'
     )
 
-    $words = Get-Content -Path "$env:PS_PROFILE_PATH\.resources\41.284_words.txt"
+    $words = Get-Content -Path "$PSScriptRoot\41.284_words.txt"
 
     $applicationPaths = @{
         Edge   = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'

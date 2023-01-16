@@ -89,7 +89,7 @@ function Search-PreferencedObject {
     param (
         [Parameter(Mandatory = $true)]
         [System.Object[]]
-        $SearchObjects,
+        $SearchObjects = @(),
 
         [Alias('is')]
         [Parameter(Mandatory = $true)]
@@ -121,7 +121,6 @@ function Search-PreferencedObject {
     $ChosenObjects = $SearchObjects | ForEach-Object {
     
         Write-Verbose "Search Property: $SearchProperty"
-        Write-Host $_
         $Property = Get-Property -Object $_ -PropertyPath $SearchProperty
         Write-Verbose $Property
         Write-Verbose ($SearchTags -join ',')
@@ -137,8 +136,8 @@ function Search-PreferencedObject {
             Object   = $_
         }
     } | `
-        Where-Object { $_.Hits -gt 0 } | `
-        Sort-Object -Property Hits -Descending
+            Where-Object { $_.Hits -gt 0 } | `
+            Sort-Object -Property Hits -Descending
 
     if ($ChosenObjects.Count -eq 0) {
         return

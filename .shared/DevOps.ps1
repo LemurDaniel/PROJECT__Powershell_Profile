@@ -53,11 +53,7 @@ function Invoke-AzDevOpsRest {
 
     [Parameter()]
     [switch]
-    $AsArray,
-
-    [Parameter()]
-    [System.String]
-    $PatOverride
+    $AsArray
   )
 
   switch ($CALL) {
@@ -79,17 +75,15 @@ function Invoke-AzDevOpsRest {
     }
   }
 
-  # Use Get-AccessToken for DevOps Sevices instead of PAT.
-  $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token #[System.String]::IsNullOrEmpty($PatOverride) ? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header) : $PatOverride
   $Request = @{
     Method  = $Method
     Body    = $body | ConvertTo-Json -Compress -AsArray:$AsArray
     Headers = @{ 
-      username         = 'O.o'
-      password         = $token
-      Authorization    = "Bearer $token"
+      username       = 'O.o'
+      password       = $token
+      Authorization  = "Basic $(Get-Pat)"
       #Authorization    = "Basic $token"
-      'Content-Domain' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
+      'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
     }
     Uri     = $Uri.Length -gt 0 ? $Uri : ($TargetURL -replace '/+', '/' -replace '/$', '' -replace ':/', '://')
   }
@@ -104,79 +98,14 @@ function Invoke-AzDevOpsRest {
 
   $response = Invoke-RestMethod @Request
 
-  if ($Property) {
-    return ($response.PSObject.Properties `
-      | Where-Object { $_.Name.toLower() -like $Property.toLower() }).Value 
+  Write-Verbose ($response | ConvertTo-Json)
+
+  if ([string]::IsNullOrEmpty($Property)) {
+    return $response | ForEach-Object { Get-Property -Object $_ -PropertyPath $Property } 
   }
   else {
     return $response
   }
-}
-
-##############################################################################################################
-##############################################################################################################
-##############################################################################################################
-
-function Is-PatExpired {
-
-  param()
-
-  $DEVOPS = Get-SecretFromStore CONFIG.AZURE_DEVOPS
-  $EXPIRES = [System.DateTime] $DEVOPS.EXPIRES
-  $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $EXPIRES
-  return $TIMESPAN.Days -lt 1
-
-}
-
-function Update-PatToken {
-
-  Write-Host -ForegroundColor RED 'PAT has expired. Please Enter new:'
-  $patToken = Read-Host -Prompt '   PAT' -AsSecureString
-  $expiration = Read-Host -Prompt '   Expires'
-
-  $AzureDevops = Get-SecretFromStore ORG -SecretPath CONFIG/AZURE_DEVOPS
-  $AzureDevops.PAT = [System.Net.NetworkCredential]::new('', $patToken).Password
-  $AzureDevops.EXPIRES = [System.DateTime]$expiration
-
-  try {
-    $Request = @{
-      METHOD      = 'GET'
-      CALL        = 'PROJ'
-      API         = '/_apis/git/repositories'
-      PatOverride = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$($AzureDevops.USER):$($AzureDevops.PAT)"))
-    }
-    $null = Invoke-AzDevOpsRest @Request
-  }
-  catch {
-    if (401 -eq $_.Exception.Response.StatusCode) {
-      Write-Host -ForegroundColor RED 'Something Went wrong: Request not Authorized. 401'
-
-      return Update-PatToken
-    }
-    else {
-      throw $_
-    }
-  }
-
-  Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS -SecretValue $AzureDevops
-}
-
-function Update-PatExpiration {
-
-  param()
-
-  if (Is-PatExpired) {
-    Write-Host -ForegroundColor RED 'PAT has expired. Download newer Version of tokenstore from Onedrive.'
-    Get-OneDriveSecretStore
-  }
-
-  if ((Is-PatExpired)) {
-    Update-PatToken
-    $pathLocal = Get-SecretFromStore SECRET_STORE_ORG__FILEPATH___TEMP
-    $fileLocal = Get-Item -Path $pathLocal
-    $fileLocal | Set-OneDriveItems -Path '/Dokumente/_Apps/_SECRET_STORE'
-  }
-
 }
 
 ##############################################################################################################
@@ -398,7 +327,6 @@ function Get-WorkItem {
   }
   $workItems = (Invoke-AzDevOpsRest @Request).fields | Where-Object { $_.'System.AssignedTo'.uniqueName -like $env:ORG_GIT_MAIL }
   return Search-In $workItems -where '(System.Title)' -is $SearchTags 
-  
 }
 
 function New-BranchFromWorkitem {

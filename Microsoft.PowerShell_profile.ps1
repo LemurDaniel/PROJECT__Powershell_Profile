@@ -98,6 +98,7 @@ function Get-DumbJoke {
 . $env:PROFILE_HELPERS_PATH/_SecretStore.ps1
 . $env:PROFILE_HELPERS_PATH/_OneDrivePersonal
 
+. $env:PROFILE_HELPERS_PATH/PatLifeCycle.ps1
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1
 . $env:PROFILE_HELPERS_PATH/Github.ps1
 . $env:PROFILE_HELPERS_PATH/Terraform.ps1
@@ -109,7 +110,6 @@ function Get-DumbJoke {
 Write-Host
 Get-SecretsFromStore PERSONAL
 Get-SecretsFromStore -Show
-Update-PatExpiration
 
 Add-EnvPaths
 

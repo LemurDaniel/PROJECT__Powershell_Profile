@@ -17,21 +17,22 @@ function Get-Pat {
         Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.EXPIRES -SecretValue $pat.validTo
         Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.AUTH_ID -SecretValue $pat.authorizationId
 
-        return $pat.token
+        $token = $pat.token
+    }
+    else {
+        $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $expires
+        if ($TIMESPAN.Days -lt 1) {
+            $pat = Update-PAT -DaysValid 60
+
+            Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.PAT -SecretValue $pat.token
+            Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.EXPIRES -SecretValue $pat.validTo
+            Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.AUTH_ID -SecretValue $pat.authorizationId
+
+            $token = $pat.token
+        }
     }
 
-    $TIMESPAN = New-TimeSpan -Start ([System.DateTime]::now) -End $expires
-    if ($TIMESPAN.Days -lt 1) {
-        $pat = Update-PAT -DaysValid 60
-
-        Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.PAT -SecretValue $pat.token
-        Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.EXPIRES -SecretValue $pat.validTo
-        Update-SecretStore ORG -SecretPath CONFIG/AZURE_DEVOPS.AUTH_ID -SecretValue $pat.authorizationId
-
-        return $pat.token
-    }
-
-    return $token
+    return [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$((Get-AzContext).Account.Id):$($token)"))
 }
 
 function Search-PAT {

@@ -70,13 +70,11 @@ function Get-DumbJoke {
 }
 
 
+Import-Module "$PSScriptRoot\Helper"
 
-## Load Helper Functions  Get-SecretsFromStore. 
-. $env:PROFILE_HELPERS_PATH/__Other.ps1
 . $env:PROFILE_HELPERS_PATH/_Utils.ps1
 . $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
 . $env:PROFILE_HELPERS_PATH/_SecretStore.ps1
-. $env:PROFILE_HELPERS_PATH/_OneDrivePersonal
 
 . $env:PROFILE_HELPERS_PATH/PatLifeCycle.ps1
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1

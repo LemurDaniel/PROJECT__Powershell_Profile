@@ -100,7 +100,7 @@ function Invoke-AzDevOpsRest {
 
   Write-Verbose ($response | ConvertTo-Json)
 
-  if ([string]::IsNullOrEmpty($Property)) {
+  if (![string]::IsNullOrEmpty($Property)) {
     return $response | ForEach-Object { Get-Property -Object $_ -PropertyPath $Property } 
   }
   else {

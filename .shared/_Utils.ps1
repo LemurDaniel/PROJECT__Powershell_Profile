@@ -69,7 +69,7 @@ function Get-Property {
         }
 
         if ($Object.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
-            Throw "Path: $PropertyPath - Error at Segment $segment - Object is $($SecretObject.GetType().Name)"
+            Throw "Path: $PropertyPath - Error at Segment $segment - Object is $($Object.GetType().Name)"
         }
 
         if ($null -eq $Object."$segment") {

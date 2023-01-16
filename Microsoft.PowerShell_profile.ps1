@@ -76,12 +76,10 @@ Import-Module "$PSScriptRoot\Helper"
 . $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
 . $env:PROFILE_HELPERS_PATH/_SecretStore.ps1
 
-. $env:PROFILE_HELPERS_PATH/PatLifeCycle.ps1
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1
 . $env:PROFILE_HELPERS_PATH/Github.ps1
 . $env:PROFILE_HELPERS_PATH/Terraform.ps1
 . $env:PROFILE_HELPERS_PATH/DevOps.ps1
-. $env:PROFILE_HELPERS_PATH/Azure.ps1
  
 
 ## Initial Script

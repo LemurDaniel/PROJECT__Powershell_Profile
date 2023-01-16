@@ -23,26 +23,26 @@ function Switch-Terraform {
         $tfBinarys = 'https://releases.hashicorp.com/terraform'
         $res = Invoke-WebRequest "$tfBinarys"
         $remoteVersions = $res.Links |
-            Select-Object @{
-                Name       = 'Version'
-                Expression = {
-                    [version]($_.href -replace '^\/terraform\/(\d.\d{1,2}.\d{1,2})\/', "`$1")
-                }
-            } |
-            Select-Object *, @{
-                Name       = 'Target'
-                Expression = {
-                    # I use WSL, because of that, i must allways use the windows exe file :)
-                    # if (!$IsLinux) {
-                    $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_windows_amd64.zip"
-                    # }
-                    # else {
-                    #   $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_linux_arm.zip"
-                    # }
-                }
-            } |
-            Where-Object Version -Is [Version] |
-            Where-Object Version -GE ([Version]'1.0.0') 
+        Select-Object @{
+            Name       = 'Version'
+            Expression = {
+                [version]($_.href -replace '^\/terraform\/(\d.\d{1,2}.\d{1,2})\/', "`$1")
+            }
+        } |
+        Select-Object *, @{
+            Name       = 'Target'
+            Expression = {
+                # I use WSL, because of that, i must allways use the windows exe file :)
+                # if (!$IsLinux) {
+                $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_windows_amd64.zip"
+                # }
+                # else {
+                #   $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_linux_arm.zip"
+                # }
+            }
+        } |
+        Where-Object Version -Is [Version] |
+        Where-Object Version -GE ([Version]'1.0.0') 
 
         $ValidateSetOptions = [string[]]($remoteVersions.Version | ForEach-Object { $_.toString() })
         $ValidateSetOptions = $ValidateSetOptions | Sort-Object -Descending
@@ -85,19 +85,4 @@ function Switch-Terraform {
         terraform --version
         Write-Host
     }
-}
-
-
-
-function Set-VersionActiveTF {
-
-    [CmdletBinding()]
-    param (
-        [Parameter()]
-        [System.String]
-        $version
-    )
-
-    Update-SecretStore ORG -ENV -SecretPath CONFIG.TF_VERSION_ACTIVE -SecretValue $version
-
 }

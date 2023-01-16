@@ -68,9 +68,9 @@ function Get-Property {
             Throw "Path: $PropertyPath - Error at Segment $segment - Object is NULL"
         }
 
-        if ($Object.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
-            Throw "Path: $PropertyPath - Error at Segment $segment - Object is $($Object.GetType().Name)"
-        }
+        #if ($Object.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
+        #    Throw "Path: $PropertyPath - Error at Segment $segment - Object is $($Object.GetType().Name)"
+        #}
 
         if ($null -eq $Object."$segment") {
             Throw "Path: $PropertyPath - Error at Segment $segment - Segment does not exist "
@@ -121,14 +121,14 @@ function Search-PreferencedObject {
     $ChosenObjects = $SearchObjects | ForEach-Object {
     
         Write-Verbose "Search Property: $SearchProperty"
-        $Property = Get-Property -Object $_ -PropertyPath $SearchProperty
+        $Property = $_."$SearchProperty"
         Write-Verbose $Property
         Write-Verbose ($SearchTags -join ',')
         Write-Verbose ($ExcludeSearchTags -join ',')
         $positiveHits = ($SearchTags | Where-Object { $Property.toLower().contains($_.toLower()) } | Measure-Object).Count
         $negativeHits = ($ExcludeSearchTags | Where-Object { !($Property.toLower().contains($_.toLower())) } | Measure-Object).Count
 
-        $returnValue = [String]::IsNullOrEmpty($returnProperty) ? $_ : (Get-Property -Object $_ -PropertyPath $returnProperty)
+        $returnValue = [String]::IsNullOrEmpty($returnProperty) ? $_ : $_."$returnProperty"
 
         return [PSCustomObject]@{
             Hits     = $positiveHits - $negativeHits

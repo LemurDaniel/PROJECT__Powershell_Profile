@@ -23,26 +23,26 @@ function Switch-Terraform {
         $tfBinarys = 'https://releases.hashicorp.com/terraform'
         $res = Invoke-WebRequest "$tfBinarys"
         $remoteVersions = $res.Links |
-        Select-Object @{
-            Name       = 'Version'
-            Expression = {
-                [version]($_.href -replace '^\/terraform\/(\d.\d{1,2}.\d{1,2})\/', "`$1")
-            }
-        } |
-        Select-Object *, @{
-            Name       = 'Target'
-            Expression = {
-                # I use WSL, because of that, i must allways use the windows exe file :)
-                # if (!$IsLinux) {
-                $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_windows_amd64.zip"
-                # }
-                # else {
-                #   $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_linux_arm.zip"
-                # }
-            }
-        } |
-        Where-Object Version -Is [Version] |
-        Where-Object Version -GE ([Version]'1.0.0') 
+            Select-Object @{
+                Name       = 'Version'
+                Expression = {
+                    [version]($_.href -replace '^\/terraform\/(\d.\d{1,2}.\d{1,2})\/', "`$1")
+                }
+            } |
+            Select-Object *, @{
+                Name       = 'Target'
+                Expression = {
+                    # I use WSL, because of that, i must allways use the windows exe file :)
+                    # if (!$IsLinux) {
+                    $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_windows_amd64.zip"
+                    # }
+                    # else {
+                    #   $tfBinarys + $_.href + "/$($_.version)/terraform_$($_.version)_linux_arm.zip"
+                    # }
+                }
+            } |
+            Where-Object Version -Is [Version] |
+            Where-Object Version -GE ([Version]'1.0.0') 
 
         $ValidateSetOptions = [string[]]($remoteVersions.Version | ForEach-Object { $_.toString() })
         $ValidateSetOptions = $ValidateSetOptions | Sort-Object -Descending
@@ -69,12 +69,9 @@ function Switch-Terraform {
         $TerraformTarget = Join-Path -Path $TerraformFolder -ChildPath "v$($TFVersion)"
         if ("v$($TFVersion)" -notin $TerraformInstallations.Name) {
            
-            $TFVersion = $TFVersion -replace 'v', ''
-            $remoteTarget = "https://releases.hashicorp.com/terraform/$TFVersion/terraform_$($TFVersion)_windows_amd64.zip"
-
+            $remoteTarget = $remoteVersions | Where-Object -Property 'Version' -EQ -Value $TFVersion
             $downloadZipFile = "$env:USERPROFILE\downloads/terraform_$TFVersion`_temp-$(Get-Random).zip"
-            Invoke-WebRequest -Method GET -Uri $remoteTarget -OutFile $downloadZipFile
-
+            Invoke-WebRequest -Method GET -Uri $remoteTarget.Target -OutFile $downloadZipFile
             $null = New-Item -Path $TerraformTarget -ItemType Directory -Force
             $terraformZip = [System.IO.Compression.ZipFile]::OpenRead($downloadZipFile)
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$TerraformTarget\terraform.exe", $true)

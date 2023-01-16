@@ -14,7 +14,7 @@ function Invoke-AzDevOpsRest {
     [Parameter()]
     [System.String]
     [ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev', 'app.vssps.visualstudio')]
-    $Type = 'dev.azure',
+    $Domain = 'dev.azure',
 
     [Parameter()]
     [ValidateSet('ORG', 'PROJ', 'TEAM', 'URI', 'NONE')]
@@ -49,7 +49,7 @@ function Invoke-AzDevOpsRest {
     [Parameter()]
     [System.String]
     [ValidateSet([DevOpsOrganization])]
-    $OrgName = [DevOpsOrganization]::Default,
+    $Organization = [DevOpsOrganization]::Default,
 
     [Parameter()]
     [switch]
@@ -62,32 +62,34 @@ function Invoke-AzDevOpsRest {
 
   switch ($CALL) {
     'NONE' {
-      $TargetURL = "https://$Type.com/$API"
+      $TargetURL = "https://$Domain.com/$API"
     }
     'ORG' { 
-      $TargetURL = "https://$Type.com/$OrgName/$API"
+      $TargetURL = "https://$Domain.com/$Organization/$API"
       continue
     }
     'PROJ' { 
       $project = ([Project]::GetByName($ProjectName))
-      $TargetURL = "https://$Type.com/$OrgName/$($project.id)/$API"
+      $TargetURL = "https://$Domain.com/$Organization/$($project.id)/$API"
     }
     'TEAM' { 
       $project = ([Project]::GetByName($ProjectName))
       $team = Search-Int $project.teams -is $TeamQuery
-      $TargetURL = "https://$Type.com/$OrgName/$($project.id)/$($team.id)/$API"
+      $TargetURL = "https://$Domain.com/$Organization/$($project.id)/$($team.id)/$API"
     }
   }
 
-  $token = [System.String]::IsNullOrEmpty($PatOverride) ? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header) : $PatOverride
+  # Use Get-AccessToken for DevOps Sevices instead of PAT.
+  $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token #[System.String]::IsNullOrEmpty($PatOverride) ? $(Get-SecretFromStore CONFIG/AZURE_DEVOPS.Header) : $PatOverride
   $Request = @{
     Method  = $Method
     Body    = $body | ConvertTo-Json -Compress -AsArray:$AsArray
     Headers = @{ 
-      username       = 'O.o'
-      password       = $token
-      Authorization  = "Basic $token"
-      'Content-Type' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
+      username         = 'O.o'
+      password         = $token
+      Authorization    = "Bearer $token"
+      #Authorization    = "Basic $token"
+      'Content-Domain' = $Method.ToLower() -eq 'get' ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
     }
     Uri     = $Uri.Length -gt 0 ? $Uri : ($TargetURL -replace '/+', '/' -replace '/$', '' -replace ':/', '://')
   }
@@ -193,15 +195,22 @@ function Get-DevOpsProjects {
 
   Connect-AzAccount
 
-  $projects = Invoke-AzDevOpsRest -Call ORG -Type dev.azure -Method GET -OrgName $Org -API _apis/projects?api-version=6.0 `
+  $RequestBlueprint = @{
+    METHOD       = 'GET'
+    CALL         = 'ORG'
+    DOMAIN       = 'dev.azure'
+    Organization = $Org
+  }
+
+  $projects = Invoke-AzDevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0' `
   | Select-Object -Property name, `
   @{Name = 'ShortName'; Expression = { "__$($_.Name)".replace(' ', '') } }, `
   @{Name = 'ReposLocation'; Expression = { $_.Name.replace(' ', '') } }, `
   @{Name = 'Teams'; Expression = {  
-      Invoke-AzDevOpsRest -Call ORG -Type dev.azure -Method GET -OrgName $Org -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
+      Invoke-AzDevOpsRest @RequestBlueprint -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
   }, `
   @{Name = 'Repositories'; Expression = {  
-      Invoke-AzDevOpsRest -Call ORG -Type dev.azure -Method GET -OrgName $Org -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
+      Invoke-AzDevOpsRest @RequestBlueprint -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
   }, `
     visibility, id, url
 
@@ -552,7 +561,7 @@ function Get-RecentSubmoduleTags {
 
   # Query All Repositories in DevOps
   $devopsRepositories = Invoke-AzDevOpsRest -Method GET -CALL PROJ -API '/_apis/git/repositories/'
-  $preferencedRepos = Search-In -$devopsRepositories -is 'terraform' -Multiple  
+  $preferencedRepos = Search-In $devopsRepositories -is 'terraform' -Multiple  
 
   foreach ($repository in $preferencedRepos) {
 
@@ -842,7 +851,7 @@ function Start-Pipeline {
   $Request = @{
     ProjectName = $projectName
     Method      = 'POST'
-    Type        = 'dev.azure'
+    Domain      = 'dev.azure'
     CALL        = 'PROJ'
     API         = '/_apis/build/builds?api-version=6.0'
     Body        = @{
@@ -887,7 +896,7 @@ function Start-PipelineOnBranch {
   $Request = @{
     ProjectName = $projectName
     Method      = 'GET'
-    Type        = 'dev.azure'
+    Domain      = 'dev.azure'
     CALL        = 'PROJ'
     API         = '_apis/pipelines?api-version=7.0'
   }

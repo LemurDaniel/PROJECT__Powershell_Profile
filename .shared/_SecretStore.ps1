@@ -308,8 +308,7 @@ function Update-SecretStore {
     $SecretStoreSource,
 
     [parameter()]
-    [AllowNull()]
-    [ORGANIZATION]
+    [ValidateSet([DevOpsOrganization])]
     $Organization = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT, #TODO
 
     [parameter(Mandatory = $true)]
@@ -336,7 +335,7 @@ function Update-SecretStore {
   $SECRET_STORE;
   switch ($SecretStoreSource) {
     'ORG' {
-      $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -Organization $Organization -noCleanNames
+      $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames
     }
     'PERSONAL' {
       $SECRET_STORE = Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames

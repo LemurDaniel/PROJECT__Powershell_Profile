@@ -121,6 +121,7 @@ function Search-PreferencedObject {
     $ChosenObjects = $SearchObjects | ForEach-Object {
     
         Write-Verbose "Search Property: $SearchProperty"
+        Write-Host $_
         $Property = Get-Property -Object $_ -PropertyPath $SearchProperty
         Write-Verbose $Property
         Write-Verbose ($SearchTags -join ',')

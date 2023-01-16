@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
 #net user administrator /active:yes
 #net user administrator /active:no
@@ -78,7 +78,6 @@ Import-Module "$PSScriptRoot\Helper"
 
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1
 . $env:PROFILE_HELPERS_PATH/Github.ps1
-. $env:PROFILE_HELPERS_PATH/Terraform.ps1
 . $env:PROFILE_HELPERS_PATH/DevOps.ps1
  
 

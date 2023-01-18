@@ -18,6 +18,10 @@ function Get-DevOpsProjects {
     }
 
     $Cache = Get-AzureDevOpsCache -Type Project -Identifier 'all' -Organization  $Organization
+    if($Cache){
+        return $Cache
+    }
+    
     $projects = Invoke-DevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0'
     return Set-AzureDevOpsCache -Object $projects -Type Project -Identifier 'all' -Organization  $Organization
 }

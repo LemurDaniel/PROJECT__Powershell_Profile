@@ -4,10 +4,15 @@ function Get-Property {
         [System.Object]
         $Object,
 
-        [Parameter(Mandatory = $true)]
+        [Alias('Property')]
+        [Parameter(Mandatory = $false)]
         [System.String]
         $PropertyPath
     )
+
+    if([System.String]::isNullOrEmpty($PropertyPath)){
+        return $Object
+    }
 
     $splitPath = $PropertyPath -split '[\/\.]+'
     foreach ($segment in $splitPath) {
@@ -18,9 +23,9 @@ function Get-Property {
             Throw "Path: $PropertyPath - Error at Segment $segment - Object is NULL"
         }
 
-        if ($Object.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
-            Throw "Path: $PropertyPath - Error at Segment $segment - Object is $($Object.GetType().Name)"
-        }
+        #if ($Object.GetType().Name -notin @('PSObject', 'PSCustomObject') ) {
+        #    Throw "Path: $PropertyPath - Error at Segment $segment - Object is $($Object.GetType().Name)"
+        #}
 
         if ($null -eq $Object."$segment") {
             Throw "Path: $PropertyPath - Error at Segment $segment - Segment does not exist "

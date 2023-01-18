@@ -1,4 +1,3 @@
-
 function Search-PreferencedObject {
 
     [cmdletbinding()]
@@ -38,18 +37,14 @@ function Search-PreferencedObject {
     $ChosenObjects = $SearchObjects | ForEach-Object {
     
         Write-Verbose "Search Property: $SearchProperty"
-        $Property = $_."$SearchProperty"
-
-        Write-Verbose ($Property | ConvertTo-Json)
+        $Property = (Get-Property -Object $_ -Property $SearchProperty)
+        Write-Verbose $Property
         Write-Verbose ($SearchTags -join ',')
         Write-Verbose ($ExcludeSearchTags -join ',')
         $positiveHits = ($SearchTags | Where-Object { $Property.toLower().contains($_.toLower()) } | Measure-Object).Count
         $negativeHits = ($ExcludeSearchTags | Where-Object { !($Property.toLower().contains($_.toLower())) } | Measure-Object).Count
 
-        Write-Verbose $positiveHits
-        Write-Verbose $negativeHits
-
-        $returnValue = [String]::IsNullOrEmpty($returnProperty) ? $_ : $_."$returnProperty"
+        $returnValue = [String]::IsNullOrEmpty($returnProperty) ? $_ : (Get-Property -Object $_ -Property $returnProperty)
 
         return [PSCustomObject]@{
             Hits     = $positiveHits - $negativeHits

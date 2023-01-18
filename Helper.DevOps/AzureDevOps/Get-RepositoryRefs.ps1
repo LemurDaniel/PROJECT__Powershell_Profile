@@ -11,7 +11,7 @@ function Get-RepositoryRefs {
         $id
     )  
 
-    $repositoryId = (Get-RepositoryInfo -path $path -id $id).id
+    $repositoryId = Get-RepositoryInfo -Property 'id' -path $path -id $id
     
     $Request = @{
         METHOD   = 'GET'

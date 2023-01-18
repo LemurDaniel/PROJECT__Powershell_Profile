@@ -43,7 +43,7 @@ function Open-Repository {
 
 
 
-    $adUser = Get-AzADUser -Mail (Get-AzContext).Account.Id
+    $adUser = Get-AzADUser -Mail (Get-AzContext).Account.Id # Takes long initialy
     $userName = $adUser.DisplayName
     $userMail = $adUser.UserPrincipalName
 
@@ -52,7 +52,7 @@ function Open-Repository {
         git -C $repository.Localpath clone $repository.remoteUrl .
     }
 
-    git config --global --add safe.directory $repositoryPath
+    git config --global --add safe.directory $repository.Localpath
     git -C $repository.Localpath config --local user.name "$userName" 
     git -C $repository.Localpath config --local user.email "$userMail"
 

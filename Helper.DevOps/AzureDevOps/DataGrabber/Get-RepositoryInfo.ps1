@@ -4,6 +4,10 @@ function Get-RepositoryInfo {
     param ( 
         [Parameter(Mandatory = $false)]
         [System.String]
+        $Property,
+
+        [Parameter(Mandatory = $false)]
+        [System.String]
         $path,
 
         [Parameter(Mandatory = $false)]
@@ -15,10 +19,11 @@ function Get-RepositoryInfo {
         $path = [System.String]::IsNullOrEmpty($path) ? (git rev-parse --show-toplevel) : $path
         $repoName = $path.split('/')[-1]
         $repositories = Get-ProjectInfo 'repositories'
-        return Search-In $repositories -where 'name' -is $repoName
+        $repository = Search-In $repositories -where 'name' -is $repoName
     }
     else {
-        return Get-ProjectInfo 'repositories' | Where-Object -Property id -EQ -Value $id
+        $repository = Get-ProjectInfo 'repositories' | Where-Object -Property id -EQ -Value $id
     }
 
+    return Get-Property -Object $repository -Property $Property
 }

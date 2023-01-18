@@ -113,63 +113,6 @@ function Invoke-AzDevOpsRest {
 ##############################################################################################################
 ##############################################################################################################
 
-
-function Get-DevOpsProjects {
-
-  [cmdletbinding()]
-  param(
-    [Parameter()]
-    [ORGANIZATION]
-    $Org = $env:AZURE_DEVOPS_ORGANIZATION_CURRENT
-  )
-
-  Connect-AzAccount
-
-  $RequestBlueprint = @{
-    METHOD       = 'GET'
-    CALL         = 'ORG'
-    DOMAIN       = 'dev.azure'
-    Organization = $Org
-  }
-
-  $projects = Invoke-AzDevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0' `
-  | Select-Object -Property name, `
-  @{Name = 'ShortName'; Expression = { "__$($_.Name)".replace(' ', '') } }, `
-  @{Name = 'ReposLocation'; Expression = { $_.Name.replace(' ', '') } }, `
-  @{Name = 'Teams'; Expression = {  
-      Invoke-AzDevOpsRest @RequestBlueprint -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" }
-  }, `
-  @{Name = 'Repositories'; Expression = {  
-      Invoke-AzDevOpsRest @RequestBlueprint -API "/$($_.id)/_apis/git/repositories?api-version=4.1" }
-  }, `
-    visibility, id, url
-
-  Update-SecretStore ORG $ORG -SecretPath CACHE.DEVOPS_REPOSITORIES_ALL -SecretValue $projects.Repositories
-
-  $projects | ForEach-Object { 
-    $_.Repositories = ($_.Repositories | Select-Object -Property `
-      @{Name = 'Repository'; Expression = {
-          [PSCustomObject]@{
-            id            = $_.id
-            name          = $_.name
-            url           = $_.url
-            remoteUrl     = $_.remoteUrl
-            defaultBranch = $_.defaultBranch
-                    
-          }
-        }
-      }).Repository
-  }
-   
-  Update-SecretStore ORG $ORG -SecretPath CACHE.DEVOPS_PROJECTS -SecretValue $projects
-  Update-SecretStore ORG $ORG -SecretPath CACHE.AZURE_TENANTS -SecretValue (Get-AzTenant)
-
-}
-
-##############################################################################################################
-##############################################################################################################
-##############################################################################################################
-
 function Get-RepositoryInfo {
 
   param ( 
@@ -180,9 +123,9 @@ function Get-RepositoryInfo {
 
   $repositoryPath = [System.String]::IsNullOrEmpty($repositoryPath) ? (Get-Location) : $repositoryPath
   $repositoryPath = (git -C $repositoryPath rev-parse --show-toplevel)
-  $project = [Project]::GetByPath($repositoryPath)
+  $project = ([Project]::ALL | Where-Object { $_.id -eq '625cb37d-7374-4306-b7e9-98f0ef6958a5' })
   $repositoryName = $repositoryPath.split('/')[-1]
-  $preferencedRepo = Search-In ([Repository]::GetByProjectName($project.name)) -where 'name' -is $repositoryName  
+  $preferencedRepo = Search-In ([Repository]::ALL | Where-Object { $_.project.id -eq '625cb37d-7374-4306-b7e9-98f0ef6958a5' }) -where 'name' -is $repositoryName  
   
   return [PSCustomObject]@{
     Project        = $project
@@ -833,7 +776,7 @@ function Start-Pipeline {
   $Pipelines = Invoke-AzDevOpsRest @Request
   
   # Search Pipelines by tags.
-  $Pipelines = Search-In $Pipelines -where 'name' -is $SearchTags -not $excludedTags -Multiple:$Multiple
+  $Pipelines = Search-In $Pipelines.value -where 'name' -is $SearchTags -not $excludedTags -Multiple:$Multiple
 
   # Action for each Pipeline.
   $Pipelines | ForEach-Object { 

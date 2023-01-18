@@ -72,9 +72,15 @@ function Get-DumbJoke {
 
 Import-Module "$PSScriptRoot\Helper"
 
+@(
+    'ValidateSet'
+) | `
+    ForEach-Object { Get-Item "$PSScriptRoot/$_" } | `
+    Get-ChildItem -Filter '*.ps1' -ErrorAction Stop | `
+    ForEach-Object { . $_.FullName }
+
 . $env:PROFILE_HELPERS_PATH/_Utils.ps1
 . $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
-. $env:PROFILE_HELPERS_PATH/_SecretStore.ps1
 
 . $env:PROFILE_HELPERS_PATH/VersionControl.ps1
 . $env:PROFILE_HELPERS_PATH/Github.ps1

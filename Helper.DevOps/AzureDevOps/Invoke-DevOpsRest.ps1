@@ -31,6 +31,10 @@ function Invoke-DevOpsRest {
 
         [Parameter()]
         [System.String]
+        $team = 'DC Azure Migration Team',
+
+        [Parameter()]
+        [System.String]
         $Uri,
 
         [Parameter()]
@@ -60,7 +64,7 @@ function Invoke-DevOpsRest {
         }
         'TEAM' { 
             $project = Get-ProjectInfo 'id'
-            $team = Get-ProjectInfo 'teams' | Where-Object -Property name -Like -Value 'DC Azure Migration Team'
+            $team = Search-In (Get-ProjectInfo 'teams') -where name -is 'DC Azure Migration Team'
             $TargetURL = "https://$Domain.com/$Organization/$($project)/$($team.id)/$API"
             break
         }
@@ -84,16 +88,18 @@ function Invoke-DevOpsRest {
         Uri     = $Uri.Length -gt 0 ? $Uri : ($TargetURL -replace '/+', '/' -replace '/$', '' -replace ':/', '://')
     }
 
-    if (!$Request.Uri.contains('api-version')) {
-        $Request.Uri += ($Request.Uri.contains('?') ? '&' : '?') + 'api-version=7.1-preview.1'
-    }
-
     Write-Verbose 'BODY START'
     Write-Verbose ($Request | ConvertTo-Json -Depth 8)
     Write-Verbose 'BODY END'
 
-
     $response = Invoke-RestMethod @Request
+
+    if($response.GetType() -eq [System.String] -AND $response.toLower().contains('sign out')){
+        Disconnect-AzAccount 
+        Connect-AzAccount
+        $response | ConvertTo-Json |out-file test.json
+        $response |out-file test.html
+    }
 
     Write-Verbose ($response | ConvertTo-Json -Depth 8)
 

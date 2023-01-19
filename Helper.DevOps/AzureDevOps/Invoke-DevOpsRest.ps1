@@ -64,7 +64,7 @@ function Invoke-DevOpsRest {
         }
         'TEAM' { 
             $project = Get-ProjectInfo 'id'
-            $team = Search-In (Get-ProjectInfo 'teams') -where name -is 'DC Azure Migration Team'
+            $team = Search-In (Get-ProjectInfo 'teams') -where name -is $team
             $TargetURL = "https://$Domain.com/$Organization/$($project)/$($team.id)/$API"
             break
         }

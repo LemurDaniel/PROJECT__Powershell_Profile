@@ -1,25 +1,4 @@
 
-function Edit-PSProfile {
-
-    param(
-        [Parameter()]
-        [System.String]
-        [ValidateSet([PsProfile])] 
-        $PsProfile = 'Profile'
-    )
-
-    if ($PsProfile -eq 'Profile') {
-        code $env:PS_PROFILE
-    }
-    elseif ($PsProfile -eq 'All') {
-        code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter '*.ps1')      
-    }
-    else {
-        code (Get-ChildItem -Path $env:PROFILE_HELPERS_PATH -Filter "$PsProfile.ps1") 
-    }
-}
-
-################################################################################################
 
 $global:DefaultEnvPaths = @{
     

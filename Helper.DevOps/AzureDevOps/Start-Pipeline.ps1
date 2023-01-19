@@ -23,6 +23,7 @@ function Start-Pipeline {
   )
 
 
+  $Organization = 'baugruppe'
   $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
   
   # Get Pipelines.
@@ -55,7 +56,7 @@ function Start-Pipeline {
     }
 
     # Open in Browser.
-    $pipelineUrl = "https://dev.azure.com/$organization/$projectNameUrlEncoded/_build?definitionId=$($_.id)"
+    $pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build?definitionId=$($_.id)"
 
     Write-Host -Foreground Green '      '
     Write-Host -Foreground Green " 🎉 Started Pipeline '$($_.folder)/folder$($_.name)'  on $environment 🎉  "

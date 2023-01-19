@@ -59,7 +59,7 @@ function Open-Repository {
     }      
 
     $item = Get-Item -Path $repository.Localpath 
-    git config --global --add safe.directory ($item.Fullname -replace '\\','/' )
+    git config --global --add safe.directory ($item.Fullname -replace '[\\]+','/' )
     git -C $repository.Localpath config --local user.name "$userName" 
     git -C $repository.Localpath config --local user.email "$userMail"
 
@@ -68,5 +68,4 @@ function Open-Repository {
     }
 
     return $item
-    #git config --global --add safe.directory 'C:/Users/Daniel/Documents/Repos/__BAUGRUPPE/DC Azure Migration/terraform-acf-main'
 }

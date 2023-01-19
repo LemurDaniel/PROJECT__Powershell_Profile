@@ -8,12 +8,10 @@ function Get-AzureDevOpsCache {
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identifier,
-
-        [Parameter(Mandatory = $true)]
-        $Organization
+        $Identifier
     )
 
+    $Organization = Get-DevOpsCurrentContext -Organization
     $cachePath = Join-Path -Path "$PSScriptRoot/../.cache/" -ChildPath (".$Type.$Organization.$Identifier.json".toLower() -replace ' ', '_') 
     $Cache = Get-Content $cachePath -ErrorAction SilentlyContinue | ConvertFrom-Json -ErrorAction SilentlyContinue
     
@@ -40,15 +38,11 @@ function Set-AzureDevOpsCache {
         [System.String]
         $Identifier,
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Organization,
-
         [Parameter(Mandatory = $false)]
         $Alive = 7
     )
 
-
+    $Organization = Get-DevOpsCurrentContext -Organization
     $cachePath = Join-Path -Path "$PSScriptRoot/../.cache/" -ChildPath (".$Type.$Organization.$Identifier.json".toLower() -replace ' ', '_') 
     @{
         Date = ([DateTime]::Now).AddDays($Alive)

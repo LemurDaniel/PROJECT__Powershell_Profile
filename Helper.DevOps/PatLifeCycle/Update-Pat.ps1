@@ -4,7 +4,7 @@ function Update-PAT {
     param (
         [Parameter()]
         [System.String]
-        $Organization = 'baugruppe',
+        $Organization,
 
         [Parameter()]
         [System.Int32]
@@ -15,6 +15,7 @@ function Update-PAT {
         $DaysValid
     )
     
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
     $CurrentUser = (Get-AzContext).Account.id
     $PatName = "User_$CurrentUser` API-generated PAT"
     $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token

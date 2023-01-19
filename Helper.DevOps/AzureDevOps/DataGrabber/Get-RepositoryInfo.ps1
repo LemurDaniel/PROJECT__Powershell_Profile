@@ -25,5 +25,9 @@ function Get-RepositoryInfo {
         $repository = Get-ProjectInfo 'repositories' | Where-Object -Property id -EQ -Value $id
     }
 
+    if(!$repository){
+        Throw "Repository not found in current Project '$(Get-ProjectInfo 'name')'"
+    }
+
     return Get-Property -Object $repository -Property $Property
 }

@@ -23,7 +23,7 @@ function Start-Pipeline {
   )
 
 
-  $Organization = 'baugruppe'
+  $Organization =  Get-DevOpsCurrentContext -Organization
   $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
   
   # Get Pipelines.

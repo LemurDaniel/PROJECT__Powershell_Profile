@@ -93,6 +93,7 @@ function New-PullRequest {
         $pullRequestId = Invoke-DevOpsRest @Request
     }
 
+    
     $projectName = (Get-ProjectInfo 'name').replace(' ', '%20')
     $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($repository.name)/pullrequest/$pullRequestId"
 

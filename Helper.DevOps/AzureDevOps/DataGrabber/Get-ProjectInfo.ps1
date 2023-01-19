@@ -4,28 +4,26 @@ function Get-ProjectInfo {
     param (
         [Parameter()]
         [System.String]
-        $Property,
-
-        [Parameter()]
-        [System.String]
-        $Organization = 'baugruppe'
+        $Property
     )
 
 
-    $ProjectName = 'DC Azure Migration' # TODO extend for other projects # Now local cache files instead one central json cache
-    $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName -Organization $Organization
+    $ProjectName = Get-DevOpsCurrentContext -Project
+    $Organization = Get-DevOpsCurrentContext -Organization
+
+    $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName
 
     if ($Cache) {
         return Get-Property -Object $Cache -Property $Property
     }
 
+
     # Get new stuff
     $RequestBlueprint = @{
-        METHOD       = 'GET'
-        Call         = 'ORG'
-        DOMAIN       = 'dev.azure'
-        Organization = $Organization 
-        Property     = 'value'
+        METHOD   = 'GET'
+        Call     = 'ORG'
+        DOMAIN   = 'dev.azure'
+        Property = 'value'
     }
 
     $project = Invoke-DevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0' | `
@@ -50,6 +48,6 @@ function Get-ProjectInfo {
         $_ | Add-Member NoteProperty Localpath (Join-Path "$projectPath" "$($_.name)") -Force
     }
 
-    Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName -Organization $Organization
-    return Get-Property -Object $Cache -Property $Property
+    Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName
+    return Get-Property -Object $Project -Property $Property
 }

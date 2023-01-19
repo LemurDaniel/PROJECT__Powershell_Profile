@@ -2,9 +2,11 @@ function Get-Pat {
     param (
         [Parameter()]
         [System.String]
-        $Organization = 'baugruppe'
+        $Organization
     )
 
+
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
     $token = Get-SecretFromStore CONFIG/AZURE_DEVOPS.PAT -ErrorAction SilentlyContinue
     $expires = Get-SecretFromStore CONFIG/AZURE_DEVOPS.EXPIRES -ErrorAction SilentlyContinue
     $authorizationId = Get-SecretFromStore CONFIG/AZURE_DEVOPS.AUTH_ID -ErrorAction SilentlyContinue

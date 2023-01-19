@@ -34,10 +34,6 @@ function Invoke-DevOpsRest {
         $Uri,
 
         [Parameter()]
-        [System.String]
-        $Organization = 'baugruppe',
-
-        [Parameter()]
         [switch]
         $AsArray,
 
@@ -46,6 +42,8 @@ function Invoke-DevOpsRest {
         $contentType
     )
 
+
+    $Organization = Get-DevOpsCurrentContext -Organization
     switch ($SCOPE) {
         'NONE' {
             $TargetURL = "https://$Domain.com/$API"

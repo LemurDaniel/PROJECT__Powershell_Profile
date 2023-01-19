@@ -3,15 +3,11 @@ function Get-RecentSubmoduleTags {
     param(
         [Parameter()]
         [switch]
-        $forceApiCall = $false,
-
-        [Parameter()]
-        [System.String]
-        $ProjectName = 'DC Azure Migration'
+        $forceApiCall = $false
     )
 
-
-    $moduleSourceReferenceCached = Get-AzureDevOpsCache -Type ModuleTags -Identifier $ProjectName -Organization 'baugruppe'
+    $ProjectName = Get-DevOpsCurrentContext -Project
+    $moduleSourceReferenceCached = Get-AzureDevOpsCache -Type ModuleTags -Identifier $ProjectName
     if ($null -ne $moduleSourceReferenceCached -AND $forceApiCall -ne $true) {
         Write-Host -ForegroundColor Yellow 'Fetching Cached Tags'
         return $moduleSourceReferenceCached
@@ -58,5 +54,5 @@ function Get-RecentSubmoduleTags {
     }
 
     $moduleSourceReferenceCached = $preferencedRepos | Where-Object { $_._TagsAssigned }
-    return Set-AzureDevOpsCache -Object $moduleSourceReferenceCached -Type ModuleTags -Identifier $ProjectName -Organization 'baugruppe'
+    return Set-AzureDevOpsCache -Object $moduleSourceReferenceCached -Type ModuleTags -Identifier $ProjectName
 }

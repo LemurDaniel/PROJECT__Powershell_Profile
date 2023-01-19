@@ -2,8 +2,10 @@ function Update-ModuleSourcesAllRepositories {
     param (
         [Parameter()]
         [switch]
-        $forceApiCall = $false
+        $refresh = $false
     )
+
+    
     
     # Peform regex on following last
     $sortOrder = @(
@@ -20,7 +22,7 @@ function Update-ModuleSourcesAllRepositories {
 
 
 
-    $null = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
+    $null = Get-RecentSubmoduleTags -refresh:($refresh)
     $allTerraformRepositories = Get-ProjectInfo 'repositories' | `
         Where-Object { $_.name.contains('terraform') } | `
         Sort-Object -Property { $sortOrder.IndexOf($_.name) }
@@ -32,8 +34,8 @@ function Update-ModuleSourcesAllRepositories {
         $null = Open-Repository -repositoryName ($repository.name) -onlyDownload
 
         Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
-        $repoRefs = Get-RepositoryRefs -repositoryId $repository.id | `
-            Where-Object { $_.name.contains('dev') -OR $_.name.contains('main') -OR $_.name.contains('master') } | `
+        $repoRefs = Get-RepositoryRefs -id $repository.id | `
+            Where-Object -Property name -In @('refs/heads/dev' ,'refs/heads/main' ,'refs/heads/master' ) | `
             Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
           
         git -C $repository.Localpath checkout ($repoRefs[0].name -split '/')[-1]
@@ -43,14 +45,10 @@ function Update-ModuleSourcesAllRepositories {
 
         Write-Host -ForegroundColor Yellow 'Search and Replace Submodule Source Paths'
         $replacements = Update-ModuleSourcesInPath -replacementPath ($repository.Localpath) -Confirm:$false
-
         if ($replacements.Count -eq 0) {
             continue;
         }
 
-
-
-        
         # Case when feature branch is needed
         if ($forceFeatureBranch.Contains($repository.name)) {
         

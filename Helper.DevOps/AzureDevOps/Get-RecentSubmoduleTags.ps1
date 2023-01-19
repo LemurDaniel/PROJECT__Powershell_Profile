@@ -3,34 +3,45 @@ function Get-RecentSubmoduleTags {
     param(
         [Parameter()]
         [switch]
-        $forceApiCall = $false
+        $refresh
     )
 
-    $ProjectName = Get-DevOpsCurrentContext -Project
+    $ProjectName = Get-ProjectInfo 'name'
     $moduleSourceReferenceCached = Get-AzureDevOpsCache -Type ModuleTags -Identifier $ProjectName
-    if ($null -ne $moduleSourceReferenceCached -AND $forceApiCall -ne $true) {
+
+    if ($null -ne $moduleSourceReferenceCached -AND $refresh -ne $true) {
         Write-Host -ForegroundColor Yellow 'Fetching Cached Tags'
         return $moduleSourceReferenceCached
     }
 
+
+
     Write-Host -ForegroundColor Yellow 'Fetching Latest Tags'
 
     # Query All Repositories in DevOps
-    $devopsRepositories = Get-ProjectInfo 'repositories'
-    $preferencedRepos = Search-In $devopsRepositories -is 'terraform' -Multiple  
+    $repositories = Get-ProjectInfo 'repositories'
+    $terraformRepositories = Search-In $repositories -is 'terraform' -Multiple  
 
-    
-    foreach ($repository in $preferencedRepos) {
+
+    foreach ($repository in $terraformRepositories) {
 
         # Call Api to get all tags on Repository and sort them by newest
-        $sortedTags = Get-RepositoryRefs -repositoryId $repository.id | Where-Object { $_.name.contains('tags') } | `
+        $sortedTags = Get-RepositoryRefs -id $repository.id -Tags | `
             Select-Object -Property `
-        @{Name = 'Tag'; Expression = { $_.name.Split('/')[2] } }, `
-        @{Name = 'TagIntSorting'; Expression = { 
-                return [String]::Format('{0:d4}.{1:d4}.{2:d4}', @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })) 
+        @{
+            Name       = 'Tag'; 
+            Expression = { $_.name.Split('/')[2] } 
+        }, `
+        @{
+            Name       = 'TagIntSorting'; 
+            Expression = { 
+                return [String]::Format('{0:d4}.{1:d4}.{2:d4}', 
+                    @($_.name.split('/')[2].Split('.') | ForEach-Object { [int32]::parse($_) })
+                ) 
             }
         } | Sort-Object -Property TagIntSorting -Descending
     
+
         # If no tag is present, skip further processing
         if ($null -eq $sortedTags -OR $sortedTags.Count -eq 0) {
             $repository | Add-Member -MemberType NoteProperty -Name _TagsAssigned -Value $false
@@ -53,6 +64,6 @@ function Get-RecentSubmoduleTags {
     
     }
 
-    $moduleSourceReferenceCached = $preferencedRepos | Where-Object { $_._TagsAssigned }
+    $moduleSourceReferenceCached = $terraformRepositories | Where-Object -Property _TagsAssigned -EQ -Value $true
     return Set-AzureDevOpsCache -Object $moduleSourceReferenceCached -Type ModuleTags -Identifier $ProjectName
 }

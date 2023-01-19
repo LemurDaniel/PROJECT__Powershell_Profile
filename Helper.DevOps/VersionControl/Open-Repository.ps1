@@ -55,9 +55,10 @@ function Open-Repository {
     }      
 
     $item = Get-Item -Path $repository.Localpath 
-    git config --global --add safe.directory ($item.Fullname -replace '[\\]+','/' )
-    git -C $repository.Localpath config --local user.name "$userName" 
-    git -C $repository.Localpath config --local user.email "$userMail"
+    $null = git config --global --add safe.directory ($item.Fullname -replace '[\\]+','/' )
+    $null = git -C $repository.Localpath config --local commit.gpgsign false
+    $null = git -C $repository.Localpath config --local user.name "$userName" 
+    $null = git -C $repository.Localpath config --local user.email "$userMail"
 
     if (-not $onlyDownload) {
         code $repository.Localpath

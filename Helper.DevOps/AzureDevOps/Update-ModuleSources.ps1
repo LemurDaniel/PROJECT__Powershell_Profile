@@ -11,12 +11,12 @@ function Update-ModuleSourcesInPath {
 
     [Parameter()]
     [switch]
-    $forceApiCall = $false
+    $refresh
   )
 
   $totalReplacements = [System.Collections.ArrayList]::new()
-  $taggedRepositories = Get-RecentSubmoduleTags -forceApiCall:($forceApiCall)
-  $replacementPath = $null -ne $replacementPath -AND $replacementPath.Length -gt 0 ? $replacementPath : ((Get-Location).Path) 
+  $taggedRepositories = Get-RecentSubmoduleTags -refresh:$refresh
+$replacementPath = [System.String]::IsNullOrEmpty($replacementPath) ? $replacementPath : ((Get-Location).Path) 
   
   # Implements Confirmation
   if ($PSCmdlet.ShouldProcess("$replacementPath" , 'Do Subfolder Regex-Operations')) {

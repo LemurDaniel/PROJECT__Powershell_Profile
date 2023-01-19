@@ -12,7 +12,12 @@ function Get-RepositoryInfo {
 
         [Parameter(Mandatory = $false)]
         [System.String]
-        $id
+        $id,
+
+        # Force API-Call and overwrite Cache
+        [Parameter()]
+        [switch]
+        $refresh
     )  
 
     if ([System.String]::IsNullOrEmpty($id)) {
@@ -22,10 +27,10 @@ function Get-RepositoryInfo {
         $repository = Search-In $repositories -where 'name' -is $repoName
     }
     else {
-        $repository = Get-ProjectInfo 'repositories' | Where-Object -Property id -EQ -Value $id
+        $repository = Get-ProjectInfo -Property 'repositories' -refresh:$refresh | Where-Object -Property id -EQ -Value $id
     }
 
-    if(!$repository){
+    if (!$repository) {
         Throw "Repository not found in current Project '$(Get-ProjectInfo 'name')'"
     }
 

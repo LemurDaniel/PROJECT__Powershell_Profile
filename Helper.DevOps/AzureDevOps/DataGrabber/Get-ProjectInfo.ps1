@@ -4,7 +4,12 @@ function Get-ProjectInfo {
     param (
         [Parameter()]
         [System.String]
-        $Property
+        $Property,
+
+        # Force API-Call and overwrite Cache
+        [Parameter()]
+        [switch]
+        $refresh
     )
 
 
@@ -13,7 +18,7 @@ function Get-ProjectInfo {
 
     $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName
 
-    if ($Cache) {
+    if (-not $refresh -AND $Cache) {
         return Get-Property -Object $Cache -Property $Property
     }
 

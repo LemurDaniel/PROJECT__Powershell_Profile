@@ -8,12 +8,6 @@ $ErrorActionPreference = 'Stop'
 
 ###################################################################################
 
-$env:PS_PROFILE = $PROFILE
-$env:PS_PROFILE_PATH = (Resolve-Path "$env:PS_PROFILE\..").Path
-$env:PROFILE_HELPERS_PATH = (Resolve-Path "$env:PS_PROFILE_PATH\.shared").Path
-
-
-## Same entry also exists in ONEDRIVE/Powershell/7/profile.ps1
 ## Resolve App Path
 $env:OneDrive = $env:OneDriveConsumer ?? $env:OneDrive
 $env:AppPath = "$env:OneDrive/_Apps/"
@@ -21,7 +15,6 @@ $env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps"
 if (!(Test-Path $env:AppPath)) {
   $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
 }
-
 
 ## ENV Variables
 $env:SECRET_STORE = "$env:AppPath/_SECRET_STORE/"

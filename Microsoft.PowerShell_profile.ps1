@@ -40,7 +40,6 @@ $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort
 ########################################################################################################################
 ########################################################################################################################
 
-
 <#
 # CREDITS: Tim Krehan (tim.krehand@brz.eu)
 #>
@@ -52,27 +51,20 @@ function Get-DumbJoke {
 
 }
 
-
 Import-Module "$PSScriptRoot\Helper"
-
-@(
-    'ValidateSet'
-) | `
-    ForEach-Object { Get-Item "$PSScriptRoot/$_" } | `
-    Get-ChildItem -Filter '*.ps1' -ErrorAction Stop | `
-    ForEach-Object { . $_.FullName }
-
 . $env:PROFILE_HELPERS_PATH/Other.ps1
  
-Get-SecretsFromStore PERSONAL
-Get-SecretsFromStore -Show
 
+Get-SecretsFromStore -Show
 Add-EnvPaths
 
-#Start-Sleep -Milliseconds 250
 
 $null = Switch-Terraform
-Switch-Terraform -TFVersion $env:TF_VERSION_ACTIVE
+if(Get-ActiveVersionTF) {
+    Switch-Terraform -TFVersion (Get-ActiveVersionTF)
+} 
+
+
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 Switch-GitConfig -config ($env:USERNAME -eq 'M01947' ? 'brz' : 'git')
 

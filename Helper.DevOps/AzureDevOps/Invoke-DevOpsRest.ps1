@@ -13,7 +13,7 @@ function Invoke-DevOpsRest {
 
         [Alias('Call')]
         [Parameter()]
-        [ValidateSet('ORG', 'PROJ', 'TEAM')]
+        [ValidateSet('ORG', 'PROJ', 'TEAM', 'NONE')]
         [System.String]
         $SCOPE = 'ORG',
 

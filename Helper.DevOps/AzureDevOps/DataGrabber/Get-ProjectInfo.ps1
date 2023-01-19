@@ -16,10 +16,9 @@ function Get-ProjectInfo {
     $ProjectName = Get-DevOpsCurrentContext -Project
     $Organization = Get-DevOpsCurrentContext -Organization
 
-    $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName
-
+    $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName -Property $Property
     if (-not $refresh -AND $Cache) {
-        return Get-Property -Object $Cache -Property $Property
+        return $Cache
     }
 
 
@@ -31,18 +30,31 @@ function Get-ProjectInfo {
         Property = 'value'
     }
 
-    $project = Invoke-DevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0' | `
-        Where-Object -Property name -EQ -Value $ProjectName | `
-        Select-Object *, @{Name = 'Teams'; Expression = {  
+    $project = Invoke-DevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0' | Where-Object -Property name -EQ -Value $ProjectName 
+    if ($null -eq $project) {
+        Throw "Project was not found in Current Organization: '$Organization'"
+    }
+   
+
+    # Get Teams and Repositories associated with project.
+    $project = $project | `
+        Select-Object *, @{
+        Name       = 'Teams'; 
+        Expression = {  
             Invoke-DevOpsRest @RequestBlueprint -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" 
         }
     }, `
-    @{Name = 'Repositories'; Expression = {  
+    @{
+        Name       = 'Repositories'; 
+        Expression = {  
             Invoke-DevOpsRest @RequestBlueprint -API "/$($_.id)/_apis/git/repositories?api-version=4.1"
         }
     }
 
-    $projectPath = "$env:USERPROFILE\Documents\repos\__$($Organization.toUpper())\$($project.name)"
+
+    # Location where to download repositories.
+    $basePath = [System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\Documents\repos" : $env:GIT_RepositoryPath
+    $projectPath = "$basePath\__$($Organization.toUpper())\$($project.name)"
     if (!(Test-Path $projectPath)) {
         $null = New-Item -ItemType Directory -Path $projectPath
     }

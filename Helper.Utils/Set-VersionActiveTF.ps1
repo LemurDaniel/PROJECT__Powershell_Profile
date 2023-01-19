@@ -1,4 +1,4 @@
-function Set-VersionActiveTF {
+function Set-ActiveVersionTF {
 
     [CmdletBinding()]
     param (
@@ -7,6 +7,15 @@ function Set-VersionActiveTF {
         $version
     )
 
-    Update-SecretStore ORG -ENV -SecretPath CONFIG.TF_VERSION_ACTIVE -SecretValue $version
+    Set-UtilsCache -Object $version -Type TerraformVersion -Identifier Current -Forever
+
+}
+
+function Get-ActiveVersionTF {
+
+    [CmdletBinding()]
+    param ()
+
+    Get-UtilsCache -Type TerraformVersion -Identifier Current
 
 }

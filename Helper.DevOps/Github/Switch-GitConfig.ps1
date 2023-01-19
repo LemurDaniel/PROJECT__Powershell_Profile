@@ -27,10 +27,14 @@ function Switch-GitConfig {
     # Overwrite settings for gpg-agent to set passphrase
     # Then Reload agent and set acutal Passphrase
     $gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
-    "default-cache-ttl 34560000`r`nmax-cache-ttl 34560000`r`nallow-preset-passphrase" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
+    @(
+        'default-cache-ttl 345600'
+        'max-cache-ttl 345600'
+        'allow-preset-passphrase'
+    ) -join "`r`n" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
     $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
     $null = gpgconf --launch gpg-agent
-    $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase -c $env:GIT_GPG_GRIP
+    $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase --preset $env:GIT_GPG_GRIP
 
     Write-Host 'Current Global Git Profile:'
     Write-Host "    $(git config --global user.name )"

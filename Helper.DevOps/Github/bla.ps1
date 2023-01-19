@@ -17,7 +17,7 @@ function Get-RepositoryVSCodePrivate {
         $noCode
     )
 
-    $PrivateRepos = Get-SecretFromStore CACHE/GITHUB.repositories PERSONAL
+    $PrivateRepos = Get-UtilsCache -Type Github -Identifier 'data' -return 'repositories'
     $preferencedRepository = Search-In $PrivateRepos -where 'name' -is $RepositoryName -not $excludeSearchTags
     
     if (!$preferencedRepository) {
@@ -25,17 +25,19 @@ function Get-RepositoryVSCodePrivate {
         return;
     }
 
+    #TODO
     $repositoryPath = "$env:GIT_REPO_PATH\$($preferencedRepository.login)\$($preferencedRepository.name)"
+
     if (!(Test-Path -Path $repositoryPath)) {
         $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath
         git -C $repositoryPath.FullName clone $preferencedRepository.clone_url .
-        git config --global --add safe.directory $repositoryPath.FullName
-        git -C "$($repositoryPath.FullName)" config --local user.name "$env:GIT_USER" 
-        git -C "$($repositoryPath.FullName)" config --local user.email "$env:GIT_MAIL"
     }
-    else {
-        $repositoryPath = Get-Item -Path $repositoryPath
-    }
+
+
+    $repositoryPath = Get-Item -Path $repositoryPath
+    $null = git config --global --add safe.directory ($repositoryPath.Fullname -replace '[\\]+', '/' )
+    $null = git -C "$($repositoryPath.FullName)" config --local user.name "$env:GIT_USER" 
+    $null = git -C "$($repositoryPath.FullName)" config --local user.email "$env:GIT_MAIL"
 
     if (!$noCode) {
         code $repositoryPath.FullName

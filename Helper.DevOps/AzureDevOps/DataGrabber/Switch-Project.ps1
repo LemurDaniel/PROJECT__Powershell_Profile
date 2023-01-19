@@ -1,7 +1,7 @@
 
-function Set-ProjectContext {
+function Switch-Project {
 
-    [Alias('Switch-Project', 'swp')]
+    [Alias('Set-ProjectContext', 'swp')]
     [CmdletBinding()]
     param ()
 
@@ -32,7 +32,7 @@ function Set-ProjectContext {
     }
     Process {
         $null = Set-DevOpsCurrentContext -Project $Project
-        Write-Host -ForegroundColor GREEN "Set Project Context to '$Project'"
+        Write-Host -ForegroundColor GREEN "`n   Set Project Context to '$Project'`n"
     }
     End {}
     

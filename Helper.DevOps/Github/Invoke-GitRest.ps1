@@ -4,7 +4,7 @@ function Invoke-GitRest {
 
     param(
         [parameter(Mandatory = $true)]
-        [validateSet([HTTPMethods])]
+        [Microsoft.PowerShell.Commands.WebRequestMethod]
         $Method,
 
         [parameter()]
@@ -29,19 +29,17 @@ function Invoke-GitRest {
         $visibility = 'all'
     )
 
-    $queryParams = @{
+    $Query = @{
         affiliation = 'owner,collaborator'  #'owner,collaborator,organization_member'
         visibility  = $visibility
         per_page    = 100
     }
 
-    $queryString = ''
-    foreach($param in $queryParams.Keys) {
-        $queryString += '&' + $param + '=' + $queryParams[$param]
-    }
+    $Query = $null -ne $Query ? $Query : [System.Collections.Hashtable]::new()
+    $QueryString = ($Query.GetEnumerator() | `
+            ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
 
-    $joinedPath = (Join-Path -Path $apiGroup -ChildPath $apiEndpoint).replace('\', '/')
-    $joinedPath = $joinedPath[-1] -eq '/' ? $joinedPath.Substring(0, $joinedPath.length - 2) : $joinedPath
+
     $Request = @{
         Method = $Method
         header = @{
@@ -49,7 +47,7 @@ function Invoke-GitRest {
             'X-GitHub-Api-Version' = $apiVersion
             Authorization          = "Bearer $env:GIT_PAT"
         }
-        uri    = 'https://api.github.com/' + $joinedPath + '?' + $queryString.Substring(1)
+        uri    = "https://api.github.com/$apiGroup/$apiEndpoint`?$QueryString"
     }
 
     Invoke-RestMethod @Request
@@ -60,20 +58,15 @@ function Get-AllRepositories {
 
     param()
 
-    $repositories = Invoke-ApiGit -Method GET -apiEndpoint repos
+    $repositories = Invoke-GitRest -Method GET -apiEndpoint repos
 
     $githubData = @{
-        owners = $repositories.owner | Get-Unique -AsString
+        owners       = $repositories.owner | Get-Unique -AsString
         repositories = $repositories | `
-            Select-Object -Property @{Name='login'; Expression={$_.owner.login}}, id, permissions, default_branch, name, full_name, description, private, visibility, html_url, url, clone_url, created_at, updated_at, pushed_at
+            Select-Object -Property @{
+            Name = 'login'; Expression = { $_.owner.login }
+        }, id, permissions, default_branch, name, full_name, description, private, visibility, html_url, url, clone_url, created_at, updated_at, pushed_at
     }
 
-    
-    #$repositories | `
-     #Select-Object -Property @{Name='login'; Expression={$_.owner.login}}, id, permissions, default_branch, name, full_name, description, private, visibility, html_url, url, clone_url, created_at, updated_at, pushed_at| `
-     #'Group-Object -Property 'login' | `
-     #ForEach-Object { $repositoryOwners[$_.Name] | Add-Member -MemberType NoteProperty -Name 'Repositories' -Value ($_.Group) -Force }
-
-    Update-SecretStore PERSONAL -SecretPath CACHE.GITHUB -SecretValue $githubData
-
+    return Set-UtilsCache -Object $githubData -Type Github -Identifier "data"
 }

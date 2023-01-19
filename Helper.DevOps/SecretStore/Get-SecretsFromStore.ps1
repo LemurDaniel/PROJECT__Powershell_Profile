@@ -5,16 +5,11 @@ function Get-SecretsFromStore {
         [Switch]
         $Show,
 
-        [parameter()]
-        [AllowNull()]
-        [SecretScope]
-        $SecretStoreSource = [System.Enum]::GetNames([SecretScope])[0],
-
         # Test
         [Parameter()]
         $CustomPath 
     )
 
-    Convert-SecretObject -SecretObject (Get-SecretStore -SecretStoreSource $SecretStoreSource -noCleanNames -CustomPath $CustomPath) -show:($Show)
+    Convert-SecretObject -SecretObject (Get-SecretStore -noCleanNames -CustomPath $CustomPath) -show:($Show)
 
 }

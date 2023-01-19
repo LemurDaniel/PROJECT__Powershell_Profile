@@ -17,8 +17,8 @@ function Get-RepositoryVSCodePrivate {
         $noCode
     )
 
-    $PrivateRepos = Get-UtilsCache -Type Github -Identifier 'data' -return 'repositories'
-    $preferencedRepository = Search-In $PrivateRepos -where 'name' -is $RepositoryName -not $excludeSearchTags
+    $Cache = Get-UtilsCache -Type Github -Identifier 'data'
+    $preferencedRepository = Search-In $Cache.repositories -where 'name' -is $RepositoryName -not $excludeSearchTags
     
     if (!$preferencedRepository) {
         Write-Host -Foreground RED 'No Repository Found'

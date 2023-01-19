@@ -8,12 +8,7 @@ function Get-UtilsCache {
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identifier,
-
-        [Alias('return')]
-        [Parameter(Mandatory = $false)]
-        [System.String]
-        $Property
+        $Identifier
     )
 
     $cachePath = Join-Path -Path "$PSScriptRoot/.cache/" -ChildPath (".$Type.$Identifier.json".toLower() -replace ' ', '_') 
@@ -21,7 +16,7 @@ function Get-UtilsCache {
     
     Write-Verbose $cachePath
     if ($Cache -AND ([DateTime]$Cache.Date -gt [datetime]::Now)) {
-        return Get-Property -Object $Cache.Content -Property $Property
+        return $Cache.Content
     }
 
 }

@@ -11,10 +11,6 @@ function Open-Repository {
         [System.String[]]
         $excludeSearchTags,
 
-        #[Parameter()] TODO
-        #[ValidateSet([Project])]
-        #$Project = [Project]::DEFAULT.name,
-
         [Parameter()]
         [switch]
         $onlyDownload,

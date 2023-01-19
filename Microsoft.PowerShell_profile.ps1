@@ -30,23 +30,6 @@ if (!(Test-Path $env:SECRET_STORE)) {
   $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
 }
 
-
-$env:SECRET_PERMISSIONS = (Resolve-Path "$env:SECRET_STORE/PERMISSION_ACTIONS.csv" -ErrorAction Continue)
-$env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json" -ErrorAction Continue) 
-
-if ($null -eq $env:ROLE_DEFINITIONS) {
-  $roleDefinitions_DEV = Get-AzRoleDefinition -Scope '/providers/Microsoft.Management/managementGroups/acfroot-dev'
-  $roleDefinitions_PROD = Get-AzRoleDefinition -Scope '/providers/Microsoft.Management/managementGroups/acfroot-prod'
-  
-  @{
-    PROD = $roleDefinitions_PROD
-    DEV  = $roleDefinitions_DEV 
-  } | ConvertTo-Json -Depth 8 | Out-File -Path "$env:SECRET_STORE/ROLE_DEFINITONS.json"
-  $env:ROLE_DEFINITIONS = (Resolve-Path "$env:SECRET_STORE/ROLE_DEFINITONS.json")
-}
-
-
-
 ### Resolve Terraform Path
 $env:TerraformDocs = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform-docs/").Path
 $env:TerraformPath = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform/").Path
@@ -79,16 +62,8 @@ Import-Module "$PSScriptRoot\Helper"
     Get-ChildItem -Filter '*.ps1' -ErrorAction Stop | `
     ForEach-Object { . $_.FullName }
 
-. $env:PROFILE_HELPERS_PATH/_Utils.ps1
-. $env:PROFILE_HELPERS_PATH/_ValidateSets.ps1
-
-. $env:PROFILE_HELPERS_PATH/VersionControl.ps1
-. $env:PROFILE_HELPERS_PATH/Github.ps1
-. $env:PROFILE_HELPERS_PATH/DevOps.ps1
+. $env:PROFILE_HELPERS_PATH/Other.ps1
  
-
-## Initial Script
-Write-Host
 Get-SecretsFromStore PERSONAL
 Get-SecretsFromStore -Show
 

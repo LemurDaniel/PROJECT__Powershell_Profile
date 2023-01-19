@@ -52,7 +52,7 @@ function Search-PreferencedObject {
             Object   = $_
         }
     } | `
-        Where-Object { $_.Hits -gt 0 } | `
+        Where-Object -Property Hits -GT -Value 0 | `
         Sort-Object -Property Hits -Descending
 
     if ($ChosenObjects.Count -eq 0) {

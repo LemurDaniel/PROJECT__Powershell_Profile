@@ -43,16 +43,23 @@ function Open-Repository {
 
 
 
-    $adUser = Get-AzADUser -Mail (Get-AzContext).Account.Id # Takes long initialy
-    $userName = $adUser.DisplayName
-    $userMail = $adUser.UserPrincipalName
+    #$adUser = Get-AzADUser -Mail (Get-AzContext).Account.Id # Takes long initialy
+    #$userName = $adUser.DisplayName
+    #$userMail = $adUser.UserPrincipalName
+
+    $userName = (Get-AzContext).Account.Id -replace '(@{1}.+)', '' -replace '\.', ' ' -replace '', ''
+    $userMail = (Get-AzContext).Account.Id
+
+    $TextInfo = (Get-Culture -Name 'de-DE').TextInfo
+    $userName = $TextInfo.ToTitleCase($userName)
 
     if (!(Test-Path $repository.Localpath)) {
         New-Item -Path $repository.Localpath -ItemType Directory
         git -C $repository.Localpath clone $repository.remoteUrl .
-    }
+    }      
 
-    git config --global --add safe.directory $repository.Localpath
+    $item = Get-Item -Path $repository.Localpath 
+    git config --global --add safe.directory ($item.Fullname -replace '\\','/' )
     git -C $repository.Localpath config --local user.name "$userName" 
     git -C $repository.Localpath config --local user.email "$userMail"
 
@@ -60,6 +67,6 @@ function Open-Repository {
         code $repository.Localpath
     }
 
-    return Get-Item $repository.Localpath
-
+    return $item
+    #git config --global --add safe.directory 'C:/Users/Daniel/Documents/Repos/__BAUGRUPPE/DC Azure Migration/terraform-acf-main'
 }

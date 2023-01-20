@@ -7,7 +7,7 @@ function New-BranchFromWorkitem {
         $SearchTags
     )    
 
-    git -C . rev-parse >nul 2>&1; 
+    git rev-parse >nul 2>&1; 
     if (!$?) {
         throw 'Please exexcute command inside a Repository'
     }

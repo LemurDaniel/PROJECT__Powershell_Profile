@@ -20,12 +20,13 @@ function Get-SprintIterations {
         return Invoke-DevOpsRest @Request -return 'value'
     }
     
+
     $Cache = Get-AzureDevOpsCache -Type Iteration -Identifier (Get-ProjectInfo 'name')
     if ($Cache) {
         return $Cache
     }
 
-    $iterations = Invoke-DevOpsRest @Request -return 'value'
 
+    $iterations = Invoke-DevOpsRest @Request -return 'value'
     return Set-AzureDevOpsCache -Object $iterations -Type Iteration -Identifier (Get-ProjectInfo 'name')
 }

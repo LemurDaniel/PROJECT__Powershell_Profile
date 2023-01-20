@@ -16,7 +16,7 @@ function Set-UtilsCache {
 
         [Parameter(Mandatory = $false)]
         [System.int32]
-        $Alive = 7,
+        $Alive = 120,
 
         [Parameter(Mandatory = $false)]
         [Switch]
@@ -25,13 +25,13 @@ function Set-UtilsCache {
 
     $cachePath = Join-Path -Path "$PSScriptRoot/.cache/" -ChildPath (".$Type.$Identifier.json".toLower() -replace ' ', '_') 
     
-    if(-not (Test-Path -Path "$PSScriptRoot/.cache/")){
-        $null = New-Item -Path "$PSScriptRoot/.cache/" -ItemType Directory -Force
+    if (-not (Test-Path -Path "$PSScriptRoot/.cache")) {
+        $null = New-Item -Path "$PSScriptRoot/.cache" -ItemType Directory -Force
     }
     
-    $Alive = $Forever ? [System.Int16]::MaxValue : $Alive
+    $Alive = $Forever ? [System.Int32]::MaxValue : $Alive
     @{
-        Date    = ([DateTime]::Now).AddDays($Alive)
+        Date    = ([DateTime]::Now).AddHours($Alive)
         Content = $Object
     } | ConvertTo-Json -Depth 8 | Out-File -Path $cachePath
    

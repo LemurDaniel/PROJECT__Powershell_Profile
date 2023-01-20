@@ -50,15 +50,8 @@ function Open-RepositoryDynamic {
     }
  
 
-    #$adUser = Get-AzADUser -Mail (Get-AzContext).Account.Id # Takes long initialy
-    #$userName = $adUser.DisplayName
-    #$userMail = $adUser.UserPrincipalName
-
-    $userName = (Get-AzContext).Account.Id -replace '(@{1}.+)', '' -replace '\.', ' ' -replace '', ''
-    $userMail = (Get-AzContext).Account.Id
-
-    $TextInfo = (Get-Culture -Name 'de-DE').TextInfo
-    $userName = $TextInfo.ToTitleCase($userName)
+    $userName = Get-CurrentUser 'displayName'
+    $userMail = Get-CurrentUser 'emailAddress'
 
     if (!(Test-Path $repository.Localpath)) {
         New-Item -Path $repository.Localpath -ItemType Directory

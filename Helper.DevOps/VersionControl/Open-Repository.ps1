@@ -1,16 +1,30 @@
 function Open-Repository {
 
-    [Alias('VC', 'Get-RepositoryVSCode')]
+    [Alias('VCD')]
     [cmdletbinding()]
     param (
-        [Parameter()]
-        [System.String[]]
-        $RepositoryName,
-
-        [Parameter()]
-        [alias('not')]
-        [System.String[]]
-        $excludeSearchTags,
+        [Parameter(
+            Mandatory = $true,
+            Position = 0
+        )]
+        [ValidateScript(
+            { 
+                $_ -in (Get-ProjectInfo 'repositories.name')
+            },
+            ErrorMessage = 'Please specify an correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = Get-ProjectInfo 'repositories.name' 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Name,
 
         [Parameter()]
         [switch]
@@ -22,27 +36,19 @@ function Open-Repository {
     )
 
 
-
     $repositories = Get-ProjectInfo 'repositories'
-
     if ($RepositoryId) {
         $repository = $repositories | Where-Object -Property id -EQ -Value $RepositoryId
     }
     else {
-        $repository = Search-In $repositories -where 'name' -is $RepositoryName -not $excludeSearchTags
+        $repository = $repositories | Where-Object -Property name -EQ -Value $Name
     }
-
 
     if (!$repository) {
         Write-Host -Foreground RED 'No Repository Found!'
         return
     }
-
-
-
-    #$adUser = Get-AzADUser -Mail (Get-AzContext).Account.Id # Takes long initialy
-    #$userName = $adUser.DisplayName
-    #$userMail = $adUser.UserPrincipalName
+ 
 
     $userName = Get-CurrentUser 'displayName'
     $userMail = Get-CurrentUser 'emailAddress'
@@ -60,7 +66,7 @@ function Open-Repository {
 
     if (-not $onlyDownload) {
         code $repository.Localpath
-    }
+    } 
 
     return $item
 }

@@ -63,7 +63,7 @@ function New-PullRequest {
     $Request = @{
         Method = 'GET'
         SCOPE  = 'PROJ'
-        API    = "/_apis/git/repositories/$($repository.id)/pullrequests"
+        API    = "/_apis/git/repositories/$($repository.id)/pullrequests?api-version=7.0"
     }
     $activePullRequests = Invoke-DevOpsRest @Request
     $chosenPullRequest = $activePullRequests.value | Where-Object { $_.targetRefName -eq $targetBranch -AND $_.sourceRefName -eq $preferencedBranch }
@@ -75,7 +75,7 @@ function New-PullRequest {
             Method   = 'POST'
             SCOPE    = 'PROJ'
             Property = 'pullRequestId'
-            API      = "/_apis/git/repositories/$($repository.id)/pullrequests"
+            API      = "/_apis/git/repositories/$($repository.id)/pullrequests?api-version=7.0"
             Body     = @{
                 sourceRefName = $preferencedBranch
                 targetRefName = $targetBranch

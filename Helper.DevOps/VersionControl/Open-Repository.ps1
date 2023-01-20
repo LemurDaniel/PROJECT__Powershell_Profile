@@ -1,6 +1,6 @@
 function Open-Repository {
 
-    [Alias('VCD')]
+    [Alias('VC')]
     [cmdletbinding()]
     param (
         [Parameter(

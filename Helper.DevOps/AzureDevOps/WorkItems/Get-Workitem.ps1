@@ -1,4 +1,4 @@
-function Get-WorkItem {
+function Get-WorkItems {
 
     [CmdletBinding()]
     param(
@@ -7,25 +7,29 @@ function Get-WorkItem {
             ValueFromPipeline = $true
         )]
         [System.String[]]
-        $ids
+        $Ids
     )
 
     Begin {
-        $workItems = [System.Collections.ArrayList]::new()
+        $IdList = [System.Collections.ArrayList]::new()
     }
     Process {
+        $null = $IdList.Add(($Ids | ForEach-Object { $_ }))
+    }
+    End {
+
         $Request = @{
             Method = 'GET'
             SCOPE  = 'PROJ'
             API    = '_apis/wit/workitems/?api-version=7.0'
             Query  = @{
-                ids = ($ids | ForEach-Object { $_.trim() } ) -join ','
+                ids = $IdList -join ','
             }
         }
 
-        $workItems.Add((Invoke-DevOpsRest @Request -return 'value.fields'))
-    }
-    End {
-        return $workItems.GetEnumerator() | ForEach-Object { $_ }
+        return Invoke-DevOpsRest @Request -return 'value.fields'
     }   
 }
+
+
+#Select-Workitems 'User Stories last 7 Days' -return 'workitems.id' | Get-WorkItems -Verbose

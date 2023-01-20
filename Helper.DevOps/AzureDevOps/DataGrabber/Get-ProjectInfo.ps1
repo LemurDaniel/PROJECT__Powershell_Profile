@@ -65,6 +65,6 @@ function Get-ProjectInfo {
         $_ | Add-Member NoteProperty Localpath (Join-Path "$projectPath" "$($_.name)") -Force
     }
 
-    Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName
+    $null = Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName
     return Get-Property -Object $Project -Property $Property
 }

@@ -1,0 +1,18 @@
+
+/*  
+
+Example 2:
+
+    Gets all Tasks Created Yesterday.
+
+    https://learn.microsoft.com/de-de/azure/devops/boards/queries/wiql-syntax?view=azure-devops
+*/
+
+SELECT  [System.Id], [System.Title], [System.State] 
+
+FROM    WorkItems 
+
+WHERE   [System.WorkItemType] = 'Task' 
+    AND     [System.CreatedDate] > @today-1
+
+ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.CreatedDate] DESC

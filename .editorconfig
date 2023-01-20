@@ -1,4 +1,7 @@
 
+[**.wiql]
+end_of_line = lf
+
 [**.ps1]
 indent_style = space
 indent_size = 4

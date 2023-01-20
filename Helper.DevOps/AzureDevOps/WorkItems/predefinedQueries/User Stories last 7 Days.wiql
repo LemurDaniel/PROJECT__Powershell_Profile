@@ -12,7 +12,8 @@ SELECT  [System.Id], [System.Title], [System.State]
 
 FROM    WorkItems 
 
-WHERE   [System.WorkItemType] = 'User Story' 
-    AND     [System.CreatedDate] > @today-7
+WHERE   [System.TeamProject]  = '{{PROJECT}}'
+    AND [System.WorkItemType] = 'User Story' 
+    AND [System.CreatedDate] > @today-7
 
 ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.CreatedDate] DESC

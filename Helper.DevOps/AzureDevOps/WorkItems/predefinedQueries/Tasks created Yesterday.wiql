@@ -12,7 +12,8 @@ SELECT  [System.Id], [System.Title], [System.State]
 
 FROM    WorkItems 
 
-WHERE   [System.WorkItemType] = 'Task' 
-    AND     [System.CreatedDate] > @today-1
+WHERE   [System.TeamProject]  = '{{PROJECT}}'
+    AND [System.WorkItemType] = 'Task' 
+    AND [System.CreatedDate] > @today-1
 
 ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.CreatedDate] DESC

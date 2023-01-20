@@ -16,11 +16,11 @@ enum SecretScope {
 
 @(
     'PatLifeCycle',
-	'SecretStore',
+    'SecretStore',
     'AzureDevOps',
     'VersionControl',
     'Github'
 ) | `
     ForEach-Object { Get-Item "$PSScriptRoot/$_" } | `
-    Get-ChildItem -Recurse -Filter '*.ps1' -ErrorAction Stop | `
+    Get-ChildItem -Recurse -Filter '*.ps1' -File -ErrorAction Stop | `
     ForEach-Object { . $_.FullName }

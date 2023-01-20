@@ -1,5 +1,5 @@
 
 
-Get-ChildItem $PSScriptRoot -Filter '*.ps1' -ErrorAction Stop | ForEach-Object {
+Get-ChildItem $PSScriptRoot -Filter '*.ps1' -File -ErrorAction Stop | ForEach-Object {
     . $_.FullName
 }

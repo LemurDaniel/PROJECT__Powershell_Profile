@@ -38,7 +38,7 @@ function Search-PimScheduleInstance {
         Where-Object { $_.expandedProperties.roleDefinition.displayName -eq $role }
     
     if (-not $eligibleScheduleInstance) {
-        throw "Not Eligible Schedule Instance found for Role '$role' on scope '$scope'"
+        throw "Not Eligible Schedule Instance found for Role '$role' on scope '$scope' on principalId '$aadUserId'"
     }
 
     return $eligibleScheduleInstance

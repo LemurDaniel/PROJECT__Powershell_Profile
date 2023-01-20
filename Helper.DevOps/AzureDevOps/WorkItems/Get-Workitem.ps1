@@ -30,6 +30,3 @@ function Get-WorkItems {
         return Invoke-DevOpsRest @Request -return 'value.fields'
     }   
 }
-
-
-#Select-Workitems 'User Stories last 7 Days' -return 'workitems.id' | Get-WorkItems -Verbose

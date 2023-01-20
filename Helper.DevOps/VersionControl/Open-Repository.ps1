@@ -1,6 +1,7 @@
 function Open-Repository {
 
     [Alias('VC', 'Get-RepositoryVSCode')]
+    [cmdletbinding()]
     param (
         [Parameter()]
         [System.String[]]

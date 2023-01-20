@@ -20,10 +20,10 @@ function Push-Profile {
     $byteArray = (1..4 | ForEach-Object { [byte](Get-Random -Max 256) })
     $hex = [Convert]::ToHexString($byteArray)
 
-    git -C $env:PS_PROFILE_PATH pull origin
-    git -C $env:PS_PROFILE_PATH add -A
-    git -C $env:PS_PROFILE_PATH commit -S -m "$hex"
-    git -C $env:PS_PROFILE_PATH push
+    git -C "$PSScriptRoot/../.." pull origin
+    git -C "$PSScriptRoot/../.." add -A
+    git -C "$PSScriptRoot/../.." commit -S -m "$hex"
+    git -C "$PSScriptRoot/../.." push
 
     Switch-GitConfig -config ($env:USERNAME -eq 'M01947' ? 'brz' : 'git')
 }

@@ -45,7 +45,7 @@ function Get-DumbJoke {
 }
 
 Import-Module "$PSScriptRoot\Helper"
-. "$PSScriptRoot/Other.ps1"
+. "$PSScriptRoot/.shared/Other.ps1"
  
 
 Get-SecretsFromStore -Show

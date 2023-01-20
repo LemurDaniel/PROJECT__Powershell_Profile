@@ -16,8 +16,11 @@ function Open-RepositoryDynamic {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                [array] $validValues = Get-ProjectInfo 'repositories.name' | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
-                $validValues -like "$wordToComplete*"
+                $validValues = Get-ProjectInfo 'repositories.name' 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
         [System.String]
@@ -73,6 +76,4 @@ function Open-RepositoryDynamic {
     } 
 
     return $item
-
-
 }

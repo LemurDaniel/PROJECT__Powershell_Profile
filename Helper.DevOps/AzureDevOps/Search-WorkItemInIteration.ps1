@@ -33,8 +33,11 @@ function Search-WorkItemInIteration {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                [array] $validValues = (Get-SprintIterations).name | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
-                $validValues -like "$wordToComplete*"
+                $validValues = (Get-SprintIterations).name
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
         [System.String]

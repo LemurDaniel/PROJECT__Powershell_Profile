@@ -1,4 +1,5 @@
 
+<#
 function Search-AzPermission {
 
     param (
@@ -7,8 +8,8 @@ function Search-AzPermission {
         $Keys,
 
         [Parameter()]
-        [ValidateSet([AzPermission])]
-        $Provider = [AzPermission]::ALL,
+        [System.String] #TODO
+        $Provider ,
 
         [Parameter()]
         [System.int32]
@@ -20,3 +21,4 @@ function Search-AzPermission {
 
     return (Search-PreferencedObject -SearchObjects $permissionsToSearch -SearchTags $Keys -SearchProperty 'Operation Name' -Multiple)[0..($Limit - 1)]
 }
+#>

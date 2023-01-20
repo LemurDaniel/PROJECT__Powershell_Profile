@@ -53,7 +53,7 @@ function Get-ProjectInfo {
 
 
     # Location where to download repositories.
-    $basePath = [System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\Documents\repos" : $env:GIT_RepositoryPath
+    $basePath = [System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\git\repos" : $env:GIT_RepositoryPath
     $projectPath = "$basePath\__$($Organization.toUpper())\$($project.name)"
     if (!(Test-Path $projectPath)) {
         $null = New-Item -ItemType Directory -Path $projectPath
@@ -65,6 +65,6 @@ function Get-ProjectInfo {
         $_ | Add-Member NoteProperty Localpath (Join-Path "$projectPath" "$($_.name)") -Force
     }
 
-    $null = Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName
+    Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName
     return Get-Property -Object $Project -Property $Property
 }

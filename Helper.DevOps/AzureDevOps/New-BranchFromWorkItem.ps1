@@ -13,7 +13,7 @@ function New-BranchFromWorkitem {
     }
 
 
-    $workItem = Search-WorkItem -SearchTags $SearchTags -Personal -Single
+    $workItem = Search-WorkItemInIteration -SearchTags 's' -Current -Personal -Single
 
     if (!$workItem) {
         Write-Host -ForegroundColor RED 'Error: Work Item not found!'

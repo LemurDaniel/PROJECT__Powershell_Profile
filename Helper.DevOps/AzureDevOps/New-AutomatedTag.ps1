@@ -27,7 +27,7 @@ function New-AutomatedTag {
     $Request = @{
         Method = 'POST'
         CALL   = 'PROJ'
-        API    = "/_apis/git/repositories/$repositoryId/annotatedtags"
+        API    = "/_apis/git/repositories/$repositoryId/annotatedtags?api-version=6.1-preview.1"
         Body   = @{
             name         = $newTag
             taggedObject = @{

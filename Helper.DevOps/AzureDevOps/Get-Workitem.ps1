@@ -1,15 +1,31 @@
 function Get-WorkItem {
+
+    [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)]
-        $id
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
+        [System.String[]]
+        $ids
     )
-    $Request = @{
-        Method = 'GET'
-        SCOPE  = 'PROJ'
-        API    = "_apis/wit/workitems/${id}?api-version=7.0"
+
+    Begin {
+        $workItems = [System.Collections.ArrayList]::new()
     }
+    Process {
+        $Request = @{
+            Method = 'GET'
+            SCOPE  = 'PROJ'
+            API    = '_apis/wit/workitems/?api-version=7.0'
+            Query  = @{
+                ids = ($ids | ForEach-Object { $_.trim() } ) -join ','
+            }
+        }
 
-    $workItem = (Invoke-DevOpsRest @Request).fields
-
-    return $workItem
+        $workItems.Add((Invoke-DevOpsRest @Request -return 'value.fields'))
+    }
+    End {
+        return $workItems.GetEnumerator() | ForEach-Object { $_ }
+    }   
 }

@@ -31,7 +31,7 @@ function New-PullRequest {
     $preferencedBranch = Search-In $remoteBranches -is $currentBranch -return 'name'
 
     $hasDevBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/dev' | Measure-Object).Count -gt 0
-    $hasMainBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/main' | Measure-Object).Count -gt 0
+    #$hasMainBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/main' | Measure-Object).Count -gt 0
     $hasMasterBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/master' | Measure-Object).Count -gt 0
 
     if (-not $hasDevBranch -AND $Target -eq 'dev') {

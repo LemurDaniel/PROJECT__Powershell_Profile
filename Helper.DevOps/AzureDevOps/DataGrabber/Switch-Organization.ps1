@@ -16,6 +16,7 @@ function Switch-Organization {
         )]
         [ArgumentCompleter(
             {
+                param($cmd, $param, $wordToComplete)
                 $validValues = (Get-DevOpsOrganizations).accountName
                 
                 $validValues | `

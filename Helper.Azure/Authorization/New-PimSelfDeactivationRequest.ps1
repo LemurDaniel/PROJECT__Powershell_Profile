@@ -1,37 +1,14 @@
-function New-PimSelfActivationRequest {
+function New-PimSelfDeactivationRequest {
 
     [cmdletbinding()]
     param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $justification,
-
-        [Parameter(Mandatory = $true)]
-        [System.int32]
-        [ValidateScript(
-            { 
-                $_ -ge 1 -AND $_ -le 8
-            },
-            ErrorMessage = 'Duration must be between 1 and 8 Hours inclusive.'
-        )]
-        $duration,
-
         [Parameter(Mandatory = $true)]
         [System.String]
         $scope,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $role,
-
-        [Parameter()]
-        [ValidateSet(       
-            'SelfActivate',
-            'SelfExtend',
-            'SelfRenew'
-        )]
-        [System.String]
-        $requestType = 'SelfActivate'
+        $role
     )
 
 
@@ -47,17 +24,18 @@ function New-PimSelfActivationRequest {
         API    = "/providers/Microsoft.Authorization/roleAssignmentScheduleRequests/$([GUID]::NewGuid())`?api-version=2020-10-01"
         Body   = @{
             properties = @{
-                requestType                     = $requestType
-                justification                   = $justification
+                requestType                     = 'SelfDeactivate'
+                justification                   = ''
                 principalId                     = $aadUser.id
 
                 linkedRoleEligibilityScheduleId = $eligibleScheduleInstance.roleEligibilityScheduleId.split('/')[-1]
                 roleDefinitionId                = $eligibleScheduleInstance.expandedProperties.roleDefinition.id
+
                 scheduleInfo                    = @{
                     expiration    = @{
                         endDateTime = $null
-                        duration    = "PT$duration`H"
-                        type        = 'AfterDuration'
+                        duration    = $null
+                        type        = $null
                     }
                     startDateTime = [DateTime]::now
                 }
@@ -68,14 +46,3 @@ function New-PimSelfActivationRequest {
     return Invoke-AzureRest @Request -return 'properties'
 
 }
-
- 
-<#
-New-PimSelfActivationRequest -Justification 'Test PIM activation via API' `
-    -duration 1 -scope 'acfroot-prod' -Role 'Tag Contributor' -Verbose
-
-New-PimSelfActivationRequest -requestType 'SelfExtend' -Justification 'Test PIM extension via API' `
-    -duration 1 -scope 'acfroot-prod' -Role 'Tag Contributor' -Verbose
-
-New-PimSelfDeactivationRequest -scope 'acfroot-prod' -Role 'Tag Contributor' -Verbose
-#>

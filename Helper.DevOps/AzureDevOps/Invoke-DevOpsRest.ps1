@@ -53,17 +53,20 @@ function Invoke-DevOpsRest {
 
 
     $Organization = Get-DevOpsCurrentContext -Organization
-    $apiVersion = [regex]::Matches($API, '\?api-version=.+').Value
-    if (!$apiVersion) {
-        throw "Please append the Api-Version behind the API: '?api-version=7.0'"
-    }
-
-    $APIEndpoint = $API.replace($apiVersion, '')
+    $APIEndpoint = ($API -split '\?')[0]
+    
+    # Build a hashtable of providedy Query params and Query params in provied api-url.
     $Query = $null -ne $Query ? $Query : [System.Collections.Hashtable]::new()
-    $Query.Add('api-version', $apiVersion.split('=')[1])
+    $null = ($API -split '\?')[1] -split '&' | ForEach-Object { $Query.Add($_.split('=')[0], $_.split('=')[1]) }
     $QueryString = ($Query.GetEnumerator() | `
             Sort-Object -Descending { $_.Name -ne 'api-version' } | `
             ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
+
+
+    if (!$Query['api-version']) {
+        throw 'Please specify an api-version to use.'
+    }
+
 
     if (!($PSBoundParameters.Keys -contains 'contentType')) {
         $calculatedContentType = $Method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Get ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'

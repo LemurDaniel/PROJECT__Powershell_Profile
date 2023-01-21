@@ -4,7 +4,11 @@ function Get-SprintIterations {
     param(
         [Parameter()]
         [switch]
-        $Current
+        $Current,
+
+        [Parameter()]
+        [switch]
+        $Refresh
     )
 
     $Request = @{
@@ -22,7 +26,7 @@ function Get-SprintIterations {
     
 
     $Cache = Get-AzureDevOpsCache -Type Iteration -Identifier (Get-ProjectInfo 'name')
-    if ($Cache) {
+    if ($Cache -AND !$Refresh) {
         return $Cache
     }
 

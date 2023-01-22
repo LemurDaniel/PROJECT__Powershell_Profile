@@ -21,6 +21,10 @@ function Get-DevOpsOrganizations {
     }
 
     $Organizations = Invoke-DevOpsRest @Request -return 'value'
+
+    if(($Organizations | Measure-Object).Count -eq 0) {
+        Throw "Couldnt find any DevOps Organizations associated with User: '$(Get-CurrentUser 'displayName')' - '$(Get-CurrentUser 'emailAddress')'"
+    }
     return Set-UtilsCache -Object $Organizations -Type Organization -Identifier 'all'
 
 }

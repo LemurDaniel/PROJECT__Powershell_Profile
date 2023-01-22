@@ -2,7 +2,7 @@ function Push-Profile {
 
     param()
 
-    $fileItem = Get-RepositoryVSCodePrivate -RepositoryName 'PROJECT__Powershell_Profile' -noCode
+    $fileItem = Open-RepositoryGithub -Name 'PROJECT__Powershell_Profile' -noCode
 
     Switch-GitConfig -config GIT
 

@@ -5,7 +5,8 @@ function Open-Repository {
     param (
         [Parameter(
             Mandatory = $true,
-            Position = 0
+            Position = 0,
+            ParameterSetName = 'repositoryName'
         )]
         [ValidateScript(
             { 
@@ -26,13 +27,16 @@ function Open-Repository {
         [System.String]
         $Name,
 
-        [Parameter()]
-        [switch]
-        $onlyDownload,
+        [Parameter(
+            Mandatory = $true,
+            ParameterSetName = 'repositoryId'
+        )]
+        [PSCustomObject]
+        $RepositoryId,
 
         [Parameter()]
-        [PSCustomObject]
-        $RepositoryId
+        [switch]
+        $onlyDownload
     )
 
 

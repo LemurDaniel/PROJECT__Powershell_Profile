@@ -18,7 +18,7 @@ function Get-DevOpsProjects {
     }
     $projects = Invoke-DevOpsRest @RequestBlueprint
 
-    if (($Organizations | Measure-Object).Count -eq 0) {
+    if (($projects | Measure-Object).Count -eq 0) {
         Throw "Couldnt find any DevOps Projects associated with User: '$(Get-CurrentUser 'displayName')' - '$(Get-CurrentUser 'emailAddress')'"
     }
 

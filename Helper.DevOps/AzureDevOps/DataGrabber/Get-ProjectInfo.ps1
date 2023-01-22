@@ -2,7 +2,32 @@ function Get-ProjectInfo {
 
     [CmdletBinding()]
     param (
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false,
+            Position = 1
+        )]
+        [ValidateScript(
+            { 
+                $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify an correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Name,
+
+        [Parameter(
+            Position = 0
+        )]
         [System.String]
         $Property,
 

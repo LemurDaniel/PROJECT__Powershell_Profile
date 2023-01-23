@@ -8,9 +8,11 @@ function Select-Workitems {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-ChildItem -Path "$PSScriptRoot\predefinedQueries" -Filter '*.wiql').name -replace '.wiql', ''
-     
+                $predefined = (Get-ChildItem -Path "$PSScriptRoot\predefinedQueries" -Filter '*.wiql').name -replace '.wiql', ''
+                $validValues = @((Get-WorkItemQueries name), $predefined) 
+
                 $validValues | `
+                    ForEach-Object { $_ } | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
@@ -25,19 +27,30 @@ function Select-Workitems {
         $Property
     )
 
-    $QueryStatement = Get-Content -Raw -Path "$PSScriptRoot/predefinedQueries/$Query.wiql" -ErrorAction SilentlyContinue
-    $QueryStatement = [System.String]::IsNullOrEmpty($QueryStatement) ? $Query : $QueryStatement
-    $QueryStatement = $QueryStatement -replace '((\/+\*+){1}([^*]|[\n]|(\*+([^*\/]|[\n])))*(\*+\/+){1})', ''
-    $QueryStatement = $QueryStatement -replace '\n', ' '
-    $QueryStatement = $QueryStatement -replace '\s+', ' '
-    #$QueryStatement = $QueryStatement -replace '{{PROJECT}}', (Get-ProjectInfo 'name')
+    if ($Query -in (Get-WorkItemQueries name)) {
 
-    $Request = @{
-        Method = 'POST'
-        SCOPE  = 'PROJ'
-        API    = '_apis/wit/wiql?api-version=5.1'
-        Body   = @{
-            query = $QueryStatement
+        $id = Get-WorkItemQueries | Where-Object -Property name -EQ -Value $Query | Select-Object -ExpandProperty id
+        $Request = @{
+            Method = 'GET'
+            SCOPE  = 'PROJ'
+            API    = "_apis/wit/wiql/$id`?api-version=7.0"
+        }
+    }
+    else {
+        $QueryStatement = Get-Content -Raw -Path "$PSScriptRoot/predefinedQueries/$Query.wiql" -ErrorAction SilentlyContinue
+        $QueryStatement = [System.String]::IsNullOrEmpty($QueryStatement) ? $Query : $QueryStatement
+        $QueryStatement = $QueryStatement -replace '((\/+\*+){1}([^*]|[\n]|(\*+([^*\/]|[\n])))*(\*+\/+){1})', ''
+        $QueryStatement = $QueryStatement -replace '\n', ' '
+        $QueryStatement = $QueryStatement -replace '\s+', ' '
+        #$QueryStatement = $QueryStatement -replace '{{PROJECT}}', (Get-ProjectInfo 'name')
+
+        $Request = @{
+            Method = 'POST'
+            SCOPE  = 'PROJ'
+            API    = '_apis/wit/wiql?api-version=5.1'
+            Body   = @{
+                query = $QueryStatement
+            }
         }
     }
 

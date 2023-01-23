@@ -67,17 +67,16 @@ function Start-PipelinesInOrder {
             $jobs.GetEnumerator() | ForEach-Object {
                 Write-Host -ForegroundColor Yellow "    Check for completion of Pipeline: '$($_.Key)'"
                 $job = Get-Job -Id $_.Value.id
-                if ($job.State -eq 'running') {
-                    continue;
-                }
 
-                $result = Receive-Job -Job $_.Value
-                if ($result -ne 'completed') {
-                    throw "An Error occured in Pipeline '$($_.Key)' - $result"
-                }
-                else {
-                    Write-Host -ForegroundColor Green "Completion of Pipeline: '$($_.Key)'"
-                    $null = $completed.Add($_.Key)
+                if ($job.State -ne 'running') {
+                    $result = Receive-Job -Job $_.Value
+                    if ($result -ne 'completed') {
+                        throw "An Error occured in Pipeline '$($_.Key)' - $result"
+                    }
+                    else {
+                        Write-Host -ForegroundColor Green "Completion of Pipeline: '$($_.Key)'"
+                        $null = $completed.Add($_.Key)
+                    }
                 }
             }
             $null = $completed | ForEach-Object { $jobs.Remove($_) }

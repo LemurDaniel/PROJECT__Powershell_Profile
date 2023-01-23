@@ -16,7 +16,7 @@ function Start-PipelineOnBranch {
         SCOPE       = 'PROJ'
         API         = '/_apis/build/builds?api-version=6.0'
         Body        = @{
-            definition   = @{ id = $_.id }
+            definition   = @{ id = $id }
             sourceBranch = $ref
         }
     }

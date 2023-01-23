@@ -1,5 +1,5 @@
 
-function Start-Pipeline {
+function Start-PipelinesBySearch {
     
   [cmdletbinding()]
   param (

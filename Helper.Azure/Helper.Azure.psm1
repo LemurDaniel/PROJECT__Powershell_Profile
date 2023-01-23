@@ -3,7 +3,8 @@
 
 @(
     'RestApi',
-    'Graph',
+    'ResourceGraph',
+    'GraphApi',
     'General',
     'Authorization'
 ) | `

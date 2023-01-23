@@ -7,6 +7,11 @@ function Search-WorkItemInIteration {
             Position = 1,
             ParameterSetName = 'current'
         )]
+        [Parameter(
+            Mandatory = $true, 
+            Position = 1,
+            ParameterSetName = 'iterations'
+        )]
         [System.String[]]
         $SearchTags,
 
@@ -35,6 +40,13 @@ function Search-WorkItemInIteration {
         [System.String]
         $Iteration,
 
+        [Parameter(
+            Position = 0,
+            ParameterSetName = 'current'
+        )]
+        [switch]
+        $Current,
+
         [Parameter()]
         [switch]
         $Personal,
@@ -44,7 +56,7 @@ function Search-WorkItemInIteration {
         $Single
     )
 
-    $TargetIteration = [System.String]::IsNullOrEmpty($Iteration) ? (Get-SprintIterations -Current) : ((Get-SprintIterations) | Where-Object -Property name -EQ -Value $Iteration)
+    $TargetIteration = $Current ? (Get-SprintIterations -Current) : ((Get-SprintIterations) | Where-Object -Property name -EQ -Value $Iteration)
     $Request = @{
         Method = 'GET'
         SCOPE  = 'PROJ'

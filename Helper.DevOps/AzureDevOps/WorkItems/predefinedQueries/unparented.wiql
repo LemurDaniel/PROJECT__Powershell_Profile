@@ -1,0 +1,16 @@
+SELECT
+    [System.Id],
+    [System.WorkItemType],
+    [System.Title],
+    [System.AssignedTo],
+    [System.State],
+    [System.Tags],
+    [System.IterationPath]
+FROM workitems
+WHERE
+    [System.TeamProject] = @project
+    AND [System.Parent] = ''
+    AND NOT [System.WorkItemType] IN ('Epic', 'Test Suite', 'Test Case', 'Test Plan')
+    AND NOT [System.State] IN ('Removed', 'Closed', 'Resolved')
+ORDER BY [System.IterationPath] DESC,
+    [System.AssignedTo] DESC

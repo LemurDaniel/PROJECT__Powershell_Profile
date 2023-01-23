@@ -12,7 +12,7 @@ SELECT  [System.Id], [System.Title], [System.State]
 
 FROM    WorkItems 
 
-WHERE   [System.TeamProject]  = '{{PROJECT}}'
+WHERE   [System.TeamProject]  = @project
     AND [System.WorkItemType] = 'Task' 
     AND [System.CreatedDate] > @today-1
 

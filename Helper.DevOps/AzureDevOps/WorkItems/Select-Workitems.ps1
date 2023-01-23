@@ -30,7 +30,7 @@ function Select-Workitems {
     $QueryStatement = $QueryStatement -replace '((\/+\*+){1}([^*]|[\n]|(\*+([^*\/]|[\n])))*(\*+\/+){1})', ''
     $QueryStatement = $QueryStatement -replace '\n', ' '
     $QueryStatement = $QueryStatement -replace '\s+', ' '
-    $QueryStatement = $QueryStatement -replace '{{PROJECT}}', (Get-ProjectInfo 'name')
+    #$QueryStatement = $QueryStatement -replace '{{PROJECT}}', (Get-ProjectInfo 'name')
 
     $Request = @{
         Method = 'POST'

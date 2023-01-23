@@ -11,6 +11,8 @@
     .OUTPUTS
     System.PSCustomObject[] List of workitems from DevOps-API.
 
+    The 'return' parameter specifies to return only a sub-attribute of the result.
+
     .EXAMPLE
 
     Get Workitmes by ids:
@@ -37,7 +39,14 @@ function Get-WorkItems {
             ValueFromPipeline = $true
         )]
         [System.String[]]
-        $Ids
+        $Ids,
+
+
+        [Alias('return')]
+        [Parameter()]
+        [System.String]
+        $Property
+
     )
 
     Begin {
@@ -54,9 +63,11 @@ function Get-WorkItems {
             API    = '_apis/wit/workitems/?api-version=7.0'
             Query  = @{
                 ids = $IdList -join ','
+  
             }
         }
 
-        return Invoke-DevOpsRest @Request -return 'value.fields'
+        $response = Invoke-DevOpsRest @Request -return 'value'
+        return Get-Property -Object $response -Property $Property
     }   
 }

@@ -3,6 +3,13 @@ function Start-PipelinesInOrder {
     
     [cmdletbinding()]
     param (
+        [Parameter(
+            Position = 0
+        )]
+        [ValidateSet('Dev', 'Master')]
+        [System.String]
+        $environment = 'Dev',
+
         [Parameter()]
         [System.String[][]]
         $Layers = @(
@@ -10,12 +17,7 @@ function Start-PipelinesInOrder {
             @('level2_landingzone_acf_hub', 'level2_landingzone_acf_hub_dns_zones'),
             @('level3_landingzone_shared_services'),
             @('level4_landingzone_appzone-nonprod', 'level4_landingzone_appzone-prod')
-        ),
-
-        [Parameter()]
-        [ValidateSet('Dev', 'Master')]
-        [System.String]
-        $environment = 'Dev'
+        )
     )
 
     foreach ($pipelines in $Layers) {

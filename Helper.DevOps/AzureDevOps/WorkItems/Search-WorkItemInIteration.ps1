@@ -1,21 +1,50 @@
+<#
+    .SYNOPSIS
+    Searches a Worktime in an Sprint-Iteration.
+
+    .DESCRIPTION
+    Searches a Worktime in an Sprint-Iteration.
+
+    .INPUTS
+    None. You cannot pipe objects into Search-WorkitemInIteration
+
+    .OUTPUTS
+    System.PSCustomObject[] A single of List of workitems from DevOps-API, depending whether single switch is set.
+
+    .EXAMPLE
+
+    Get Workitme assigend to user in current iteration:
+
+    PS> Search-WorkItemInIteration -Current 'update','provider' -Personal -single
+
+    .EXAMPLE
+
+    Get Single Workitmes assigend to user in specific iteration:
+
+    PS> Search-WorkItemInIteration -Iteration '2023-04and05' -SearchTags 'update','provider' -Personal -single
+
+    .EXAMPLE
+
+    Get multiple Workitmes in specific iteration:
+
+    PS> Search-WorkItemInIteration '2023-04and05' 'update','provider'
+
+        
+    .EXAMPLE
+
+    Get multiple Workitmes in specific iteration of type task:
+
+    PS> Search-WorkItemInIteration '2023-04and05' 'update','provider' 'task'
+
+    .LINK
+        
+#>
+
 function Search-WorkItemInIteration {
 
     [CmdletBinding()]
     param(
-        [Parameter(
-            Mandatory = $true, 
-            Position = 1,
-            ParameterSetName = 'current'
-        )]
-        [Parameter(
-            Mandatory = $true, 
-            Position = 1,
-            ParameterSetName = 'iterations'
-        )]
-        [System.String[]]
-        $SearchTags,
-
-
+        # The Iteration to search in. Either Iteration or Current switch need to be set exclusivley.
         [Parameter(
             Mandatory = $false,
             Position = 0,
@@ -40,6 +69,8 @@ function Search-WorkItemInIteration {
         [System.String]
         $Iteration,
 
+
+        # Retrieves the Current Sprint iteration. Either Iteration or Current switch need to be set exclusivley.
         [Parameter(
             Position = 0,
             ParameterSetName = 'current'
@@ -47,10 +78,45 @@ function Search-WorkItemInIteration {
         [switch]
         $Current,
 
+
+        # Search Tags, for Querying workitems.
+        [Parameter(
+            Mandatory = $true, 
+            Position = 1,
+            ParameterSetName = 'current'
+        )]
+        [Parameter(
+            Mandatory = $true, 
+            Position = 1,
+            ParameterSetName = 'iterations'
+        )]
+        [System.String[]]
+        $SearchTags,
+
+
+        # Type of workitem to retrieve.
+        [Parameter(
+            Position = 2
+        )]
+        [ValidateSet(
+            'Epic',
+            'Feature',
+            'User Story',
+            'Task',
+            'Bug',
+            'Issue',
+            'Any'
+        )]
+        [System.String]
+        $Type = 'Any',
+
+
+        # Gets only workitmes assigned to the current loggied in user.
         [Parameter()]
         [switch]
         $Personal,
 
+        # Retrieves only the first workitem with the most hits.
         [Parameter()]
         [switch]
         $Single
@@ -90,6 +156,14 @@ function Search-WorkItemInIteration {
         
     if ($Personal) {
         $workItems = $workItems | Where-Object { $_.'System.AssignedTo'.uniqueName -like (Get-AzContext).Account.Id }
+    }
+
+    if ($Type -ne 'Any') {
+        $workItems = $workItems | Where-Object -Property 'System.WorkItemType' -EQ -Value $Type
+    }
+
+    if(!$workItems){
+        return $null
     }
     
     return Search-In $workItems -where 'System.Title' -is $SearchTags -Multiple:$(!$Single)

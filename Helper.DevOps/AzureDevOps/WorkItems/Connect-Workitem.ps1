@@ -1,34 +1,30 @@
 <#
     .SYNOPSIS
-    Creates a workitem with several fields.
+    Creates a workitem  Relation between to workitems.
 
     .DESCRIPTION
-    Creates a worktime of a specific type, with several field an an optional parent.
+    Creates a workitem  Relation between to workitems.
 
     .INPUTS
-    None. You cannot pipe objects into New-Workitem
+    None. You cannot pipe objects into Connect-Workitem
 
     .OUTPUTS
-    System.PSCustomObject A single created workitem.
+    The API-Respone with the first provided workitem and the new relation field.
 
     .EXAMPLE
 
-    Create a User Story with a Title:
+    Create a Child Relation to a UserStory
 
-    PS> New-Workitem -Type 'User Story' -Title 'Document Powershell Module'
-
-    .EXAMPLE
-
-    Create a Task with a Title and a Parent Workitem:
-
-    PS> New-Workitem -Type Task -Title 'Document Powershell Module' -ParentId 12034
+    PS> $userStory = New-Workitem -Type 'User Story' -Title 'APITEST_UserStory'
+    PS> $task = New-Workitem -Type Task -Title 'APITEST_Task'
+    PS> Connect-Workitem -WorkItem1 $userStory -WorkItem2 $task -RelationType Child
 
 
     .LINK
         
 #>
 
-function New-Workitem {
+function Connect-Workitem {
 
     param(
         # Workitem for Relation
@@ -49,7 +45,7 @@ function New-Workitem {
         [Parameter(
             Mandatory = $true
         )]
-        [PSCustomObject[]]
+        [System.String]
         $RelationType
     )
 

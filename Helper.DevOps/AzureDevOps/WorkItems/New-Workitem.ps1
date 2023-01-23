@@ -30,8 +30,11 @@
 
 function New-Workitem {
 
+    [CmdletBinding()]
     param(
-        [Parameter()]
+        [Parameter(
+            Position = 0
+        )]
         [ValidateSet(
             'Epic',
             'Feature',
@@ -61,16 +64,12 @@ function New-Workitem {
 
 
         # Optional Parent of newly created workitem.
-        [Parameter(
-            ParameterSetName = 'parentId'
-        )]
+        [Parameter()]
         [System.String]
         $ParentId,
 
         # Optional Parent of newly created workitem.
-        [Parameter(
-            ParameterSetName = 'parentUrl'
-        )]
+        [Parameter()]
         [System.String]
         $ParentUrl
     )

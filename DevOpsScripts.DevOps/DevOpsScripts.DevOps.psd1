@@ -96,9 +96,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'Alias', 'Set-OrgContext', 'swo', 'CmdletBinding', 'param', 'Alias', 
-               'Set-ProjectContext', 'swp', 'CmdletBinding', 'param', 'Alias', 'VC', 
-               'cmdletbinding', 'param', 'Alias', 'VCP', 'param', 'Alias', 'gitW', 'param'
+AliasesToExport = 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'VC', 'VCP', 'gitW'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -1,5 +1,19 @@
-#Requires -Modules @{ ModuleName="OneDrive"; ModuleVersion="2.2.0" }
 
-Get-ChildItem $PSScriptRoot -Filter '*.ps1' -File -ErrorAction Stop | ForEach-Object {
-    . $_.FullName
-}
+        if ($true -and ($PSEdition -eq 'Desktop')) {
+            if ($PSVersionTable.PSVersion -lt [Version]'7.2') {
+                throw 'PowerShell versions lower than 7.2 are not supported. Please upgrade to PowerShell 7.2 or higher.'
+            }
+        }
+
+        # All Files in public will be exported by the Powershell-Module on Import-Module.
+        @(
+            'internal',
+            'public' 
+        ) | `
+            ForEach-Object { Join-Path -Path $PSScriptRoot -ChildPath $_ } | `
+            Get-ChildItem -Recurse -File -Filter '*.ps1' -ErrorAction Stop | `
+            ForEach-Object {
+            . $_.FullName
+        }
+
+    

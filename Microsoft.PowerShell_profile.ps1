@@ -53,8 +53,9 @@ Add-EnvPaths
 
 
 $null = Switch-Terraform
-if(Get-ActiveVersionTF) {
-    Switch-Terraform -TFVersion (Get-ActiveVersionTF)
+$activeVersionTF = Get-UtilsCache -Type TerraformVersion -Identifier Current
+if($activeVersionTF) {
+    Switch-Terraform -TFVersion $activeVersionTF
 } 
 
 

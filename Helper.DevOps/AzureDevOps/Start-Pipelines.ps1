@@ -40,7 +40,7 @@ function Start-Pipeline {
     # Run Pipeline from Branch, dev or master
     if ($environment -eq 'Branch') {
         $currentBranch = git branch --show-current
-        Start-PipelineOnBranch -id $Pipeline.id -ref "refs/heads/features/$currentBranch"
+        Start-PipelineOnBranch -id $Pipeline.id -ref "refs/heads/$currentBranch"
     }
 
     if ($environment -eq 'dev' -OR $environment -eq 'both') {

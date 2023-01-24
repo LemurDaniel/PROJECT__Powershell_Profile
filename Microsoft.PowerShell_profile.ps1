@@ -44,7 +44,7 @@ function Get-DumbJoke {
 
 }
 
-Import-Module "$PSScriptRoot\Helper"
+Import-Module "$PSScriptRoot\DevOpsScripts"
 . "$PSScriptRoot/.shared/Other.ps1"
  
 

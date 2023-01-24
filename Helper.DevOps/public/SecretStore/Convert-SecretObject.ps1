@@ -1,3 +1,9 @@
+enum SecretScope {
+    ALL
+    ORG
+    PERSONAL
+}
+
 function Convert-SecretObject {
     param (
         [parameter()]

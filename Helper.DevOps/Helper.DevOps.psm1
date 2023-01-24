@@ -1,10 +1,5 @@
 
 
-enum SecretScope {
-    ALL
-    ORG
-    PERSONAL
-}
 
 @(
     'PatLifeCycle',

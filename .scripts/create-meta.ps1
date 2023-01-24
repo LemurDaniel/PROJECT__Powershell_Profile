@@ -31,7 +31,7 @@ Get-ChildItem -Path $currentPath -Filter "$moduleBaseName*" | ForEach-Object {
         CmdletsToExport    = @()
         AliasesToExport    = @()
         FunctionsToExport  = (
-            Get-ChildItem -Path (Join-Path -Path $_.FullName -ChildPath 'public') -Filter '*.ps1' -ErrorAction SilentlyContinue | `
+            Get-ChildItem -Path (Join-Path -Path $_.FullName -ChildPath 'public') -Recurse -Filter '*.ps1' -ErrorAction SilentlyContinue | `
                 Select-Object -ExpandProperty Name | ForEach-Object { $_.split('.')[0] }
         )
     }

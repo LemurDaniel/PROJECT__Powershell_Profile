@@ -1,6 +1,6 @@
 
 
-$moduleBaseName = 'Helper'
+$moduleBaseName = 'DevOpsScripts'
 $currentPath = Resolve-Path -Path '.'
 
 

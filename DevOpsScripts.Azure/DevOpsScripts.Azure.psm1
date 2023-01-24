@@ -5,10 +5,8 @@
             }
         }
 
-        # All Files in public will be exported by the Powershell-Module on Import-Module.
         @(
-            'internal',
-            'public' 
+            'functions' 
         ) | `
             ForEach-Object { Join-Path -Path $PSScriptRoot -ChildPath $_ } | `
             Get-ChildItem -Recurse -File -Filter '*.ps1' -ErrorAction Stop | `

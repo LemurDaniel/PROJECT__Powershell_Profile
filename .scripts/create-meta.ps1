@@ -33,7 +33,7 @@ Get-ChildItem -Path $currentPath -Filter "$moduleBaseName*" | ForEach-Object {
             Get-ChildItem -Path (Join-Path -Path $_.FullName -ChildPath 'functions') -Recurse -Filter '*.ps1' -ErrorAction SilentlyContinue | `
                 Get-Content -Raw | ForEach-Object {
                 $match = [regex]::Match($_, "Alias\([A-Za-z\-',\s]+\)[\s\S]+param\s+\(")?.Value
-                return [regex]::Matches($match, "'[A-Za-z\-]+'").Value
+                return [regex]::Matches($match, "[A-Za-z\-]+").Value
             } | Where-Object { $_ -ne $null }
         )
         FunctionsToExport  = (

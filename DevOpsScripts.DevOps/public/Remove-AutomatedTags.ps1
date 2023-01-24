@@ -3,7 +3,7 @@ function Remove-AutomatedTags {
     param()
 
     $currentTags = Get-RepositoryRefs | Where-Object { $_.name.contains('tags') }
-    $repositoryId = Get-RepositoryInfo 'id'
+    $repositoryId = Get-RepositoryInfo -Property 'id'
     $Request = @{
         Method  = 'POST'
         CALL    = 'PROJ'

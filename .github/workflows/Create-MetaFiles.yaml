@@ -6,7 +6,12 @@ on:
     branches:
       - master
     paths:
-      - "**/Helper*.ps1"
+      - ".github/workflows/*.yaml"
+      - "**/Helper/**.ps1"
+      - "**/Helper.Azure/**.ps1"
+      - "**/Helper.DevOps/**.ps1"
+      - "**/Helper.OneDrive/**.ps1"
+      - "**/Helper.Utils/**.ps1"
 jobs:
   create-meta-files:
     name: Create Modules Meta-Files

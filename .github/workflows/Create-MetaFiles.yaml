@@ -8,11 +8,11 @@ on:
     paths:
       - ".github/workflows/*.yaml"
       - ".scripts/create-meta.ps1"
-      - "**/Helper/**.ps1"
-      - "**/Helper.Azure/**.ps1"
-      - "**/Helper.DevOps/**.ps1"
-      - "**/Helper.OneDrive/**.ps1"
-      - "**/Helper.Utils/**.ps1"
+      - "**/DevOpsScripts/**.ps1"
+      - "**/DevOpsScripts.Azure/**.ps1"
+      - "**/DevOpsScripts.DevOps/**.ps1"
+      - "**/DevOpsScripts.OneDrive/**.ps1"
+      - "**/DevOpsScripts.Utils/**.ps1"
 jobs:
   create-meta-files:
     name: Create Modules Meta-Files

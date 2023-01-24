@@ -1,7 +1,7 @@
-function Search-PreferencedObject {
+function Search-In {
 
     [cmdletbinding()]
-    [Alias('Search-In')]
+    [Alias('Search-PreferencedObject')]
     param (
         [Parameter(Mandatory = $true)]
         [System.Object[]]

@@ -29,9 +29,15 @@ Get-ChildItem -Path $currentPath -Filter "$moduleBaseName*" | ForEach-Object {
 
         VariablesToExport  = @()
         CmdletsToExport    = @()
-        AliasesToExport    = @()
+        AliasesToExport    = @(
+            Get-ChildItem -Path (Join-Path -Path $_.FullName -ChildPath 'functions') -Recurse -Filter '*.ps1' -ErrorAction SilentlyContinue | `
+                Get-Content -Raw | ForEach-Object {
+                $match = [regex]::Match($_, "Alias\([A-Za-z\-',\s]+\)[\s\S]+param\s+\(")?.Value
+                return [regex]::Matches($match, "'[A-Za-z\-]+'").Value
+            } | Where-Object { $_ -ne $null }
+        )
         FunctionsToExport  = (
-            Get-ChildItem -Path (Join-Path -Path $_.FullName -ChildPath 'public') -Recurse -Filter '*.ps1' -ErrorAction SilentlyContinue | `
+            Get-ChildItem -Path (Join-Path -Path $_.FullName -ChildPath 'functions') -Recurse -Filter '*.ps1' -ErrorAction SilentlyContinue | `
                 Select-Object -ExpandProperty Name | ForEach-Object { $_.split('.')[0] }
         )
     }
@@ -53,10 +59,8 @@ Get-ChildItem -Path $currentPath -Filter "$moduleBaseName*" | ForEach-Object {
             }
         }
 
-        # All Files in public will be exported by the Powershell-Module on Import-Module.
         @(
-            'internal',
-            'public' 
+            'functions' 
         ) | `
             ForEach-Object { Join-Path -Path $PSScriptRoot -ChildPath $_ } | `
             Get-ChildItem -Recurse -File -Filter '*.ps1' -ErrorAction Stop | `

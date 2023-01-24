@@ -72,7 +72,7 @@ RequiredAssemblies = @()
 FunctionsToExport = 'Add-EnvPaths', 'Get-DailyMsRewards', 'Get-MsRewards', 'Get-Property', 
                'Get-ScrambledText', 'Get-UtilsCache', 'Join-PsObject', 'Prompt', 
                'Search-In', 'Set-UtilsCache', 'Set-VersionActiveTF', 
-               'Switch-Terraform', 'Test-TestTest'
+               'Switch-Terraform'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

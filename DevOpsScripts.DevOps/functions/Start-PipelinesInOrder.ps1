@@ -47,8 +47,8 @@ function Start-PipelinesInOrder {
             if ($OpenBrowser) {
                 $Organization = Get-DevOpsCurrentContext -Organization
                 $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
-                #$pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build?definitionId=$($Pipeline.id)"
-                #Start-Process $pipelineUrl
+                $pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build?definitionId=$($Pipeline.id)"
+                Start-Process $pipelineUrl
             }
 
             $Helper = Get-Item "$PSScriptRoot/../../DevOpsScripts"

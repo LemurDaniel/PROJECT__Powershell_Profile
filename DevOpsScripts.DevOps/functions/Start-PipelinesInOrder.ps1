@@ -13,12 +13,16 @@ function Start-PipelinesInOrder {
         [Parameter()]
         [System.String[][]]
         $Layers = @(
-            @('level1_landingzone_foundations'),
+            @(
+                'level1_landingzone_foundations'
+            ),
             @(
                 'level2_landingzone_acf_hub', 
                 'level2_landingzone_acf_hub_dns_zones'
             ),
-            @('level3_landingzone_shared_services'),
+            @(
+                'level3_landingzone_shared_services'
+            ),
             @(
                 'level4_landingzone_appzone-nonprod', 
                 'level4_landingzone_appzone-prod'

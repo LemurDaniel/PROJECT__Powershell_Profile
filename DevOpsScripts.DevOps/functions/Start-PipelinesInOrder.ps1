@@ -27,7 +27,11 @@ function Start-PipelinesInOrder {
                 'level4_landingzone_appzone-nonprod', 
                 'level4_landingzone_appzone-prod'
             )
-        )
+        ),
+
+        [Parameter()]
+        [switch]
+        $OpenBrowser
     )
 
     foreach ($pipelines in $Layers) {
@@ -38,18 +42,24 @@ function Start-PipelinesInOrder {
             
             Write-Host -ForegroundColor Green "Started Pipeline: '$($_)'"
             $pipelineId = Search-In (Get-DevOpsPipelines) -where name -is $_ -return id
+            $build = Start-PipelineOnBranch -id $pipelineid -ref "refs/heads/$($environment.ToLower())"
 
-            $Helper = Get-Item "$PSScriptRoot/../../Helper"
+            if ($OpenBrowser) {
+                $Organization = Get-DevOpsCurrentContext -Organization
+                $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
+                #$pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build?definitionId=$($Pipeline.id)"
+                #Start-Process $pipelineUrl
+            }
+
+            $Helper = Get-Item "$PSScriptRoot/../../DevOpsScripts"
             $job = Start-Job `
-                -ArgumentList $Helper.FullName, $pipelineId, $environment `
+                -ArgumentList $Helper.FullName, $build.id, $OpenBrowser `
                 -ScriptBlock {
 
                 Import-Module Microsoft.PowerShell.Utility
                 Import-Module $args[0]
             
-                $pipelineid = $args[1]
-                $environment = $args[2]
-                $build = Start-PipelineOnBranch -id $pipelineid -ref "refs/heads/$($environment.ToLower())"
+                $buildId = $args[1]
 
                 $Request = @{
                     METHOD   = 'GET'
@@ -61,7 +71,7 @@ function Start-PipelinesInOrder {
                 $running = $true
                 while ($running) {
                     Start-Sleep -Seconds 20
-                    $status = Invoke-DevOpsRest @Request -API "/_apis/build/builds/$($build.id)?api-version=7.0"
+                    $status = Invoke-DevOpsRest @Request -API "/_apis/build/builds/$($buildId)?api-version=7.0"
                     $running = $status -eq 'notStarted' -or $status -eq 'inProgress'
                 }
 

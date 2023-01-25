@@ -80,13 +80,13 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 'Get-Reposit
                'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
                'Get-SecretStore', 'Update-SecretStore', 'Open-Repository', 
                'Get-AzureDevOpsCache', 'Get-CurrentUser', 'Get-DevOpsCurrentContext', 
-               'Get-DevOpsOrganizations', 'Get-DevOpsProjects', 'Get-Pipelines', 
-               'Set-DevOpsCurrentContext', 'Get-GithubData', 'Invoke-GitRest', 
-               'Open-RepositoryGithub', 'Push-Profile', 'Switch-GitConfig', 
-               'Add-SprintIncrement', 'Connect-Workitem', 'Get-SprintIterations', 
-               'Get-WorkItemQueries', 'Get-Workitems', 'New-BranchFromWorkItem', 
-               'New-SprintIteration', 'New-Workitem', 'Search-WorkItemInIteration', 
-               'Select-Workitems'
+               'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 
+               'Get-DevOpsProjects', 'Set-DevOpsCurrentContext', 'Get-GithubData', 
+               'Invoke-GitRest', 'Open-RepositoryGithub', 'Push-Profile', 
+               'Switch-GitConfig', 'Add-SprintIncrement', 'Connect-Workitem', 
+               'Get-SprintIterations', 'Get-WorkItemQueries', 'Get-Workitems', 
+               'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
+               'Search-WorkItemInIteration', 'Select-Workitems'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

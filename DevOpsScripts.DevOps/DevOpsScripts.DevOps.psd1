@@ -74,19 +74,21 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 'Get-Reposit
                'Remove-AutomatedTags', 'Remove-MovedBlocks', 'Update-ModuleSources', 
                'Update-ModuleSourcesAllRepositories', 'Get-ProjectInfo', 
                'Get-RepositoryInfo', 'Show-DevOpsContext', 'Switch-Organization', 
-               'Switch-Project', 'Get-PAT', 'New-Pat', 'Search-Pat', 'Update-Pat', 
-               'Open-BuildInBrowser', 'Start-Pipeline', 'Start-PipelineOnBranch', 
-               'Start-PipelinesBySearch', 'Start-PipelinesInOrder', 
-               'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
-               'Get-SecretStore', 'Update-SecretStore', 'Open-Repository', 
+               'Switch-Project', 'Switch-QuickContext', 'Get-PAT', 'New-Pat', 
+               'Search-Pat', 'Update-Pat', 'Open-BuildInBrowser', 'Start-Pipeline', 
+               'Start-PipelineOnBranch', 'Start-PipelinesBySearch', 
+               'Start-PipelinesInOrder', 'Convert-SecretObject', 
+               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
+               'Update-SecretStore', 'Open-Repository', 'Add-QuickContext', 
                'Get-AzureDevOpsCache', 'Get-CurrentUser', 'Get-DevOpsCurrentContext', 
                'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 
-               'Get-DevOpsProjects', 'Set-DevOpsCurrentContext', 'Get-GithubData', 
-               'Invoke-GitRest', 'Open-RepositoryGithub', 'Push-Profile', 
-               'Switch-GitConfig', 'Add-SprintIncrement', 'Connect-Workitem', 
-               'Get-SprintIterations', 'Get-WorkItemQueries', 'Get-Workitems', 
-               'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
-               'Search-WorkItemInIteration', 'Select-Workitems'
+               'Get-DevOpsProjects', 'Get-QuickContexts', 'Remove-QuickContexts', 
+               'Set-DevOpsCurrentContext', 'Get-GithubData', 'Invoke-GitRest', 
+               'Open-RepositoryGithub', 'Push-Profile', 'Switch-GitConfig', 
+               'Add-SprintIncrement', 'Connect-Workitem', 'Get-SprintIterations', 
+               'Get-WorkItemQueries', 'Get-Workitems', 'New-BranchFromWorkItem', 
+               'New-SprintIteration', 'New-Workitem', 'Search-WorkItemInIteration', 
+               'Select-Workitems'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -95,7 +97,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'VC', 'VCP', 'gitW'
+AliasesToExport = 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'swc', 'VC', 'VCP', 
+               'gitW'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

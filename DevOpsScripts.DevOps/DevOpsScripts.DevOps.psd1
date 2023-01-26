@@ -76,18 +76,17 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 'Get-Reposit
                'Get-RepositoryInfo', 'Show-DevOpsContext', 'Switch-Organization', 
                'Switch-Project', 'Switch-QuickContext', 'Get-PAT', 'New-Pat', 
                'Search-Pat', 'Update-Pat', 'Open-BuildInBrowser', 'Start-Pipeline', 
-               'Start-PipelineOnBranch', 'Start-PipelinesBySearch', 
-               'Start-PipelinesInOrder', 'Convert-SecretObject', 
-               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
-               'Update-SecretStore', 'Open-Repository', 'Add-QuickContext', 
-               'Get-AzureDevOpsCache', 'Get-CurrentUser', 'Get-DevOpsCurrentContext', 
-               'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 
-               'Get-DevOpsProjects', 'Get-QuickContexts', 'Remove-QuickContext', 
-               'Set-AzureDevOpsCache', 'Set-DevOpsCurrentContext', 
-               'Add-SprintIncrement', 'Connect-Workitem', 'Get-SprintIterations', 
-               'Get-WorkItemQueries', 'Get-Workitems', 'New-BranchFromWorkItem', 
-               'New-SprintIteration', 'New-Workitem', 'Search-WorkItemInIteration', 
-               'Select-Workitems'
+               'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
+               'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
+               'Get-SecretStore', 'Update-SecretStore', 'Open-Repository', 
+               'Add-QuickContext', 'Get-AzureDevOpsCache', 'Get-CurrentUser', 
+               'Get-DevOpsCurrentContext', 'Get-DevOpsOrganizations', 
+               'Get-DevOpsPipelines', 'Get-DevOpsProjects', 'Get-QuickContexts', 
+               'Remove-QuickContext', 'Set-AzureDevOpsCache', 
+               'Set-DevOpsCurrentContext', 'Add-SprintIncrement', 'Connect-Workitem', 
+               'Get-SprintIterations', 'Get-WorkItemQueries', 'Get-Workitems', 
+               'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
+               'Search-WorkItemInIteration', 'Select-Workitems'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

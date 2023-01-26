@@ -40,19 +40,19 @@ function Start-Pipeline {
     # Run Pipeline from Branch, dev or master
     if ($environment -eq 'Branch') {
         $currentBranch = git branch --show-current
-        Start-PipelineOnBranch -id $Pipeline.id -ref "refs/heads/$currentBranch"
+        $build = Start-PipelineOnBranch -id $Pipeline.id -ref "refs/heads/$currentBranch"
     }
 
     if ($environment -eq 'dev' -OR $environment -eq 'both') {
-        Start-PipelineOnBranch -id $Pipeline.id -ref 'refs/heads/dev'
+        $build = Start-PipelineOnBranch -id $Pipeline.id -ref 'refs/heads/dev'
     }
 
     if ($environment -eq 'master' -OR $environment -eq 'both') {
-        Start-PipelineOnBranch -id $Pipeline.id -ref 'refs/heads/master'
+        $build = Start-PipelineOnBranch -id $Pipeline.id -ref 'refs/heads/master'
     }
 
     # Open in Browser.
-    $pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build?definitionId=$($Pipeline.id)"
+    $pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build/results?buildId=$($build.id)&view=logs"
 
     Write-Host -Foreground Green '      '
     Write-Host -Foreground Green " 🎉 Started Pipeline '$($Pipeline.folder)/folder$($Pipeline.name)'  on $environment 🎉  "

@@ -33,8 +33,6 @@ function Start-Pipeline {
     )
 
 
-    $Organization = Get-DevOpsCurrentContext -Organization
-    $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
     $Pipeline = Get-DevOpsPipelines | Where-Object -Property name -EQ -Value $name
     
     # Run Pipeline from Branch, dev or master
@@ -51,14 +49,11 @@ function Start-Pipeline {
         $build = Start-PipelineOnBranch -id $Pipeline.id -ref 'refs/heads/master'
     }
 
-    # Open in Browser.
-    $pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build/results?buildId=$($build.id)&view=logs"
-
+  
     Write-Host -Foreground Green '      '
     Write-Host -Foreground Green " 🎉 Started Pipeline '$($Pipeline.folder)/folder$($Pipeline.name)'  on $environment 🎉  "
-    Write-Host -Foreground Green "    $pipelineUrl "
     Write-Host -Foreground Green '      '
 
-    Start-Process $pipelineUrl
+    Open-BuildInBrowser -buildId $build.id
 
 }

@@ -1,9 +1,34 @@
+<#
+    .SYNOPSIS
+    Switches the current Project Context.
+
+    .DESCRIPTION
+    Switches the current Organization Context based on the User connected via Connect-AzAccount and the Organization-Context.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Set the current Project-Context by name.
+
+    PS> Switch-Project <Project_name>
+
+
+    .LINK
+        
+#>
 
 function Switch-Project {
 
     [Alias('Set-ProjectContext', 'swp')]
     [CmdletBinding()]
     param (
+        # The name of the Project to swtich to.
         [Parameter(
             Mandatory = $true,
             Position = 0

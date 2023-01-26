@@ -1,5 +1,38 @@
+<#
+    .SYNOPSIS
+    Gets Repository Info for a repository in the current project.
+
+    .DESCRIPTION
+    Gets Repository Info for a repository in the current project.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The Full Repository info or a Sub-Property of it if 'Property' is set.
+
+
+    .EXAMPLE
+
+    Get the Full Output of the current Repository in which the command is run
+
+    PS> Get-RepositoryInfo
+
+
+    .EXAMPLE
+
+    Get the id of a repository in the current Project.
+
+    PS> Get-RepositoryInfo '<repository_name>' -return id
+
+
+    .LINK
+        
+#>
+
 function Get-RepositoryInfo {
 
+    # The Name of the Target-Repository. If not specifed tries returning info about the repository the command is excuted in.
     [CmdletBinding()]
     param ( 
         [Parameter(
@@ -25,15 +58,18 @@ function Get-RepositoryInfo {
         [System.String]
         $Name,
 
+        # Optional Path to a repository
         [Parameter()]
         [System.String]
         $path,
 
-
+        # Optional Id of a repository
         [Parameter()]
         [System.String]
         $id,
 
+        # The Property to return from the info. If not specified everything will be returned.
+        [Alias('return')]
         [Parameter()]
         [System.String]
         $Property,

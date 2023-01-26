@@ -1,9 +1,33 @@
+<#
+    .SYNOPSIS
+    Switches the current Organization Context.
 
+    .DESCRIPTION
+    Switches the current Organization Context based on the User connected via Connect-AzAccount.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Set the current Organization-Context by name.
+
+    PS> Switch-Organization <Organization_name>
+
+
+    .LINK
+        
+#>
 function Switch-Organization {
 
     [Alias('Set-OrgContext', 'swo')]
     [CmdletBinding()]
     param (
+        # The name of the Organization to switch to.
         [Parameter(
             Mandatory = $true,
             Position = 0

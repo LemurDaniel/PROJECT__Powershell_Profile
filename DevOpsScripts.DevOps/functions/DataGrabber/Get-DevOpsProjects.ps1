@@ -1,4 +1,26 @@
+<#
+    .SYNOPSIS
+    Gets all DevOps Projects in the current Organization-Context.
 
+    .DESCRIPTION
+    Gets all DevOps Projects in the current Organization-Context.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    List of all DevOps Projects in the current Organization-Context.
+
+
+    .EXAMPLE
+
+    Gets all Names of the DevOps Projects in the curren Organization-Context.
+
+    PS> Get-DevOpsPipelines 'name'
+    
+    .LINK
+        
+#>
 function Get-DevOpsProjects {
 
     [cmdletbinding()]

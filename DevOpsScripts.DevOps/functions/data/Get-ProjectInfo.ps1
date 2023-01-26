@@ -1,7 +1,45 @@
+<#
+    .SYNOPSIS
+    Gets Project Info for the current project or a project specified in the current organization Context.
+
+    .DESCRIPTION
+    Gets Project Info for the current project or a project specified in the current organization Context.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The Full Project info or a sub-Property of it if 'Property' is set.
+
+    .EXAMPLE
+
+    Get the Full Output of the current Project-Context.
+
+    PS> Get-ProjectInfo
+
+    .EXAMPLE
+
+    Get the name of the current Project-Context.
+
+    PS> Get-ProjectInfo 'name'
+
+    .EXAMPLE
+
+    Get the name of the 'BRZ365 Galaxy' Project-Context in the Current Organization-Context.
+
+    PS> Get-ProjectInfo 'name' 'BRZ365 Galaxy'
+
+
+    .LINK
+        
+#>
+
 function Get-ProjectInfo {
 
     [CmdletBinding()]
     param (
+
+        # The name of the project, if not set default to the Current-Project-Context.
         [Parameter(
             Mandatory = $false,
             Position = 1
@@ -25,6 +63,8 @@ function Get-ProjectInfo {
         [System.String]
         $Name,
 
+        # The Property to return from the Project Context. If not set everything will be returned.
+        [Alias('return')]
         [Parameter(
             Position = 0
         )]

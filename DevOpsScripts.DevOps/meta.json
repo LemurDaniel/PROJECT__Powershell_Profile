@@ -3,7 +3,7 @@
     "version": "1.0.1",
     "owner": "Team DevOps",
     "author": "o.O",
-    "description": "",
+    "description": "Contains several function regarding the DevOps-API, managing repositories, workitmes, projects, etc.",
     "tags": [],
     "powershellversion": "7.2",
     "dependencies": {

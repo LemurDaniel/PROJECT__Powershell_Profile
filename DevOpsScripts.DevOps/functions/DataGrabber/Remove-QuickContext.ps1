@@ -1,4 +1,26 @@
+<#
+    .SYNOPSIS
+    Remove a previous specified Quick-Context.
 
+    .DESCRIPTION
+    Remove a previous specified Quick-Context.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Hashtable of all avaialbe Quick-Contexts.
+
+
+    .EXAMPLE
+
+    Remove a Quick-Context:
+
+    PS> Remove-QuickContext '<Quick_Context_Name>'
+    
+    .LINK
+        
+#>
 function Remove-QuickContext {
 
     [CmdletBinding()]

@@ -1,3 +1,32 @@
+<#
+    .SYNOPSIS
+    Get the current set DevOps Context.
+
+    .DESCRIPTION
+    Get the current set DevOps Context.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The Organization or Projectname of the current Context.
+
+
+    .EXAMPLE
+
+    Gets the Current-Context Organization:
+
+    PS> Get-DevOpsCurrentContext -Organization
+
+    .EXAMPLE
+
+    Gets the Current-Context Project:
+
+    PS> Get-DevOpsCurrentContext -Project
+    
+    .LINK
+        
+#>
 function Get-DevOpsCurrentContext {
 
     [CmdletBinding()]

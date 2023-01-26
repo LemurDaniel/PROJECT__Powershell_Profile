@@ -1,4 +1,27 @@
+<#
+    .SYNOPSIS
+    Get Information about the current DevOps-User loggedin via Connect-AzAccount.
 
+    .DESCRIPTION
+    Get Information about the current DevOps-User loggedin via Connect-AzAccount.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Fullinformation of the current user or an attribute specified by Property.
+
+
+    .EXAMPLE
+
+    Gets the Current User in Azure DevOps:
+
+    PS> Get-CurrentUser
+
+    
+    .LINK
+        
+#>
 function Get-CurrentUser {
 
     [cmdletbinding()]

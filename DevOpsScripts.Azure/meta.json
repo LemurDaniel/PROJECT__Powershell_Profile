@@ -3,7 +3,7 @@
     "version": "1.0.1",
     "owner": "Team DevOps",
     "author": "o.O",
-    "description": "",
+    "description": "Provides several functions regarding Azure resources, such as Searching for specific Resources.",
     "tags": [],
     "powershellversion": "7.2",
     "dependencies": {

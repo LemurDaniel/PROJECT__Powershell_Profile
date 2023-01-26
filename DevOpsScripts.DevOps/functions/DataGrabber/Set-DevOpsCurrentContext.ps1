@@ -1,4 +1,13 @@
+<#
+    .SYNOPSIS
+    Set the Current DevOps Context. Use Switch-Project and Switch-Organization instead.
 
+    .DESCRIPTION
+    Set the Current DevOps Context. Use Switch-Project and Switch-Organization instead.
+    
+    .LINK
+        
+#>
 function Set-DevOpsCurrentContext {
 
     [CmdletBinding()]

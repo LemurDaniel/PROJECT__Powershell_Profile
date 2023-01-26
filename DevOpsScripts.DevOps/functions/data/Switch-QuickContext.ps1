@@ -1,9 +1,33 @@
+<#
+    .SYNOPSIS
+    Switches to a predefined Quick-Context.
 
+    .DESCRIPTION
+    Switches to a predefined Quick-Context.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Switch to a Quick-Context by name.
+
+    PS> Switch-QuickContext <Context_name>
+
+
+    .LINK
+        
+#>
 function Switch-QuickContext {
 
     [Alias('swc')]
     [CmdletBinding()]
     param (
+        # The name of the Context to switch to.
         [Parameter(
             Mandatory = $true,
             Position = 0

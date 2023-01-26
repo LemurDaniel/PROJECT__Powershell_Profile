@@ -30,7 +30,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) o.O. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'Provides several utility-function like chaching to JSON-Files, etc.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.2'

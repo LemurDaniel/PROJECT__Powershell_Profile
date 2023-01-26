@@ -30,7 +30,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) o.O. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'Contains several function regarding the DevOps-API, managing repositories, workitmes, projects, etc.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.2'
@@ -83,12 +83,11 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 'Get-Reposit
                'Get-AzureDevOpsCache', 'Get-CurrentUser', 'Get-DevOpsCurrentContext', 
                'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 
                'Get-DevOpsProjects', 'Get-QuickContexts', 'Remove-QuickContext', 
-               'Set-AzureDevOpsCache', 'Set-DevOpsCurrentContext', 'Get-GithubData', 
-               'Invoke-GitRest', 'Open-RepositoryGithub', 'Push-Profile', 
-               'Switch-GitConfig', 'Add-SprintIncrement', 'Connect-Workitem', 
-               'Get-SprintIterations', 'Get-WorkItemQueries', 'Get-Workitems', 
-               'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
-               'Search-WorkItemInIteration', 'Select-Workitems'
+               'Set-AzureDevOpsCache', 'Set-DevOpsCurrentContext', 
+               'Add-SprintIncrement', 'Connect-Workitem', 'Get-SprintIterations', 
+               'Get-WorkItemQueries', 'Get-Workitems', 'New-BranchFromWorkItem', 
+               'New-SprintIteration', 'New-Workitem', 'Search-WorkItemInIteration', 
+               'Select-Workitems'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -97,8 +96,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'swc', 'VC', 'VCP', 
-               'gitW'
+AliasesToExport = 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'swc', 'VC', 'gitW'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

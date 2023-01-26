@@ -12,7 +12,7 @@ function Get-DevOpsPipelines {
         $refresh
     )
 
-    $Pipelines = Get-AzureDevOpsCache -Type Pipeline -Identifier 'all'
+    $Pipelines = Get-AzureDevOpsCache -Type Pipeline -Identifier (Get-ProjectInfo 'name')
 
     if (!$Pipelines -OR $refresh) {
         # Get Pipelines.
@@ -25,6 +25,6 @@ function Get-DevOpsPipelines {
         $Pipelines = Invoke-DevOpsRest @Request -Property 'value'
     }
 
-    $null = Set-AzureDevOpsCache -Object $Pipelines -Type Pipeline -Identifier 'all'
+    $null = Set-AzureDevOpsCache -Object $Pipelines -Type Pipeline -Identifier (Get-ProjectInfo 'name')
     return Get-Property -Object $Pipelines -Property $Property
 }

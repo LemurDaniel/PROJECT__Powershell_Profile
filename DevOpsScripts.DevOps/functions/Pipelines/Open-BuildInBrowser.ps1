@@ -5,6 +5,28 @@ function Open-BuildInBrowser {
     [cmdletbinding()]
     param (
         [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            ParameterSetName = 'pipeLineName'
+        )]
+        [ValidateScript(
+            {
+                $_ -in (Get-DevOpsPipelines 'name')
+            }
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = Get-DevOpsPipelines 'name'
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        $Name,
+
+        [Parameter(
             Mandatory = $true,
             ParameterSetName = 'pipeLineId'
         )]
@@ -19,6 +41,9 @@ function Open-BuildInBrowser {
         $buildId
     )
 
+    if (!$PipelineId) {
+        $pipeLineId = Search-In (Get-DevOpsPipelines) -where name -is $name -return id
+    }
 
     # Get Latest Build for Pipeline
     if ($pipeLineId) {

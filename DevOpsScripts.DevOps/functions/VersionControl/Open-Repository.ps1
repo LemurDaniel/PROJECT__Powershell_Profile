@@ -1,8 +1,34 @@
+
+<#
+    .SYNOPSIS
+    Automatically download an open a repository in VS Code.
+
+    .DESCRIPTION
+    Automatically download an open a repository in VS Code.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Download an open a repository in the current DevOps-Context:
+
+    PS> Open-Repository '<repository_name>'
+
+
+    .LINK
+        
+#>
 function Open-Repository {
 
     [Alias('VC')]
     [cmdletbinding()]
     param (
+        # The Name of the Repository.
         [Parameter(
             Mandatory = $true,
             Position = 0,
@@ -27,6 +53,7 @@ function Open-Repository {
         [System.String]
         $Name,
 
+        # Optional download an open by id.
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'repositoryId'
@@ -34,6 +61,7 @@ function Open-Repository {
         [PSCustomObject]
         $RepositoryId,
 
+        # Optional only download the repository.
         [Parameter()]
         [switch]
         $onlyDownload

@@ -8,11 +8,15 @@ function Get-UtilsCache {
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identifier
+        $Identifier,
+
+        [Parameter()]
+        [Switch]
+        $AsHashtable
     )
 
     $cachePath = Join-Path -Path "$PSScriptRoot/.cache/" -ChildPath (".$Type.$Identifier.json".toLower() -replace ' ', '_') 
-    $Cache = Get-Content $cachePath -ErrorAction SilentlyContinue | ConvertFrom-Json -ErrorAction SilentlyContinue
+    $Cache = Get-Content $cachePath -ErrorAction SilentlyContinue | ConvertFrom-Json -AsHashtable:$AsHashtable -ErrorAction SilentlyContinue
     
     Write-Verbose $cachePath
     if ($Cache -AND ([DateTime]$Cache.Date -gt [datetime]::Now)) {

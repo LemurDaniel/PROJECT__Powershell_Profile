@@ -13,14 +13,14 @@ $env:OneDrive = $env:OneDriveConsumer ?? $env:OneDrive
 $env:AppPath = "$env:OneDrive/_Apps/"
 $env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps"
 if (!(Test-Path $env:AppPath)) {
-  $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
+    $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
 }
 
 ## ENV Variables
 $env:SECRET_STORE = "$env:AppPath/_SECRET_STORE/"
 $env:Secondary_SECRET_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/"
 if (!(Test-Path $env:SECRET_STORE)) {
-  $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
+    $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
 }
 
 ### Resolve Terraform Path
@@ -38,9 +38,9 @@ $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort
 #>
 function Get-DumbJoke {
 
-  param()
+    param()
 
-  return (Invoke-RestMethod -Method GET -Uri 'https://icanhazdadjoke.com/' -Headers @{'Accept' = 'application/json' }).joke
+    return (Invoke-RestMethod -Method GET -Uri 'https://icanhazdadjoke.com/' -Headers @{'Accept' = 'application/json' }).joke
 
 }
 
@@ -54,9 +54,13 @@ Add-EnvPaths
 
 $null = Switch-Terraform
 $activeVersionTF = Get-UtilsCache -Type TerraformVersion -Identifier Current
-if($activeVersionTF) {
+if ($activeVersionTF) {
     Switch-Terraform -TFVersion $activeVersionTF
 } 
+
+$null = Add-QuickContext -ContextName Teamsbuilder -Organization baugruppe -Project 'Teamsbuilder' -Force
+$null = Add-QuickContext -ContextName 'DC Migration' -Organization baugruppe -Project 'DC Azure Migration' -Force
+Add-QuickContext -ContextName 'DC Redeploy' -Organization baugruppe -Project 'DC ACF Redeployment' -Force
 
 
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'

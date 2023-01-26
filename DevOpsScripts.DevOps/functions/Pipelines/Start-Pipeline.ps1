@@ -1,8 +1,33 @@
 
+<#
+    .SYNOPSIS
+    Start a specific Pipeline in the Current Project-Context and open the build in the Browser.
+
+    .DESCRIPTION
+    Start a specific Pipeline in the Current Project-Context and open the build in the Browser.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Start a Pipeline and open the build in the Browser:
+
+    PS> Start-Pipeline '<Pipeline_name>'
+
+
+    .LINK
+        
+#>
 function Start-Pipeline {
     
     [cmdletbinding()]
     param (
+        # The Name of the Pipeline in the Current Project.
         [Parameter()]
         [ValidateScript(
             {
@@ -21,15 +46,11 @@ function Start-Pipeline {
         )]
         $Name,
 
-
+        # Where to start the Pipeline. Master/Dev or Current-Branch of repository.
         [Parameter()]
         [ValidateSet('Branch', 'Dev', 'Master', 'Both')]
         [System.String]
-        $environment = 'Branch',
-
-        [Parameter()]
-        [switch]
-        $Multiple
+        $environment = 'Branch'
     )
 
 

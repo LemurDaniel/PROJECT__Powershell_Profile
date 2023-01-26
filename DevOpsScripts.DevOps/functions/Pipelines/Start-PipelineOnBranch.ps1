@@ -1,3 +1,21 @@
+
+<#
+    .SYNOPSIS
+    Start a Pipeline by id on a specific branch. Use Start-Pipeline instead.
+
+    .DESCRIPTION
+    Start a Pipeline by id on a specific branch. Use Start-Pipeline instead.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .LINK
+        
+#>
 function Start-PipelineOnBranch {
     param (
         [Parameter()]

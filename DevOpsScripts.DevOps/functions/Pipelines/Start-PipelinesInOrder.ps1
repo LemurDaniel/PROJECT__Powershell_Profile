@@ -1,8 +1,33 @@
 
+<#
+    .SYNOPSIS
+    Start sveral Pipelines in successive order.
+
+    .DESCRIPTION
+    Start sveral Pipelines in successive order.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Start sveral Pipelines in successive order on the Dev-Branch
+
+    PS> Start-PipelinesInOrder Dev
+
+
+    .LINK
+        
+#>
 function Start-PipelinesInOrder {
     
     [cmdletbinding()]
     param (
+        # The Branch to start all Pipelines on
         [Parameter(
             Position = 0
         )]
@@ -10,6 +35,7 @@ function Start-PipelinesInOrder {
         [System.String]
         $environment = 'Dev',
 
+        # All Layers of Pipelines
         [Parameter()]
         [System.String[][]]
         $Layers = @(
@@ -29,6 +55,7 @@ function Start-PipelinesInOrder {
             )
         ),
 
+        # Whether to open the Pipeline in the Browser.
         [Parameter()]
         [switch]
         $OpenBrowser

@@ -1,9 +1,45 @@
 
+<#
+    .SYNOPSIS
+    Open a specific build or the latest build by pipeline name or id in the Browser.
 
+    .DESCRIPTION
+    Open a specific build or the latest build by pipeline name or id in the Browser. 
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Open the latest build for a Pipeline in the current Project-Context:
+
+    PS> Open-BuildInBrowser '<Pipeline_name>'
+
+    .EXAMPLE
+
+    Open the latest build for a Pipeline in the current Project-Context:
+
+    PS> Open-BuildInBrowser -pipelineId '<Pipeline_id>'
+
+    .EXAMPLE
+
+    Open the latest build for a Pipeline in the current Project-Context:
+
+    PS> Open-BuildInBrowser -buildId '<Build_id>'
+
+
+    .LINK
+        
+#>
 function Open-BuildInBrowser {
     
     [cmdletbinding()]
     param (
+        # The Pipeline name in the current Project autocompleted.
         [Parameter(
             Position = 0,
             Mandatory = $true,
@@ -26,6 +62,7 @@ function Open-BuildInBrowser {
         )]
         $Name,
 
+        # The Pipeline-Id in the Current-Project.
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'pipeLineId'
@@ -33,6 +70,7 @@ function Open-BuildInBrowser {
         [System.String]
         $pipeLineId,
 
+        # The Build-Id in the current-Project.
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'buildId'

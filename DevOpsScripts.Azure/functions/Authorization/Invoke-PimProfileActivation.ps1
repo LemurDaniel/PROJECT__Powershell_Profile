@@ -29,12 +29,7 @@ function Invoke-PimProfileActivation {
 
         [Parameter(
             Position = 1,
-            Mandatory = $true,
-            ParameterSetName = 'Profile'  
-        )]
-        [Parameter(
-            Mandatory = $true,
-            ParameterSetName = 'Custom'  
+            Mandatory = $true
         )]
         [System.String]
         $justification,

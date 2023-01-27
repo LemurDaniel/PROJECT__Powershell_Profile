@@ -63,7 +63,7 @@ function Connect-Workitem {
                     rel        = Get-WorkItemRelationType $RelationType -return 'referenceName'
                     url        = $WorkItem2.url
                     attributes = @{
-                        comment = 'Making a new link for the dependency'
+                        comment = "$((Get-CurrentUser).displayName) created $RelationType on workitem $($WorkItem1.name) to $($WorkItem2.name)"
                     }
                 }
             }

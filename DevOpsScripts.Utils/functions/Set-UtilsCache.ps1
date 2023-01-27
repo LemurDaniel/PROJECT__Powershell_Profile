@@ -64,7 +64,7 @@ function Set-UtilsCache {
     @{
         Date    = ([DateTime]::Now).AddMinutes($Alive)
         Content = $Object
-    } | ConvertTo-Json -Depth 8 | Out-File -Path $cachePath
+    } | ConvertTo-Json -Depth 16 | Out-File -Path $cachePath
    
     return $Object
 

@@ -17,11 +17,11 @@ function Get-Property {
     }
 
 
-    $segmented = $PropertyPath.toLower() -replace '[\/\.]+', '.'
+    $segmented = '.' + $PropertyPath.toLower() -replace '[\/\.]+', '.'
 
     while ($segmented) {
 
-        Write-Verbose "_----------------------------_"
+        Write-Verbose '_----------------------------_'
         Write-Verbose ($Object.GetType().BaseType ?? $Object.GetType().Name)
 
         $objectProperties = $Object.PSObject.Properties
@@ -32,16 +32,16 @@ function Get-Property {
         Write-Verbose ($objectProperties.Name | ConvertTo-Json)
 
         $Target = $objectProperties | `
-         Where-Object { $segmented.Contains($_.Name.toLower()) } | `
-         Sort-Object -Property @{ Expression = { $segmented.IndexOf($_.Name.toLower()) } } | `
-         Select-Object -First 1
+            Where-Object { $segmented.Contains('.' + $_.Name.toLower()) } | `
+            Sort-Object -Property @{ Expression = { $segmented.IndexOf('.' + $_.Name.toLower()) } } | `
+            Select-Object -First 1
 
         if ($null -eq $Target) {
             Throw "Path: '$PropertyPath' - Error at '$segmented' - is NULL"
         }
 
         Write-Verbose "$segmented, $($Target.name.toLower())"
-        $segmented = $segmented -replace "\.*$($Target.name.toLower())\.*", ''
+        $segmented = $segmented -replace "\.$($Target.name.toLower())", ''
         Write-Verbose "$segmented, $($Target.name.toLower())"
         $Object = $Object."$($Target.name)" # Don't use Target Value, in case $object is Array and multiple need to be returned
     }

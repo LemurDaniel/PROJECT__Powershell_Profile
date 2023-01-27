@@ -53,7 +53,7 @@ function Get-PimAssignments {
                 Name       = 'expirationEndUserAssignment';
                 Expression = {
                     Search-In (Get-RoleManagmentPoliciyAssignmentsForScope $scope) `
-                        -where 'policyAssignmentProperties.roleDefinition.id' `
+                        -where 'properties.policyAssignmentProperties.roleDefinition.id' `
                         -is $_.roleDefinitionId  
                 }
             }

@@ -1,7 +1,7 @@
 function Invoke-PimProfileActivation {
 
-    [Alias('pim')]
     [cmdletbinding()]
+    [Alias('pim')]
     param(
         # The name of the Context to switch to.
         [Parameter(

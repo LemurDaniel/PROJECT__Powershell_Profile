@@ -76,7 +76,7 @@ FunctionsToExport = 'Invoke-AzureRest', 'Switch-AzTenant', 'Backup-AzState',
                'Get-RBACPermissions', 'Invoke-PimProfileActivation', 
                'New-PimSelfActivationRequest', 'New-PimSelfDeactivationRequest', 
                'Search-PimScheduleInstance', 'Search-PimScheduleInstanceForUser', 
-               'Select-RBACPermission', 'Get-GraphApiManager', 
+               'Select-RBACPermissions', 'Get-GraphApiManager', 
                'Get-onPremisesExtensionAttributes', 'Invoke-GraphApi'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

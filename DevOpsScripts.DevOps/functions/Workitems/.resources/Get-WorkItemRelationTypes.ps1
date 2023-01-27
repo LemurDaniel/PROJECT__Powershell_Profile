@@ -1,3 +1,28 @@
+
+<#
+    .SYNOPSIS
+    Gets Information about a DevOps WorkItemRelationTypes.
+
+    .DESCRIPTION
+    Gets Information about a DevOps WorkItemRelationTypes.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Download an open a repository in the current DevOps-Context:
+
+    PS> Get-WorkItemRelationType '<repository_name>'
+
+
+    .LINK
+        
+#>
 function Get-WorkItemRelationType {
 
     [CmdletBinding()]

@@ -15,7 +15,7 @@ function Set-UtilsCache {
         $Identifier,
 
         [Parameter(Mandatory = $false)]
-        [System.int32]
+        [System.Int16]
         $Alive = 120,
 
         [Parameter(Mandatory = $false)]
@@ -29,7 +29,7 @@ function Set-UtilsCache {
         $null = New-Item -Path "$PSScriptRoot/.cache" -ItemType Directory -Force
     }
     
-    $Alive = $Forever ? [System.Int32]::MaxValue : $Alive
+    $Alive = $Forever ? [System.Int16]::MaxValue : $Alive
     @{
         Date    = ([DateTime]::Now).AddHours($Alive)
         Content = $Object

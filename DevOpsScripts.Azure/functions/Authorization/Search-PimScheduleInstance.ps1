@@ -5,6 +5,7 @@
 
     .DESCRIPTION
     Searches an eligible PIM-Schedule Instance on a scope for a role. At the moment only management groups.
+    Can return multiple schedule instances. Current DC Migartion Infrastructure, only one Eligible PIM-Aissgnment per role, per scope.
 
     .INPUTS
     None. You cannot pipe objects into the Function.

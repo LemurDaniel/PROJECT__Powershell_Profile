@@ -16,6 +16,7 @@
 #>
 function Update-ModuleSourcesAllRepositories {
     param (
+        # Refresh cached values.
         [Parameter()]
         [switch]
         $refresh = $false

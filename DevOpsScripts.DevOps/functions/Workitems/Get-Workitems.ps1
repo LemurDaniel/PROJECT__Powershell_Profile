@@ -66,7 +66,6 @@ function Get-WorkItems {
             API    = '_apis/wit/workitems/?api-version=7.0'
             Query  = @{
                 ids = $IdList -join ','
-  
             }
         }
 

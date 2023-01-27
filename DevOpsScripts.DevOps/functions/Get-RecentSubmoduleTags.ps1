@@ -1,6 +1,33 @@
+
+<#
+    .SYNOPSIS
+    Gets all recent terraform-submodule tags of repositories named terraform. (Project DC Migration specific)
+
+    .DESCRIPTION
+    Gets all recent terraform-submodule tags of repositories named terraform. (Project DC Migration specific)
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    return the number of replacements
+
+
+    .EXAMPLE
+
+    Gets all recent terraform-submodule tags:
+
+    PS> Get-RecentSubmoduleTags
+
+
+    .LINK
+        
+#>
+
 function Get-RecentSubmoduleTags {
 
     param(
+        # Refresh any cached values.
         [Parameter()]
         [switch]
         $refresh
@@ -25,6 +52,7 @@ function Get-RecentSubmoduleTags {
 
     foreach ($repository in $terraformRepositories) {
 
+        Write-Host "Fetching Repository $($repository.name)"
         # Call Api to get all tags on Repository and sort them by newest
         $sortedTags = Get-RepositoryRefs -id $repository.id -Tags | `
             Select-Object -Property `

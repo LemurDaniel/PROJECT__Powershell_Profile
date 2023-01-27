@@ -1,3 +1,19 @@
+<#
+    .SYNOPSIS
+    Update all terraform-submodule sources in all locations. (DC Migration specific)
+
+    .DESCRIPTION
+    Update all terraform-submodule sources in all locations. (DC Migration specific)
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None.
+
+    .LINK
+        
+#>
 function Update-ModuleSourcesAllRepositories {
     param (
         [Parameter()]
@@ -23,19 +39,19 @@ function Update-ModuleSourcesAllRepositories {
 
 
     $null = Get-RecentSubmoduleTags -refresh:($refresh)
-    $allTerraformRepositories = Get-ProjectInfo 'repositories' | `
-        Where-Object { $_.name.contains('terraform') } | `
+    $allTerraformRepositories = Get-ProjectInfo -return 'repositories' | `
+        Where-Object -Property name -Like '*terraform*' | `
         Sort-Object -Property { $sortOrder.IndexOf($_.name) }
 
 
     foreach ($repository in $allTerraformRepositories) {
     
         Write-Host -ForegroundColor Yellow "Searching Respository '$($repository.name)' locally"
-        $null = Open-Repository -repositoryName ($repository.name) -onlyDownload
+        $null = Open-Repository -Name ($repository.name) -onlyDownload
 
         Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
         $repoRefs = Get-RepositoryRefs -id $repository.id | `
-            Where-Object -Property name -In @('refs/heads/dev' ,'refs/heads/main' ,'refs/heads/master' ) | `
+            Where-Object -Property name -In @('refs/heads/dev' , 'refs/heads/main' , 'refs/heads/master' ) | `
             Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
           
         git -C $repository.Localpath checkout ($repoRefs[0].name -split '/')[-1]

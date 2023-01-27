@@ -1,3 +1,29 @@
+
+<#
+    .SYNOPSIS
+    Performs a regex replace operation on all files in a Folder or the current Folder.
+
+    .DESCRIPTION
+    Performs a regex replace operation on all files in a Folder or the current Folder.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    return the number of replacements
+
+
+    .EXAMPLE
+
+    Remove Moved-Blocks from Terraform configuration in current-Folder:
+
+    PS> Edit-RegexOnFiles -regexQuery 'moved\s*\{[^\}]*\}'
+
+
+    .LINK
+        
+#>
+
 function Edit-RegexOnFiles {
 
     [cmdletbinding(
@@ -5,16 +31,17 @@ function Edit-RegexOnFiles {
         ConfirmImpact = 'high'
     )]
     param (
+        # Root replacementpath. If not specified defaults to current location.
         [Parameter()]
         [System.String]
         $replacementPath = $null,
 
-        # Parameter help description.
+        # String to replace regex results with.
         [Parameter()]
         [System.String]
         $replace = '',
 
-        # Parameter help description.
+        # The Regexquery to perform on all files.
         [Parameter(Mandatory = $true)]
         [System.String]
         $regexQuery
@@ -31,7 +58,7 @@ function Edit-RegexOnFiles {
             ForEach-Object { 
             [PSCustomObject]@{
                 FullName = $_.FullName
-                Content  = (Get-Content -Path $_.FullName -Raw)
+                Content  = (Get-Content -Raw -Path $_.FullName)
             } 
         } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
 
@@ -44,13 +71,7 @@ function Edit-RegexOnFiles {
                 continue
             }
       
-            :regexMatch 
-            foreach ($match in $regexMatches) {     
-                # -replace is used, since get-content returns an array of lines of file, not a text string.
-                # And -replace works on Arrays as well, unlike .replace
-                $file.Content = $file.Content -replace ($match.Value), $replace
-            }
-
+            $file.Content = $file.Content -replace $regexQuery, $replace
             $file.Content | Out-File -LiteralPath $file.FullName
         }  
     }

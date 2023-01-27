@@ -1,21 +1,57 @@
 
+<#
+    .SYNOPSIS
+    Creates a new Pull-Request in Azure DevOps from.
+
+    .DESCRIPTION
+    Creates a new Pull-Request in Azure DevOps from one Branch to Dev or Dev to Master.
+    Opens it automatically in the Browser.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None.
+
+
+    .EXAMPLE
+
+    Create a new Pull-Request from the current features branch in the corresponding AzureDevOps Repository:
+
+    PS> New-PullRequest
+
+    .EXAMPLE
+
+    Create a new Pull-Request from the current features branch in the corresponding AzureDevOps Repository:
+    - Specify a PR-Title and a target. Dev or default (Main or Master)
+
+    PS> New-PullRequest -PRTitle '<title>'
+
+
+    .LINK
+        
+#>
 function New-PullRequest {
 
     [cmdletbinding()]
     param(
+        # The PR-Title. If null will be created automatically.
         [Parameter()]
         [System.String]
         $PRtitle = $null,
 
+        # The target branch. Dev or default for (master or main)
         [Parameter()]
         [ValidateSet('dev', 'default')]
         [System.String]
         $Target = 'dev',
 
+        # A repository path. If not specified will default to current location.
         [Parameter(Mandatory = $false)]
         [System.String]
         $path,
 
+        # A repository id. If not specified will default to current location.
         [Parameter(Mandatory = $false)]
         [System.String]
         $id   
@@ -104,15 +140,4 @@ function New-PullRequest {
 
     Start-Process $pullRequestUrl
 
-}
-
-function New-MasterPR {
-
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PRtitle
-    )
-
-    New-PullRequest -Target 'default' -PRtitle $PRTitle
 }

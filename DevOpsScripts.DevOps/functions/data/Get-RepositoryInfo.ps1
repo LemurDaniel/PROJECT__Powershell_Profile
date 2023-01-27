@@ -68,7 +68,8 @@ function Get-RepositoryInfo {
         [System.String]
         $id,
 
-        # The Property to return from the info. If not specified everything will be returned.
+      
+        # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
         [Parameter()]
         [System.String]

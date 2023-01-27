@@ -1,12 +1,48 @@
 
+<#
+    .SYNOPSIS
+    Creates a new Branch in the Current Repository, based on a workitem assigned to the current user.
+
+    .DESCRIPTION
+    Creates a new Branch in the Current Repository, based on a workitem assigned to the current user.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+    .EXAMPLE
+
+    Create a new Branch in the current repository from a workitem:
+
+    PS> New-BranchFromWorkitem '<item_from_autocomplete>'
+
+
+    .LINK
+        
+#>
 
 function New-BranchFromWorkitem {
 
     [Alias('gitW')]
     param (
-        [Parameter()]
-        [System.String[]]
-        $SearchTags
+        # Autocomplete list for workitems assigned to the user.
+        [Parameter(Mandatory = $true)]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = Search-WorkItemInIteration -SearchTags '*' -Current -Personal -return 'System.Title'  
+
+                $validValues | `
+                    ForEach-Object { $_ } | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $workItem
     )    
 
     git rev-parse >nul 2>&1; 
@@ -15,20 +51,13 @@ function New-BranchFromWorkitem {
     }
 
 
-    $workItem = Search-WorkItemInIteration -SearchTags $SearchTags -Current -Personal -Single
-
-    if (!$workItem) {
-        Write-Host -ForegroundColor RED 'Error: Work Item not found!'
-    }
-    else {
-        $transformedTitle = $workItem.'System.Title'.toLower() -replace '[?!:\/\\\-\s]+', '_'
-        $branchName = "features/$($workItem.'System.id')-$transformedTitle"
+    $transformedTitle = $workItem.'System.Title'.toLower() -replace '[?!:\/\\\-\s]+', '_'
+    $branchName = "features/$($workItem.'System.id')-$transformedTitle"
         
-        git checkout master
-        git pull origin master
-        git checkout dev
-        git pull origin dev
-        git checkout -b "$branchName"
-    }
+    git checkout master
+    git pull origin master
+    git checkout dev
+    git pull origin dev
+    git checkout -b "$branchName"
 
 }

@@ -1,9 +1,40 @@
 
+<#
+    .SYNOPSIS
+    Select Worktimes based on a wiql-Query in folder or DevOps accessbible by the user.
+
+    .DESCRIPTION
+    Select Worktimes based on a wiql-Query in folder or DevOps accessbible by the user.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    returns a list of queried workitems.
+
+
+    .EXAMPLE
+
+    Select-Workitems based on a defined query:
+
+    PS> Select-Workitems '<item_from_autocomplete_list>'
+
+    .EXAMPLE
+
+    Select-Workitems based on a custom Query:
+
+    PS> Select-Workitems '<custom_wiql_query_as_string>'
+
+    .LINK
+        
+#>
+
 function Select-Workitems {
 
     [CmdletBinding()]
     param(
 
+        # Autocomplted list of Queries
         [Parameter(Mandatory = $true)]
         [ArgumentCompleter(
             {
@@ -21,6 +52,7 @@ function Select-Workitems {
         $Query,
 
 
+        # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
         [Parameter()]
         [System.String]

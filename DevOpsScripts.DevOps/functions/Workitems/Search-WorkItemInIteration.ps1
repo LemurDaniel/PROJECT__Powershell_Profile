@@ -119,41 +119,55 @@ function Search-WorkItemInIteration {
         # Retrieves only the first workitem with the most hits.
         [Parameter()]
         [switch]
-        $Single
+        $Single,
+
+
+
+        # The Property to return from the items. If null will return full Properties.
+        [Alias('return')]
+        [Parameter()]
+        [System.String]
+        $Property
     )
 
     $TargetIteration = $Current ? (Get-SprintIterations -Current) : ((Get-SprintIterations) | Where-Object -Property name -EQ -Value $Iteration)
-    $Request = @{
-        Method = 'GET'
-        SCOPE  = 'PROJ'
-        API    = "/_apis/work/teamsettings/iterations/$($TargetIteration.id)/workitems?api-version=7.1-preview.1"
-    }
-    $workItems = Invoke-DevOpsRest @Request
-
-    $Request = @{
-        Method = 'POST'
-        SCOPE  = 'PROJ'
-        API    = '/_apis/wit/workitemsbatch?api-version=7.1-preview.1'
-        Body   = @{
-            ids    = $workItems.WorkItemRelations.target.id
-            fields = @(
-                'System.Id',
-                'System.Title',
-                'System.AssignedTo',
-                'System.WorkItemType',
-                'System.Parent',
-                'System.PersonId',
-                'System.ProjectId',
-                'System.Reason',
-                'System.RelatedLinkCount',
-                'System.RelatedLinks',
-                'Microsoft.VSTS.Scheduling.RemainingWork'
-            )
+    
+    $workItems = Get-AzureDevOpsCache -Type WITSearch -Identifier "$($TargetIteration.id)"
+    if (!$workItems) {
+        $Request = @{
+            Method = 'GET'
+            SCOPE  = 'PROJ'
+            API    = "/_apis/work/teamsettings/iterations/$($TargetIteration.id)/workitems?api-version=7.1-preview.1"
         }
+        $workItems = Invoke-DevOpsRest @Request
+
+        $Request = @{
+            Method = 'POST'
+            SCOPE  = 'PROJ'
+            API    = '/_apis/wit/workitemsbatch?api-version=7.1-preview.1'
+            Body   = @{
+                ids    = $workItems.WorkItemRelations.target.id
+                fields = @(
+                    'System.Id',
+                    'System.Title',
+                    'System.AssignedTo',
+                    'System.WorkItemType',
+                    'System.Parent',
+                    'System.PersonId',
+                    'System.ProjectId',
+                    'System.Reason',
+                    'System.RelatedLinkCount',
+                    'System.RelatedLinks',
+                    'Microsoft.VSTS.Scheduling.RemainingWork'
+                )
+            }
+        }
+
+        $workItems = (Invoke-DevOpsRest @Request).value.fields
+        $workItems = Set-AzureDevOpsCache -Object $workItems -Type WITSearch -Identifier "$($TargetIteration.id)" -Alive 10
     }
 
-    $workItems = (Invoke-DevOpsRest @Request).value.fields
-        
+
     if ($Personal) {
         $workItems = $workItems | Where-Object { $_.'System.AssignedTo'.uniqueName -like (Get-AzContext).Account.Id }
     }
@@ -162,9 +176,9 @@ function Search-WorkItemInIteration {
         $workItems = $workItems | Where-Object -Property 'System.WorkItemType' -EQ -Value $Type
     }
 
-    if(!$workItems){
+    if (!$workItems) {
         return $null
     }
     
-    return Search-In $workItems -where 'System.Title' -is $SearchTags -Multiple:$(!$Single)
+    return Search-In $workItems -where 'System.Title' -is $SearchTags -Multiple:$(!$Single) -return $Property
 }

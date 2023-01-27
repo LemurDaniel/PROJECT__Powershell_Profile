@@ -1,4 +1,28 @@
 
+<#
+    .SYNOPSIS
+    Adds a new Sprint-Increment to the Project.
+
+    .DESCRIPTION
+    Adds a new Sprint-Increment to the Project and associates it with the specified team.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Response of the Request containing the new iteration.
+
+
+    .EXAMPLE
+
+    Add-SprintIncrement:
+
+    PS> Add-SprintIncrement 'DC Azure Migration'
+
+
+    .LINK
+        
+#>
 function Add-SprintIncrement {
 
     [CmdletBinding()]

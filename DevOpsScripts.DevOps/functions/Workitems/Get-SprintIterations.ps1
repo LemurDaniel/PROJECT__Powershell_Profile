@@ -1,12 +1,43 @@
 
+<#
+    .SYNOPSIS
+    Gets all Sprint-Iterations in the Current Project.
+
+    .DESCRIPTION
+    Gets all Sprint-Iterations in the Current Project.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    List of all Sprint-iterations in the Project or the most current one.
+
+
+    .EXAMPLE
+
+    Get List of Sprint Iterations:
+
+    PS> Get-SprintIterations
+
+    .EXAMPLE
+
+    Get Most Current Sprint Iteration:
+
+    PS> Get-SprintIterations -Current
+
+    .LINK
+        
+#>
 function Get-SprintIterations {
 
     [CmdletBinding()]
     param(
+        # Switch to only return the most current Sprint-Iteration.
         [Parameter()]
         [switch]
         $Current,
 
+        # Switch to refresh Cached Values.
         [Parameter()]
         [switch]
         $Refresh
@@ -26,12 +57,11 @@ function Get-SprintIterations {
     }
     
 
-    $Cache = Get-AzureDevOpsCache -Type Iteration -Identifier (Get-ProjectInfo 'name')
-    if ($Cache -AND !$Refresh) {
-        return $Cache
+    $iterations = Get-AzureDevOpsCache -Type Iteration -Identifier (Get-ProjectInfo 'name')
+    if (!$iterations -OR $Refresh) {
+        $iterations = Invoke-DevOpsRest @Request -return 'value'
+        $iterations = Set-AzureDevOpsCache -Object $iterations -Type Iteration -Identifier (Get-ProjectInfo 'name')
     }
 
-
-    $iterations = Invoke-DevOpsRest @Request -return 'value'
-    return Set-AzureDevOpsCache -Object $iterations -Type Iteration -Identifier (Get-ProjectInfo 'name')
+    return $iterations 
 }

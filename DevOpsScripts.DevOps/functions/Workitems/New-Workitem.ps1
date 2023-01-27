@@ -32,6 +32,7 @@ function New-Workitem {
 
     [CmdletBinding()]
     param(
+        # Type of the new workitem.
         [Parameter(
             Position = 0
         )]
@@ -46,14 +47,17 @@ function New-Workitem {
         [System.String]
         $Type = 'User Story',
 
+        # Title of the new Workitem
         [parameter(Mandatory = $true)]
         [System.String]
         $Title,
 
+        # Description of the new Workitem.
         [Parameter()]
         [System.String]
         $Description = $null,
 
+        # Team association.
         [Parameter()]
         $Team = 'DC Azure Migration',
         [System.String]

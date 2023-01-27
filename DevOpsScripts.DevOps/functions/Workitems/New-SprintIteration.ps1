@@ -1,9 +1,34 @@
 
+<#
+    .SYNOPSIS
+    Creates a new iteration in the Project.
+
+    .DESCRIPTION
+    Creates a new iteration in the Project without association to a team.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    API Respones with the new Iteration.
+
+
+    .EXAMPLE
+
+    Create a new Sprint Iteration
+
+    PS> New-SprintIteration  -Name '2023-07and08' -StartDate ([DateTime]::Now) -DurationDays 12
+
+
+    .LINK
+        
+#>
 
 function New-SprintIteration {
 
     [CmdletBinding()]
     param(
+
         [parameter(Mandatory = $true)]
         [System.String]
         $Name,

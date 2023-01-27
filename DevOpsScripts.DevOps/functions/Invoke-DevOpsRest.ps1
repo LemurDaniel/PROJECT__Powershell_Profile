@@ -29,6 +29,8 @@ function Invoke-DevOpsRest {
         [PSCustomObject]
         $Body,
 
+        # The Property to return from the items. If null will return full Properties.
+        # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
         [Parameter()]
         [System.String]

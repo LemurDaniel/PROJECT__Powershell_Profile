@@ -34,6 +34,7 @@ function Get-WorkItems {
 
     [CmdletBinding()]
     param(
+        # List of workitem ids to return
         [Parameter(
             Mandatory = $true,
             ValueFromPipeline = $true
@@ -42,6 +43,8 @@ function Get-WorkItems {
         $Ids,
 
 
+
+        # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
         [Parameter()]
         [System.String]

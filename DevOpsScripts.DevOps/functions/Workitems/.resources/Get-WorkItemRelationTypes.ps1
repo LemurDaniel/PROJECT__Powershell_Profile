@@ -48,6 +48,7 @@ function Get-WorkItemRelationType {
         $RelationType,
 
 
+        # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
         [Parameter()]
         [System.String]

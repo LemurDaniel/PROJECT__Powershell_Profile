@@ -1,6 +1,37 @@
 
+<#
+    .SYNOPSIS
+    Gets all Workitem Queries in Azure DevOps accesible by the user.
+
+    .DESCRIPTION
+    Gets all Workitem Queries in Azure DevOps accesible by the user. Own and Shared.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    List of all Workitem Queries accessible by the user.
+
+
+    .EXAMPLE
+
+    Get a List of all Work-Item Queries:
+
+    PS> Get-WorkItemQueries
+
+    .EXAMPLE
+
+    Get a List of the Names of all Work-Item Queries:
+
+    PS> Get-WorkItemQueries 'name'
+
+    .LINK
+        
+#>
 function Get-WorkItemQueries {
     param (
+
+        # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
         [Parameter()]
         [System.String]

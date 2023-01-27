@@ -15,7 +15,7 @@ function Set-UtilsCache {
         $Identifier,
 
         [Parameter(Mandatory = $false)]
-        [System.Int16]
+        [System.Int32]
         $Alive = 120,
 
         [Parameter(Mandatory = $false)]
@@ -29,9 +29,9 @@ function Set-UtilsCache {
         $null = New-Item -Path "$PSScriptRoot/.cache" -ItemType Directory -Force
     }
     
-    $Alive = $Forever ? [System.Int16]::MaxValue : $Alive
+    $Alive = $Forever ? [System.Int32]::MaxValue : $Alive
     @{
-        Date    = ([DateTime]::Now).AddHours($Alive)
+        Date    = ([DateTime]::Now).AddMinutes($Alive)
         Content = $Object
     } | ConvertTo-Json -Depth 8 | Out-File -Path $cachePath
    

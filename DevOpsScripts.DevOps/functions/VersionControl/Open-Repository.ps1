@@ -10,7 +10,7 @@
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
-    None
+    Fileitem with location of the repository
 
 
     .EXAMPLE

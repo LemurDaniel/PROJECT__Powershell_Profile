@@ -44,7 +44,6 @@ function Invoke-PimProfileActivation {
         $requestType = 'SelfActivate'
     )
 
-    $pimProfile = (Get-PimProfiles).GetEnumerator() | Where-Object -Property Key -EQ -Value $ProfileName
-
+    $pimProfile = (Get-PimProfiles).GetEnumerator() | Where-Object -Property Key -EQ -Value $ProfileName | Select-Object -ExpandProperty Value
     return New-PimSelfActivationRequest -justification $justification -duration $pimProfile.Duration -scope $pimProfile.Scope -role $pimProfile.Role -requestType $requestType
 }

@@ -72,8 +72,8 @@ RequiredAssemblies = @()
 FunctionsToExport = 'Invoke-AzureRest', 'Switch-AzTenant', 'Backup-AzState', 
                'Search-AzFunctionApp', 'Search-AzPermission', 'Search-AzResource', 
                'Search-AzStorageAccount', 'Search-AzStorageContext', 'Search-AzVm', 
-               'Activate-PimProfile', 'Add-PimProfile', 'Get-PimAssignments', 
-               'Get-PimProfiles', 'New-PimSelfActivationRequest', 
+               'Add-PimProfile', 'Get-PimAssignments', 'Get-PimProfiles', 
+               'Invoke-PimProfileActivation', 'New-PimSelfActivationRequest', 
                'New-PimSelfDeactivationRequest', 'Search-PimScheduleInstance', 
                'Search-PimScheduleInstanceForUser', 'Get-GraphApiManager', 
                'Get-onPremisesExtensionAttributes', 'Invoke-GraphApi'

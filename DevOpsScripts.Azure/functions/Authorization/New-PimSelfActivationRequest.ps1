@@ -81,8 +81,8 @@ function New-PimSelfActivationRequest {
         $pimProfile = (Get-PimProfiles).GetEnumerator() | Where-Object -Property Key -EQ -Value $ProfileName
 
         $scope = $pimProfile.Scope
-        $role = $pimProfile.role
-        $duration = $pimProfile.duration
+        $role = $pimProfile.Role
+        $duration = $pimProfile.Duration
     }
 
     $aadUser = Get-AzADUser -Mail (Get-AzContext).Account.Id

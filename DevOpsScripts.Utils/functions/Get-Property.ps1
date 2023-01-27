@@ -21,8 +21,8 @@ function Get-Property {
 
     while ($segmented) {
 
-         Write-Verbose "_----------------------------_"
-        Write-Verbose ($Object.GetType().BaseType)
+        Write-Verbose "_----------------------------_"
+        Write-Verbose ($Object.GetType().BaseType ?? $Object.GetType().Name)
 
         $objectProperties = $Object.PSObject.Properties
         if ($Object.GetType().BaseType -eq [System.Array]) {
@@ -42,7 +42,7 @@ function Get-Property {
 
         Write-Verbose "$segmented, $($Target.name.toLower())"
         $segmented = $segmented -replace "\.*$($Target.name.toLower())\.*", ''
-         Write-Verbose "$segmented, $($Target.name.toLower())"
+        Write-Verbose "$segmented, $($Target.name.toLower())"
         $Object = $Object."$($Target.name)" # Don't use Target Value, in case $object is Array and multiple need to be returned
     }
 

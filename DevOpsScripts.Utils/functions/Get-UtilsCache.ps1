@@ -1,15 +1,48 @@
+
+<#
+    .SYNOPSIS
+    Gets a chached value by a type and a specified identifier.
+
+    .DESCRIPTION
+    Gets a chached value by a type and a specified identifier.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Return null or the Cached value if present.
+
+
+    .EXAMPLE
+
+    Get the current User cached back:
+
+    PS> Get-UtilsCache -Type User -Identifier current
+
+        .EXAMPLE
+
+    Get all PIM Profiles as a hashtable back.
+
+    PS> Get-UtilsCache -Type PIM_Profiles -Identifier all -AsHashtable
+    
+    .LINK
+        
+#>
 function Get-UtilsCache {
 
     [CmdletBinding()]
     param (
+        # The type of the cache.
         [Parameter(Mandatory = $true)]
         [System.String]
         $Type,
 
+        # An identifier for the cache.
         [Parameter(Mandatory = $true)]
         [System.String]
         $Identifier,
 
+        # Return the cache as a hashtable.
         [Parameter()]
         [Switch]
         $AsHashtable

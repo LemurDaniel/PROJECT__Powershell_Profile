@@ -1,3 +1,34 @@
+
+
+<#
+    .SYNOPSIS
+    Set a chache by a type and a specified identifier.
+
+    .DESCRIPTION
+    Set a chache by a type and a specified identifier.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Return the cached object.
+
+
+    .EXAMPLE
+
+    Cache a value for 3 Minutes:
+
+    PS> Get-UtilsCache -object $value -Type value -Identifier current -Alive 3
+
+        .EXAMPLE
+
+    Cache the all pim-profiles forever:
+
+    PS> Get-UtilsCache -Object $profiles -Type PIM_Profiles -Identifier all -Forever
+    
+    .LINK
+        
+#>
 function Set-UtilsCache {
 
     [CmdletBinding()]

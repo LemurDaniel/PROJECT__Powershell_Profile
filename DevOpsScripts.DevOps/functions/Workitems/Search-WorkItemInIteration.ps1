@@ -81,17 +81,17 @@ function Search-WorkItemInIteration {
 
         # Search Tags, for Querying workitems.
         [Parameter(
-            Mandatory = $true, 
+            Mandatory = $false, 
             Position = 1,
             ParameterSetName = 'current'
         )]
         [Parameter(
-            Mandatory = $true, 
+            Mandatory = $false, 
             Position = 1,
             ParameterSetName = 'iterations'
         )]
         [System.String[]]
-        $SearchTags,
+        $SearchTags = '*',
 
 
         # Type of workitem to retrieve.

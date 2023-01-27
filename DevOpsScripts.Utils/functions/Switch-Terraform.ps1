@@ -1,3 +1,22 @@
+
+
+<#
+    .SYNOPSIS
+    Switches the current Terraform Version.
+
+    .DESCRIPTION
+    Switches the current Terraform Version, based on an API-Call quering the latest versions.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None.
+
+    
+    .LINK
+        
+#>
 function Switch-Terraform {
     
     [Alias('tf')]

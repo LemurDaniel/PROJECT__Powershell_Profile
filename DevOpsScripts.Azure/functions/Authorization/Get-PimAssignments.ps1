@@ -1,3 +1,7 @@
+
+
+
+# DC Migration Specific because of PIM-Group Naming. For testing.
 function Get-PimAssignments {
 
     [cmdletbinding()]
@@ -41,32 +45,32 @@ function Get-PimAssignments {
         
             $scope = "/managementGroups/$($_.scope)"
             Write-Host "Fetching PIM for Scope: $Scope - $($_.assignment)"
-            $Request = @{
-                Method = 'GET'
-                Scope  = $scope
-                API    = 'providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01'
-            }
            
-            return Invoke-AzureRest @Request -return 'value.properties' | `
+            return Get-RoleEligibilitySceduleInstancesForScope $scope | `
                 Where-Object -Property principalId -EQ -Value $_.id | `
                 Select-Object *, @{
                 Name       = 'expirationEndUserAssignment';
                 Expression = {
                     Search-In (Get-RoleManagmentPoliciyAssignmentsForScope $scope) `
                         -where 'properties.policyAssignmentProperties.roleDefinition.id' `
-                        -is $_.roleDefinitionId  
+                        -is $_.roleDefinitionId  `
+                        -return 'Properties.effectiveRules' | `
+                        Where-Object -Property id -EQ -Value 'Expiration_EndUser_Assignment'
                 }
             }
             
             
         }
     } | `
-        Where-Object -Property PIM_Configuration -NE -Value $false #| `
-    # ForEach-Object {
-    #Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
-    # }s
+        Where-Object -Property PIM_Configuration -NE -Value $false | `
+        ForEach-Object {
+        Add-PimProfile -ProfileName "$($_.assignment)--$($_.scope)" `
+            -Scope $_.PIM_Configuration.scope `
+            -Role $_.PIM_Configuration.expandedProperties.roleDefinition.displayName `
+            -duration ($_.PIM_Configuration.expirationEndUserAssignment.maximumDuration -replace '[^\d]*', '') -Force
+    }
 
 
-
-    return Set-UtilsCache -Object $pimGroups -Type PIM -Identifier assignments
+    return Get-PimProfiles
+    #return Set-UtilsCache -Object $pimGroups -Type PIM -Identifier assignments
 }

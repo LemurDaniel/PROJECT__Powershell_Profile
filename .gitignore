@@ -3,3 +3,5 @@
 
 .cache/
 .context.current.json
+
+**test*.json

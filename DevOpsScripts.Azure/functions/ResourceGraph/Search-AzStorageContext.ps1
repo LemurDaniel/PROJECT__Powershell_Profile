@@ -1,3 +1,22 @@
+<#
+    .SYNOPSIS
+    Searches and returns a storage context from the Azure Resource Graph.
+
+    .DESCRIPTION
+    Searches and returns a storage context from the Azure Resource Graph. 
+    For quickly aquiring a storage context and calling/testing storage tables, etc. via powershell.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Return a storage context for an storage account
+
+
+
+    .LINK
+        
+#>
 function Search-AzStorageContext {
 
     [Alias('STCtx')]

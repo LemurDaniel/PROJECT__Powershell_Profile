@@ -1,4 +1,20 @@
 
+<#
+    .SYNOPSIS
+    Switches to a Tenant accessible by the connected user.
+
+    .DESCRIPTION
+    Switches to a Tenant accessible by the connected user.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+    .LINK
+        
+#>
 function Switch-AzTenant {
 
     [CmdletBinding()]
@@ -33,7 +49,7 @@ function Switch-AzTenant {
         Disconnect-AzAccount
     }
 
-    Connect-AzAccount -Tenant $tenantId
-    az login --tenant $tenantId
+    $null = Connect-AzAccount -Tenant $tenantId
+    $null = az login --tenant $tenantId
     
 }

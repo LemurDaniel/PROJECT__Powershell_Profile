@@ -1,3 +1,22 @@
+<#
+    .SYNOPSIS
+    Downloads and backs up all terraform states for state changes. (DC Migration specific)
+
+    .DESCRIPTION
+    Downloads and backs up all terraform states for state changes. (DC Migration specific)
+    Not used since Moved-Blocks prefered and in most cases sufficient.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+
+    .LINK
+        
+#>
 function Backup-AzState {
 
     [CmdletBinding()]

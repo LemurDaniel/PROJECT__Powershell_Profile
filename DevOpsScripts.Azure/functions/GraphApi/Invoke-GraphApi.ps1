@@ -1,4 +1,22 @@
 
+<#
+    .SYNOPSIS
+    Invokes the Azure GraphApi.
+
+    .DESCRIPTION
+    Invokes the Azure GraphApi. TODO
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    None
+
+
+
+    .LINK
+        
+#>
 
 function Invoke-GraphApi {
     param (
@@ -17,29 +35,5 @@ function Invoke-GraphApi {
 
 
     return ($response.Content | ConvertFrom-Json -Depth 8)
-  
-}
-
-function Get-GraphApiManager {
-    param (
-        [Parameter()]
-        [System.String]
-        $usermail
-    )
-
-    $userId = (Get-AzADUser -Mail $usermail).id
-    return Invoke-GraphApi -ApiResource users -ApiEndpoint "$userId/manager"
-
-}
-
-function  Get-onPremisesExtensionAttributes {
-    param (
-        [Parameter()]
-        [System.String]
-        $usermail
-    )
-
-    $userId = (Get-AzADUser -Mail $usermail).id
-    return Invoke-GraphApi -ApiResource users -ApiEndpoint "$userId/onPremisesExtensionAttributes"
   
 }

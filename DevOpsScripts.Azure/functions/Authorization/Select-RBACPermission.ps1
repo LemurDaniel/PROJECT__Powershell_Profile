@@ -1,6 +1,6 @@
 
-<#
-function Search-AzPermission {
+
+function Select-RBACPermission {
 
     param (
         [Parameter(Mandatory = $true)]
@@ -21,4 +21,3 @@ function Search-AzPermission {
 
     return (Search-PreferencedObject -SearchObjects $permissionsToSearch -SearchTags $Keys -SearchProperty 'Operation Name' -Multiple)[0..($Limit - 1)]
 }
-#>

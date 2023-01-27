@@ -54,7 +54,7 @@ function Set-UtilsCache {
         $Forever
     )
 
-    $cachePath = Join-Path -Path "$PSScriptRoot/.cache/" -ChildPath (".$Type.$Identifier.json".toLower() -replace ' ', '_') 
+    $cachePath = Join-Path -Path "$PSScriptRoot/.cache/" -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
     
     if (-not (Test-Path -Path "$PSScriptRoot/.cache")) {
         $null = New-Item -Path "$PSScriptRoot/.cache" -ItemType Directory -Force

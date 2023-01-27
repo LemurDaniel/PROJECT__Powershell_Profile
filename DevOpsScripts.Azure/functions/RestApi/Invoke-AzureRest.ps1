@@ -52,23 +52,29 @@ function Invoke-AzureRest {
     }
 
 
-    $toplevelScope = $scope.contains('managementGroups') ? 'providers/Microsoft.Management' : 'providers/Microsoft.Subscriptions'
+    if (!$scope.Contains('/providers/Microsoft.Management') -AND !$scope.Contains('providers/Microsoft.Subscriptions')) {
+        $toplevelScope = $scope.contains('managementGroups') ? 'providers/Microsoft.Management' : 'providers/Microsoft.Subscriptions'
+    }
+    else {
+        # Set to empty string, if top level scope ist provided in scope itself.
+        $toplevelScope = ''
+    }
     $TargetURL = "https://management.azure.com/$toplevelScope/$scope/$APIEndpoint`?$QueryString"
 
     $Request = @{
         Method  = $METHOD
         Uri     = $TargetURL
-        PayLoad = $body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray
+        PayLoad = $body | ConvertTo-Json -Depth 16 -Compress -AsArray:$AsArray
     }
 
-    Write-Verbose ($Request | ConvertTo-Json -Depth 8)
+    Write-Verbose ($Request | ConvertTo-Json -Depth 16)
     $response = Invoke-AzRestMethod @Request
 
 
-    if ($response.StatusCode -lt 200 -OR $response.StatusCode  -gt 201) {
+    if ($response.StatusCode -lt 200 -OR $response.StatusCode -gt 201) {
         throw "$($response.StatusCode) - $($response.Content)"
     }
-    Write-Verbose ($response | ConvertTo-Json -Depth 8)
+    Write-Verbose ($response | ConvertTo-Json -Depth 16)
 
-    return Get-Property -Object ($response.Content | ConvertFrom-Json -Depth 8) -Property $Property
+    return Get-Property -Object ($response.Content | ConvertFrom-Json -Depth 16) -Property $Property
 }

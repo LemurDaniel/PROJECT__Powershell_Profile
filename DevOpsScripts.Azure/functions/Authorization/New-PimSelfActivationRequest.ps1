@@ -4,7 +4,7 @@
     Activate a Eligible Pim-Assignment on a scope or for a Pim-Profile.
 
     .DESCRIPTION
-    Activate a Eligible Pim-Assignment on a scope. At the moment only management groups.
+    Activate a eligible Pim-Assignment on a scope. At the moment only management groups.
     Fails if a eligible schedule instance can't be found for the current user.
 
     .INPUTS
@@ -123,7 +123,7 @@ function New-PimSelfActivationRequest {
     $Request = @{
     
         Method = 'PUT'
-        Scope  = "managementGroups/$Scope"
+        Scope  = $scope
         API    = "/providers/Microsoft.Authorization/roleAssignmentScheduleRequests/$([GUID]::NewGuid())`?api-version=2020-10-01"
         Body   = @{
             properties = @{

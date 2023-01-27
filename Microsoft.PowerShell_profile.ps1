@@ -63,8 +63,8 @@ $null = Add-QuickContext -ContextName 'DC Migration' -Organization baugruppe -Pr
 $null = Add-QuickContext -ContextName 'DC Redeploy' -Organization baugruppe -Project 'DC ACF Redeployment' -Force
 
 
-$null = Add-PimProfile -ProfileName WebContrib -Scope acfroot-prod -Role 'Website Contributor' -duration 3 -Force
-$null = Add-PimProfile -ProfileName PolicyContrib -Scope acfroot-prod -Role 'Resource Policy Contributor' -duration 3 -Force
+$null = Add-PimProfile -ProfileName WebContrib -Scope 'managementGroups/acfroot-prod' -Role 'Website Contributor' -duration 3 -Force
+$null = Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
 
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 Switch-GitConfig -config ($env:USERNAME -eq 'M01947' ? 'brz' : 'git')

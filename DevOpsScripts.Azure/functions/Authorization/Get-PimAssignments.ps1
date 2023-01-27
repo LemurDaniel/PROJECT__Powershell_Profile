@@ -3,7 +3,7 @@ function Get-PimAssignments {
     [cmdletbinding()]
     param()
 
-    $Cache = Get-UtilsCache -Type PIM -Identifier assignments
+    $Cache = $null# Get-UtilsCache -Type PIM -Identifier assignments
     if ($Cache) {
         return $Cache
     }
@@ -39,18 +39,33 @@ function Get-PimAssignments {
                 return $false
             }
         
+            $scope = "/managementGroups/$($_.scope)"
+            Write-Host "Fetching PIM for Scope: $Scope - $($_.assignment)"
             $Request = @{
                 Method = 'GET'
-                Scope  = "/managementGroups/$($_.scope)"
+                Scope  = $scope
                 API    = 'providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01'
             }
-
-            $scheduleInstances = Invoke-AzureRest @Request -return 'value.properties' | Where-Object -Property principalId -EQ -Value $_.id
-    
-            return $scheduleInstances
+           
+            return Invoke-AzureRest @Request -return 'value.properties' | `
+                Where-Object -Property principalId -EQ -Value $_.id | `
+                Select-Object *, @{
+                Name       = 'expirationEndUserAssignment';
+                Expression = {
+                    Search-In (Get-RoleManagmentPoliciyAssignmentsForScope $scope) `
+                        -where 'policyAssignmentProperties.roleDefinition.id' `
+                        -is $_.roleDefinitionId  
+                }
+            }
+            
+            
         }
     } | `
-        Where-Object -Property PIM_Configuration -NE -Value $false
+        Where-Object -Property PIM_Configuration -NE -Value $false #| `
+    # ForEach-Object {
+    #Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
+    # }s
+
 
 
     return Set-UtilsCache -Object $pimGroups -Type PIM -Identifier assignments

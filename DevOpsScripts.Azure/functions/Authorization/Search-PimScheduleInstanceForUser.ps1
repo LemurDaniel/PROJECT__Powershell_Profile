@@ -1,3 +1,29 @@
+
+<#
+    .SYNOPSIS
+    Searches an eligible PIM-Schedule Instance on a scope for a role. (DC Migration Specific)
+
+    .DESCRIPTION
+    Searches an eligible PIM-Schedule Instance on a scope for a role. At the moment only management groups.
+    Validates that the current user has the schedule instance assigned.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The Schedule Instance found.
+
+
+    .EXAMPLE
+
+    Get the schedule Instance for PIM-Assignment Webiste Contributor on Managment Group 'acfroot-prod':
+
+    PS> Search-PimScheduleInstanceForUser -scope 'acfroot-prod' -role 'Webiste Contributor' -aadUserId '<id>'
+
+    
+    .LINK
+        
+#>
 function Search-PimScheduleInstanceForUser {
 
     [cmdletbinding()]

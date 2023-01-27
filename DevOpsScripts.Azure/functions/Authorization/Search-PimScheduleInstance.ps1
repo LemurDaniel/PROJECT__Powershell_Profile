@@ -1,3 +1,28 @@
+
+<#
+    .SYNOPSIS
+    Searches an eligible PIM-Schedule Instance on a scope for a role.
+
+    .DESCRIPTION
+    Searches an eligible PIM-Schedule Instance on a scope for a role. At the moment only management groups.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The Schedule Instance found.
+
+
+    .EXAMPLE
+
+    Get the schedule Instance for PIM-Assignment Webiste Contributor on Managment Group 'acfroot-prod':
+
+    PS> Search-PimScheduleInstance -scope 'acfroot-prod' -role 'Webiste Contributor'
+
+    
+    .LINK
+        
+#>
 function Search-PimScheduleInstance {
 
     [cmdletbinding()]

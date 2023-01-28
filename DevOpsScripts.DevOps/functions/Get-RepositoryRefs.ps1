@@ -48,18 +48,31 @@ function Get-RepositoryRefs {
         # Optional switch to only return tags.
         [Parameter(Mandatory = $false)]
         [Switch]
-        $Tags
+        $Tags,
+
+        # Optional switch to only return heads.
+        [Parameter(Mandatory = $false)]
+        [Switch]
+        $Heads,
+
+
+        # Optional switch to include statuses
+        [Parameter(Mandatory = $false)]
+        [Switch]
+        $Statuses
     )  
 
     $repositoryId = Get-RepositoryInfo -Property 'id' -path $path -id $id
+    $filter = $Tags ? 'tags' : $Heads ? 'heads': $null
     $Request = @{
         METHOD = 'GET'
         SCOPE  = 'PROJ'
         API    = "/_apis/git/repositories/$($repositoryId)/refs?api-version=7.0"
         return = 'value'
-        query  = $Tags ? @{
-            filter = 'tags'
-        } : $null
+        query  = @{
+            includeStatuses = $Statuses
+            filter          = $filter 
+        } 
     }
 
     return Invoke-DevOpsRest @Request 

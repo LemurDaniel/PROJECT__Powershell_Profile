@@ -9,29 +9,20 @@ function Get-AzResourceGraphUpdates {
     param (
 
         # The resourceType to filter change events from.
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $resourceType,
+
+        # The change attribute to capture
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $updateProperty,
+        
+        # Any change attributes to capture on the change events.
         [Parameter(Mandatory = $false)]
         [System.String]
-        $resourceType = 'microsoft.compute/disks',
-
-        # Any change attributes to capture on the change events.
-        [Parameter(Mandatory = $false)]
-        [System.Collections.Hashtable]
-        $ChangeAttributes = @{
-            # Gets inserted in this order, so keys can make references to previous keys.
-            previousDiskSize      = "iff(isnull(properties.changes.['properties.diskSizeBytes'].previousValue), 0, properties.changes.['properties.diskSizeBytes'].previousValue)"
-            newDiskSize           = "iff(isnull(properties.changes.['properties.diskSizeBytes'].newValue), 0, properties.changes.['properties.diskSizeBytes'].newValue)"
-            previousDiskSizeBytes = 'format_bytes(tolong(previousDiskSize))'
-            newDiskSizeBytes      = 'format_bytes(tolong(newDiskSize))'
-        },
-
-        # Any change attributes to capture on the change events.
-        [Parameter(Mandatory = $false)]
-        [System.Collections.Hashtable]
-        $resourceAttributes = @{
-            # Gets inserted in this order, so keys can make references to previous keys.
-            diskSizeBytesResource = 'format_bytes(tolong(properties.diskSizeBytes))'
-        },
-
+        $format = '$1',
+        
 
         # The Timestamp from back when to take the change events.
         [Parameter(Mandatory = $false)]
@@ -48,26 +39,32 @@ function Get-AzResourceGraphUpdates {
     )
 
     $managementGroup = (Get-AzContext).Tenant.Id
-
-    $ChangeAttributes = @{}
     $resourceAttributes = @{}
-    if (($changeAttributes.Keys.Count + $resourceAttributes.Keys.Count) -gt 0) {
-        $attributeExtensions = ($changeAttributes.Keys + $resourceAttributes.Keys) -join ', '
+    if ($false) {
+        #$attributeExtensions = $attributeExtensions.Keys.Count -gt 0 ? ", $($attributeExtensions.Keys -join ', ')" : ''
     }
     # Search-AzGraph -ManagementGroup $managementGroup -Query
     #$changeAttributesExtensions = $changeAttributes.Keys.Count -gt 0 ? ", $($changeAttributes.Keys -join ',' )" : ''
     #$resourceAttributesExtensions = $resourceAttributes.Keys.Count -gt 0 ? ", $($resourceAttributes.Keys -join ',' )" : ''
-    return  Search-AzGraph -ManagementGroup $managementGroup -Query "
+
+    $propertyNameOld = "previous$($updateProperty.Split('.')[1])"
+    $propertyNameNew = "new$($updateProperty.Split('.')[1])"
+    return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
         | where properties.targetResourceType =~ '$resourceType' 
         // Get only Changes after Timestamp of Type Update.
         | where properties.changeType =~ 'Update'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
+        | where properties has 'properties.$updateProperty'
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
         | extend resourceName = split(resourceId,'/')[-1]
+        | extend oldValue = properties.changes.['properties.$updateProperty'].previousValue
+        | extend newValue = properties.changes.['properties.$updateProperty'].newValue
+        | extend $propertyNameOld = $($format -replace '\$1', 'oldValue')
+        | extend $propertyNameNew = $($format -replace '\$1', 'newValue')
         // Check for existence of resource. (In case resource was deleted, then ignore update events.)
         | join kind=leftouter (
             resources 
@@ -88,15 +85,17 @@ function Get-AzResourceGraphUpdates {
             | extend WasCreated = true
             | extend resourceId = tolower(tostring(properties.targetResourceId))
         ) on `$left.resourceId == `$right.resourceId
-        // Summarize any number of events on the same resource Id into one.
-        | summarize CollapsedEvents = count(TimeStamp), arg_max(TimeStamp, *), arg_min(MinTimeStamp = TimeStamp, id) by resourceId
         | where isnull(WasCreated)
-        $(
-            $ChangeAttributes.GetEnumerator() | ForEach-Object { "| extend $($_.Key) = $($_.Value)`n" }
-        )
+        // Summarize any number of events on the same resource Id into one.
+        | summarize CollapsedEvents = count(TimeStamp), arg_max(TimeStamp, Operation, tenantId, subscriptionId, resourceGroup, resourceName, $propertyNameOld, $propertyNameNew), arg_min(MinTimeStamp = TimeStamp, id) by resourceId
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource/', resourceId)
-        | project Operation, CollapsedEvents, subscriptionId, resourceGroup, name = resourceName, TimeStamp, MinTimeStamp, resourceURL $attributeExtensions
+        | project Operation, CollapsedEvents, subscriptionId, resourceGroup, name = resourceName, TimeStamp, MinTimeStamp, resourceURL, $propertyNameOld, $propertyNameNew
         | sort by TimeStamp desc
         "
     
 }
+
+
+# Get-AzResourceGraphUpdates -resourceType  'microsoft.compute/disks' -updateProperty 'diskSizeBytes' -format 'format_bytes(tolong($1))'
+
+# Get-AzResourceGraphUpdates -resourceType  'microsoft.compute/virtualmachines' -updateProperty 'hardwareProfile.vmSize'

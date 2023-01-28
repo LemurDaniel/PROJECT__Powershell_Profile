@@ -1,0 +1,17 @@
+
+[32;1mOperation             : [0mUpdate
+[32;1mCollapsedEvents       : [0m1
+[32;1msubscriptionId        : [0m93644b9f-d702-4207-8aef-cfc30f602e61
+[32;1mresourceGroup         : [0mrg-brz7test-prod-001
+[32;1mname                  : [0mdatadisk-01-brz-nue-daybld1
+[32;1mTimeStamp             : [0m27.01.2023 22:01:12
+[32;1mMinTimeStamp          : [0m27.01.2023 22:01:12
+[32;1mresourceURL           : [0mhttps://portal.azure.com/#@7ecb8dff-97cb-4f4a-94d3-86a4b39a84f2/resource//subscriptions/93644b9f-d702-4207-8aef-cfc30f602e61/resourcegroups/rg-brz7test-prod-001/providers/microsoft.compute/disks/datadisk-01-brz-nue-daybld1
+[32;1mpreviousDiskSize      : [0m549755813888
+[32;1mpreviousDiskSizeBytes : [0m512 GB
+[32;1mpreviousTier          : [0m
+[32;1mnewDiskSize           : [0m1099511627776
+[32;1mnewDiskSizeBytes      : [0m1 TB
+[32;1mnewTier               : [0m
+
+

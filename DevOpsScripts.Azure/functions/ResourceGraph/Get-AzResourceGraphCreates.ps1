@@ -85,4 +85,9 @@ Get-AzResourceGraphCreates -resourceType 'microsoft.compute/disks' `
     diskSizeBytes = 'format_bytes(tolong(properties.diskSizeBytes))'
 }
 
+Get-AzResourceGraphCreates -resourceType 'microsoft.compute/virtualmachines' `
+    -resourceAttributes @{
+    vmSize = "properties.hardwareProfile.vmSize"
+}
+
 #>

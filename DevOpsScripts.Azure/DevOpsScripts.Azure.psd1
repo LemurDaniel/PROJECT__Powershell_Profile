@@ -70,10 +70,10 @@ RequiredAssemblies = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Invoke-AzureRest', 'Switch-AzTenant', 'Backup-AzState', 
-               'Search-AzFunctionApp', 'Search-AzResource', 
-               'Search-AzStorageAccount', 'Search-AzStorageContext', 'Search-AzVm', 
-               'Add-PimProfile', 'Get-PimAssignments', 'Get-PimProfiles', 
-               'Get-RBACPermissions', 
+               'Get-AzResourceGraphUpdates', 'Search-AzFunctionApp', 
+               'Search-AzResource', 'Search-AzStorageAccount', 
+               'Search-AzStorageContext', 'Search-AzVm', 'Add-PimProfile', 
+               'Get-PimAssignments', 'Get-PimProfiles', 'Get-RBACPermissions', 
                'Get-RoleEligibilitySceduleInstancesForScope', 
                'Get-RoleManagmentPoliciyAssignmentsForScope', 
                'New-PimSelfActivationRequest', 'New-PimSelfDeactivationRequest', 

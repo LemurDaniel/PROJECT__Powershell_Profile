@@ -1,7 +1,24 @@
-/Modules
-/Scripts
+# Ignore everything
+*
+# whitelist anything that's a directory
+!*/
 
-.cache/
-.context.current.json
+# Whitelist Files
+!.gitignore
+!Microsoft.PowerShell_profile.ps1
+!Other.ps1
+!Readme.md
 
-**test*.json
+# Whitelist subfolders
+!DevOpsScripts/**
+!DevOpsScripts.Azure/**
+!DevOpsScripts.DevOps/**
+!DevOpsScripts.OneDrive/**
+!DevOpsScripts.Utils/**
+!.vscode/**
+!.scripts/**
+!.github/**
+
+# Ignore additional folders
+.cache
+.context.*.json

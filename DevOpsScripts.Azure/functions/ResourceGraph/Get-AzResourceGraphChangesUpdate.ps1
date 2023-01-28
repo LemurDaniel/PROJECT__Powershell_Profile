@@ -2,12 +2,11 @@
 
 
 # Test - Abstract Query to get change events on any resource  with some customization. back x-days.
-function Get-AzResourceGraphUpdates {
+function Get-AzResourceGraphChangesUpdate {
 
 
     [CmdletBinding()]
     param (
-
         # The resourceType to filter change events from.
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -96,6 +95,6 @@ function Get-AzResourceGraphUpdates {
 }
 
 
-# Get-AzResourceGraphUpdates -resourceType  'microsoft.compute/disks' -updateProperty 'diskSizeBytes' -format 'format_bytes(tolong($1))'
+# Get-AzResourceGraphChangesUpdate -resourceType  'microsoft.compute/disks' -updateProperty 'diskSizeBytes' -format 'format_bytes(tolong($1))'
 
-# Get-AzResourceGraphUpdates -resourceType  'microsoft.compute/virtualmachines' -updateProperty 'hardwareProfile.vmSize'
+# Get-AzResourceGraphChangesUpdate -resourceType  'microsoft.compute/virtualmachines' -updateProperty 'hardwareProfile.vmSize'

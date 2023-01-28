@@ -2,12 +2,11 @@
 
 
 # Test - Abstract Query to get Create events on any resource  with some customization. back x-days.
-function Get-AzResourceGraphCreates {
+function Get-AzResourceGraphChangesCreate {
 
 
     [CmdletBinding()]
     param (
-
         # The resourceType to filter change events from.
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -80,12 +79,12 @@ function Get-AzResourceGraphCreates {
 
 <#
 
-Get-AzResourceGraphCreates -resourceType 'microsoft.compute/disks' `
+Get-AzResourceGraphChangesCreate -resourceType 'microsoft.compute/disks' `
     -resourceAttributes @{
     diskSizeBytes = 'format_bytes(tolong(properties.diskSizeBytes))'
 }
 
-Get-AzResourceGraphCreates -resourceType 'microsoft.compute/virtualmachines' `
+Get-AzResourceGraphChangesCreate -resourceType 'microsoft.compute/virtualmachines' `
     -resourceAttributes @{
     vmSize = "properties.hardwareProfile.vmSize"
 }

@@ -19,13 +19,21 @@
 
     PS> Get-RepositoryRefs
 
+
     .EXAMPLE
 
-    Gets all refs for a  Repository.
+    Gets all refs for a Repository.
 
     PS> $id = Get-RepositoryInfo '<name>' -return id
     PS> Get-RepositoryRefs -id $id
 
+
+    .EXAMPLE
+
+    Gets only branches of a Repository.
+
+    PS> $id = Get-RepositoryInfo '<name>' -return id
+    PS> Get-RepositoryRefs -id $id -Heads
 
     .LINK
         

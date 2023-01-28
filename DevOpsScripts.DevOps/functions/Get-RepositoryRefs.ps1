@@ -63,7 +63,6 @@ function Get-RepositoryRefs {
     )  
 
     $repositoryId = Get-RepositoryInfo -Property 'id' -path $path -id $id
-    $filter = $Tags ? 'tags' : $Heads ? 'heads': $null
     $Request = @{
         METHOD = 'GET'
         SCOPE  = 'PROJ'
@@ -71,7 +70,7 @@ function Get-RepositoryRefs {
         return = 'value'
         query  = @{
             includeStatuses = $Statuses
-            filter          = $filter 
+            filter          = $Tags ? 'tags' : $Heads ? 'heads': $null
         } 
     }
 

@@ -23,12 +23,15 @@
     .LINK
         
 #>
-function Get-WorkItemRelationType {
+function Get-WorkItemRelationTypes {
 
     [CmdletBinding()]
     param (
-
-        [Parameter()]
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            ParameterSetName = 'specific'
+        )]
         [ValidateScript(
             {
                 $_ -in ((Get-Content "$PSScriptRoot\WorkItemRelationTypes.json") | ConvertFrom-Json).value.name
@@ -47,6 +50,13 @@ function Get-WorkItemRelationType {
         [System.String]
         $RelationType,
 
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = 'all'
+        )]
+        [switch]
+        $All,
+
 
         # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
@@ -55,6 +65,10 @@ function Get-WorkItemRelationType {
         $Property
     )
 
-    $workItemRelationType = ((Get-Content "$PSScriptRoot\WorkItemRelationTypes.json") | ConvertFrom-Json).value | Where-Object -Property name -EQ -Value $RelationType
-    return Get-Property -Object $workItemRelationType -Property $Property
+    $workItemRelationTypes = ((Get-Content "$PSScriptRoot\WorkItemRelationTypes.json") | ConvertFrom-Json).value
+    if (!$All) {
+        $workItemRelationTypes = $workItemRelationTypes | Where-Object -Property name -EQ -Value $RelationType 
+    } 
+    
+    return Get-Property -Object $workItemRelationTypes -Property $Property
 }

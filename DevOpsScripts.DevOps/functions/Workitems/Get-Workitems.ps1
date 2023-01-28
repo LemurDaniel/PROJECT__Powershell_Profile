@@ -39,7 +39,7 @@ function Get-WorkItems {
             Mandatory = $true,
             ValueFromPipeline = $true
         )]
-        [System.String[]]
+        [System.int32[]]
         $Ids,
 
 

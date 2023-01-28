@@ -27,43 +27,57 @@
 function Connect-Workitem {
 
     param(
-        # Workitem for Relation
+        # Workitem for Relation.
         [Parameter(
             Mandatory = $true
         )]
-        [PSCustomObject[]] # TODO, Provide class
-        $WorkItem1,
+        [System.Int32]
+        $WorkItemId,
 
-        # Workitem for Relation
-        [Parameter(
-            Mandatory = $true
-        )]
-        [PSCustomObject[]]
-        $WorkItem2,
-
-        # Workitem Relation Type => Parent, Child, etc.
+        # LinkElement for Relation. Workitem url or artifact id, etc.
         [Parameter(
             Mandatory = $true
         )]
         [System.String]
-        $RelationType
-    )
+        $linkElementId,
 
+        # Workitem Relation Type => Parent, Child, etc.
+        [ValidateScript(
+            {
+                $_ -in (Get-WorkItemRelationTypes -All -return name)
+            }
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = Get-WorkItemRelationTypes -All -return name
+     
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $RelationType
+
+    )
+    $WorkItem
     $Request = @{
         METHOD      = 'PATCH'
         DOMAIN      = 'dev.azure'
         CALL        = 'PROJ'
-        API         = "_apis/wit/workitems/$($WorkItem1.id)?api-version=7.0"
+        API         = "_apis/wit/workitems/$($WorkItemId)?api-version=4.1"
         ContentType = 'application/json-patch+json'
         Body        = @(
             @{
                 op    = 'add'
                 path  = '/relations/-'
                 value = @{
-                    rel        = Get-WorkItemRelationType $RelationType -return 'referenceName'
-                    url        = $WorkItem2.url
+                    rel        = Get-WorkItemRelationTypes $RelationType -return 'referenceName'
+                    url        = $linkElementId
                     attributes = @{
-                        comment = "$((Get-CurrentUser).displayName) created $RelationType on workitem $($WorkItem1.name) to $($WorkItem2.name)"
+                        name    = $RelationType
+                        comment = "$((Get-CurrentUser).displayName) created $RelationType"
                     }
                 }
             }

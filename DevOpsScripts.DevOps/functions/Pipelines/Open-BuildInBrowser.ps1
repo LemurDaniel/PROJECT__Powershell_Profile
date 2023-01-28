@@ -79,19 +79,21 @@ function Open-BuildInBrowser {
         $buildId
     )
 
-    if (!$PipelineId) {
-        $pipeLineId = Search-In (Get-DevOpsPipelines) -where name -is $name -return id
-    }
-
-    # Get Latest Build for Pipeline
-    if ($pipeLineId) {
-        $Request = @{
-            Method = 'GET'
-            Domain = 'dev.azure'
-            SCOPE  = 'PROJ'
-            API    = "/_apis/build/latest/$($pipeLineId)?api-version=7.0-preview.1"
+    if ([System.String]::IsNullOrEmpty($buildId)) {
+        if ([System.String]::IsNullOrEmpty($pipeLineId)) {
+            $pipeLineId = Search-In (Get-DevOpsPipelines) -where name -is $name -return id
         }
-        $buildId = Invoke-DevOpsRest @Request -return 'id'
+
+        # Get Latest Build for Pipeline
+        if ($pipeLineId) {
+            $Request = @{
+                Method = 'GET'
+                Domain = 'dev.azure'
+                SCOPE  = 'PROJ'
+                API    = "/_apis/build/latest/$($pipeLineId)?api-version=7.0-preview.1"
+            }
+            $buildId = Invoke-DevOpsRest @Request -return 'id'
+        }
     }
 
     $Organization = Get-DevOpsCurrentContext -Organization

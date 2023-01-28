@@ -42,7 +42,7 @@ function New-BranchFromWorkitem {
             }
         )]
         [System.String]
-        $workItem
+        $workitemTitle
     )    
 
     git rev-parse >nul 2>&1; 
@@ -50,7 +50,7 @@ function New-BranchFromWorkitem {
         throw 'Please exexcute command inside a Repository'
     }
 
-
+    $workItem = Search-WorkItemInIteration -Current -Personal -Single -SearchTags $workitemTitle
     $transformedTitle = $workItem.'System.Title'.toLower() -replace '[?!:\/\\\-\s]+', '_'
     $branchName = "features/$($workItem.'System.id')-$transformedTitle"
         

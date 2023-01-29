@@ -13,7 +13,7 @@
     Return the result of the Az Resource Graph Query.
 
 
-    
+
     .EXAMPLE
 
     Get all updates on Virtual Machine sizes with an additonal tag Attribute returned:
@@ -177,8 +177,12 @@ function Get-AzResourceGraphChangesUpdate {
     $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
     $resourceExtensionAttributes = $ResourceAttributes.Keys.Count -gt 0 ? ", $($ResourceAttributes.Keys -join ', ')" : ''
 
-    $propertyNameOld = "previous$($UpdateProperty.Split('.')[-1])"
-    $propertyNameNew = "new$($UpdateProperty.Split('.')[-1])"
+    #$TextInfo = [System.Globalization.CultureInfo]::GetCultureInfo('de').TextInfo
+    #$UpdatePropertyName = $TextInfo.ToTitleCase($UpdateProperty.Split('.')[-1])
+
+    $UpdatePropertyName = [System.Char]::ToUpper($UpdateProperty.split('.')[-1][0]) + $UpdateProperty.split('.')[-1].Substring(1)
+    $propertyNameOld = "previous$UpdatePropertyName"
+    $propertyNameNew = "new$UpdatePropertyName"
     return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
         | where properties.targetResourceType $ResourceTypeFilter '$ResourceType' 

@@ -28,6 +28,13 @@
     PS> Get-AzResourceGraphChangesDelete -ResourceType 'microsoft.compute/disks' -TimeStamp ([DateTime]::Now.AddDays(-3))
 
 
+    .EXAMPLE
+
+    Get all Deletion Events in the last 3-Days for Disks and virtual machines:
+
+    PS> Get-AzResourceGraphChangesDelete 'in~' 'microsoft.compute/virtualmachines', 'microsoft.compute/disks' -TimeStamp ([DateTime]::Now.AddDays(-3))
+
+
     .LINK
         
 #>
@@ -53,7 +60,9 @@ function Get-AzResourceGraphChangesDelete {
             '!endwith', #Case-InSensitive
             'startswith', #Case-InSensitive
             '!startswith', #Case-InSensitive
-            'matches regex'
+            'matches regex',
+            'in~', #Case-InSensitive
+            '!in~' #Case-InSensitive
         )]
         [System.String]
         $ResourceTypeFilter = '=~',
@@ -63,7 +72,7 @@ function Get-AzResourceGraphChangesDelete {
             Position = 1,
             Mandatory = $true
         )]
-        [System.String]
+        [System.String[]]
         $ResourceType,
 
         # The Timestamp from back when to take the change events.
@@ -101,9 +110,12 @@ function Get-AzResourceGraphChangesDelete {
 
     $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
 
+    $ResourceType = $ResourceType | ForEach-Object { "'$_'" }
+    $ResourceTypeQuery = $ResourceType.Count -eq 1 ? $($ResourceType[0]) : "($($ResourceType -join ', '))" 
+
     return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
-        | where properties.targetResourceType $ResourceTypeFilter '$ResourceType' 
+        | where properties.targetResourceType $ResourceTypeFilter $ResourceTypeQuery
         // Get only Changes after Timestamp of Type Delete.
         | where properties.changeType =~ 'Delete'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
@@ -117,7 +129,7 @@ function Get-AzResourceGraphChangesDelete {
         // Filter out Resources that where created afterwards again and still exist.
         | join kind=leftouter (
             resources 
-            | where type $ResourceTypeFilter '$ResourceType' 
+            | where type $ResourceTypeFilter $ResourceTypeQuery 
             | extend id = tolower(id)
             | extend joinResExistent = true
         ) on `$left.resourceId == `$right.id
@@ -125,7 +137,7 @@ function Get-AzResourceGraphChangesDelete {
         | where isnull(joinResExistent)
         | join kind=leftouter (
             resourcechanges 
-            | where properties.targetResourceType $ResourceTypeFilter '$ResourceType'  
+            | where properties.targetResourceType $ResourceTypeFilter $ResourceTypeQuery 
             | where properties.changeAttributes.timestamp > datetime($TimeStamp)
             | where properties.changeAttributes.timestamp < datetime($TimeStampEnd)
             | where properties.changeType =~ 'Create' 

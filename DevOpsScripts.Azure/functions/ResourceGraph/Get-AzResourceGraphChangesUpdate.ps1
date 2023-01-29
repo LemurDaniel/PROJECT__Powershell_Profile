@@ -19,6 +19,8 @@
     Get all updates on Virtual Machine sizes with an additonal tag Attribute returned:
     retrieves the update property as: 'previousvmSize' and 'newvmSize'
 
+    # This is useful for example for Azure-Reservations that can then be done based on changes of VmSizes.
+
     PS> Get-AzResourceGraphChangesUpdate -ResourceType 'microsoft.compute/virtualmachines' `
             -UpdateProperty 'properties.hardwareProfile.vmSize' `
             -ResourceAttributes @{

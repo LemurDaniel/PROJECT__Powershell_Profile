@@ -18,6 +18,8 @@
 
     Get all newly created Virtual Machines in the last 7-Days with their sizes and tags:
 
+    # This is useful for example for Azure-Reservations that can then be done based on Creations of new VMs with their VmSizes.
+
     PS> Get-AzResourceGraphChangesCreate -ResourceType 'microsoft.compute/virtualmachines' `
             -ResourceAttributes @{
                 vmSize              = 'properties.hardwareProfile.vmSize'

@@ -19,7 +19,7 @@
     retrieves the update property as: 'previousvmSize' and 'newvmSize'
 
     PS> Get-AzResourceGraphChangesUpdate -ResourceType 'microsoft.compute/virtualmachines' `
-            -UpdateProperty 'hardwareProfile.vmSize' `
+            -UpdateProperty 'properties.hardwareProfile.vmSize' `
             -ResourceAttributes @{
                 acfVmOperatingHours = 'tags.acfVmOperatingHours'
             }
@@ -30,10 +30,23 @@
     Get updates of disks on 'diskSizeBytes' formated as bytes with additional sku Attributes:
 
     PS> Get-AzResourceGraphChangesUpdate -ResourceType  'microsoft.compute/disks' `
-            -UpdateProperty 'diskSizeBytes' -format 'format_bytes(tolong($1))' `
+            -UpdateProperty 'properties.diskSizeBytes' -format 'format_bytes(tolong($1))' `
             -ResourceAttributes @{
                 skuName           = 'sku.name'
                 skuTier           = 'sku.tier'
+            }
+
+
+   .EXAMPLE
+
+    Get any Changes on Virtual Machine Powerstates and addtional tags in the last 8-Hours:
+
+    PS> Get-AzResourceGraphChangesUpdate -ResourceType  'microsoft.compute/virtualmachines' `
+            -TimeStamp ([DateTime]::Now.AddHours(-8)) `
+            -UpdateProperty 'properties.extended.instanceView.powerState.code' `
+            -ResourceAttributes @{
+                tags                = 'tags'
+                acfVmOperatingHours = 'tags.acfVmOperatingHours'
             }
 
     .LINK
@@ -118,15 +131,15 @@ function Get-AzResourceGraphChangesUpdate {
         // Get only Changes after Timestamp of Type Update.
         | where properties.changeType =~ 'Update'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
-        | where properties has 'properties.$UpdateProperty'
+        | where properties has '$UpdateProperty'
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
         | extend targetResourceType = properties.targetResourceType
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
         | extend resourceName = split(resourceId,'/')[-1]
-        | extend oldValue = properties.changes.['properties.$UpdateProperty'].previousValue
-        | extend newValue = properties.changes.['properties.$UpdateProperty'].newValue
+        | extend oldValue = properties.changes.['$UpdateProperty'].previousValue
+        | extend newValue = properties.changes.['$UpdateProperty'].newValue
         | extend $propertyNameOld = $($format -replace '\$1', 'oldValue')
         | extend $propertyNameNew = $($format -replace '\$1', 'newValue')
         // This is to prevent failures with the Resource Attributes. (Since change attributes also have tags => the join on would become tags1 then | Adding Project to avoid the confusion)
@@ -155,7 +168,7 @@ function Get-AzResourceGraphChangesUpdate {
         | where isnull(WasCreated)
         // Summarize any number of events on the same resource Id into one.
         | summarize CollapsedEvents = count(TimeStamp), arg_max(TimeStamp, Operation, targetResourceType, tenantId, subscriptionId, resourceGroup, resourceName, $propertyNameNew $resourceExtensionAttributes), arg_min(MinTimeStamp = TimeStamp, id, $propertyNameOld) by resourceId
-        | extend Operation = iif(tostring($propertyNameOld) == tostring($propertyNameNew), 'NonChange-Update', Operation)
+        | extend Operation = iif(trim(' ',tostring($propertyNameOld)) == trim(' ',tostring($propertyNameNew)), 'NonChange-Update', Operation)
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
         | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, MinTimeStamp, resourceURL, $propertyNameOld, $propertyNameNew $resourceExtensionAttributes
         | sort by TimeStamp desc

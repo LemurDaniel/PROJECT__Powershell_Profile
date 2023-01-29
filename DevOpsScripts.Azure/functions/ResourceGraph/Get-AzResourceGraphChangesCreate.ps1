@@ -224,7 +224,7 @@ function Get-AzResourceGraphChangesCreate {
         | summarize CollapsedEvents = 1 + count(TimeStamp), arg_max(TimeStamp, Operation, targetResourceType, tenantId, subscriptionId, resourceGroup, resourceName, TimeStamp $ResourceAttributesExtensions), arg_min(TimeStampDelete, id) by resourceId
         | extend Operation = iif(todatetime(TimeStamp) > TimeStampDelete, 'Recreate', Operation)
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
-        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampDelete, resourceURL $ResourceAttributesExtensions
+        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampDelete, resourceId, resourceURL $ResourceAttributesExtensions
         | sort by TimeStamp desc
         "
     

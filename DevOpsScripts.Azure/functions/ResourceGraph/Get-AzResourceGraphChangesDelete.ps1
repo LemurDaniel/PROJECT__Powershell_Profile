@@ -186,7 +186,7 @@ function Get-AzResourceGraphChangesDelete {
         | extend TimeLived = format_timespan(todatetime(TimeStamp) - TimeStampCreate, 'd:HH:mm')
         // Not of much use, since its deleted.
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
-        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampCreate, TimeLived, resourceURL
+        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampCreate, TimeLived, resourceId, resourceURL
         | sort by TimeStamp
         "
     

@@ -235,7 +235,7 @@ function Get-AzResourceGraphChangesUpdate {
         | summarize CollapsedEvents = count(TimeStamp), arg_max(TimeStamp, Operation, targetResourceType, tenantId, subscriptionId, resourceGroup, resourceName, $propertyNameNew $resourceExtensionAttributes), arg_min(MinTimeStamp = TimeStamp, id, $propertyNameOld) by resourceId
         | extend Operation = iif(trim(' ',tostring($propertyNameOld)) == trim(' ',tostring($propertyNameNew)), 'NonChange-Update', Operation)
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
-        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, MinTimeStamp, resourceURL, $propertyNameOld, $propertyNameNew $resourceExtensionAttributes
+        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, MinTimeStamp, resourceId, resourceURL, $propertyNameOld, $propertyNameNew $resourceExtensionAttributes
         | sort by TimeStamp desc
         "
     

@@ -25,8 +25,11 @@
 #>
 function Open-Repository {
 
-    [Alias('VC')]
-    [cmdletbinding()]
+    [Alias('vc')]
+    [cmdletbinding(
+        SupportsShouldProcess,
+        ConfirmImpact = 'high'
+    )]
     param (
         # The Name of the Repository.
         [Parameter(
@@ -64,7 +67,12 @@ function Open-Repository {
         # Optional only download the repository.
         [Parameter()]
         [switch]
-        $onlyDownload
+        $onlyDownload,
+
+        # Optional to replace an existing repository at the location and redownload it.
+        [Parameter()]
+        [switch]
+        $replace
     )
 
 
@@ -84,6 +92,12 @@ function Open-Repository {
 
     $userName = Get-CurrentUser 'displayName'
     $userMail = Get-CurrentUser 'emailAddress'
+
+    if ($replace) {
+        if ($PSCmdlet.ShouldProcess($repository.Localpath, 'Do you want to replace the existing repository and any data in it.')) {
+            Remove-Item -Path $repository.Localpath -Recurse -Force -Confirm:$false
+        }
+    }
 
     if (!(Test-Path $repository.Localpath)) {
         New-Item -Path $repository.Localpath -ItemType Directory

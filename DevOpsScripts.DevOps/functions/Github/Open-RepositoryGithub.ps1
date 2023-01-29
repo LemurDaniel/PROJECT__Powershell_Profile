@@ -1,6 +1,10 @@
 function Open-RepositoryGithub {
 
-    [Alias('VCP')]
+    [Alias('vcp')]
+    [cmdletbinding(
+        SupportsShouldProcess,
+        ConfirmImpact = 'high'
+    )]
     param (
         [Parameter(
             Mandatory = $true,
@@ -27,11 +31,22 @@ function Open-RepositoryGithub {
 
         [Parameter()]
         [switch]
-        $noCode
+        $noCode,
+
+        # Optional to replace an existing repository at the location and redownload it.
+        [Parameter()]
+        [switch]
+        $replace
     )
 
     $repository = Get-GithubData 'repositories' | Where-Object -Property Name -EQ -Value $Name
     $repositoryPath = "$env:GIT_RepositoryPath\$($repository.login)\$($repository.name)"
+
+    if ($replace) {
+        if ($PSCmdlet.ShouldProcess($repositoryPath, 'Do you want to replace the existing repository and any data in it.')) {
+            Remove-Item -Path $repositoryPath -Recurse -Force -Confirm:$false
+        }
+    }
 
     if (!(Test-Path -Path $repositoryPath)) {
         $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath

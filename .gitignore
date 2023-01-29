@@ -5,6 +5,7 @@
 
 # Whitelist Files
 !.gitignore
+!.editorconfig
 !Microsoft.PowerShell_profile.ps1
 !Other.ps1
 !Readme.md

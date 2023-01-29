@@ -35,6 +35,13 @@
     PS> Get-AzResourceGraphChangesDelete 'in~' 'microsoft.compute/virtualmachines', 'microsoft.compute/disks' -TimeStamp ([DateTime]::Now.AddDays(-3))
 
 
+    .EXAMPLE
+
+    Get all Deletion Events on 'microsoft.compute' resources with a regex match on ids with Sandbox Resource Groups:
+
+    PS> Get-AzResourceGraphChangesDelete 'startswith' 'microsoft.compute' `
+            -regexMatchId 'resourcegroups/rg-[MPmp0-9]+sandbox-dev-001'
+
     .LINK
         
 #>
@@ -74,6 +81,28 @@ function Get-AzResourceGraphChangesDelete {
         )]
         [System.String[]]
         $ResourceType,
+
+        # Additional Filter to filter out resources that start with a certain name.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $NameStartsWith = '',
+
+        # Additional Filter to filter out resources that Contain a ceratin string in their name.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $NameContains = '',
+
+        # Additional Filter to filter out resources that Contain a ceratin string in their resourceGroup.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $regexMatchId = '',
+
 
         # The Timestamp from back when to take the change events.
         [Parameter(Mandatory = $false)]
@@ -125,7 +154,11 @@ function Get-AzResourceGraphChangesDelete {
         | extend targetResourceType = properties.targetResourceType
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
+        $([System.String]::IsNullOrEmpty($regexMatchId)     ? ' ' : "| where resourceId matches regex '$regexMatchId'" )
         | extend resourceName = split(resourceId,'/')[-1]
+        $([System.String]::IsNullOrEmpty($NameStartsWith)   ? ' ' : "| where resourceName startswith '$NameStartsWith'" )
+        $([System.String]::IsNullOrEmpty($NameContains)     ? ' ' : "| where resourceName contains '$NameContains'" )
+
         // Filter out Resources that where created afterwards again and still exist.
         | join kind=leftouter (
             resources 

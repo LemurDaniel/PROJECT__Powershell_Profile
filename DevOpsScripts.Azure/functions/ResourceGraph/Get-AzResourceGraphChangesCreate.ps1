@@ -60,6 +60,18 @@
                 tags                = 'tags'
             }
 
+
+    .EXAMPLE
+
+    Filter out change events on 'microsoft.compute' resources where a regex filters out target-resource-ids with Sandbox Resource Groups:
+
+    PS> Get-AzResourceGraphChangesCreate 'startswith' 'microsoft.compute' `
+            -regexMatchId 'resourcegroups/rg-[MPmp0-9]+sandbox-dev-001' `
+            -ResourceAttributes @{
+                properites          = 'properties'
+                tags                = 'tags'
+            }
+
     .LINK
         
 #>
@@ -99,6 +111,27 @@ function Get-AzResourceGraphChangesCreate {
         )]
         [System.String[]]
         $ResourceType,
+
+        # Additional Filter to filter out resources that start with a certain name.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $NameStartsWith = '',
+
+        # Additional Filter to filter out resources that Contain a ceratin string in their name.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $NameContains = '',
+
+        # Additional Filter to filter out resources that Contain a ceratin string in their resourceGroup.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $regexMatchId = '',
 
         # The change attribute to capture
         [Parameter(Mandatory = $false)]
@@ -158,7 +191,10 @@ function Get-AzResourceGraphChangesCreate {
         | extend targetResourceType = properties.targetResourceType
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
+        $([System.String]::IsNullOrEmpty($regexMatchId)     ? ' ' : "| where resourceId matches regex '$regexMatchId'" )
         | extend resourceName = split(resourceId,'/')[-1]
+        $([System.String]::IsNullOrEmpty($NameStartsWith)   ? ' ' : "| where resourceName startswith '$NameStartsWith'" )
+        $([System.String]::IsNullOrEmpty($NameContains)     ? ' ' : "| where resourceName contains '$NameContains'" )
         // This is to prevent failures with the Resource Attributes. (Since change attributes also have tags => the join on would become tags1 then | Adding Project to avoid the confusion)
         | project Operation, targetResourceType, subscriptionId, resourceGroup, resourceName, TimeStamp, resourceId
         // Check for existence of resource. (In case resource was deleted, then ignore Create Events.)

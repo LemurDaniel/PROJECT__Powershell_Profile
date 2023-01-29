@@ -119,6 +119,27 @@ function Get-AzResourceGraphChangesUpdate {
         [System.Collections.Hashtable]
         $ResourceAttributes = @{},
 
+        # Additional Filter to filter out resources that start with a certain name.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $NameStartsWith = '',
+
+        # Additional Filter to filter out resources that Contain a ceratin string in their name.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $NameContains = '',
+
+        # Additional Filter to filter out resources that Contain a ceratin string in their resourceGroup.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $regexMatchId = '',
+
         # The Timestamp from back when to take the change events.
         [Parameter(Mandatory = $false)]
         [ValidateScript(
@@ -170,7 +191,10 @@ function Get-AzResourceGraphChangesUpdate {
         | extend targetResourceType = properties.targetResourceType
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
+        $([System.String]::IsNullOrEmpty($regexMatchId)     ? ' ' : "| where resourceId matches regex '$regexMatchId'" )
         | extend resourceName = split(resourceId,'/')[-1]
+        $([System.String]::IsNullOrEmpty($NameStartsWith)   ? ' ' : "| where resourceName startswith '$NameStartsWith'" )
+        $([System.String]::IsNullOrEmpty($NameContains)     ? ' ' : "| where resourceName contains '$NameContains'" )
         | extend oldValue = properties.changes.['$UpdateProperty'].previousValue
         | extend newValue = properties.changes.['$UpdateProperty'].newValue
         | extend $propertyNameOld = $($format -replace '\$1', 'oldValue')

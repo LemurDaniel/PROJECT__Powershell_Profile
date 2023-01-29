@@ -117,13 +117,28 @@ function Get-AzResourceGraphChangesCreate {
             ErrorMessage = 'Timestampe is out of Range.' 
         )]
         [System.DateTime]
-        $TimeStamp = [System.DateTime]::Now.AddDays(-7),
+        $TimeStamp,
+
+        # An additional Timestamp to create a range to search in. From last 24-Hours until up to last 12-Hours.
+        [Parameter(Mandatory = $false)]
+        [ValidateScript(
+            {
+                # Resource Graph changes apperently only date back to the last 7 days.
+                $_ -ge ([DateTime]::Now.AddDays(-7).AddMinutes(-1))
+            },
+            ErrorMessage = 'Timestampe is out of Range.' 
+        )]
+        [System.DateTime]
+        $TimeStampEnd,
 
         # Mangement Group Scope on which to perform query. Will default to tennand id.
         [Parameter(Mandatory = $false)]
         [System.String]
         $managementGroup
     )
+
+    $TimeStamp = $TimeStamp ? $TimeStamp : [DateTime]::Now.AddDays(-7).AddMinutes(-1)
+    $TimeStampEnd = $TimeStampEnd ? $TimeStampEnd : [DateTime]::Now.AddDays(1)
 
     $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
     $ResourceAttributesExtensions = $ResourceAttributes.Keys.Count -gt 0 ? ", $($ResourceAttributes.Keys -join ',' )" : ''
@@ -137,6 +152,7 @@ function Get-AzResourceGraphChangesCreate {
         // Get only Changes after Timestamp of Type Create.
         | where properties.changeType =~ 'Create'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
+        | where properties.changeAttributes.timestamp < datetime($TimeStampEnd)
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
         | extend targetResourceType = properties.targetResourceType
@@ -162,6 +178,7 @@ function Get-AzResourceGraphChangesCreate {
             resourcechanges 
             | where properties.targetResourceType $ResourceTypeFilter $ResourceTypeQuery 
             | where properties.changeAttributes.timestamp > datetime($TimeStamp)
+            | where properties.changeAttributes.timestamp < datetime($TimeStampEnd)
             | where properties.changeType =~ 'Delete'
             | extend TimeStampDelete = todatetime(tostring(properties.changeAttributes.timestamp))
             | extend resourceId = tolower(tostring(properties.targetResourceId))

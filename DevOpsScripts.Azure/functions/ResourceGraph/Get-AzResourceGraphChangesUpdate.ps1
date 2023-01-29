@@ -49,6 +49,23 @@
                 acfVmOperatingHours = 'tags.acfVmOperatingHours'
             }
 
+
+               
+    .EXAMPLE
+
+    Get any Changes on Virtual Machine Powerstates and addtional acfVmOperatingHours in from '27.01.2023 at 0:00' until 24 Hours later:
+
+    PS> $TimeStamp = [DateTime]::Parse('27.01.2023') 
+    PS> Get-AzResourceGraphChangesUpdate -ResourceType  'microsoft.compute/virtualmachines' `
+            -TimeStamp $TimeStamp  `
+            -TimeStampEnd $TimeStamp.AddHours(24) `
+            -UpdateProperty 'properties.extended.instanceView.powerState.code' `
+            -ResourceAttributes @{
+                acfVmOperatingHours = 'tags.acfVmOperatingHours'
+            }
+        # (DC-Migration specific)
+        # The correct working of acfVmOperatingHours start/shutdown can be seen by comparing MinTimeStamp and TimeStamp with acfOperatingHours.
+
     .LINK
         
 #>
@@ -112,13 +129,28 @@ function Get-AzResourceGraphChangesUpdate {
             ErrorMessage = 'Timestampe is out of Range.' 
         )]
         [System.DateTime]
-        $TimeStamp = [System.DateTime]::Now.AddDays(-7),
+        $TimeStamp,
+
+        # An additional Timestamp to create a range to search in. From last 24-Hours until up to last 12-Hours.
+        [Parameter(Mandatory = $false)]
+        [ValidateScript(
+            {
+                # Resource Graph changes apperently only date back to the last 7 days.
+                $_ -ge ([DateTime]::Now.AddDays(-7).AddMinutes(-1))
+            },
+            ErrorMessage = 'Timestampe is out of Range.' 
+        )]
+        [System.DateTime]
+        $TimeStampEnd,
 
         # Mangement Group Scope on which to perform query. Will default to tennand id.
         [Parameter(Mandatory = $false)]
         [System.String]
         $managementGroup
     )
+
+    $TimeStamp = $TimeStamp ? $TimeStamp : [DateTime]::Now.AddDays(-7).AddMinutes(-1)
+    $TimeStampEnd = $TimeStampEnd ? $TimeStampEnd : [DateTime]::Now.AddDays(1)
 
     $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
     $resourceExtensionAttributes = $ResourceAttributes.Keys.Count -gt 0 ? ", $($ResourceAttributes.Keys -join ', ')" : ''
@@ -131,6 +163,7 @@ function Get-AzResourceGraphChangesUpdate {
         // Get only Changes after Timestamp of Type Update.
         | where properties.changeType =~ 'Update'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
+        | where properties.changeAttributes.timestamp < datetime($TimeStampEnd)
         | where properties has '$UpdateProperty'
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
@@ -161,6 +194,7 @@ function Get-AzResourceGraphChangesUpdate {
             resourcechanges 
             | where properties.targetResourceType $ResourceTypeFilter '$ResourceType'
             | where properties.changeAttributes.timestamp > datetime($TimeStamp)
+            | where properties.changeAttributes.timestamp < datetime($TimeStampEnd)
             | where properties.changeType =~ 'Create'
             | extend WasCreated = true
             | extend resourceId = tolower(tostring(properties.targetResourceId))

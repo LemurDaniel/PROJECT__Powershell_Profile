@@ -13,6 +13,7 @@
     Return the result of the Az Resource Graph Query.
 
 
+    
     .EXAMPLE
 
     Get all updates on Virtual Machine sizes with an additonal tag Attribute returned:

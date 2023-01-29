@@ -13,6 +13,7 @@
     Return the result of the Az Resource Graph Query.
 
 
+    
     .EXAMPLE
 
     Get all newly created Virtual Machines in the last 7-Days with their sizes and tags:
@@ -136,9 +137,7 @@ function Get-AzResourceGraphChangesCreate {
         # The change attribute to capture
         [Parameter(Mandatory = $false)]
         [System.Collections.Hashtable]
-        $ResourceAttributes = @{
-            diskSizeBytes = 'format_bytes(tolong(properties.diskSizeBytes))'
-        },
+        $ResourceAttributes = @{},
 
         # The Timestamp from back when to take the change events.
         [Parameter(Mandatory = $false)]

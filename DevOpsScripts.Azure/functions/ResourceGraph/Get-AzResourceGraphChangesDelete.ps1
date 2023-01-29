@@ -14,6 +14,7 @@
     Return the result of the Az Resource Graph Query.
 
 
+    
     .EXAMPLE
 
     Get all Deletion Events in the last 7-Days for Virtual Machines:

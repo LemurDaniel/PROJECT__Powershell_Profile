@@ -119,7 +119,7 @@ function Get-AzResourceGraphChangesCreate {
         [System.DateTime]
         $TimeStamp,
 
-        # An additional Timestamp to create a range to search in. From last 24-Hours until up to last 12-Hours.
+        # An additional Timestamp to create a range to search in. From for Example last 24-Hours until up to last 12-Hours.
         [Parameter(Mandatory = $false)]
         [ValidateScript(
             {

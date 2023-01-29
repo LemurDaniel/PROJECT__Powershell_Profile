@@ -45,7 +45,19 @@
             -TimeStamp ([DateTime]::Now.AddDays(-4)) `
             -ResourceAttributes @{
                 properites          = 'properties'
-                resourceTags        = 'tags'
+                tags                = 'tags'
+            }
+
+
+    .EXAMPLE
+
+    Get the general Properties and tags of any 'microsoft.compute/disks' and 'microsoft.compute/virtualmachines' resource created in the last 4-Days:
+
+    PS> Get-AzResourceGraphChangesCreate 'in~' 'microsoft.compute/disks', 'microsoft.compute/virtualmachines' `
+            -TimeStamp ([DateTime]::Now.AddDays(-4)) `
+            -ResourceAttributes @{
+                properites          = 'properties'
+                tags                = 'tags'
             }
 
     .LINK
@@ -73,7 +85,9 @@ function Get-AzResourceGraphChangesCreate {
             '!endwith', #Case-InSensitive
             'startswith', #Case-InSensitive
             '!startswith', #Case-InSensitive
-            'matches regex' #Case-Sensitive
+            'matches regex',
+            'in~', #Case-InSensitive
+            '!in~' #Case-InSensitive
         )]
         [System.String]
         $ResourceTypeFilter = '=~',
@@ -83,7 +97,7 @@ function Get-AzResourceGraphChangesCreate {
             Position = 1,
             Mandatory = $true
         )]
-        [System.String]
+        [System.String[]]
         $ResourceType,
 
         # The change attribute to capture
@@ -114,9 +128,12 @@ function Get-AzResourceGraphChangesCreate {
     $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
     $ResourceAttributesExtensions = $ResourceAttributes.Keys.Count -gt 0 ? ", $($ResourceAttributes.Keys -join ',' )" : ''
 
+    $ResourceType = $ResourceType | ForEach-Object { "'$_'" }
+    $ResourceTypeQuery = $ResourceType.Count -eq 1 ? $($ResourceType[0]) : "($($ResourceType -join ', '))" 
+
     return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
-        | where properties.targetResourceType $ResourceTypeFilter '$ResourceType' 
+        | where properties.targetResourceType $ResourceTypeFilter $ResourceTypeQuery
         // Get only Changes after Timestamp of Type Create.
         | where properties.changeType =~ 'Create'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
@@ -131,7 +148,7 @@ function Get-AzResourceGraphChangesCreate {
         // Check for existence of resource. (In case resource was deleted, then ignore Create Events.)
         | join kind=leftouter (
             resources 
-            | where type $ResourceTypeFilter '$ResourceType'
+            | where type $ResourceTypeFilter $ResourceTypeQuery
             | extend id = tolower(id)
             | extend joinResExistent = true
             $(
@@ -143,7 +160,7 @@ function Get-AzResourceGraphChangesCreate {
         // Check for Deletion Events on the resource. (A Resource that was Deleted and a Creat Event can be interpreted as 'Recreate')
         | join kind=leftouter (
             resourcechanges 
-            | where properties.targetResourceType $ResourceTypeFilter '$ResourceType'  
+            | where properties.targetResourceType $ResourceTypeFilter $ResourceTypeQuery 
             | where properties.changeAttributes.timestamp > datetime($TimeStamp)
             | where properties.changeType =~ 'Delete'
             | extend TimeStampDelete = todatetime(tostring(properties.changeAttributes.timestamp))

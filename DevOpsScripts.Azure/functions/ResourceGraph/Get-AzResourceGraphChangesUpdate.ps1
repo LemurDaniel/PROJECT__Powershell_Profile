@@ -55,13 +55,13 @@ function Get-AzResourceGraphChangesUpdate {
             '=~', #Case-InSensitive
             '!=', #Case-Sensitive
             '!~', #Case-InSensitive
-            'contains', #Case-Sensitive
+            'contains', #Case-InSensitive
             '!contains', #Case-InSensitive
-            'endswith', #Case-Sensitive
+            'endswith', #Case-InSensitive
             '!endwith', #Case-InSensitive
-            'startswith', #Case-Sensitive
+            'startswith', #Case-InSensitive
             '!startswith', #Case-InSensitive
-            'matches regex' #Case-Sensitive
+            'matches regex'
         )]
         [System.String]
         $ResourceTypeFilter = '=~',

@@ -107,7 +107,7 @@ function Get-AzResourceGraphChangesCreate {
         [System.String]
         $ResourceTypeFilter = '=~',
 
-        # The ResourceType to filter change events from.
+        # The ResourceType to filter change events for.
         [Parameter(
             Position = 1,
             Mandatory = $true
@@ -136,7 +136,7 @@ function Get-AzResourceGraphChangesCreate {
         [System.String]
         $regexMatchId = '',
 
-        # The change attribute to capture
+        # Any additional Resource attributes to be returned from the changed resource.
         [Parameter(Mandatory = $false)]
         [System.Collections.Hashtable]
         $ResourceAttributes = @{},

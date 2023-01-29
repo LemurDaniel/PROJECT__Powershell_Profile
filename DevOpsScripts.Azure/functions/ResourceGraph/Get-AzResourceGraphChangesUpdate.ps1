@@ -99,7 +99,7 @@ function Get-AzResourceGraphChangesUpdate {
         [System.String]
         $ResourceTypeFilter = '=~',
 
-        # The ResourceType to filter change events from.
+        # The ResourceType to filter change events for.
         [Parameter(
             Position = 1,
             Mandatory = $true
@@ -107,7 +107,7 @@ function Get-AzResourceGraphChangesUpdate {
         [System.String]
         $ResourceType,
         
-        # The change attribute to capture
+        # The change attribute to capture the previous and new value from.
         [Parameter(Mandatory = $true)]
         [System.String]
         $UpdateProperty,
@@ -117,7 +117,7 @@ function Get-AzResourceGraphChangesUpdate {
         [System.String]
         $format = '$1',
 
-        # The change attribute to capture
+        # Any additional Resource attributes to be returned from the changed resource.
         [Parameter(Mandatory = $false)]
         [System.Collections.Hashtable]
         $ResourceAttributes = @{},

@@ -53,9 +53,9 @@
                
     .EXAMPLE
 
-    Get any Changes on Virtual Machine Powerstates and addtional acfVmOperatingHours in from '27.01.2023 at 0:00' until 24 Hours later:
+    Get any Changes on Virtual Machine Powerstates and addtional acfVmOperatingHours in from 'yesterday at 0:00' until '24 Hours later':
 
-    PS> $TimeStamp = [DateTime]::Parse('27.01.2023') 
+    PS> $TimeStamp = [DateTime]::Now.Date.AddDays(-1)
     PS> Get-AzResourceGraphChangesUpdate -ResourceType  'microsoft.compute/virtualmachines' `
             -TimeStamp $TimeStamp  `
             -TimeStampEnd $TimeStamp.AddHours(24) `

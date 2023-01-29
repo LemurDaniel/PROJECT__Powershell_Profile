@@ -137,7 +137,7 @@ function Get-AzResourceGraphChangesCreate {
         $managementGroup
     )
 
-    $TimeStamp = $TimeStamp ? $TimeStamp : [DateTime]::Now.AddDays(-7).AddMinutes(-1)
+    $TimeStamp = $TimeStamp ? $TimeStamp : [DateTime]::Now.AddDays(-7)
     $TimeStampEnd = $TimeStampEnd ? $TimeStampEnd : [DateTime]::Now.AddDays(1)
 
     $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup

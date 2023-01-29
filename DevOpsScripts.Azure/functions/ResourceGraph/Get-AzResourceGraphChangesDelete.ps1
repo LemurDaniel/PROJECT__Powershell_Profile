@@ -37,8 +37,32 @@ function Get-AzResourceGraphChangesDelete {
 
     [CmdletBinding()]
     param (
+        # A resource type filter to allow for more customization. Default ist '=~' Equals-CaseInsensitive
+        [Parameter(
+            Position = 0,
+            Mandatory = $false
+        )]
+        [ValidateSet(
+            '==', #Case-Sensitive
+            '=~', #Case-InSensitive
+            '!=', #Case-Sensitive
+            '!~', #Case-InSensitive
+            'contains', #Case-Sensitive
+            '!contains', #Case-InSensitive
+            'endswith', #Case-Sensitive
+            '!endwith', #Case-InSensitive
+            'startswith', #Case-Sensitive
+            '!startswith', #Case-InSensitive
+            'matches regex' #Case-Sensitive
+        )]
+        [System.String]
+        $ResourceTypeFilter = '=~',
+
         # The ResourceType to filter change events from.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Position = 1,
+            Mandatory = $true
+        )]
         [System.String]
         $ResourceType,
 
@@ -65,19 +89,20 @@ function Get-AzResourceGraphChangesDelete {
 
     return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
-        | where properties.targetResourceType =~ '$ResourceType' 
+        | where properties.targetResourceType $ResourceTypeFilter '$ResourceType' 
         // Get only Changes after Timestamp of Type Delete.
         | where properties.changeType =~ 'Delete'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
+        | extend targetResourceType = properties.targetResourceType
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
         | extend resourceName = split(resourceId,'/')[-1]
         // Filter out Resources that where created afterwards again and still exist.
         | join kind=leftouter (
             resources 
-            | where type =~ '$ResourceType' 
+            | where type $ResourceTypeFilter '$ResourceType' 
             | extend id = tolower(id)
             | extend joinResExistent = true
         ) on `$left.resourceId == `$right.id
@@ -85,7 +110,7 @@ function Get-AzResourceGraphChangesDelete {
         | where isnull(joinResExistent)
         | join kind=leftouter (
             resourcechanges 
-            | where properties.targetResourceType =~ 'microsoft.compute/virtualmachines' 
+            | where properties.targetResourceType $ResourceTypeFilter '$ResourceType'  
             | where properties.changeAttributes.timestamp > datetime($TimeStamp)
             | where properties.changeType =~ 'Create' 
             | project CreationEvent = properties
@@ -99,7 +124,7 @@ function Get-AzResourceGraphChangesDelete {
         | extend TimeLived = format_timespan(todatetime(TimeStamp) - TimeStampCreate, 'd:HH:mm')
         // Not of much use, since its deleted.
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
-        | project Operation, CollapsedEvents, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampCreate, TimeLived, resourceURL
+        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampCreate, TimeLived, resourceURL
         | sort by TimeStamp
         "
     

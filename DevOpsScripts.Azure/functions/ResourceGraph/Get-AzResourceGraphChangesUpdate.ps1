@@ -45,11 +45,35 @@ function Get-AzResourceGraphChangesUpdate {
 
     [CmdletBinding()]
     param (
+        # A resource type filter to allow for more customization. Default ist '=~' Equals-CaseInsensitive
+        [Parameter(
+            Position = 0,
+            Mandatory = $false
+        )]
+        [ValidateSet(
+            '==', #Case-Sensitive
+            '=~', #Case-InSensitive
+            '!=', #Case-Sensitive
+            '!~', #Case-InSensitive
+            'contains', #Case-Sensitive
+            '!contains', #Case-InSensitive
+            'endswith', #Case-Sensitive
+            '!endwith', #Case-InSensitive
+            'startswith', #Case-Sensitive
+            '!startswith', #Case-InSensitive
+            'matches regex' #Case-Sensitive
+        )]
+        [System.String]
+        $ResourceTypeFilter = '=~',
+
         # The ResourceType to filter change events from.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Position = 1,
+            Mandatory = $true
+        )]
         [System.String]
         $ResourceType,
-
+        
         # The change attribute to capture
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -59,7 +83,6 @@ function Get-AzResourceGraphChangesUpdate {
         [Parameter(Mandatory = $false)]
         [System.String]
         $format = '$1',
-        
 
         # The change attribute to capture
         [Parameter(Mandatory = $false)]
@@ -91,13 +114,14 @@ function Get-AzResourceGraphChangesUpdate {
     $propertyNameNew = "new$($UpdateProperty.Split('.')[-1])"
     return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
-        | where properties.targetResourceType =~ '$ResourceType' 
+        | where properties.targetResourceType $ResourceTypeFilter '$ResourceType' 
         // Get only Changes after Timestamp of Type Update.
         | where properties.changeType =~ 'Update'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
         | where properties has 'properties.$UpdateProperty'
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
+        | extend targetResourceType = properties.targetResourceType
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
         | extend resourceName = split(resourceId,'/')[-1]
@@ -105,10 +129,12 @@ function Get-AzResourceGraphChangesUpdate {
         | extend newValue = properties.changes.['properties.$UpdateProperty'].newValue
         | extend $propertyNameOld = $($format -replace '\$1', 'oldValue')
         | extend $propertyNameNew = $($format -replace '\$1', 'newValue')
+        // This is to prevent failures with the Resource Attributes. (Since change attributes also have tags => the join on would become tags1 then | Adding Project to avoid the confusion)
+        | project Operation, targetResourceType, subscriptionId, resourceGroup, resourceName, TimeStamp, resourceId, $propertyNameOld, $propertyNameNew
         // Check for existence of resource. (In case resource was deleted, then ignore update events.)
         | join kind=leftouter (
             resources 
-            | where type =~ '$ResourceType' 
+            | where type $ResourceTypeFilter '$ResourceType' 
             | extend id = tolower(id)
             | extend joinResExistent = true
             $(
@@ -120,7 +146,7 @@ function Get-AzResourceGraphChangesUpdate {
         // Check for Creation Events on the resource. (Maybe make it optional, as of now create events will be handled seperatly and not included in change events.)
         | join kind=leftouter (
             resourcechanges 
-            | where properties.targetResourceType =~ '$ResourceType' 
+            | where properties.targetResourceType $ResourceTypeFilter '$ResourceType'
             | where properties.changeAttributes.timestamp > datetime($TimeStamp)
             | where properties.changeType =~ 'Create'
             | extend WasCreated = true
@@ -128,10 +154,10 @@ function Get-AzResourceGraphChangesUpdate {
         ) on `$left.resourceId == `$right.resourceId
         | where isnull(WasCreated)
         // Summarize any number of events on the same resource Id into one.
-        | summarize CollapsedEvents = count(TimeStamp), arg_max(TimeStamp, Operation, tenantId, subscriptionId, resourceGroup, resourceName, $propertyNameNew $resourceExtensionAttributes), arg_min(MinTimeStamp = TimeStamp, id, $propertyNameOld) by resourceId
+        | summarize CollapsedEvents = count(TimeStamp), arg_max(TimeStamp, Operation, targetResourceType, tenantId, subscriptionId, resourceGroup, resourceName, $propertyNameNew $resourceExtensionAttributes), arg_min(MinTimeStamp = TimeStamp, id, $propertyNameOld) by resourceId
         | extend Operation = iif(tostring($propertyNameOld) == tostring($propertyNameNew), 'NonChange-Update', Operation)
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
-        | project Operation, CollapsedEvents, subscriptionId, resourceGroup, name = resourceName, TimeStamp, MinTimeStamp, resourceURL, $propertyNameOld, $propertyNameNew $resourceExtensionAttributes
+        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, MinTimeStamp, resourceURL, $propertyNameOld, $propertyNameNew $resourceExtensionAttributes
         | sort by TimeStamp desc
         "
     

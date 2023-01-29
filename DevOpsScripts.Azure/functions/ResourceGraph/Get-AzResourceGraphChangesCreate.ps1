@@ -15,7 +15,7 @@
 
     .EXAMPLE
 
-    Get all newly created Virtual Machines in the last 3-Days with their sizes and tags:
+    Get all newly created Virtual Machines in the last 7-Days with their sizes and tags:
 
     PS> Get-AzResourceGraphChangesCreate -ResourceType 'microsoft.compute/virtualmachines' `
             -ResourceAttributes @{
@@ -26,7 +26,7 @@
 
     .EXAMPLE
 
-    Get all newly created Disks in the last 7-Days with their sku and disksize in bytes:
+    Get all newly created Disks in the last 3-Days with their sku and disksize in bytes:
 
     PS> Get-AzResourceGraphChangesCreate -ResourceType 'microsoft.compute/disks' `
             -TimeStamp ([DateTime]::Now.AddDays(-3)) `
@@ -37,6 +37,17 @@
             }
 
 
+    .EXAMPLE
+
+    Get the general Properties and tags of any 'microsoft.compute' resource created in the last 4-Days:
+
+    PS> Get-AzResourceGraphChangesCreate 'startswith' 'microsoft.compute' `
+            -TimeStamp ([DateTime]::Now.AddDays(-4)) `
+            -ResourceAttributes @{
+                properites          = 'properties'
+                resourceTags        = 'tags'
+            }
+
     .LINK
         
 #>
@@ -46,8 +57,32 @@ function Get-AzResourceGraphChangesCreate {
 
     [CmdletBinding()]
     param (
+        # A resource type filter to allow for more customization. Default ist '=~' Equals-CaseInsensitive
+        [Parameter(
+            Position = 0,
+            Mandatory = $false
+        )]
+        [ValidateSet(
+            '==', #Case-Sensitive
+            '=~', #Case-InSensitive
+            '!=', #Case-Sensitive
+            '!~', #Case-InSensitive
+            'contains', #Case-InSensitive
+            '!contains', #Case-InSensitive
+            'endswith', #Case-InSensitive
+            '!endwith', #Case-InSensitive
+            'startswith', #Case-InSensitive
+            '!startswith', #Case-InSensitive
+            'matches regex' #Case-Sensitive
+        )]
+        [System.String]
+        $ResourceTypeFilter = '=~',
+
         # The ResourceType to filter change events from.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Position = 1,
+            Mandatory = $true
+        )]
         [System.String]
         $ResourceType,
 
@@ -81,19 +116,22 @@ function Get-AzResourceGraphChangesCreate {
 
     return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
-        | where properties.targetResourceType =~ '$ResourceType' 
+        | where properties.targetResourceType $ResourceTypeFilter '$ResourceType' 
         // Get only Changes after Timestamp of Type Create.
         | where properties.changeType =~ 'Create'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
+        | extend targetResourceType = properties.targetResourceType
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
         | extend resourceName = split(resourceId,'/')[-1]
+        // This is to prevent failures with the Resource Attributes. (Since change attributes also have tags => the join on would become tags1 then | Adding Project to avoid the confusion)
+        | project Operation, targetResourceType, subscriptionId, resourceGroup, resourceName, TimeStamp, resourceId
         // Check for existence of resource. (In case resource was deleted, then ignore Create Events.)
         | join kind=leftouter (
             resources 
-            | where type =~ '$ResourceType' 
+            | where type $ResourceTypeFilter '$ResourceType'
             | extend id = tolower(id)
             | extend joinResExistent = true
             $(
@@ -105,17 +143,17 @@ function Get-AzResourceGraphChangesCreate {
         // Check for Deletion Events on the resource. (A Resource that was Deleted and a Creat Event can be interpreted as 'Recreate')
         | join kind=leftouter (
             resourcechanges 
-            | where properties.targetResourceType =~ '$ResourceType'  
+            | where properties.targetResourceType $ResourceTypeFilter '$ResourceType'  
             | where properties.changeAttributes.timestamp > datetime($TimeStamp)
             | where properties.changeType =~ 'Delete'
             | extend TimeStampDelete = todatetime(tostring(properties.changeAttributes.timestamp))
             | extend resourceId = tolower(tostring(properties.targetResourceId))
             ) on `$left.resourceId == `$right.resourceId
         // Summarize any number of events on the same resource Id into one.
-        | summarize CollapsedEvents = 1 + count(TimeStamp), arg_max(TimeStamp, Operation, tenantId, subscriptionId, resourceGroup, resourceName, TimeStamp $ResourceAttributesExtensions), arg_min(TimeStampDelete, id) by resourceId
+        | summarize CollapsedEvents = 1 + count(TimeStamp), arg_max(TimeStamp, Operation, targetResourceType, tenantId, subscriptionId, resourceGroup, resourceName, TimeStamp $ResourceAttributesExtensions), arg_min(TimeStampDelete, id) by resourceId
         | extend Operation = iif(todatetime(TimeStamp) > TimeStampDelete, 'Recreate', Operation)
         | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
-        | project Operation, CollapsedEvents, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampDelete, resourceURL $ResourceAttributesExtensions
+        | project Operation, CollapsedEvents, targetResourceType, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampDelete, resourceURL $ResourceAttributesExtensions
         | sort by TimeStamp desc
         "
     

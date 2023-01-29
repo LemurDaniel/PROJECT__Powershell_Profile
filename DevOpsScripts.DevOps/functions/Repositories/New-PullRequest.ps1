@@ -75,7 +75,7 @@ function New-PullRequest {
     }
 
     if ($Target -eq 'default') {
-		$preferencedBranch = 'refs/heads/dev'
+        $preferencedBranch = 'refs/heads/dev'
         $targetBranch = $hasMasterBranch ? 'refs/heads/master' : 'refs/heads/main' 
         $branchName = 'DEV'
     }

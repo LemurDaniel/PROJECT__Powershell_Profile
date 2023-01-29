@@ -1,56 +1,106 @@
 
+<#
+    .SYNOPSIS
+    Gets Delete Events of a resource type from the Azure Resource Graph.
+
+    .DESCRIPTION
+    Gets Delete Events of a resource type from the Azure Resource Graph with one specific update property,
+    filtering out resources that were created again and still exist, also designating Created and Deleted Resources as 'CreateAndDelete' with a Time Lived in Hours.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Return the result of the Az Resource Graph Query.
 
 
-# TODO
-function Get-AzResourceGraphChangesCreate {
+    .EXAMPLE
+
+    Get all Deletion Events in the last 7-Days for Virtual Machines:
+
+    PS> Get-AzResourceGraphChangesDelete -ResourceType 'microsoft.compute/virtualmachines'
+
+
+    .EXAMPLE
+
+    Get all Deletion Events in the last 3-Days for Disks:
+
+    PS> Get-AzResourceGraphChangesDelete -ResourceType 'microsoft.compute/disks' -TimeStamp ([DateTime]::Now.AddDays(-3))
+
+
+    .LINK
+        
+#>
+
+function Get-AzResourceGraphChangesDelete {
 
 
     [CmdletBinding()]
     param (
-        # The resourceType to filter change events from.
+        # The ResourceType to filter change events from.
         [Parameter(Mandatory = $true)]
         [System.String]
-        $resourceType,
+        $ResourceType,
 
         # The Timestamp from back when to take the change events.
         [Parameter(Mandatory = $false)]
         [ValidateScript(
             {
                 # Resource Graph changes apperently only date back to the last 7 days.
-                $_ -ge ([DateTime]::Now.AddDays(-7).AddMinutes(1))
+                $_ -ge ([DateTime]::Now.AddDays(-7).AddMinutes(-1))
             },
             ErrorMessage = 'Timestampe is out of Range.' 
         )]
         [System.DateTime]
-        $TimeStamp = [System.DateTime]::Now.AddDays(-7)
-    
+        $TimeStamp = [System.DateTime]::Now.AddDays(-7),
+
+        # Mangement Group Scope on which to perform query. Will default to tennand id.
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $managementGroup
     )
 
-    $managementGroup = (Get-AzContext).Tenant.Id
+
+    $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
 
     return Search-AzGraph -ManagementGroup $managementGroup -Query "
         resourcechanges
-        | where properties.targetResourceType =~ '$resourceType' 
-        // Get only Changes after Timestamp of Type Create.
-        | where properties.changeType =~ 'Create'
+        | where properties.targetResourceType =~ '$ResourceType' 
+        // Get only Changes after Timestamp of Type Delete.
+        | where properties.changeType =~ 'Delete'
         | where properties.changeAttributes.timestamp > datetime($TimeStamp)
         | extend Operation = properties.changeType
         // Get Basic Change Attributes.
         | extend TimeStamp = tostring(properties.changeAttributes.timestamp)
         | extend resourceId = tolower(tostring(properties.targetResourceId))
         | extend resourceName = split(resourceId,'/')[-1]
-
-
-.......TODO
-        Filter for resources that were created, then deleted with a time lived => 2 hours, etc.
+        // Filter out Resources that where created afterwards again and still exist.
+        | join kind=leftouter (
+            resources 
+            | where type =~ '$ResourceType' 
+            | extend id = tolower(id)
+            | extend joinResExistent = true
+        ) on `$left.resourceId == `$right.id
+        // Checking if null, boolean is irrelevant. Any non-matches will have a null value.
+        | where isnull(joinResExistent)
+        | join kind=leftouter (
+            resourcechanges 
+            | where properties.targetResourceType =~ 'microsoft.compute/virtualmachines' 
+            | where properties.changeAttributes.timestamp > datetime($TimeStamp)
+            | where properties.changeType =~ 'Create' 
+            | project CreationEvent = properties
+            | extend resourceId = tolower(tostring(CreationEvent.targetResourceId))
+            | extend TimeStampCreate = todatetime(CreationEvent.changeAttributes.timestamp)
+            ) on `$left.resourceId == `$right.resourceId
+        // Summarize any number of events on the same resource Id into one.
+        | summarize CollapsedEvents =  1 + count(TimeStamp), arg_max(TimeStamp, *), arg_min(TimeStampCreate, id) by resourceId
+        // If a Vm was created before deletion, it is a CreateAndDelete and has a timelived.
+        | extend Operation = iif(todatetime(TimeStamp) > TimeStampCreate, 'CreateAndDelete', Operation)
+        | extend TimeLived = format_timespan(todatetime(TimeStamp) - TimeStampCreate, 'd:HH:mm')
+        // Not of much use, since its deleted.
+        | extend resourceURL = strcat('https://portal.azure.com/#@', tenantId, '/resource', resourceId)
+        | project Operation, CollapsedEvents, subscriptionId, resourceGroup, name = resourceName, TimeStamp, TimeStampCreate, TimeLived, resourceURL
+        | sort by TimeStamp
         "
     
 }
-
-<#
-
-Get-AzResourceGraphChangesDelete -resourceType 'microsoft.compute/disks'
-
-Get-AzResourceGraphChangesDelete -resourceType 'microsoft.compute/virtualmachines'
-
-#>

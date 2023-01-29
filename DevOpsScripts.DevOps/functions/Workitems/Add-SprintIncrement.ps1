@@ -51,10 +51,10 @@ function Add-SprintIncrement {
 
 
     $SprintIteration = @{
-        Name         = [System.String]::Format('{0}-{1:00}and{2:00}', $startOfNextWeek.Year, $WeekOfYear, $WeekOfYear + 1)
-        StartDate    = $startOfNextWeek
-        finishDate   = $startOfNextWeek.AddDays(11)
-        Team         = $Team 
+        Name       = [System.String]::Format('{0}-{1:00}and{2:00}', $startOfNextWeek.Year, $WeekOfYear, $WeekOfYear + 1)
+        StartDate  = $startOfNextWeek
+        finishDate = $startOfNextWeek.AddDays(11)
+        Team       = $Team 
     }
 
     return New-SprintIteration @SprintIteration

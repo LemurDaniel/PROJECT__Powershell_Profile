@@ -33,9 +33,9 @@ function Set-UtilsCache {
 
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [PSCustomObject]
-        $Object,
+        $Object = @{},
 
         [Parameter(Mandatory = $true)]
         [System.String]

@@ -29,11 +29,11 @@ function Start-PipelineOnBranch {
   
     # Run Pipeline.
     $Request = @{
-        Method      = 'POST'
-        Domain      = 'dev.azure'
-        SCOPE       = 'PROJ'
-        API         = '/_apis/build/builds?api-version=6.0'
-        Body        = @{
+        Method = 'POST'
+        Domain = 'dev.azure'
+        SCOPE  = 'PROJ'
+        API    = '/_apis/build/builds?api-version=6.0'
+        Body   = @{
             definition   = @{ id = $id }
             sourceBranch = $ref
         }

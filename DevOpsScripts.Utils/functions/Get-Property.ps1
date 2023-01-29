@@ -1,3 +1,36 @@
+
+<#
+    .SYNOPSIS
+    Gets a chached value by a type and a specified identifier.
+
+    .DESCRIPTION
+    Gets a chached value by a type and a specified identifier.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Return null or the Cached value if present.
+
+    .EXAMPLE
+
+    Many Methods implement this Method:
+    Get All Names of the Teams in the current Project-Context:
+
+    PS> Get-ProjectInfo -return teams.name
+
+    .EXAMPLE
+
+    Get all the DisplayName Property of all Role Management Policy Assignments on a Management Group:
+
+    PS> $roleManagementPolicyAssignments = Get-RoleManagmentPoliciyAssignmentsForScope -scope /managementGroups/acfroot-dev
+    PS> Get-Property -Object $roleManagementPolicyAssignments -return 'properties.policyAssignmentProperties.roleDefinition.displayName'
+
+
+    .LINK
+        
+#>
+
 function Get-Property {
 
     [CmdletBinding()]
@@ -6,7 +39,7 @@ function Get-Property {
         [System.Object]
         $Object,
 
-        [Alias('Property')]
+        [Alias('Property', 'return')]
         [Parameter(Mandatory = $false)]
         [System.String]
         $PropertyPath

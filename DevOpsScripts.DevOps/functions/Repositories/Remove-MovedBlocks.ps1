@@ -17,9 +17,9 @@
 
 function Remove-MovedBlocks {
 
-  param ()
+    param ()
 
-  # Remove Moved-Blocks from Terraform configuration.
+    # Remove Moved-Blocks from Terraform configuration.
     Edit-RegexOnFiles -regexQuery 'moved\s*\{[^\}]*\}'
   
 }

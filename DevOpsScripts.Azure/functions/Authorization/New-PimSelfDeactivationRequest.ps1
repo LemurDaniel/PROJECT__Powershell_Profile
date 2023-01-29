@@ -24,18 +24,56 @@
 #>
 function New-PimSelfDeactivationRequest {
 
+    [Alias('pimDeactivate')]
     [cmdletbinding()]
     param(
+        # A PIM-Profile to choose from.
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            ParameterSetName = 'Profile'
+        )]
+        [ValidateScript(
+            { 
+                $_ -in (Get-PimProfiles).Keys
+            },
+            ErrorMessage = 'Please specify the correct Context.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-PimProfiles).Keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $ProfileName,
+
         # The scope of the active assignment.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true,
+            ParameterSetName = 'custom'
+        )]
         [System.String]
         $scope,
 
         # The role of the active assignment.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true,
+            ParameterSetName = 'custom'
+        )]
         [System.String]
         $role
     )
+
+    if (![System.String]::IsNullOrEmpty($ProfileName)) {
+        $pimProfile = (Get-PimProfiles).GetEnumerator() | Where-Object -Property Key -EQ -Value $ProfileName | Select-Object -ExpandProperty Value
+        $scope = $pimProfile.Scope
+        $role = $pimProfile.Role
+    }
 
     $aadUser = Get-AzADUser -Mail (Get-AzContext).Account.Id
     $eligibleScheduleInstance = Search-PimScheduleInstance -scope $scope -role $role

@@ -8,10 +8,10 @@ Contains a few useful Functions for Calling DevOps-Api, Azure-Api, etc.
 
 ## Basic Steps:
 
-Refers only to the Helper-Module.
+Refers only to the DevOpsScripts-Module.
 
 1. Install Azure Az-Module.
-2. Install/Import Helper-Module
+2. Install/Import DevOpsScripts-Module
 3. Run Connect-AzAccount.
 4. Set the correct DevOps Context
    1. Switch-Organization changes the current DevOps-Organiztaion-Context.

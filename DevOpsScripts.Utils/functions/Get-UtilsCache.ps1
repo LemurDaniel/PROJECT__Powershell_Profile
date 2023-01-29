@@ -1,16 +1,16 @@
 
 <#
     .SYNOPSIS
-    Gets a chached value by a type and a specified identifier.
+    Gets a Property based on a Property path of an Object or an Array of Objects.
 
     .DESCRIPTION
-    Gets a chached value by a type and a specified identifier.
+    Gets a Property based on a Property path of an Object or an Array of Objects.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
-    Return null or the Cached value if present.
+    Returns the Property or Array of Properties if found.
 
 
     .EXAMPLE

@@ -20,7 +20,5 @@ function Get-RoleEligibilitySceduleInstancesForScope {
         $RoleEligibilitySceduleInstances = Set-UtilsCache -Object $RoleEligibilitySceduleInstances -Type RoleEligibilitySceduleInstances -Identifier $scope
     } 
       
-
-
     return $RoleEligibilitySceduleInstances
 }

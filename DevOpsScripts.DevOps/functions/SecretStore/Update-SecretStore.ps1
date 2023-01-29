@@ -43,7 +43,7 @@ function Update-SecretStore {
             Throw "Path: $Path - Error at Segment $segment - Object is $($SecretObject.GetType().Name)"
         }
 
-        $candidate = $SecretObject.PSObject.Properties | Where-Object -Property Name -like -Value "*$segment"
+        $candidate = $SecretObject.PSObject.Properties | Where-Object -Property Name -Like -Value "*$segment"
 
         if ($null -ne $candidate -AND $candidate.GetType().BaseType -eq [System.Array]) {
             Throw "Path: $Path - Error at Segment $segment - Multiple Candidates found"

@@ -73,7 +73,7 @@ function Add-QuickContext {
     )
 
     $contexts = Get-QuickContexts
-    if(!$Force -AND $contexts[$ContextName]) {
+    if (!$Force -AND $contexts[$ContextName]) {
         throw 'Context with same name already exists'
     }
     $contexts[$ContextName] = @{

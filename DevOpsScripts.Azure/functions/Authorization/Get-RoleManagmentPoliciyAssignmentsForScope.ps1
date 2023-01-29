@@ -20,7 +20,5 @@ function Get-RoleManagmentPoliciyAssignmentsForScope {
         $roleManagementPoliciyAssignments = Set-UtilsCache -Object $roleManagementPoliciyAssignments -Type roleManagmentPolicyAssignments -Identifier $scope
     } 
       
-
-
     return $roleManagementPoliciyAssignments
 }

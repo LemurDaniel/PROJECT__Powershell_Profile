@@ -15,7 +15,7 @@
 
     .EXAMPLE
 
-    Create a new Pull-Request from Dev to Master in Azure DevOps:
+    Create a new Pull-Request from Dev to Master in Azure DevOps in the current Repository:
 
     PS> New-MasterPR -PRTitle '<Title>'
 

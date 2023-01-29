@@ -34,6 +34,7 @@
 #>
 function New-PimSelfActivationRequest {
 
+    [Alias('pim')]
     [cmdletbinding()]
     param(
         # A PIM-Profile to choose from.
@@ -112,10 +113,12 @@ function New-PimSelfActivationRequest {
         $requestType = 'SelfActivate'
     )
 
-    $pimProfile = (Get-PimProfiles).GetEnumerator() | Where-Object -Property Key -EQ -Value $ProfileName | Select-Object -ExpandProperty Value
-    $scope = $pimProfile.Scope
-    $role = $pimProfile.Role
-    $duration = $duration -eq 0 ? $pimProfile.Duration : $duration
+    if (![System.String]::IsNullOrEmpty($ProfileName)) {
+        $pimProfile = (Get-PimProfiles).GetEnumerator() | Where-Object -Property Key -EQ -Value $ProfileName | Select-Object -ExpandProperty Value
+        $scope = $pimProfile.Scope
+        $role = $pimProfile.Role
+        $duration = $duration -eq 0 ? $pimProfile.Duration : $duration
+    }
 
     $aadUser = Get-AzADUser -Mail (Get-AzContext).Account.Id
     $eligibleScheduleInstance = Search-PimScheduleInstance -scope $scope -role $role

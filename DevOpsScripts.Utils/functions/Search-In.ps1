@@ -37,9 +37,9 @@ function Search-In {
     [cmdletbinding()]
     [Alias('Search-PreferencedObject')]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [System.Object[]]
-        $SearchObjects,
+        $SearchObjects = @(),
 
         [Alias('is')]
         [Parameter(Mandatory = $true)]

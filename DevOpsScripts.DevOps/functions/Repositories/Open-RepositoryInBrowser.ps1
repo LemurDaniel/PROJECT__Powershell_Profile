@@ -17,7 +17,7 @@
     .LINK
         
 #>
-function Open-RepositoryInBrowswer {
+function Open-RepositoryInBrowser {
 
     [Alias('repoBrowser')]
     [cmdletbinding(

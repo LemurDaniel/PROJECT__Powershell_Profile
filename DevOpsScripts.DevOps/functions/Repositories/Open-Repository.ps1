@@ -76,19 +76,7 @@ function Open-Repository {
     )
 
 
-    $repositories = Get-ProjectInfo 'repositories'
-    if ($RepositoryId) {
-        $repository = $repositories | Where-Object -Property id -EQ -Value $RepositoryId
-    }
-    else {
-        $repository = $repositories | Where-Object -Property name -EQ -Value $Name
-    }
-
-    if (!$repository) {
-        Write-Host -Foreground RED 'No Repository Found!'
-        return
-    }
- 
+    $repository = ![System.String]::IsNullOrEmpty($RepositoryId) ? (Get-RepositoryInfo -id $RepositoryId) : (Get-RepositoryInfo -name $name)
 
     $userName = Get-CurrentUser 'displayName'
     $userMail = Get-CurrentUser 'emailAddress'

@@ -32,16 +32,16 @@
 
 function Get-RepositoryInfo {
 
-    # The Name of the Target-Repository. If not specifed tries returning info about the repository the command is excuted in.
     [CmdletBinding()]
     param ( 
+        # The Name of the Repository. If null will default to current repository where command is executed.
         [Parameter(
             Mandatory = $false,
             Position = 0
         )]
         [ValidateScript(
             { 
-                $_ -in (Get-ProjectInfo 'repositories.name')
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-ProjectInfo 'repositories.name')
             },
             ErrorMessage = 'Please specify an correct Name.'
         )]

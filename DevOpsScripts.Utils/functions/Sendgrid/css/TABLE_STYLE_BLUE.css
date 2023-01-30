@@ -15,16 +15,16 @@ div#id {
 }
 
 #id table tr:nth-child(even) {
-    background-color: #c1e5b166;
+    background-color: #F0F8FF;
 }
 
 #id table tr:nth-child(odd) {
-    background-color: #e0f2d833;
+    background-color: #FFFFFF;
 }
 
 
 #id table tr:hover {
-    background-color: #a2d88a99;
+    background-color: #87CEFA;
 }
 
 #id table th {

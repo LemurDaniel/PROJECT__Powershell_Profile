@@ -1,21 +1,43 @@
 <#
 .Synopsis
-    Formats content in a Standardized way for sending via Sendgrid
+    Formats Content into an HTML-Table with some custom CSS and ability to create href-links.
  
 .DESCRIPTION
-    
- 
+    Formats Content into an HTML-Table with some custom CSS and ability to create href-links.
+    Primarly used for sending a HTML-Formatted Table via SendGrid.
+
 .EXAMPLE
- 
+
+    Get recently created Disks and format it into a HTML-Table with some CSS:
+
+    PS> $createdDisks = Get-AzResourceGraphChangesCreate `
+            -ResourceType 'microsoft.compute/disks' `
+            -ResourceAttributes @{
+                diskSizeBytes     = 'format_bytes(tolong(properties.diskSizeBytes))'
+                skuName           = 'sku.name'
+                skuTier           = 'sku.tier'
+            }
+
+   PS> $order = @('Operation', 'TimeStamp', 'Name', 'diskSizeBytes', 'skuName', 'skuTier', 'subscriptionId', 'ResourceGroup')        
+   PS> $sendGridFormat = $createdDisks | `
+            Format-SendGridContent `
+            -PropertiesAsLink @{ Name = 'resourceUrl' } `
+            -Order $order `
+            -CSS_STYLE 'TABLE_STYLE_BLUE' `
+            -ContentInsert "<h3>List of Created Disks:</h3>`$1"
+
+   PS> $sendGridFormat.toHTMLString() | Out-File createdDisks.html
+
 #>
 
-
+   
 . "$PSScriptRoot/classes/Stylesheet.ps1"
 . "$PSScriptRoot/classes/SendGridHTMLFormat.ps1"
 
 function Format-SendGridContent {
 
     param(
+        # A special class when the function is called several times with different lists.
         [Parameter(
             Mandatory = $false
         )]
@@ -35,18 +57,22 @@ function Format-SendGridContent {
         [System.Collections.Hashtable]
         $PropertiesAsLink = @{},
 
+        # Some outer html, where $1 defines the insertion of the HTML-Table.
         [Parameter(Mandatory = $false)]
         [System.String]
         $ContentInsert = '$1',
 
+        # Which Properties to keep in which Order in the created Table.
         [Parameter(Mandatory = $false)]
         [System.String[]]
         $Order = '*',
 
+        # Which Properties to exclude from the created Table.
         [Parameter(Mandatory = $false)]
         [System.String[]]
         $ExcludeProperty = '',
 
+        # The Filename of a predfined Table-Css-Style.
         [Parameter()]
         [System.String]
         [ValidateSet([Stylesheet])] 
@@ -66,11 +92,15 @@ function Format-SendGridContent {
     Process {
 
         ForEach ($Object in $ContentObjects) {
-
             $convertedResult = $Object | ConvertTo-Json | ConvertFrom-Json -Depth 8
             $PropertiesAsLink.GetEnumerator() | ForEach-Object {
                 $linkSource = $_.Value
                 $linkSource = $convertedResult."$linkSource"
+
+                if ([System.String]::IsNullOrEmpty($linkSource)) {
+                    throw "$($_.Value) not found." 
+                }
+
                 $linkName = $_.Key
                 $linkName = [System.String]::IsNullOrEmpty($convertedResult."$linkName") ? $linkName : $convertedResult."$linkName"
 

@@ -1,7 +1,8 @@
 class Stylesheet : System.Management.Automation.IValidateSetValuesGenerator {
 
     static [System.IO.DirectoryInfo] GetCssFolder() {
-        return Get-ChildItem -Path "$PSScriptRoot/../" -Recurse -Directory -Filter 'css'
+        $folder = [System.String]::IsNullOrEmpty($PSScriptRoot) ? (Get-Location) : "$PSScriptRoot/../"
+        return Get-ChildItem -Path "$folder" -Recurse -Directory -Filter 'css'
     }
 
     static [System.IO.FileInfo[]] GetCssFiles() {

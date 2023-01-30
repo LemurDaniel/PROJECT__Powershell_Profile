@@ -51,37 +51,27 @@ function Open-RepositoryInBrowser {
 
         # Switch to open the Active-PullRequests-Site of the repository. Default is the repository itself.
         [Alias('pr')]
-        [Parameter(
-            ParameterSetName = 'PullRequest'
-        )]
+        [Parameter()]
         [switch]
         $PullRequest,
 
         # Switch to open the Branch-Site of the repository. Default is the Files of the repository.
-        [Parameter(
-            ParameterSetName = 'Branch'
-        )]
+        [Parameter()]
         [switch]
         $Branch,
 
         # Switch to open the Tags-Site of the repository. Default is the Files of the repository.
-        [Parameter(
-            ParameterSetName = 'Tags'
-        )]
+        [Parameter()]
         [switch]
         $Tags,
 
         # Switch to open the Commits-Site of the repository. Default is the Files of the repository.
-        [Parameter(
-            ParameterSetName = 'Commits'
-        )]
+        [Parameter()]
         [switch]
         $Commits,
 
         # Switch to open the Pushes-Site of the repository. Default is the Files of the repository.
-        [Parameter(
-            ParameterSetName = 'Pushes'
-        )]
+        [Parameter()]
         [switch]
         $Pushes
     )

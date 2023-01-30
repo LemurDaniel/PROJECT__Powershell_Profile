@@ -22,10 +22,16 @@ function Search-AzFunctionAppSettings {
     param (
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $FunctionAppName
+        $FunctionAppName,
+
+        # The Property to return from the items. If null will return full Properties.
+        [Alias('return')]
+        [Parameter()]
+        [System.String]
+        $Property
     )
 
-    $FunctionApp = Search-AzFunctionApp -FunctionAppName $FunctionAppName
+    $FunctionApp = Search-AzFunctionApp -FunctionAppName $FunctionAppName -Take 1
     if (!$FunctionApp) {
         throw 'Function App Not Found'
     }
@@ -36,5 +42,6 @@ function Search-AzFunctionAppSettings {
         API                 = '/config/appsettings/list?api-version=2021-02-01'
         noTopLevelProvider = $true
     }
-    return Invoke-AzureRest @Request -return 'properties'
+    $response = Invoke-AzureRest @Request -return 'properties'
+    return Get-Property -Object $response -return $Property
 }

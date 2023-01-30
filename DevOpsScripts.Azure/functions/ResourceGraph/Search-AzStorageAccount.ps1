@@ -19,21 +19,41 @@
 function Search-AzStorageAccount {
     param (
         # The Name the storage account must contain.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Position = 0,
+            Mandatory = $true
+        )]
         [System.String[]]
         $StorageAccountName,
 
-        # The number of storage accounts to return.
-        [Parameter(Mandatory = $false)]
+        # The number of resources to return.
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = 'Take'
+        )]
         [System.int32]
-        $take = 1,
+        $Take = 1,
+
+        # Switch to return all results.
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = 'All'
+        )]
+        [switch]
+        $All,
+
+        # The Property to return from the items. If null will return full Properties.
+        [Alias('return')]
+        [Parameter()]
+        [System.String]
+        $Property,
 
         # Switch to open them in the Azure Portal.
         [Parameter(Mandatory = $false)]
         [switch]
-        $open
+        $Browser
     )
     
-    return Search-AzResource -open:$open -ResourceName $StorageAccountName -ResourceType 'microsoft.storage/storageaccounts' -take $take 
+    return Search-AzResource -Browser:$Browser -Property $Property -Take ($All ? 999 : $Take) -ResourceName $StorageAccountName -ResourceType 'microsoft.storage/storageaccounts' -Take $Take 
 
 }

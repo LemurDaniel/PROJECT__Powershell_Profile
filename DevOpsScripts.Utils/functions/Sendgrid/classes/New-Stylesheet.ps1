@@ -20,3 +20,12 @@ class Stylesheet : System.Management.Automation.IValidateSetValuesGenerator {
     }
 }
   
+
+function New-Stylesheet {
+
+    [CmdletBinding()]
+    param ()
+
+    return [Stylesheet]::new()
+    
+}

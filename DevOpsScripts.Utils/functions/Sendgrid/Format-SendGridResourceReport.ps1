@@ -33,14 +33,10 @@
                 -ResourceType 'Disks' `
                 -PreviousProperty previousDiskSizeBytes `
                 -NewProperty newDiskSizeBytes `
-                -Order Name, newDiskSizeBytes, previousDiskSizeBytes, operatingHours, Subscription, ResourceGroup
+                -Order Name, previousDiskSizeBytes, newDiskSizeBytes, skuName, skuTier, ResourceGroup
 
     PS> $resourceReport | Out-File resourceReport.html
 #>
-
-
-. "$PSScriptRoot/classes/Stylesheet.ps1"
-. "$PSScriptRoot/classes/SendGridHTMLFormat.ps1"
 
 function Format-SendGridResourceReport {
 
@@ -78,7 +74,7 @@ function Format-SendGridResourceReport {
 
     Write-Host -ForegroundColor Yellow "Converting Content to be send via SendGrid `n`n"
       
-    $SendGridHTMLFormat = $null
+    $SendGridHTMLFormat = New-SendGridHtmlFormat
 
     $updatedResources = $resourceData | Where-Object -Property Operation -EQ 'Update' 
     $createdResources = $resourceData | Where-Object -Property Operation -EQ 'Create' 
@@ -148,7 +144,7 @@ function Format-SendGridResourceReport {
             Format-SendGridContent -SendGridHTMLFormat $SendGridHTMLFormat `
             -PropertiesAsLink @{ Name = 'resourceURL' } `
             -Order $Order `
-            -CSS_STYLE 'TABLE_STYLE_YELLOW' `
+            -CSS_STYLE 'TABLE_STYLE_ORANGE' `
             -ContentInsert "
             <h3>Recently CreatedAndDeleted '$resourceType':</h3>
             $linkInfo

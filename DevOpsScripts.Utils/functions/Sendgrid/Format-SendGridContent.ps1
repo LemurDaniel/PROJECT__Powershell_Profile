@@ -18,7 +18,7 @@
                 skuTier           = 'sku.tier'
             }
 
-   PS> $order = @('Operation', 'TimeStamp', 'Name', 'diskSizeBytes', 'skuName', 'skuTier', 'subscriptionId', 'ResourceGroup')        
+   PS> $order = @('Operation', 'TimeStamp', 'Name', 'diskSizeBytes', 'skuName', 'skuTier', 'ResourceGroup')        
    PS> $sendGridFormat = $createdDisks | `
             Format-SendGridContent `
             -PropertiesAsLink @{ Name = 'resourceUrl' } `
@@ -30,10 +30,6 @@
 
 #>
 
-   
-. "$PSScriptRoot/classes/Stylesheet.ps1"
-. "$PSScriptRoot/classes/SendGridHTMLFormat.ps1"
-
 function Format-SendGridContent {
 
     param(
@@ -41,7 +37,14 @@ function Format-SendGridContent {
         [Parameter(
             Mandatory = $false
         )]
-        [SendGridHTMLFormat]
+        [ValidateScript(
+            {
+                $null -eq $_ -OR ($_.GetType() -eq (New-SendGridHtmlFormat).GetType())
+            },
+            ErrorMessage = 'Must be an instance of SendGridHtmlFormat'
+        )]
+        [AllowNull()]
+        [PSObject]
         $SendGridHTMLFormat,
 
         # The Content to turn into HTML-Email.
@@ -75,14 +78,19 @@ function Format-SendGridContent {
         # The Filename of a predfined Table-Css-Style.
         [Parameter()]
         [System.String]
-        [ValidateSet([Stylesheet])] 
+        [ValidateScript(
+            {
+                $_ -in (New-Stylesheet).GetValidValues()
+            },
+            ErrorMessage = ''
+        )]
         $CSS_STYLE
     )
 
 
     Begin {
 
-        $SendGridHTMLFormat = $SendGridHTMLFormat ?? [SendGridHTMLFormat]::new()
+        $SendGridHTMLFormat = $SendGridHTMLFormat ?? (New-SendGridHtmlFormat)
         $collection = [System.Collections.ArrayList]::new()
 
         if ([regex]::Matches($ContentInsert, '\$1').Count -gt 1) {

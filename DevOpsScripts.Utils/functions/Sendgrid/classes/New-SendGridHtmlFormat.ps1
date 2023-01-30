@@ -8,7 +8,7 @@ class SendGridHTMLFormat {
         $randomString = -join ((97..122) | Get-Random -Count 14 | ForEach-Object { [char]$_ })
         $DivContent = $ContentInsert -replace '\$1', $DivContent
         $Div = "<div id='$randomString'>$DivContent</div>"
-        $Css = [Stylesheet]::GetCSSContentTargetedToId($CSSFileName, $randomString)
+        $Css = (New-Stylesheet)::GetCSSContentTargetedToId($CSSFileName, $randomString)
 
         $this.CSSHeads += $Css
         $this.BodyDivs += $Div
@@ -25,4 +25,14 @@ class SendGridHTMLFormat {
         
     }
 
+}
+
+
+function New-SendGridHtmlFormat {
+
+    [CmdletBinding()]
+    param ()
+
+    return [SendGridHTMLFormat]::new()
+    
 }

@@ -72,7 +72,7 @@ RequiredAssemblies = @()
 FunctionsToExport = 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 'Prompt', 'Search-In', 
                'Set-UtilsCache', 'Format-SendGridContent', 
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'SendGridHTMLFormat', 'Stylesheet', 'Add-EnvPaths', 
+               'New-SendGridHtmlFormat', 'New-Stylesheet', 'Add-EnvPaths', 
                'Get-DailyMsRewards', 'Get-MsRewards', 'Get-ScrambledText', 
                'Switch-Terraform', 'Convert-SecretObject', 'Get-SecretFromStore', 
                'Get-SecretsFromStore', 'Get-SecretStore', 'Set-VersionActiveTF', 

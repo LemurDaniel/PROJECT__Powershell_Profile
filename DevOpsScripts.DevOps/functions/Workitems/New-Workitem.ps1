@@ -21,7 +21,8 @@
 
     Create a Task with a Title and a Parent Workitem:
 
-    PS> New-Workitem -Type Task -Title 'Document Powershell Module' -ParentId 12034
+    PS> $userStory = New-Workitem -Type 'User Story' -Title 'Document Powershell Module'
+    PS> New-Workitem -Type Task -Title 'Document Powershell Module' -ParentId $userStory.id
 
 
     .LINK
@@ -117,7 +118,7 @@ function New-Workitem {
             op    = 'add'
             path  = '/relations/-'
             value = @{
-                rel        = Get-WorkItemRelationTypes Parent referenceName
+                rel        = Get-WorkItemRelationTypes Parent -return referenceName
                 url        = [System.String]::IsNullOrEmpty($ParentUrl) ? (Get-WorkItems -Ids $ParentId -return 'url') : $ParentUrl
                 attributes = @{}
             }

@@ -17,7 +17,7 @@
 
     PS> $userStory = New-Workitem -Type 'User Story' -Title 'APITEST_UserStory'
     PS> $task = New-Workitem -Type Task -Title 'APITEST_Task'
-    PS> Connect-Workitem -WorkItem1 $userStory -WorkItem2 $task -RelationType Child
+    PS> Connect-Workitem -WorkItemId $userStory.id -linkElementUrl $task.url -RelationType Child
 
 
     .LINK
@@ -39,7 +39,7 @@ function Connect-Workitem {
             Mandatory = $true
         )]
         [System.String]
-        $linkElementId,
+        $linkElementUrl,
 
         # Workitem Relation Type => Parent, Child, etc.
         [ValidateScript(
@@ -74,7 +74,7 @@ function Connect-Workitem {
                 path  = '/relations/-'
                 value = @{
                     rel        = Get-WorkItemRelationTypes $RelationType -return 'referenceName'
-                    url        = $linkElementId
+                    url        = $linkElementUrl
                     attributes = @{
                         name    = $RelationType
                         comment = "$((Get-CurrentUser).displayName) created $RelationType"

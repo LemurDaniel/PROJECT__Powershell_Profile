@@ -34,7 +34,12 @@ function Invoke-AzureRest {
 
         [parameter()]
         [string]
-        $contentType
+        $contentType,
+
+        # TODO temporary fix
+        [parameter()]
+        [string]
+        $noTopLevelProvider
     )
 
     $APIEndpoint = ($API -split '\?')[0]
@@ -52,7 +57,7 @@ function Invoke-AzureRest {
     }
 
 
-    if (!$scope.Contains('/providers/Microsoft.Management') -AND !$scope.Contains('providers/Microsoft.Subscriptions')) {
+    if (!$noTopLevelProvider -AND !$scope.Contains('/providers/Microsoft.Management') -AND !$scope.Contains('providers/Microsoft.Subscriptions')) {
         $toplevelScope = $scope.contains('managementGroups') ? 'providers/Microsoft.Management' : 'providers/Microsoft.Subscriptions'
     }
     else {

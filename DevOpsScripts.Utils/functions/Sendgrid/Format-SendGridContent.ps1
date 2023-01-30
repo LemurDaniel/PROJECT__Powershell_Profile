@@ -60,6 +60,10 @@ function Format-SendGridContent {
 
         $SendGridHTMLFormat = $SendGridHTMLFormat ?? [SendGridHTMLFormat]::new()
         $collection = [System.Collections.ArrayList]::new()
+
+        if ([regex]::Matches($ContentInsert, '\$1').Count -gt 1) {
+            throw 'Only one of $1 Content-Insertion is allowed'
+        }
     }
     Process {
 
@@ -90,7 +94,7 @@ function Format-SendGridContent {
         $htmlFragment = $collection | ConvertTo-Html -Fragment
         $htmlFragment = $htmlFragment -replace '\[HREF_START\]', '<a href="' -replace '\[HREF_MIDDLE\]', '"> ' -replace '\[HREF_END\]', ' </a>'
         return  $SendGridHTMLFormat.AddElement($CSS_STYLE, $htmlFragment, $ContentInsert)
-        
+
     }
 
 }

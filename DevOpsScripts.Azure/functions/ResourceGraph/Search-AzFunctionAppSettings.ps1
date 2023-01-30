@@ -1,3 +1,21 @@
+<#
+    .SYNOPSIS
+    Searches and returns a App Settings for a Function App.
+
+    .DESCRIPTION
+    Searches and returns a App Settings for a Function App.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The App Settings of the found Function App.
+
+
+
+    .LINK
+        
+#>
 function Search-AzFunctionAppSettings {
 
     [Alias('FAConf')]

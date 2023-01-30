@@ -117,7 +117,7 @@ function New-Workitem {
             op    = 'add'
             path  = '/relations/-'
             value = @{
-                rel        = Get-WorkItemRelationType Parent referenceName
+                rel        = Get-WorkItemRelationTypes Parent referenceName
                 url        = [System.String]::IsNullOrEmpty($ParentUrl) ? (Get-WorkItems -Ids $ParentId -return 'url') : $ParentUrl
                 attributes = @{}
             }

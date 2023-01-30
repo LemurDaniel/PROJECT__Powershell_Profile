@@ -34,13 +34,13 @@ function Get-WorkItemRelationTypes {
         )]
         [ValidateScript(
             {
-                $_ -in ((Get-Content "$PSScriptRoot\WorkItemRelationTypes.json") | ConvertFrom-Json).value.name
+                $_ -in ((Get-Content "$PSScriptRoot\.workItemRelationTypes.json") | ConvertFrom-Json).value.name
             }
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = ((Get-Content "$PSScriptRoot\WorkItemRelationTypes.json") | ConvertFrom-Json).value.name
+                $validValues = ((Get-Content "$PSScriptRoot\.workItemRelationTypes.json") | ConvertFrom-Json).value.name
      
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `

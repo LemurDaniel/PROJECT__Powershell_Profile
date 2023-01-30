@@ -65,7 +65,7 @@ function Get-WorkItemRelationTypes {
         $Property
     )
 
-    $workItemRelationTypes = ((Get-Content "$PSScriptRoot\WorkItemRelationTypes.json") | ConvertFrom-Json).value
+    $workItemRelationTypes = ((Get-Content "$PSScriptRoot\.workItemRelationTypes.json") | ConvertFrom-Json).value
     if (!$All) {
         $workItemRelationTypes = $workItemRelationTypes | Where-Object -Property name -EQ -Value $RelationType 
     } 

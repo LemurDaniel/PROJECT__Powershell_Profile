@@ -89,9 +89,8 @@ function Format-SendGridContent {
 
         $htmlFragment = $collection | ConvertTo-Html -Fragment
         $htmlFragment = $htmlFragment -replace '\[HREF_START\]', '<a href="' -replace '\[HREF_MIDDLE\]', '"> ' -replace '\[HREF_END\]', ' </a>'
-        $null = $SendGridHTMLFormat.AddElement($CSS_STYLE, $htmlFragment, $ContentInsert)
-
-        return $SendGridHTMLFormat
+        return  $SendGridHTMLFormat.AddElement($CSS_STYLE, $htmlFragment, $ContentInsert)
+        
     }
 
 }

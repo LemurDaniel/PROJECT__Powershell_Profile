@@ -33,9 +33,7 @@ function Format-SendGridContent {
         # Parameter for defining which Property gets interpreted as a Link. If the key is Found, will use elements from the Key as LinkNames.
         [Parameter(Mandatory = $false)]
         [System.Collections.Hashtable]
-        $PropertiesAsLink = @{
-            Name = 'URL'
-        },
+        $PropertiesAsLink = @{},
 
         [Parameter(Mandatory = $false)]
         [System.String]

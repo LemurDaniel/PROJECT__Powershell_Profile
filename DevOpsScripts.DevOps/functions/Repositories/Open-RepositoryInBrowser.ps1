@@ -27,7 +27,7 @@ function Open-RepositoryInBrowser {
     param (
         # The Name of the Repository. If null will default to current repository where command is executed.
         [Parameter(
-            Mandatory = $true,
+            Mandatory = $false,
             Position = 0
         )]
         [ValidateScript(

@@ -73,9 +73,10 @@ FunctionsToExport = 'Invoke-AzureRest', 'Switch-AzTenant', 'Backup-AzState',
                'Get-AzResourceGraphChangesCreate', 
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
-               'Search-AzResource', 'Search-AzStorageAccount', 
-               'Search-AzStorageContext', 'Search-AzVm', 'Test', 'Add-PimProfile', 
-               'Get-PimAssignments', 'Get-PimProfiles', 'Get-RBACPermissions', 
+               'Search-AzFunctionAppSettings', 'Search-AzResource', 
+               'Search-AzStorageAccount', 'Search-AzStorageContext', 'Search-AzVm', 
+               'Test', 'Add-PimProfile', 'Get-PimAssignments', 'Get-PimProfiles', 
+               'Get-RBACPermissions', 
                'Get-RoleEligibilitySceduleInstancesForScope', 
                'Get-RoleManagmentPoliciyAssignmentsForScope', 
                'New-PimSelfActivationRequest', 'New-PimSelfDeactivationRequest', 
@@ -90,7 +91,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'STCtx', 'pim', 'pimDeactivate'
+AliasesToExport = 'FAConf', 'STCtx', 'pim', 'pimDeactivate'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

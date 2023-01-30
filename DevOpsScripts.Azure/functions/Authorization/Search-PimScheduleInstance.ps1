@@ -43,7 +43,7 @@ function Search-PimScheduleInstance {
     # Get Eligiblity Schedule Instance on Scope
     $Request = @{
         Method = 'GET'
-        Scope  = "/managementGroups/$scope"
+        Scope  = $scope
         API    = 'providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01'
     }
     $eligibleScheduleInstance = Invoke-AzureRest @Request -return 'value.properties' | `

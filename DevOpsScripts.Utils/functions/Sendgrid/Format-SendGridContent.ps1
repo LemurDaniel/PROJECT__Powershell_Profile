@@ -72,11 +72,8 @@ function Format-SendGridContent {
                 $linkName = $_.Key
                 $linkName = [System.String]::IsNullOrEmpty($convertedResult."$linkName") ? $linkName : $convertedResult."$linkName"
 
-                $linkPrototype = "?LINK[NAME={$linkName};SRC={$linkSource}]!"
-
                 # Because ConvertTo-HTML messes with the <a href link...
                 $linkPrototype = "[HREF_START]$linkSource[HREF_MIDDLE]$linkName[HREF_END]"
-
 
                 $convertedResult = $convertedResult | Select-Object -ExcludeProperty $linkName, $linkSource
                 $null = $convertedResult | Add-Member NoteProperty $_.Key $linkPrototype -Force

@@ -81,16 +81,14 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-AzureDevOpsCac
                'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
                'Get-PAT', 'New-Pat', 'Search-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
                'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
-               'New-AutomatedTag', 'Remove-AutomatedTags', 'Convert-SecretObject', 
-               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
-               'Update-SecretStore', 'Get-GithubData', 'Invoke-GitRest', 
-               'Open-RepositoryGithub', 'Push-Profile', 'Switch-GitConfig', 
-               'Get-ProjectInfo', 'Get-RepositoryInfo', 'Show-DevOpsContext', 
-               'Switch-Organization', 'Switch-Project', 'Switch-QuickContext', 
-               'Add-SprintIncrement', 'Connect-Workitem', 'Get-SprintIterations', 
-               'Get-WorkItemQueries', 'Get-Workitems', 'New-BranchFromWorkItem', 
-               'New-SprintIteration', 'New-Workitem', 'Search-WorkItemInIteration', 
-               'Select-Workitems'
+               'New-AutomatedTag', 'Remove-AutomatedTags', 'Get-GithubData', 
+               'Invoke-GitRest', 'Open-RepositoryGithub', 'Push-Profile', 
+               'Switch-GitConfig', 'Get-ProjectInfo', 'Get-RepositoryInfo', 
+               'Show-DevOpsContext', 'Switch-Organization', 'Switch-Project', 
+               'Switch-QuickContext', 'Add-SprintIncrement', 'Connect-Workitem', 
+               'Get-SprintIterations', 'Get-WorkItemQueries', 'Get-Workitems', 
+               'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
+               'Search-WorkItemInIteration', 'Select-Workitems'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

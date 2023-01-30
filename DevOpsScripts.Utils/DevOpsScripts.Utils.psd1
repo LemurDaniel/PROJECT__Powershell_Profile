@@ -69,10 +69,11 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Add-EnvPaths', 'Get-DailyMsRewards', 'Get-MsRewards', 'Get-Property', 
-               'Get-ScrambledText', 'Get-UtilsCache', 'Join-PsObject', 'Prompt', 
-               'Search-In', 'Set-UtilsCache', 'Set-VersionActiveTF', 
-               'Switch-Terraform'
+FunctionsToExport = 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 'Prompt', 'Search-In', 
+               'Set-UtilsCache', 'Add-EnvPaths', 'Get-DailyMsRewards', 'Get-MsRewards', 
+               'Get-ScrambledText', 'Switch-Terraform', 'Convert-SecretObject', 
+               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
+               'Set-VersionActiveTF', 'Update-SecretStore'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

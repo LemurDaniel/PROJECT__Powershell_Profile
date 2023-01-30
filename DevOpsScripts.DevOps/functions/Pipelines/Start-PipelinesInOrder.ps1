@@ -78,7 +78,7 @@ function Start-PipelinesInOrder {
                 Start-Process $pipelineUrl
             }
 
-            $Helper = Get-Item "$PSScriptRoot/../../DevOpsScripts"
+            $Helper = Get-Item "$PSScriptRoot/../../../DevOpsScripts"
             $job = Start-Job `
                 -ArgumentList $Helper.FullName, $build.id, $OpenBrowser `
                 -ScriptBlock {

@@ -76,10 +76,10 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-AzureDevOpsCac
                'Set-AzureDevOpsCache', 'Set-DevOpsCurrentContext', 
                'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 'Get-RepositoryRefs', 
                'New-MasterPR', 'New-PullRequest', 'Open-Repository', 
-               'Remove-MovedBlocks', 'Update-ModuleSourcesAllRepositories', 
-               'Update-ModuleSourcesInPath', 'Get-PAT', 'New-Pat', 'Search-Pat', 
-               'Update-Pat', 'Open-BuildInBrowser', 'Start-Pipeline', 
-               'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
+               'Open-RepositoryInBrowser', 'Remove-MovedBlocks', 
+               'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
+               'Get-PAT', 'New-Pat', 'Search-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
+               'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
                'New-AutomatedTag', 'Remove-AutomatedTags', 'Convert-SecretObject', 
                'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
                'Update-SecretStore', 'Get-GithubData', 'Invoke-GitRest', 
@@ -98,8 +98,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'vc', 'vcp', 'sc', 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'swc', 
-               'gitW'
+AliasesToExport = 'vc', 'repoBrowser', 'vcp', 'sc', 'Set-OrgContext', 'swo', 
+               'Set-ProjectContext', 'swp', 'swc', 'gitW'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

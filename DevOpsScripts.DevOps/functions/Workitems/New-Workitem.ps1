@@ -65,29 +65,26 @@ function New-Workitem {
 
         # Iteration Path.
         [Parameter()]
-        $IterationPath = "current",
+        $IterationPath = 'current',
         [System.String]
 
         # Optional Parent of newly created workitem.
-        [Parameter(ParameterSetName="ParentId")]
+        [Parameter(ParameterSetName = 'ParentId')]
         [System.String]
         $ParentId,
 
         # Optional Parent of newly created workitem.
-        [Parameter(ParameterSetName="ParentUrl")]
+        [Parameter(ParameterSetName = 'ParentUrl')]
         [System.String]
         $ParentUrl
     )
 
 
-    $projectInfo = Get-ProjectInfo
-    $teamObject = $projectInfo.Teams | Where-Object name -eq $team
-
-    if($IterationPath -eq "current"){
+    if ($IterationPath -eq 'current') {
         $sprintIteration = Get-SprintIterations -Current
     }
-    else{
-        $sprintIteration = Get-SprintIterations -Refresh |Where-Object -Property Name -EQ -Value $IterationPath
+    else {
+        $sprintIteration = Get-SprintIterations | Search -has $IterationPath
     }
 
     $Request = @{
@@ -105,13 +102,13 @@ function New-Workitem {
                 op    = 'add'
                 path  = '/fields/System.TeamProject'
                 from  = $null
-                value = $teamObject.projectName
+                value = Get-ProjectInfo name
             },
             @{
                 op    = 'add'
                 path  = '/fields/System.AreaPath'
                 from  = $null
-                value = $teamObject.projectName
+                value = Get-ProjectInfo name
             },
             @{
                 op    = 'add'

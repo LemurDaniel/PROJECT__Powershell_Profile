@@ -53,7 +53,7 @@ function Search-AzResource {
             | where $( ($ResourceName | ForEach-Object { "name contains '$_'" }) -join ' and ' )
     ") | ForEach-Object { $_ }
 
-    $resources = Search-In $results -where 'name' -is $ResourceName -Multiple
+    $resources = Search-In $results -where 'name' -has $ResourceName -Multiple
 
     if ($resources.GetType().BaseType -eq [System.Array]) {
         $resources = $resources[0..($take - 1)]

@@ -93,7 +93,7 @@ function Get-RepositoryInfo {
         # Get Current repository from VSCode Terminal, if nothing is specified.
         $path = [System.String]::IsNullOrEmpty($path) ? (git rev-parse --show-toplevel) : $path
         $repoName = $path.split('/')[-1]
-        $repository = Search-In $repositories -where 'name' -is $repoName
+        $repository = Search-In $repositories -where 'name' -has $repoName
     }
 
     if (!$repository) {

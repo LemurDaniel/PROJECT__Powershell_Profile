@@ -163,7 +163,7 @@ function Invoke-DevOpsRest {
         }
         'TEAM' { 
             $project = Get-ProjectInfo 'id'
-            $team = Search-In (Get-ProjectInfo 'teams') -where name -is $team
+            $team = Search-In (Get-ProjectInfo 'teams') -where name -has $team
             $TargetURL = "https://$Domain.com/$Organization/$($project)/$($team.id)/$APIEndpoint`?$QueryString"
             break
         }

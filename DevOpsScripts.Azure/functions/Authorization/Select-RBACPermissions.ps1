@@ -104,6 +104,6 @@ function Select-RBACPermissions {
     $permissions = Get-RBACPermissions $ResourceProvider | `
         Where-Object -Property 'Data Action' -EQ -Value $dataActions | `
         Where-Object { $actionType -eq 'any' -OR $_.'Operation Name' -like "*$actionType" }
-    return Search-In $permissions -where 'Operation Description' -is $tags -Multiple -return $Property
+    return Search-In $permissions -where 'Operation Description' -has $tags -Multiple -return $Property
 
 }

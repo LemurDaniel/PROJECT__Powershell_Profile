@@ -81,7 +81,7 @@ function Open-BuildInBrowser {
 
     if ([System.String]::IsNullOrEmpty($buildId)) {
         if ([System.String]::IsNullOrEmpty($pipeLineId)) {
-            $pipeLineId = Search-In (Get-DevOpsPipelines) -where name -is $name -return id
+            $pipeLineId = Search-In (Get-DevOpsPipelines) -where name -has $name -return id
         }
 
         # Get Latest Build for Pipeline

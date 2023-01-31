@@ -68,7 +68,7 @@ function Start-PipelinesInOrder {
         $pipelines | ForEach-Object {
             
             Write-Host -ForegroundColor Green "Started Pipeline: '$($_)'"
-            $pipelineId = Search-In (Get-DevOpsPipelines) -where name -is $_ -return id
+            $pipelineId = Search-In (Get-DevOpsPipelines) -where name -has $_ -return id
             $build = Start-PipelineOnBranch -id $pipelineid -ref "refs/heads/$($environment.ToLower())"
 
             if ($OpenBrowser) {

@@ -35,12 +35,7 @@ function Get-SprintIterations {
         # Switch to only return the most current Sprint-Iteration.
         [Parameter()]
         [switch]
-        $Current,
-
-        # Switch to refresh Cached Values.
-        [Parameter()]
-        [switch]
-        $Refresh
+        $Current
     )
 
     $Request = @{

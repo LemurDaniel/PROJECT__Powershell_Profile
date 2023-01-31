@@ -180,5 +180,5 @@ function Search-WorkItemInIteration {
         return $null
     }
     
-    return Search-In $workItems -where 'System.Title' -is $SearchTags -Multiple:$(!$Single) -return $Property
+    return Search-In $workItems -where 'System.Title' -has $SearchTags -Multiple:$(!$Single) -return $Property
 }

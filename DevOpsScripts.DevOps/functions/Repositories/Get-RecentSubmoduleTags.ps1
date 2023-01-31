@@ -47,7 +47,7 @@ function Get-RecentSubmoduleTags {
 
     # Query All Repositories in DevOps
     $repositories = Get-ProjectInfo 'repositories'
-    $terraformRepositories = Search-In $repositories -is 'terraform' -Multiple  
+    $terraformRepositories = Search-In $repositories -has 'terraform' -Multiple  
 
 
     foreach ($repository in $terraformRepositories) {

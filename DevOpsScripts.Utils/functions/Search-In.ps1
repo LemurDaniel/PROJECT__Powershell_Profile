@@ -21,13 +21,13 @@
 
     Get All Projects in the current organization containing the name containig BRZ and 365:
     
-    PS> Search-in (Get-DevOpsProjects) -where 'name' -is BZR,365 -return name -Multiple
+    PS> Search-in (Get-DevOpsProjects) -where 'name' -has BZR,365 -return name -Multiple
 
     .EXAMPLE
 
     Get All the LocalPath of repositories in the current Project containing the word terraform:
     
-    PS> Search-in (Get-ProjectInfo 'repositories') -where 'name' -is terraform -return LocalPath -Multiple
+    PS> Search-in (Get-ProjectInfo 'repositories') -where 'name' -has terraform -return LocalPath -Multiple
 
     .LINK
         
@@ -35,7 +35,7 @@
 function Search-In {
 
     [cmdletbinding()]
-    [Alias('Search-PreferencedObject')]
+    [Alias('Search-PreferencedObject', 'Search')]
     param (
         [Parameter(
             Mandatory = $false,
@@ -44,7 +44,7 @@ function Search-In {
         [System.Object[]]
         $SearchObjects = @(),
 
-        [Alias('is')]
+        [Alias('has')]
         [Parameter(Mandatory = $true)]
         [System.String[]]
         $SearchTags,
@@ -90,7 +90,6 @@ function Search-In {
     
                 Write-Verbose "Search Property: $SearchProperty"
                 $Property = (Get-Property -Object $_ -Property $SearchProperty)
-                Write-Verbose $Property
                 Write-Verbose ($SearchTags -join ',')
                 Write-Verbose ($ExcludeSearchTags -join ',')
                 $positiveHits = ($SearchTags | Where-Object { $Property.toLower().contains($_.toLower()) } | Measure-Object).Count

@@ -64,7 +64,7 @@ function New-PullRequest {
     git -C $repository.Localpath push --set-upstream origin $currentBranch
 
     $remoteBranches = Get-RepositoryRefs -id $repository.id
-    $preferencedBranch = Search-In $remoteBranches -is $currentBranch -return 'name'
+    $preferencedBranch = Search-In $remoteBranches -has $currentBranch -return 'name'
 
     $hasDevBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/dev' | Measure-Object).Count -gt 0
     #$hasMainBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/main' | Measure-Object).Count -gt 0

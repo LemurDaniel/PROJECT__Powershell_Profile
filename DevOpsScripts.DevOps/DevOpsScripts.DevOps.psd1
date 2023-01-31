@@ -86,7 +86,7 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-AzureDevOpsCac
                'Switch-GitConfig', 'Get-ProjectInfo', 'Get-RepositoryInfo', 
                'Show-DevOpsContext', 'Switch-Organization', 'Switch-Project', 
                'Switch-QuickContext', 'Add-SprintIncrement', 'Connect-Workitem', 
-               'Get-SprintIterations', 'Get-WorkItemQueries', 'Get-Workitems', 
+               'Get-SprintIterations', 'Get-Workitem', 'Get-WorkItemQueries', 
                'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
                'Search-WorkItemInIteration', 'Select-Workitems'
 

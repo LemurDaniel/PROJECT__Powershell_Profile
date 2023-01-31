@@ -77,7 +77,8 @@ FunctionsToExport = 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 'Prompt',
                'Switch-Terraform', 'Get-DallEFromJoke', 
                'Invoke-DallEImageFromPrompt', 'Convert-SecretObject', 
                'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
-               'Set-VersionActiveTF', 'Update-SecretStore'
+               'Set-VersionActiveTF', 'Update-SecretStore', 'Get-BlenderFiles', 
+               'Open-BlenderFile'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

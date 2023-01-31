@@ -1,10 +1,10 @@
 
 <#
     .SYNOPSIS
-    Activate a Eligible Pim-Assignment on a scope or for a Pim-Profile.
+    Activate a Eligible Pim-Assignment on a scope or for a Pim-Profile or for a scope and role via the API.
 
     .DESCRIPTION
-    Activate a eligible Pim-Assignment on a scope. At the moment only management groups.
+    Activate a Eligible Pim-Assignment on a scope or for a Pim-Profile or for a scope and role via the API.
     Fails if a eligible schedule instance can't be found for the current user.
 
     .INPUTS
@@ -64,6 +64,7 @@ function New-PimSelfActivationRequest {
 
         # A justification for activating pim.
         [Parameter(
+            Position = 1,
             Mandatory = $true
         )]
         [System.String]

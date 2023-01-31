@@ -25,6 +25,6 @@ function Get-DallEFromJoke {
     $joke = (Invoke-RestMethod -Method GET -Uri 'https://icanhazdadjoke.com/' -Headers @{'Accept' = 'application/json' }).joke
     
     Write-Host $joke
-    $null = Invoke-DallEImageFromPrompt -Prompt $joke -openImage
+    $null = Invoke-OpenAIImageGeneration -Prompt $joke -openImage
 
 }

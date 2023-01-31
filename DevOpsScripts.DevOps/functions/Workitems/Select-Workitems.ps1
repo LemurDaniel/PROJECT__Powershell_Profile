@@ -40,7 +40,7 @@ function Select-Workitems {
             {
                 param($cmd, $param, $wordToComplete)
                 $predefined = (Get-ChildItem -Path "$PSScriptRoot\predefinedQueries" -Filter '*.wiql').name -replace '.wiql', ''
-                $validValues = @((Get-WorkItemQueries | get name), $predefined) 
+                $validValues = @((Get-WorkItemQueries | Get-Property name), $predefined) 
 
                 $validValues | `
                     ForEach-Object { $_ } | `

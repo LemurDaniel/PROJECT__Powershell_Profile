@@ -23,7 +23,7 @@
 
     Get a List of the Names of all Work-Item Queries:
 
-    PS> Get-WorkItemQueries | get 'name'
+    PS> Get-WorkItemQueries | Get-Property 'name'
 
     .LINK
         

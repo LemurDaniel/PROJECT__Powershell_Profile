@@ -1,5 +1,4 @@
 
-
 <#
     .SYNOPSIS
     Sends a Prompt to OpenAI ImageGeneration and saves the API-Response as a file.
@@ -14,17 +13,24 @@
     Returns the Fileitems of the generated images.
 
 
+    .EXAMPLE
+
+    Sends the Request to OpenAI, save the images at a temporary path and opens them in Windows-Default for jpg:
+
+    PS> Invoke-OpenAIImageGeneration -OpenImage An otter flying to otter-space.
+
     .LINK
         
 #>
 
-function Invoke-DallEImageFromPrompt {
+function Invoke-OpenAIImageGeneration {
 
     [CmdletBinding()]
     param (
         # The Prompt to send to DallE.
         [Parameter(
             Position = 0,
+            Mandatory = $true,
             ValueFromRemainingArguments = $true
         )]
         [System.String]    
@@ -54,14 +60,21 @@ function Invoke-DallEImageFromPrompt {
         [Parameter()]
         [ValidateRange(1, 10)]
         [System.int32]    
-        $n = 1
+        $n = 1,
+
+        # The Open AI token for the Request.
+        [Parameter()]
+        [System.String]    
+        $API_TOKEN
     )
+
+    $API_TOKEN = [System.String]::isNullOrEmpty($API_TOKEN) ? $env:OPEN_AI_API_KEY : $API_TOKEN
 
     $Request = @{
         Method  = 'POST'
         Uri     = 'https://api.openai.com/v1/images/generations'
         headers = @{
-            'Authorization' = "Bearer $ENV:OPEN_AI_API_KEY"
+            'Authorization' = "Bearer $API_TOKEN"
             'Content-Type'  = 'application/json'
         }
         body    = @{
@@ -76,7 +89,7 @@ function Invoke-DallEImageFromPrompt {
     $regex = [System.String]::Format('[{0}]', [regex]::Escape( $invalidChars))
     $promptFilenameCleaned = [regex]::Replace($prompt, $regex, '_')
 
-    return Invoke-RestMethod @Request | get data.b64_json | `
+    return Invoke-RestMethod @Request | Get-Property data.b64_json | `
         ForEach-Object { $index = 1 } {
 
         $bytes = [System.Convert]::FromBase64String($_)

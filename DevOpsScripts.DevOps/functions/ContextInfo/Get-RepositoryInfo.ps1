@@ -41,14 +41,14 @@ function Get-RepositoryInfo {
         )]
         [ValidateScript(
             { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-ProjectInfo 'repositories.name')
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-ProjectInfo repositories.name)
             },
             ErrorMessage = 'Please specify an correct Name.'
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = Get-ProjectInfo 'repositories.name' 
+                $validValues = Get-ProjectInfo repositories.name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -100,5 +100,5 @@ function Get-RepositoryInfo {
         Throw "Repository '$($repoName)' not found in current Project '$(Get-ProjectInfo 'name')'"
     }
 
-    return Get-Property -Object $repository -Property $Property
+    return $repository | Get-Property -return $Property
 }

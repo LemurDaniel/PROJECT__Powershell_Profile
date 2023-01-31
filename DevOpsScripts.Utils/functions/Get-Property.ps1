@@ -7,17 +7,22 @@
     Gets a chached value by a type and a specified identifier.
 
     .INPUTS
-    None. You cannot pipe objects into the Function.
+    Any Objects can be Piped into the Function.
 
     .OUTPUTS
     Return null or the Cached value if present.
 
     .EXAMPLE
 
-    Many Methods implement this Method:
-    Get All Names of the Teams in the current Project-Context:
+    Get All repository Ids in a Project:
 
-    PS> Get-ProjectInfo -return teams.name
+    PS> Get-ProjectInfo | return 'repositories'
+
+    .EXAMPLE
+
+    Get A an Attribute for all workitems in the current Iteration:
+
+    PS> Search-WorkItemInIteration -Current | get-property 'System.AssignedTo.displayName'
 
     .EXAMPLE
 
@@ -26,6 +31,7 @@
     PS> $roleManagementPolicyAssignments = Get-RoleManagmentPoliciyAssignmentsForScope -scope /managementGroups/acfroot-dev
     PS> Get-Property -Object $roleManagementPolicyAssignments -return 'properties.policyAssignmentProperties.roleDefinition.displayName'
 
+    $t | Get-Property 'fields.System.CreatedBy.displayName'
 
     .LINK
         
@@ -33,51 +39,62 @@
 
 function Get-Property {
 
+    [Alias('Select-Property', 'property', 'return')]
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
         [System.Object]
         $Object,
 
         [Alias('Property', 'return')]
-        [Parameter(Mandatory = $false)]
+        [Parameter(
+            Mandatory = $false,
+            Position = 0
+        )]
         [System.String]
-        $PropertyPath
+        $PropertyPath = ''
     )
 
-    if ([System.String]::isNullOrEmpty($PropertyPath)) {
-        return $Object
+    Begin {
+        $segmented = '.' + $PropertyPath.toLower() -replace '[\/\.]+', '.'
+        $collection = [System.Collections.ArrayList]::new()
     }
+    PROCESS {
 
+        while ($segmented.Length -gt 1) {
 
-    $segmented = '.' + $PropertyPath.toLower() -replace '[\/\.]+', '.'
+            Write-Verbose '_----------------------------_'
+            Write-Verbose ($Object.GetType().BaseType ?? $Object.GetType().Name)
 
-    while ($segmented) {
+            $objectProperties = $Object.PSObject.Properties
+            if ($Object.GetType().BaseType -eq [System.Array]) {
+                $objectProperties = $Object[0].PSObject.Properties
+            }
 
-        Write-Verbose '_----------------------------_'
-        Write-Verbose ($Object.GetType().BaseType ?? $Object.GetType().Name)
+            Write-Verbose ($objectProperties.Name | ConvertTo-Json)
 
-        $objectProperties = $Object.PSObject.Properties
-        if ($Object.GetType().BaseType -eq [System.Array]) {
-            $objectProperties = $Object[0].PSObject.Properties
+            $Target = $objectProperties | `
+                Where-Object { $segmented.Contains('.' + $_.Name.toLower()) } | `
+                Sort-Object -Property @{ Expression = { $segmented.IndexOf('.' + $_.Name.toLower()) } } | `
+                Select-Object -First 1
+
+            if ($null -eq $Target) {
+                Throw "Path: '$PropertyPath' - Error at '$segmented' - is NULL"
+            }
+
+            Write-Verbose "$segmented, $($Target.name.toLower())"
+            $segmented = $segmented -replace "\.$($Target.name.toLower())", ''
+            Write-Verbose "$segmented, $($Target.name.toLower())"
+            $Object = $Object."$($Target.name)" # Don't use Target Value, in case $object is Array and multiple need to be returned
         }
 
-        Write-Verbose ($objectProperties.Name | ConvertTo-Json)
-
-        $Target = $objectProperties | `
-            Where-Object { $segmented.Contains('.' + $_.Name.toLower()) } | `
-            Sort-Object -Property @{ Expression = { $segmented.IndexOf('.' + $_.Name.toLower()) } } | `
-            Select-Object -First 1
-
-        if ($null -eq $Target) {
-            Throw "Path: '$PropertyPath' - Error at '$segmented' - is NULL"
-        }
-
-        Write-Verbose "$segmented, $($Target.name.toLower())"
-        $segmented = $segmented -replace "\.$($Target.name.toLower())", ''
-        Write-Verbose "$segmented, $($Target.name.toLower())"
-        $Object = $Object."$($Target.name)" # Don't use Target Value, in case $object is Array and multiple need to be returned
+        $null = $collection.Add($Object)
+    }
+    END {
+        return $collection | ForEach-Object { $_ }
     }
 
-    return $Object
 }

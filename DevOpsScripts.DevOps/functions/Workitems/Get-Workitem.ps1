@@ -30,46 +30,48 @@
         
 #>
 
-function Get-WorkItems {
+function Get-WorkItem {
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName="expand")]
     param(
         # List of workitem ids to return
         [Parameter(
             Mandatory = $true,
             ValueFromPipeline = $true
         )]
-        [System.int32[]]
-        $Ids,
-
-
+        [System.int32]
+        $Id,
 
         # The Property to return from the items. If null will return full Properties.
-        [Alias('return')]
-        [Parameter()]
+        [Parameter(ParameterSetName="fields")]
         [System.String]
-        $Property
+        $fields,
+
+        [ValidateSet("None", "Relations", "Fields", "Links", "All")]
+        [Parameter(ParameterSetName="expand")]
+        [System.String]
+        $expand
 
     )
-
     Begin {
-        $IdList = [System.Collections.ArrayList]::new()
     }
     Process {
-        $null = $IdList.Add(($Ids | ForEach-Object { $_ }))
-    }
-    End {
-
         $Request = @{
             Method = 'GET'
             SCOPE  = 'PROJ'
-            API    = '_apis/wit/workitems/?api-version=7.0'
-            Query  = @{
-                ids = $IdList -join ','
-            }
+            API    = '_apis/wit/workitems/' + $Id + '?api-version=7.0'
+            Query  = @{}
+        }
+        if ($PSBoundParameters.ContainsKey("fields")) {
+            $Request.Query.fields = $fields -join ','
+        }
+        if($PSBoundParameters.ContainsKey("expand")){
+            $Request.Query.'$expand' = $expand
         }
 
-        $response = Invoke-DevOpsRest @Request -return 'value'
-        return Get-Property -Object $response -Property $Property
+        $response = Invoke-DevOpsRest @Request
+    }
+    End {
+        return $response
     }   
 }

@@ -60,26 +60,35 @@ function New-Workitem {
 
         # Team association.
         [Parameter()]
-        $Team = 'DC Azure Migration',
         [System.String]
+        $Team = 'DC Azure Migration Team',
 
+        # Iteration Path.
         [Parameter()]
+        $IterationPath = "current",
         [System.String]
-        $AreaPath = 'DC Azure Migration',
-
 
         # Optional Parent of newly created workitem.
-        [Parameter()]
+        [Parameter(ParameterSetName="ParentId")]
         [System.String]
         $ParentId,
 
         # Optional Parent of newly created workitem.
-        [Parameter()]
+        [Parameter(ParameterSetName="ParentUrl")]
         [System.String]
         $ParentUrl
     )
 
 
+    $projectInfo = Get-ProjectInfo
+    $teamObject = $projectInfo.Teams | Where-Object name -eq $team
+
+    if($IterationPath -eq "current"){
+        $sprintIteration = Get-SprintIterations -Current
+    }
+    else{
+        $sprintIteration = Get-SprintIterations -Refresh |Where-Object -Property Name -EQ -Value $IterationPath
+    }
 
     $Request = @{
         Method = 'POST'
@@ -96,19 +105,25 @@ function New-Workitem {
                 op    = 'add'
                 path  = '/fields/System.TeamProject'
                 from  = $null
-                value = $Team
+                value = $teamObject.projectName
             },
             @{
                 op    = 'add'
                 path  = '/fields/System.AreaPath'
                 from  = $null
-                value = $AreaPath
+                value = $teamObject.projectName
             },
             @{
                 op    = 'add'
                 path  = '/fields/System.Description'
                 from  = $null
                 value = $Description
+            },
+            @{
+                op    = 'add'
+                path  = '/fields/System.IterationPath'
+                from  = $null
+                value = $sprintIteration.path
             }
         )
     }
@@ -119,7 +134,7 @@ function New-Workitem {
             path  = '/relations/-'
             value = @{
                 rel        = Get-WorkItemRelationTypes Parent -return referenceName
-                url        = [System.String]::IsNullOrEmpty($ParentUrl) ? (Get-WorkItems -Ids $ParentId -return 'url') : $ParentUrl
+                url        = [System.String]::IsNullOrEmpty($ParentUrl) ? (Get-WorkItem -Id $ParentId).url : $ParentUrl
                 attributes = @{}
             }
         }

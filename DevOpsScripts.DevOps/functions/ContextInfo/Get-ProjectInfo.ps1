@@ -78,15 +78,16 @@ function Get-ProjectInfo {
     )
 
 
-    $ProjectName = Get-DevOpsCurrentContext -Project
+    $ProjectName = $PSBoundParameters.ContainsKey('Name') ? $Name : (Get-DevOpsCurrentContext -Project)
     $Organization = Get-DevOpsCurrentContext -Organization
 
     $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName
     if (-not $refresh -AND $Cache) {
-        return Get-Property -Object $Cache -Property $Property
+        return $Cache | Get-Property -return $Property
     }
 
 
+    ######################################
     # Get new stuff
     $RequestBlueprint = @{
         METHOD   = 'GET'
@@ -95,7 +96,7 @@ function Get-ProjectInfo {
         Property = 'value'
     }
 
-    $project = Invoke-DevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0' | Where-Object -Property name -EQ -Value $ProjectName 
+    $project = (Invoke-DevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0') | Where-Object -Property name -EQ -Value $ProjectName 
     if ($null -eq $project) {
         Throw "Project '$ProjectName' was not found in Current Organization: '$Organization'"
     }
@@ -130,6 +131,5 @@ function Get-ProjectInfo {
         $_ | Add-Member NoteProperty Localpath (Join-Path "$projectPath" "$($_.name)") -Force
     }
 
-    $null = Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName
-    return Get-Property -Object $Project -Property $Property
+    return Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName | Get-Property -return $Property
 }

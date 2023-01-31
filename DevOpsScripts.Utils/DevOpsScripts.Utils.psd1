@@ -74,9 +74,10 @@ FunctionsToExport = 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 'Prompt',
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
                'New-SendGridHtmlFormat', 'New-Stylesheet', 'Add-EnvPaths', 
                'Get-DailyMsRewards', 'Get-MsRewards', 'Get-ScrambledText', 
-               'Switch-Terraform', 'Invoke-DallEImageFromPrompt', 
-               'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
-               'Get-SecretStore', 'Set-VersionActiveTF', 'Update-SecretStore'
+               'Switch-Terraform', 'Get-DallEFromJoke', 
+               'Invoke-DallEImageFromPrompt', 'Convert-SecretObject', 
+               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
+               'Set-VersionActiveTF', 'Update-SecretStore'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

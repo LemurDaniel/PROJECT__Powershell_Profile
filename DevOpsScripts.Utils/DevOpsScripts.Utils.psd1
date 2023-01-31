@@ -70,15 +70,7 @@ RequiredAssemblies = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 'Prompt', 'Search-In', 
-               'Set-UtilsCache', 'Format-SendGridContent', 
-               'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'New-SendGridHtmlFormat', 'New-Stylesheet', 'Add-EnvPaths', 
-               'Get-DailyMsRewards', 'Get-MsRewards', 'Get-ScrambledText', 
-               'Switch-Terraform', 'Get-DallEFromJoke', 
-               'Invoke-DallEImageFromPrompt', 'Convert-SecretObject', 
-               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
-               'Set-VersionActiveTF', 'Update-SecretStore', 'Get-BlenderFiles', 
-               'Open-BlenderFile'
+               'Set-UtilsCache', 'Get-DallEFromJoke', 'Invoke-DallEImageFromPrompt'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -88,7 +80,7 @@ CmdletsToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = 'Select-Property', 'property', 'get', 'Search-PreferencedObject', 
-               'Search', 'tf'
+               'Search'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -25,6 +25,10 @@
 
     Invoke-OpenAIMoodToColor -returnHex A warm reddish sunset
 
+    .NOTES
+
+    Testing Open AI, Playground.
+    
     .LINK
         
 #>
@@ -66,9 +70,10 @@ function Invoke-OpenAIMoodToColor {
         }
     )
 
-    $Prompt = "The CSS code for a color like '$Prompt'"
+    $Prompt = "The CSS code for a color like $($Prompt):`nbackground-color:"
+    $Prompt
     $HexCode = Invoke-OpenAICompletion -Model 'text-davinci-003' -Prompt $Prompt -n $n @openAIparameters | `
-        Get-Property choices.text | ForEach-Object { [regex]::Match($_, '#[A-F0-9]{6}').Value }
+        Get-Property choices.text | ForEach-Object { [regex]::Match($_, '#[a-zA-F0-9]{6}').Value }
 
     if ($returnHex) {
         return $HexCode

@@ -1,0 +1,36 @@
+div#id {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#id table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+
+#id table td,
+#id table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#id table tr:nth-child(even) {
+    background-color: #f3e0a966;
+}
+
+#id table tr:nth-child(odd) {
+    background-color: #f9f0d433;
+}
+
+
+#id table tr:hover {
+    background-color: #eed17d99;
+}
+
+#id table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #e2b227;
+    color: white;
+}

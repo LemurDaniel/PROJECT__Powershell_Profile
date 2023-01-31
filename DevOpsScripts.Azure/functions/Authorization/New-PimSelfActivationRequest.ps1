@@ -80,12 +80,7 @@ function New-PimSelfActivationRequest {
             ParameterSetName = 'custom'
         )]
         [System.int32]
-        [ValidateScript(
-            { 
-                $_ -ge 1 -AND $_ -le 8
-            },
-            ErrorMessage = 'Duration must be between 1 and 8 Hours inclusive.'
-        )]
+        [ValidateRange(1,8)]
         $duration,
 
         # Scope for the PIM-Acitvation at the Moment only Management Groups.

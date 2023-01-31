@@ -94,10 +94,17 @@ function Get-RepositoryInfo {
         $path = [System.String]::IsNullOrEmpty($path) ? (git rev-parse --show-toplevel) : $path
         $repoName = $path.split('/')[-1]
         $repository = Search-In $repositories -where 'name' -has $repoName
+        
+        if($repository){
+            $repository | Add-Member NoteProperty currentPath $path
+        }
     }
 
     if (!$repository) {
         Throw "Repository '$($repoName)' not found in current Project '$(Get-ProjectInfo 'name')'"
+    }
+    if(!$repository.currentPath){
+        $repository | Add-Member NoteProperty currentPath $repository.LocalPath
     }
 
     return $repository | Get-Property -return $Property

@@ -28,6 +28,5 @@ function Open-BlenderFile {
         $BlenderFile
     )
 
-    $filePath = Get-BlenderFiles | Search -has $BlenderFile | get FullName
-    Start-Process $filePath
+    Start-Process (Get-BlenderFiles | Search -has $BlenderFile | get FullName)
 }

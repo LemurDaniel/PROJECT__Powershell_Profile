@@ -40,7 +40,6 @@ function Search-AzFunctionAppSettings {
         Method              = 'POST'
         Scope               = $FunctionApp.ResourceId
         API                 = '/config/appsettings/list?api-version=2021-02-01'
-        noTopLevelProvider = $true
     }
     $response = Invoke-AzureRest @Request -return 'properties'
     return Get-Property -Object $response -return $Property

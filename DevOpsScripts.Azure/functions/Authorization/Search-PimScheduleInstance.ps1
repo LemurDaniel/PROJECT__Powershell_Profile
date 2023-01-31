@@ -48,6 +48,8 @@ function Search-PimScheduleInstance {
     }
     $eligibleScheduleInstance = Invoke-AzureRest @Request -return 'value.properties' | `
         Where-Object { $_.expandedProperties.roleDefinition.displayName -eq $role }
+
+    
     
     if (-not $eligibleScheduleInstance) {
         throw "Not Eligible Schedule Instance found for Role '$role' on scope '$scope'"

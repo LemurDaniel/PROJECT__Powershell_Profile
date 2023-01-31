@@ -121,7 +121,7 @@ function New-PimSelfActivationRequest {
     }
 
     $aadUser = Get-AzADUser -Mail (Get-AzContext).Account.Id
-    $eligibleScheduleInstance = Search-PimScheduleInstance -scope $scope -role $role
+    $eligibleScheduleInstance = Search-PimScheduleInstanceForUser -aadUserId $aadUser.Id -scope $scope -role $role
 
     $Request = @{
     

@@ -40,9 +40,7 @@ function Invoke-GraphApi {
     )
 
     $uri = "https://graph.microsoft.com/v1.0/$(Join-Path -Path $ApiResource -ChildPath $ApiEndpoint)"
-    Write-Host $uri
     $response = Invoke-AzRestMethod -Method $Method -Uri $uri -Verbose
-
 
     $response = ($response.Content | ConvertFrom-Json -Depth 8)
     return Get-Property -Object $response -Property $Property

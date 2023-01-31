@@ -13,12 +13,6 @@
     .OUTPUTS
     Returns the Fileitems of the generated images.
 
-    .EXAMPLE
-
-    Get All repository Ids in a Project:
-
-    PS> Get-ProjectInfo | return 'repositories'
-
 
     .LINK
         
@@ -26,6 +20,7 @@
 
 function Invoke-DallEImageFromPrompt {
 
+    [CmdletBinding()]
     param (
         # The Prompt to send to DallE.
         [Parameter(
@@ -34,6 +29,11 @@ function Invoke-DallEImageFromPrompt {
         )]
         [System.String]    
         $Prompt,
+
+        # Switch to open the image in the Windows-Default-Foto-View for .jpg
+        [Parameter()]
+        [Switch]
+        $openImage,
 
         # The path were to store the generated images.
         [Parameter()]
@@ -53,7 +53,7 @@ function Invoke-DallEImageFromPrompt {
         # The Number of Images to return.
         [Parameter()]
         [ValidateRange(1, 10)]
-        [System.int]    
+        [System.int32]    
         $n = 1
     )
 
@@ -72,18 +72,23 @@ function Invoke-DallEImageFromPrompt {
         } | ConvertTo-Json -Compress
     }
 
-    $response = Invoke-RestMethod @Request | 
-    
-    return $response | get data.b64_json | `
+    $invalidChars = [IO.Path]::GetInvalidFileNameChars() -join ''
+    $regex = [System.String]::Format('[{0}]', [regex]::Escape( $invalidChars))
+    $promptFilenameCleaned = [regex]::Replace($prompt, $regex, '_')
+
+    return Invoke-RestMethod @Request | get data.b64_json | `
         ForEach-Object { $index = 1 } {
 
         $bytes = [System.Convert]::FromBase64String($_)
         $timeStamp = [System.DateTime]::Now.ToString('yyyy-MM-dd')
-        $fileName = "$timestamp - $prompt.$index.jpg"
+        $fileName = "$timestamp - $promptFilenameCleaned.$index.jpg"
         $fullPath = Join-Path -Path $OutPath -ChildPath $fileName
         [System.IO.File]::WriteAllBytes($fullPath, $bytes)
         $index++
 
+        if ($openImage) {
+            Start-Process $fullPath
+        }
         return Get-Item $fullPath
     }
 

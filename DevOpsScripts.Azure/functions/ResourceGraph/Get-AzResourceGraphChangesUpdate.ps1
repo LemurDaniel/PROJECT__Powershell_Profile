@@ -145,13 +145,13 @@ function Get-AzResourceGraphChangesUpdate {
 
         # The Timestamp from back when to take the change events.
         [Parameter(Mandatory = $false)]
-        [ValidateScript(
-            {
-                # Resource Graph changes apperently only date back to the last 7 days.
-                $_ -ge ([DateTime]::Now.AddDays(-7).AddMinutes(-1))
-            },
-            ErrorMessage = 'Timestampe is out of Range.' 
-        )]
+        #[ValidateScript(
+        #    {
+        #        # Resource Graph changes apperently only date back to the last 7 days.
+        #        $_ -ge ([DateTime]::Now.AddDays(-7).AddMinutes(-1))
+        #    },
+        #    ErrorMessage = 'Timestampe is out of Range.' 
+        #)]
         [System.DateTime]
         $TimeStamp,
 

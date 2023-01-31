@@ -74,7 +74,12 @@ function Invoke-OpenAICompletion {
         # The Open AI parameters
         [Parameter()]
         [System.String[]]    
-        $stop = @(';')
+        $stop = @(';'),
+
+        # The Open AI parameters
+        [Parameter()]
+        [System.Boolean]     
+        $echo = $true
     )
 
     $Request = @{
@@ -93,7 +98,7 @@ function Invoke-OpenAICompletion {
             n           = $n
             stream      = $false
             logprobs    = $null
-            echo        = $false
+            echo        = $echo
             stop        = $stop
         } | ConvertTo-Json -Compress
     }

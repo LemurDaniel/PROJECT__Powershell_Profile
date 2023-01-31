@@ -28,7 +28,7 @@
     .NOTES
 
     Testing Open AI, Playground.
-    
+
     .LINK
         
 #>
@@ -64,6 +64,7 @@ function Invoke-OpenAIMoodToColor {
             temperature       = 0
             max_tokens        = 64
             top_p             = 1.0
+            echo              = $true
             frequency_penalty = 1.0
             presence_penalty  = 1.0
             stop              = @(';')
@@ -71,20 +72,22 @@ function Invoke-OpenAIMoodToColor {
     )
 
     $Prompt = "The CSS code for a color like $($Prompt):`nbackground-color:"
-    $Prompt
-    $HexCode = Invoke-OpenAICompletion -Model 'text-davinci-003' -Prompt $Prompt -n $n @openAIparameters | `
-        Get-Property choices.text | ForEach-Object { [regex]::Match($_, '#[a-zA-F0-9]{6}').Value }
+    $textResponse = Invoke-OpenAICompletion -Model 'text-davinci-003' -Prompt $Prompt -n $n @openAIparameters | Get-Property choices.text 
+    $HexCode = [regex]::Match($textResponse, '#[a-zA-F0-9]{6}').Value
+    
+    if ([System.String]::isNullOrEmpty($HexCode)) {
+        Throw 'Nothing was returned'
+    }
 
     if ($returnHex) {
         return $HexCode
     }
 
-    # Else
-    $window = New-WindowFromXAML -Path "$PSScriptRoot/ui/MoodToColorDialog.xaml"
+    $window = New-WindowFromXAML -Path (Get-ChildItem -Recurse -File '*.xaml')   #"$PSScriptRoot/ui/MoodToColorDialog.xaml"
     $window.FindName('HexDisplay').Background = $HexCode
-    $window.FindName('Prompt').Text = $Prompt
+    $window.FindName('Prompt').Text = $textResponse
     $window.FindName('HexText').Content = $HexCode
-    $window.Activate()
+    $null = $window.Activate()
 
     Write-Host -ForeGround GREEN 'Look at the Taskbar. Window might not be focused.'
     $window.ShowDialog()

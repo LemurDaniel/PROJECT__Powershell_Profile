@@ -81,7 +81,7 @@ function New-PimSelfDeactivationRequest {
     $Request = @{
     
         Method = 'PUT'
-        Scope  = "managementGroups/$Scope"
+        Scope  = $Scope
         API    = "/providers/Microsoft.Authorization/roleAssignmentScheduleRequests/$([GUID]::NewGuid())`?api-version=2020-10-01"
         Body   = @{
             properties = @{

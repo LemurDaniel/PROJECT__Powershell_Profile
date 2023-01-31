@@ -23,20 +23,13 @@
 
     Get a List of the Names of all Work-Item Queries:
 
-    PS> Get-WorkItemQueries 'name'
+    PS> Get-WorkItemQueries | get 'name'
 
     .LINK
         
 #>
 function Get-WorkItemQueries {
-    param (
-
-        # The Property to return from the items. If null will return full Properties.
-        [Alias('return')]
-        [Parameter()]
-        [System.String]
-        $Property
-    )
+    param ()
 
     $Queries = Get-AzureDevOpsCache -Type Queries -Identifier 'all'
 
@@ -51,5 +44,5 @@ function Get-WorkItemQueries {
         $Queries = Set-AzureDevOpsCache -Object $response -Type Queries -Identifier 'all' -Alive 10
     }
 
-    return Get-Property -Object $Queries -Property $Property
+    return $Queries
 }

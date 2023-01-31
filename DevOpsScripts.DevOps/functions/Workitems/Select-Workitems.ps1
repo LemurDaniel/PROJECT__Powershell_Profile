@@ -40,7 +40,7 @@ function Select-Workitems {
             {
                 param($cmd, $param, $wordToComplete)
                 $predefined = (Get-ChildItem -Path "$PSScriptRoot\predefinedQueries" -Filter '*.wiql').name -replace '.wiql', ''
-                $validValues = @((Get-WorkItemQueries name), $predefined) 
+                $validValues = @((Get-WorkItemQueries | get name), $predefined) 
 
                 $validValues | `
                     ForEach-Object { $_ } | `
@@ -49,14 +49,7 @@ function Select-Workitems {
             }
         )]
         [System.String]
-        $Query,
-
-
-        # The Property to return from the items. If null will return full Properties.
-        [Alias('return')]
-        [Parameter()]
-        [System.String]
-        $Property
+        $Query
     )
 
     if ($Query -in (Get-WorkItemQueries name)) {
@@ -86,6 +79,6 @@ function Select-Workitems {
         }
     }
 
-    return Invoke-DevOpsRest @Request -return $Property 
+    return Invoke-DevOpsRest @Request
    
 }

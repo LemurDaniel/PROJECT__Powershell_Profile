@@ -23,7 +23,7 @@
 
     Get Workitmes by previous search-query
 
-    PS> Select-Workitems -Query 'query' -return 'workitems.id' | Get-Workitems
+    PS> Select-Workitems -Query 'query' | get 'workitems.id' | Get-Workitems
 
 
     .LINK

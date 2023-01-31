@@ -72,8 +72,9 @@ RequiredAssemblies = @()
 FunctionsToExport = 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 'Prompt', 'Search-In', 
                'Set-UtilsCache', 'Format-SendGridContent', 
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'New-SendGridHtmlFormat', 'New-Stylesheet', 'Get-DallEFromJoke', 
-               'Invoke-DallEImageFromPrompt'
+               'New-SendGridHtmlFormat', 'New-Stylesheet', 'New-WindowFromXAML', 
+               'Get-DallEFromJoke', 'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
+               'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -83,7 +84,7 @@ CmdletsToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = 'Select-Property', 'property', 'get', 'Search-PreferencedObject', 
-               'Search'
+               'Search', 'dall-e', 'ColorOpenAI'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -60,8 +60,10 @@ function New-PullRequest {
     $repository = Get-RepositoryInfo -path $path -id $id
 
 
-    $currentBranch = git -C $repository.Localpath branch --show-current
-    git -C $repository.Localpath push --set-upstream origin $currentBranch
+    $repostoryPath = [System.String]::IsNullOrEmpty($path) ? $repository.Localpath : $path
+
+    $currentBranch = git -C $repostoryPath --show-current
+    git -C $repostoryPath push --set-upstream origin $currentBranch
 
     $remoteBranches = Get-RepositoryRefs -id $repository.id
     $preferencedBranch = Search-In $remoteBranches -has $currentBranch -return 'name'

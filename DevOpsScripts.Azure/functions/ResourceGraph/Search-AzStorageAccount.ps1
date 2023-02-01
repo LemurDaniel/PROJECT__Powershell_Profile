@@ -17,11 +17,19 @@
         
 #>
 function Search-AzStorageAccount {
+
+     [CmdletBinding(DefaultParameterSetName = 'Take')]
     param (
         # The Name the storage account must contain.
         [Parameter(
             Position = 0,
-            Mandatory = $true
+            Mandatory = $true,
+             ParameterSetName = 'Take'
+        )]
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+             ParameterSetName = 'All'
         )]
         [System.String[]]
         $StorageAccountName,
@@ -54,6 +62,6 @@ function Search-AzStorageAccount {
         $Browser
     )
     
-    return Search-AzResource -Browser:$Browser -Property $Property -Take ($All ? 999 : $Take) -ResourceName $StorageAccountName -ResourceType 'microsoft.storage/storageaccounts' -Take $Take 
+    return Search-AzResource -Browser:$Browser -Property $Property -Take ($All ? 999 : $Take) -ResourceName $StorageAccountName -ResourceType 'microsoft.storage/storageaccounts'
 
 }

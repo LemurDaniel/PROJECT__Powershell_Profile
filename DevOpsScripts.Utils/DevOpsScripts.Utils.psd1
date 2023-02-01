@@ -69,11 +69,13 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 'Prompt', 'Search-In', 
-               'Set-UtilsCache', 'Format-SendGridContent', 
+FunctionsToExport = 'Get-CleanFilename', 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 
+               'Prompt', 'Read-SecureStringFromFile', 'Save-SecureStringToFile', 
+               'Search-In', 'Set-UtilsCache', 'Format-SendGridContent', 
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
                'New-SendGridHtmlFormat', 'New-Stylesheet', 'New-WindowFromXAML', 
-               'Get-DallEFromJoke', 'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
+               'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
+               'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
                'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

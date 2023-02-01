@@ -29,8 +29,8 @@ function Get-OpenAIAPIAuthentication {
 
     if (![System.String]::isNullOrEmpty($env:OPEN_AI_API_KEY)) {
         return @{
-            apiKey = $env:OPEN_AI_API_KEY
-            orgId  = $env:OPEN_AI_ORD_ID
+            OpenAIapiKey = $env:OPEN_AI_API_KEY
+            OpenAIapiOrgId  = $env:OPEN_AI_ORD_ID
         }
     }
 

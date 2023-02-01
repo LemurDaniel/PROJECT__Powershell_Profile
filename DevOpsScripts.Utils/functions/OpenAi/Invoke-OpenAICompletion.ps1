@@ -82,18 +82,6 @@ function Invoke-OpenAICompletion {
         $echo = $true
     )
 
-    $API_KEY = $ENV:OPEN_AI_API_KEY
-
-    if ([System.String]::isNullOrEmpty($API_KEY)) {
-        $API_KEY = Read-SecureStringFromFile -Identifier OpenAIapiKey -AsPlainText
-    }
-
-    if ([System.String]::isNullOrEmpty($API_KEY)) {
-        $secureString = Get-Credential -UserName 'openaiapi' 
-        Save-SecureStringToFile -SecureString $secureString -Identifier OpenAIapiKey
-        $API_KEY = Read-SecureStringFromFile -Identifier OpenAIapiKey
-    }
-
     $openAIAuth = Get-OpenAIAPIAuthentication
     $Request = @{
         Method  = 'POST'

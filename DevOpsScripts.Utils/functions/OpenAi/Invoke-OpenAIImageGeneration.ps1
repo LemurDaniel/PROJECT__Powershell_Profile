@@ -88,10 +88,10 @@ function Invoke-OpenAIImageGeneration {
     }
 
 
-    if(!(Test-Path -Path $OutPath)){
+    if (!(Test-Path -Path $OutPath)) {
         $null = New-Item -ItemType Directory -Path $OutPath
     }
-    if($openFolder){
+    if ($openFolder) {
         [System.Diagnostics.Process]::start('explorer.exe', $OutPath)
     }
     $invalidChars = [IO.Path]::GetInvalidFileNameChars() -join ''

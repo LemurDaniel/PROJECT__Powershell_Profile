@@ -9,6 +9,11 @@ on:
       - ".github/workflows/*.yaml"
       - ".scripts/create-meta.ps1"
       - "**/DevOpsScripts*/**.ps1"
+
+env:
+  MODULE_BASE_NAME: DevOpsScripts
+  NUGET_OUT_DIR: ./nugets
+    
 jobs:
   create-meta-files:
     name: Create Modules Meta-Files
@@ -19,7 +24,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Run Script
-        run: .scripts/create-meta.ps1 -moduleBaseName DevOpsScripts -buildPath . -buildNuget $false
+        run: .scripts/create-meta.ps1 -moduleBaseName ${{ env.MODULE_BASE_NAME }} -buildPath . -buildNuget $false
         shell: pwsh
 
       - name: Commit generated Files
@@ -33,4 +38,31 @@ jobs:
           if($changes.Count -gt 0){
             git commit -am "(Automated) Generate Meta-Files"
             git push
+          }
+
+
+
+      # Testing something
+      - name: Use .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 4.7.x
+
+      - name: Restore NuGet packages
+        run: dotnet restore
+
+      - name: Build NuGet package
+        shell: pwsh
+        run: |
+          Get-ChildItems -Filter '*.nuspec' | ForEach-Object {
+            $_
+            dotnet pack $_.FullName --output ${{ env.NUGET_OUT_DIR }}
+          }
+
+      - name: Push NuGet package
+        shell: pwsh
+        run: |
+          Get-ChildItems -Path ${{ env.NUGET_OUT_DIR }} -Filter '*.nupkg' | ForEach-Object {
+            $_
+            dotnet nuget push  $_.FullName --api-key ${{ secrets.GH_TOKEN }} --source "github"
           }

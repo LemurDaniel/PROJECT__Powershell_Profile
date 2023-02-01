@@ -20,6 +20,9 @@
 !.vscode/**
 !.scripts/**
 !.github/**
+!Package.nuspec.templ
+!packages.config
+!nuget.config
 
 # Ignore additional folders
 .cache

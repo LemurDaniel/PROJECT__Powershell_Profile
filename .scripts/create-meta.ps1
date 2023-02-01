@@ -90,7 +90,7 @@ Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
             }
 
             @(
-                '{{FOLDER}}'
+                'functions'
             ) | `
                 ForEach-Object { Join-Path -Path $PSScriptRoot -ChildPath $_ } | `
                 Get-ChildItem -Recurse -File -Filter '*.ps1' -ErrorAction Stop | `
@@ -112,6 +112,8 @@ Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
             }
 
             if({{LOAD_FROM_LOCAL_RELATIVE_PATH}}){
+                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Stuff") -Global
+                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.OneDrive") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Azure") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.DevOps") -Global
@@ -126,7 +128,6 @@ Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
     $rootModuleContent `
         -replace '{{LOAD_FROM_LOCAL_RELATIVE_PATH}}', ($buildNuget ? '$False' : '$True') `
         -replace '{{PSVERSION}}', $_meta.powershellversion `
-        -replace '{{FOLDER}}', $functionsFolder | `
         Out-File -FilePath (Join-Path -Path $_modulePath -ChildPath "$($_.Name).psm1")
 
     #########################################################################################################################################

@@ -127,7 +127,7 @@ Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
 
     $rootModuleContent `
         -replace '{{LOAD_FROM_LOCAL_RELATIVE_PATH}}', ($buildNuget ? '$False' : '$True') `
-        -replace '{{PSVERSION}}', $_meta.powershellversion `
+        -replace '{{PSVERSION}}', $_meta.powershellversion | `
         Out-File -FilePath (Join-Path -Path $_modulePath -ChildPath "$($_.Name).psm1")
 
     #########################################################################################################################################

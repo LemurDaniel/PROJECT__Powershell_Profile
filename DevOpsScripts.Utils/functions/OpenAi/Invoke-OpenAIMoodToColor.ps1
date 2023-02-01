@@ -10,7 +10,7 @@
     None. You cannot Pipe values into the Function.
 
     .OUTPUTS
-    If switch returnHex is set, will return the Hex-Color, else a Window is opened, presenting the Color.
+    A Window is opened, presenting the Color.
 
     .EXAMPLE
 
@@ -35,7 +35,7 @@
 
 function Invoke-OpenAIMoodToColor {
 
-    [Alias('ColorOpenAI')]
+    [Alias('moodToColor')]
     [CmdletBinding()]
     param (
         # The Prompt to send to Open AI.
@@ -46,11 +46,6 @@ function Invoke-OpenAIMoodToColor {
         )]
         [System.String]    
         $Prompt,
-
-        # Switch to return the HEX-Value insted of opening a Window.
-        [Parameter()]
-        [switch]    
-        $returnHex,
 
         # The Open AI parameters
         [Parameter()]
@@ -79,16 +74,12 @@ function Invoke-OpenAIMoodToColor {
         Throw 'Nothing was returned'
     }
 
-    if ($returnHex) {
-        return $HexCode
-    }
-
     $window = New-WindowFromXAML -Path "$PSScriptRoot/ui/MoodToColorDialog.xaml"
     $window.FindName('HexDisplay').Background = $HexCode
     $window.FindName('Prompt').Text = $textResponse
     $window.FindName('HexText').Content = $HexCode
     $null = $window.Activate()
 
-    Write-Host -ForeGround GREEN 'Look at the Taskbar. Window might not be focused.'
-    $window.ShowDialog()
+    Write-Host -ForeGround GREEN 'If no Window appears look at the Taskbar. Window might not be focused.'
+    $null = $window.ShowDialog()
 }

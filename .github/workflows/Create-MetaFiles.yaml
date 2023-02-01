@@ -46,7 +46,7 @@ jobs:
       - name: Use .NET Core
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 4.7.x
+          dotnet-version: 5.0.x
 
       - name: Restore NuGet packages
         run: dotnet restore

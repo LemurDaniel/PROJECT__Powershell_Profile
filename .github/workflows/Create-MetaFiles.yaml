@@ -51,7 +51,7 @@ jobs:
       - name: Build NuGet package
         shell: pwsh
         run: |
-          Get-ChildItems -Filter '*.nuspec' | ForEach-Object {
+          Get-ChildItem -Filter '*.nuspec' | ForEach-Object {
             $_
             dotnet pack $_.FullName --output ${{ env.NUGET_OUT_DIR }}
           }
@@ -59,7 +59,7 @@ jobs:
       - name: Push NuGet package
         shell: pwsh
         run: |
-          Get-ChildItems -Path ${{ env.NUGET_OUT_DIR }} -Filter '*.nupkg' | ForEach-Object {
+          Get-ChildItem -Path ${{ env.NUGET_OUT_DIR }} -Filter '*.nupkg' | ForEach-Object {
             $_
             dotnet nuget push  $_.FullName --api-key ${{ secrets.GH_TOKEN }} --source "github"
           }

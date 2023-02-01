@@ -6,7 +6,7 @@
             }
 
             @(
-                ''
+                'functions'
             ) | `
                 ForEach-Object { Join-Path -Path $PSScriptRoot -ChildPath $_ } | `
                 Get-ChildItem -Recurse -File -Filter '*.ps1' -ErrorAction Stop | `

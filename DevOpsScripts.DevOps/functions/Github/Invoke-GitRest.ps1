@@ -37,13 +37,21 @@ function Invoke-GitRest {
     $QueryString = ($Query.GetEnumerator() | `
             ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
 
+    $GIT_PATH = Read-SecureStringFromFile -Identifier GitPersonalPAT -AsPlainText
+    $GIT_PATH = [System.String]::isNullOrEmpty($env:GIT_PAT) ? $GIT_PATH : $env:GIT_PAT
+
+    if ([System.String]::isNullOrEmpty($GIT_PATH)) {
+        $GIT_PATH = Read-Host -AsSecureString -Prompt 'Please Enter your Personal Git PAT'
+        Save-SecureStringToFile -SecureString $GIT_PATH -Identifier GitPersonalPAT
+        $GIT_PATH = $GIT_PATH | ConvertFrom-SecureString -AsPlainText
+    }
 
     $Request = @{
         Method = $Method
         header = @{
             Accept                 = $contentType
             'X-GitHub-Api-Version' = $apiVersion
-            Authorization          = "Bearer $env:GIT_PAT"
+            Authorization          = "Bearer $GIT_PATH"
         }
         uri    = "https://api.github.com/$apiGroup/$apiEndpoint`?$QueryString"
     }

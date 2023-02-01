@@ -66,7 +66,7 @@ function Get-Property {
         $null = $Object ?? @() | ForEach-Object { $collection.Add($_) }
     }
     END {
-        return Get-PropertyOfObjects -Object $collection -Property $PropertyPath
+        return Get-PropertyOfObjects -Object $collection -Property $PropertyPath | ForEach-Object { $_ }
     }
 
 }

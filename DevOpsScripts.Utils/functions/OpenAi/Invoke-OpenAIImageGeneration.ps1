@@ -18,6 +18,7 @@
     Sends the Request to OpenAI, save the images at a temporary path and opens them in Windows-Default for jpg:
 
     PS> Invoke-OpenAIImageGeneration -OpenImage An otter flying to otter-space.
+    
 
     .LINK
         
@@ -25,6 +26,7 @@
 
 function Invoke-OpenAIImageGeneration {
 
+    [Alias('openAiImage')]
     [CmdletBinding()]
     param (
         # The Prompt to send to DallE.
@@ -41,10 +43,15 @@ function Invoke-OpenAIImageGeneration {
         [Switch]
         $openImage,
 
+        # Switch to open the Folder defined by outpath
+        [Parameter()]
+        [Switch]
+        $openFolder,
+
         # The path were to store the generated images.
         [Parameter()]
         [System.String]    
-        $OutPath = [System.IO.Path]::GetTempPath(),
+        $OutPath = (Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath 'dallE'),
 
         # An image size to return from DallE.
         [Parameter()]
@@ -80,6 +87,13 @@ function Invoke-OpenAIImageGeneration {
         } | ConvertTo-Json -Compress
     }
 
+
+    if(!(Test-Path -Path $OutPath)){
+        $null = New-Item -ItemType Directory -Path $OutPath
+    }
+    if($openFolder){
+        [System.Diagnostics.Process]::start('explorer.exe', $OutPath)
+    }
     $invalidChars = [IO.Path]::GetInvalidFileNameChars() -join ''
     $regex = [System.String]::Format('[{0}]', [regex]::Escape( $invalidChars))
     $promptFilenameCleaned = [regex]::Replace($prompt, $regex, '_')

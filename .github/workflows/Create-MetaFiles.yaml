@@ -16,6 +16,7 @@ env:
   MODULE_BASE_NAME: DevOpsScripts
   NUGET_OUT_DIR: ./nugets
   BUILD_PATH: ./build
+  USER_NAME: LemurDaniel
     
 jobs:
   create-meta-files:
@@ -67,6 +68,7 @@ jobs:
       - name: Push NuGet package
         shell: pwsh
         run: |
+          dotnet nuget add source --username ${{ env.USER_NAME }} --password ${{ secrets.GH_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ env.USER_NAME }}/index.json"
           Get-ChildItem -Path ${{ env.NUGET_OUT_DIR }} -Filter '*.nupkg' | ForEach-Object {
             $_
             dotnet nuget push  $_.FullName --api-key ${{ secrets.GH_TOKEN }} --source "github"

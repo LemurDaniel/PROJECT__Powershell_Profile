@@ -3,11 +3,13 @@
     "version": "1.0.1",
     "owner": "Team DevOps",
     "author": "o.O",
-    "description": "",
+    "description": "Some stuff for onedrive",
     "tags": [],
     "powershellversion": "7.2",
     "dependencies": {
-        "modules": [],
+        "modules": [
+            "DevOpsScripts.Utils"
+        ],
         "assemblies": []
     }
 }

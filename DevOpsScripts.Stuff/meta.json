@@ -3,11 +3,13 @@
     "version": "1.0.1",
     "owner": "Team DevOps",
     "author": "o.O",
-    "description": "",
+    "description": "SomeStuff",
     "tags": [],
     "powershellversion": "7.2",
     "dependencies": {
-        "modules": [],
+        "modules": [
+            "DevOpsScripts.Utils"
+        ],
         "assemblies": []
     }
 }

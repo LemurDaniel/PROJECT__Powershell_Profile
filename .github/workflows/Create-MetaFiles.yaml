@@ -59,7 +59,7 @@ jobs:
         run: |
           Get-ChildItem -Path ${{ env.BUILD_PATH }} -Filter '*.nuspec' | ForEach-Object {
             $_
-            nuget pack $_.FullName --output ${{ env.NUGET_OUT_DIR }}
+            nuget pack $_.FullName --OutputDirectory  ${{ env.NUGET_OUT_DIR }}
           }
 
       - name: Push NuGet package

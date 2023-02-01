@@ -5,8 +5,9 @@ on:
   push:
     branches:
       - master
-    # Pushtrigger disabled for now
-    #paths:
+    # Pushtrigger paths disabled for now
+    paths:
+       - "none"
       #- ".github/workflows/*.yaml"
       #- ".scripts/create-meta.ps1"
       #- "**/DevOpsScripts*/**.ps1"
@@ -54,5 +55,5 @@ jobs:
           dotnet nuget add source --username ${{ env.USER_NAME }} --password ${{ secrets.GH_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ env.USER_NAME }}/index.json"
           Get-ChildItem -Path ${{ env.NUGET_OUT_DIR }} -Filter '*.nupkg' | ForEach-Object {
             $_
-            dotnet nuget push  $_.FullName --api-key ${{ secrets.GH_TOKEN }} --source "github"
+            dotnet nuget push  $_.FullName --api-key ${{ secrets.GH_TOKEN }} --source "github" --skip-duplicate
           }

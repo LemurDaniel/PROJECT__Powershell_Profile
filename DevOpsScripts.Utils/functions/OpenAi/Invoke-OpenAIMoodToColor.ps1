@@ -83,7 +83,7 @@ function Invoke-OpenAIMoodToColor {
         return $HexCode
     }
 
-    $window = New-WindowFromXAML -Path (Get-ChildItem -Recurse -File '*.xaml')   #"$PSScriptRoot/ui/MoodToColorDialog.xaml"
+    $window = New-WindowFromXAML -Path "$PSScriptRoot/ui/MoodToColorDialog.xaml"
     $window.FindName('HexDisplay').Background = $HexCode
     $window.FindName('Prompt').Text = $textResponse
     $window.FindName('HexText').Content = $HexCode

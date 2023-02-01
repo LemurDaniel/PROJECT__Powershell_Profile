@@ -48,9 +48,6 @@ jobs:
         with:
           dotnet-version: 5.0.x
 
-      - name: Restore NuGet packages
-        run: dotnet restore
-
       - name: Build NuGet package
         shell: pwsh
         run: |

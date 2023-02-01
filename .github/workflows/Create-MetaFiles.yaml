@@ -13,6 +13,7 @@ on:
 env:
   MODULE_BASE_NAME: DevOpsScripts
   NUGET_OUT_DIR: ./nugets
+  BUILD_PATH: ./build
     
 jobs:
   create-meta-files:
@@ -48,10 +49,15 @@ jobs:
         with:
           dotnet-version: 5.0.x
 
+      - name: Build nuspec files
+        run: .scripts/create-meta.ps1 -moduleBaseName ${{ env.MODULE_BASE_NAME }} -buildPath ${{ env.BUILD_PATH }} -buildNuget $true
+        shell: pwsh
+
+
       - name: Build NuGet package
         shell: pwsh
         run: |
-          Get-ChildItem -Filter '*.nuspec' | ForEach-Object {
+          Get-ChildItem -Path ${{ env.BUILD_PATH }} -Filter '*.nuspec' | ForEach-Object {
             $_
             dotnet pack $_.FullName --output ${{ env.NUGET_OUT_DIR }}
           }

@@ -1,7 +1,17 @@
 
+            if ($true -and ($PSEdition -eq 'Desktop')) {
+                if ($PSVersionTable.PSVersion -lt [Version]'7.2') {
+                    throw 'PowerShell versions lower than 7.2 are not supported. Please upgrade to PowerShell 7.2 or higher.'
+                }
+            }
 
-Import-Module "$PSScriptRoot\..\DevOpsScripts.Stuff" -MinimumVersion 1.0.1 -Global
-Import-Module "$PSScriptRoot\..\DevOpsScripts.Utils" -MinimumVersion 1.0.1 -Global
-Import-Module "$PSScriptRoot\..\DevOpsScripts.OneDrive" -MinimumVersion 1.0.1 -Global
-Import-Module "$PSScriptRoot\..\DevOpsScripts.Azure" -MinimumVersion 1.0.1 -Global
-Import-Module "$PSScriptRoot\..\DevOpsScripts.DevOps" -MinimumVersion 1.0.1 -Global
+            if($True){
+                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
+                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Azure") -Global
+                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.DevOps") -Global
+            } else {
+                Import-Module DevOpsScripts.Utils -Global
+                Import-Module DevOpsScripts.Azure -Global
+                Import-Module DevOpsScripts.DevOps -Global
+            }
+        

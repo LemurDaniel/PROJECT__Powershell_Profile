@@ -60,22 +60,17 @@ function Invoke-OpenAIImageGeneration {
         [Parameter()]
         [ValidateRange(1, 10)]
         [System.int32]    
-        $n = 1,
-
-        # The Open AI token for the Request.
-        [Parameter()]
-        [System.String]    
-        $API_TOKEN
+        $n = 1
     )
 
-    $API_TOKEN = [System.String]::isNullOrEmpty($API_TOKEN) ? $env:OPEN_AI_API_KEY : $API_TOKEN
-
+    $openAIAuth = Get-OpenAIAPIAuthentication
     $Request = @{
         Method  = 'POST'
         Uri     = 'https://api.openai.com/v1/images/generations'
         headers = @{
-            'Authorization' = "Bearer $API_TOKEN"
-            'Content-Type'  = 'application/json'
+            'OpenAI-Organization' = $openAIAuth.OpenAIapiOrgId
+            'Authorization'       = "Bearer $($openAIAuth.OpenAIapiKey)"
+            'Content-Type'        = 'application/json'
         }
         body    = @{
             size            = $ImageSize 

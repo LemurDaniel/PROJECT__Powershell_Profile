@@ -19,7 +19,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Run Script
-        run: .scripts/create-meta.ps1
+        run: .scripts/create-meta.ps1 -moduleBaseName DevOpsScripts -buildPath . -buildNuget $false
         shell: pwsh
 
       - name: Commit generated Files

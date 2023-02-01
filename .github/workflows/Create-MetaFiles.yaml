@@ -9,14 +9,9 @@ on:
       - ".github/workflows/*.yaml"
       - ".scripts/create-meta.ps1"
       - "**/DevOpsScripts*/**.ps1"
-      - "*.config"
-      - "*.templ"
 
 env:
   MODULE_BASE_NAME: DevOpsScripts
-  NUGET_OUT_DIR: ./nugets
-  BUILD_PATH: ./build
-  USER_NAME: LemurDaniel
     
 jobs:
   create-meta-files:
@@ -27,11 +22,11 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Run Script
+      - name: Run Script for creating .psd1 and .psm1 files
         run: .scripts/create-meta.ps1 -moduleBaseName ${{ env.MODULE_BASE_NAME }} -buildPath . -buildNuget $false
         shell: pwsh
 
-      - name: Commit generated Files
+      - name: Commit generated Files when changed
         shell: pwsh
         run: |
           git config --global user.name LemurDaniel
@@ -42,34 +37,4 @@ jobs:
           if($changes.Count -gt 0){
             git commit -am "(Automated) Generate Meta-Files"
             git push
-          }
-
-
-
-      # Testing something
-      - name: Use .NET Core
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 5.0.x
-
-      - name: Build nuspec files
-        run: .scripts/create-meta.ps1 -moduleBaseName ${{ env.MODULE_BASE_NAME }} -buildPath ${{ env.BUILD_PATH }} -buildNuget $true
-        shell: pwsh
-
-
-      - name: Build NuGet package
-        shell: pwsh
-        run: |
-          Get-ChildItem -Path ${{ env.BUILD_PATH }} -Filter '*.nuspec' | ForEach-Object {
-            $_
-            nuget pack $_.FullName -OutputDirectory  ${{ env.NUGET_OUT_DIR }}
-          }
-
-      - name: Push NuGet package
-        shell: pwsh
-        run: |
-          dotnet nuget add source --username ${{ env.USER_NAME }} --password ${{ secrets.GH_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ env.USER_NAME }}/index.json"
-          Get-ChildItem -Path ${{ env.NUGET_OUT_DIR }} -Filter '*.nupkg' | ForEach-Object {
-            $_
-            dotnet nuget push  $_.FullName --api-key ${{ secrets.GH_TOKEN }} --source "github"
           }

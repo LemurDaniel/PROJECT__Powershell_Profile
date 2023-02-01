@@ -1,0 +1,58 @@
+name: Testing Publishing Powershell Modules as NuGets
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    # Pushtrigger disabled for now
+    #paths:
+      #- ".github/workflows/*.yaml"
+      #- ".scripts/create-meta.ps1"
+      #- "**/DevOpsScripts*/**.ps1"
+      #- "nuget.config"
+      #- "packages.config"
+      #- "Packages.nuspec.templ"
+
+env:
+  MODULE_BASE_NAME: DevOpsScripts
+  NUGET_OUT_DIR: ./nugets
+  BUILD_PATH: ./build
+  USER_NAME: LemurDaniel
+    
+# Just For Testing
+jobs:
+  publish-module-as-nuget:
+    name: Testing Publishing Powershell Modules as NuGets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+
+      - name: Use .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 5.0.x
+
+      - name: Build nuspec files
+        run: .scripts/create-meta.ps1 -moduleBaseName ${{ env.MODULE_BASE_NAME }} -buildPath ${{ env.BUILD_PATH }} -buildNuget $true
+        shell: pwsh
+
+      - name: Build NuGet package
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path ${{ env.BUILD_PATH }} -Filter '*.nuspec' | ForEach-Object {
+            $_
+            nuget pack $_.FullName -OutputDirectory  ${{ env.NUGET_OUT_DIR }}
+          }
+
+      - name: Push NuGet package
+        shell: pwsh
+        run: |
+          dotnet nuget add source --username ${{ env.USER_NAME }} --password ${{ secrets.GH_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ env.USER_NAME }}/index.json"
+          Get-ChildItem -Path ${{ env.NUGET_OUT_DIR }} -Filter '*.nupkg' | ForEach-Object {
+            $_
+            dotnet nuget push  $_.FullName --api-key ${{ secrets.GH_TOKEN }} --source "github"
+          }

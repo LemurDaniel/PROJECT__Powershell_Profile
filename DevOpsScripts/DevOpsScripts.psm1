@@ -5,13 +5,13 @@
                 }
             }
 
-            if($True){
+            # For Testing
+            if ([System.Boolean]::Parse('True')) {
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Stuff") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.OneDrive") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Azure") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.DevOps") -Global
-            } else {
+            }
+            else {
                 Import-Module DevOpsScripts.Utils -Global
                 Import-Module DevOpsScripts.Azure -Global
                 Import-Module DevOpsScripts.DevOps -Global

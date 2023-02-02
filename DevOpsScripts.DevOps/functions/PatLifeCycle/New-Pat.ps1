@@ -21,10 +21,10 @@ function New-PAT {
 
         [Parameter()]
         [System.Int32]
-        $DaysValid = 3
+        $HoursValid = 8
     )
     
-        $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
     $CurrentUser = (Get-AzContext).Account.id
     $PatName = "User_$CurrentUser` API-generated PAT"
     $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
@@ -38,7 +38,7 @@ function New-PAT {
         Body    = @{
             displayName = $PatName
             scope       = $patScopes -join ' '
-            validTo     = ([DateTime]::now).AddDays($DaysValid)
+            validTo     = ([DateTime]::now).AddHours($HoursValid)
             allOrgs     = $false
         } | ConvertTo-Json
     }

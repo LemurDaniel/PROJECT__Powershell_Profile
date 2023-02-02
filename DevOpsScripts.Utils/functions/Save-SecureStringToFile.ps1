@@ -36,16 +36,22 @@ function Save-SecureStringToFile {
         # An identifier for the data.
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identifier
+        $Identifier,
+
+        # Path to specify where to save the file. If not specified defaults to userProfile
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Path
     )
-    
-    $directory = "$env:USERPROFILE/.devopsscripts/"
+
+    $Path = [System.String]::IsNullOrEmpty($Path) ? $env:USERPROFILE : $Path
+    $directory = "$Path/.devopsscripts/"
     if (!(Test-Path -Path $directory)) {
         $null = New-Item -ItemType Directory -Path $directory
     }
 
     $filename = ".$Identifier.secure" | Get-CleanFilename
-    $filePath = Join-Path -Path "$env:USERPROFILE/.devopsscripts/" -ChildPath $filename
+    $filePath = Join-Path -Path $directory -ChildPath $filename
 
     if (![System.String]::isNullOrEmpty($PlainText)) {
         $PlainText | ConvertTo-SecureString -AsPlainText | ConvertFrom-SecureString | Out-File $filePath

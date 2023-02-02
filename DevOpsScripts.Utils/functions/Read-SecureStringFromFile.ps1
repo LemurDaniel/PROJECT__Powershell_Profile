@@ -26,11 +26,17 @@ function Read-SecureStringFromFile {
         # A switch to return the data as an unencrypted string.
         [Parameter(Mandatory = $false)]
         [switch]
-        $AsPlainText
+        $AsPlainText,
+
+        # Path to specify where to save the file. If not specified defaults to userProfile
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Path
     )
 
+    $Path = [System.String]::IsNullOrEmpty($Path) ? $env:USERPROFILE : $Path
     $filename = ".$Identifier.secure" | Get-CleanFilename
-    $filePath = Join-Path -Path "$env:USERPROFILE/.devopsscripts/" -ChildPath $filename
+    $filePath = Join-Path -Path "$Path/.secure_devopsscripts/" -ChildPath $filename
     $Content = Get-Content -Path $filePath -ErrorAction SilentlyContinue | ConvertTo-SecureString -ErrorAction SilentlyContinue 
     if ($Content -AND $AsPlainText) {
         return $Content | ConvertFrom-SecureString -AsPlainText

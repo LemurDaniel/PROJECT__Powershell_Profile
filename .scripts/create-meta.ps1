@@ -1,9 +1,10 @@
 
 param ($moduleBaseName, $buildPath, $buildNuget)
 
-$moduleBaseName = [System.String]::IsNullOrEmpty($moduleBaseName) Where-Object 'DevOpsScripts' : $moduleBaseName
-$buildPath = [System.String]::IsNullOrEmpty($buildPath) Where-Object './modules/build' : $buildPath
-$buildNuget = [System.String]::IsNullOrEmpty($buildNuget) Where-Object $true : $buildNuget
+# Stupid code completion
+$moduleBaseName = [System.String]::IsNullOrEmpty($moduleBaseName) ? 'DevOpsScripts' : $moduleBaseName
+$buildPath = [System.String]::IsNullOrEmpty($buildPath) ? './modules/build' : $buildPath
+$buildNuget = [System.String]::IsNullOrEmpty($buildNuget) ? $true : $buildNuget
 $buildNuget = [System.Boolean]::Parse($buildNuget)
 
 # Move File to correct Build-Path
@@ -116,8 +117,6 @@ $buildFolderModules | ForEach-Object {
             # For Testing
             if ([System.Boolean]::Parse('{{LOAD_FROM_LOCAL_RELATIVE_PATH}}')) {
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Stuff") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.OneDrive") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Azure") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.DevOps") -Global
             }
@@ -125,14 +124,12 @@ $buildFolderModules | ForEach-Object {
                 Import-Module DevOpsScripts.Utils -Global
                 Import-Module DevOpsScripts.Azure -Global
                 Import-Module DevOpsScripts.DevOps -Global
-                Import-Module DevOpsScripts.Stuff -Global
-                Import-Module DevOpsScripts.OneDrive -Global
             }
         }
     }
  
     $rootModuleContent `
-        -replace '{{LOAD_FROM_LOCAL_RELATIVE_PATH}}', ($buildNuget Where-Object 'False' : 'True') `
+        -replace '{{LOAD_FROM_LOCAL_RELATIVE_PATH}}', ($buildNuget ? 'False' : 'True') `
         -replace '{{PSVERSION}}', $_meta.powershellversion | `
         Out-File -FilePath (Join-Path -Path $_modulePath -ChildPath "$($_.Name).psm1")
 

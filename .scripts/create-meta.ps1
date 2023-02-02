@@ -145,8 +145,8 @@ $buildFolderModules | ForEach-Object {
         $null = $moduleImportsUnsorted.remove($item)
         $null = $moduleImportsSorted.Add($item)
     }
-$moduleImportsSorted
-    $moduleImportsSorted | ForEach-Object {
+
+    $moduleImports = $moduleImportsSorted | ForEach-Object {
         $buildNuget ? "Import-Module $($_.BaseName) -Global" : ('Import-Module (Resolve-Path "$PSScriptRoot\..\'+($_.BaseName)+'") -Global')
     }
  

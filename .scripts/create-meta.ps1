@@ -3,13 +3,13 @@ param ($moduleBaseName, $buildPath, $buildNuget)
 
 # Stupid code completion
 $moduleBaseName = [System.String]::IsNullOrEmpty($moduleBaseName) ? 'DevOpsScripts' : $moduleBaseName
-$buildPath = [System.String]::IsNullOrEmpty($buildPath) ? './modules/build' : $buildPath
+$buildPath = [System.String]::IsNullOrEmpty($buildPath) ? './build/psmodules' : $buildPath
 $buildNuget = [System.String]::IsNullOrEmpty($buildNuget) ? $true : $buildNuget
 $buildNuget = [System.Boolean]::Parse($buildNuget)
 
 # Move File to correct Build-Path
 $sourcePath = Resolve-Path -Path '.' 
-$buildDirectoy = Join-Path $sourcePath -ChildPath $buildPath
+$buildDirectoy = $buildPath
 
 Write-Host "Module Base Name: $moduleBaseName"
 Write-Host "Current Path: $sourcePath"
@@ -115,21 +115,16 @@ $buildFolderModules | ForEach-Object {
             }
 
             # For Testing
-            if ([System.Boolean]::Parse('{{LOAD_FROM_LOCAL_RELATIVE_PATH}}')) {
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Azure") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.DevOps") -Global
-            }
-            else {
-                Import-Module DevOpsScripts.Utils -Global
-                Import-Module DevOpsScripts.Azure -Global
-                Import-Module DevOpsScripts.DevOps -Global
-            }
+            {{MODULE_IMPORTS}}
         }
+    }
+
+    $moduleImports = $buildFolderModules | Where-Object { $_.BaseName.toLower() -ne $moduleBaseName.toLower()} | ForEach-Object {
+        $buildNuget ? "Import-Module $($_.BaseName) -Global" : ('Import-Module (Resolve-Path "$PSScriptRoot\..\'+($_.BaseName)+'") -Global')
     }
  
     $rootModuleContent `
-        -replace '{{LOAD_FROM_LOCAL_RELATIVE_PATH}}', ($buildNuget ? 'False' : 'True') `
+        -replace '{{MODULE_IMPORTS}}', ($moduleImports -Join "`n")`
         -replace '{{PSVERSION}}', $_meta.powershellversion | `
         Out-File -FilePath (Join-Path -Path $_modulePath -ChildPath "$($_.Name).psm1")
 

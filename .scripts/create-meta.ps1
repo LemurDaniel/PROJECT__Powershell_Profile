@@ -114,9 +114,9 @@ $buildFolderModules | ForEach-Object {
             }
 
             if({{LOAD_FROM_LOCAL_RELATIVE_PATH}}){
+                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Stuff") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.OneDrive") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Azure") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.DevOps") -Global
             } else {

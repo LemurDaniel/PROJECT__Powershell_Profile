@@ -6,9 +6,9 @@
             }
 
             if($True){
+                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Stuff") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.OneDrive") -Global
-                Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Utils") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.Azure") -Global
                 Import-Module (Resolve-Path "$PSScriptRoot\..\DevOpsScripts.DevOps") -Global
             } else {

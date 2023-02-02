@@ -79,7 +79,7 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-AzureDevOpsCac
                'New-MasterPR', 'New-PullRequest', 'Open-Repository', 
                'Open-RepositoryInBrowser', 'Remove-MovedBlocks', 
                'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
-               'Get-PAT', 'New-Pat', 'Search-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
+               'Get-PAT', 'New-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
                'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
                'New-AutomatedTag', 'Remove-AutomatedTags', 'Get-GithubData', 
                'Invoke-GitRest', 'Open-RepositoryGithub', 'Push-Profile', 

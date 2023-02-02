@@ -2,39 +2,41 @@
 param ($moduleBaseName, $buildPath, $buildNuget)
 
 $moduleBaseName = [System.String]::IsNullOrEmpty($moduleBaseName) ? 'DevOpsScripts' : $moduleBaseName
-$buildPath = [System.String]::IsNullOrEmpty($buildPath) ? '.' : $buildPath
-$buildNuget = [System.String]::IsNullOrEmpty($buildNuget) ? $false : $buildNuget
+$buildPath = [System.String]::IsNullOrEmpty($buildPath) ? './modules/build' : $buildPath
+$buildNuget = [System.String]::IsNullOrEmpty($buildNuget) ? $true : $buildNuget
 $buildNuget = [System.Boolean]::Parse($buildNuget)
 
 # Move File to correct Build-Path
-$currentPath = Resolve-Path -Path '.' 
-$buildDirectoy = Join-Path $currentPath -ChildPath $buildPath
+$sourcePath = Resolve-Path -Path '.' 
+$buildDirectoy = Join-Path $sourcePath -ChildPath $buildPath
 
 Write-Host "Module Base Name: $moduleBaseName"
-Write-Host "Current Path: $currentPath"
+Write-Host "Current Path: $sourcePath"
 Write-Host "Build Path: $buildDirectoy"
 Write-Host "Build Nuget: $buildNuget"
 
 
 if (!(Test-Path -Path $buildDirectoy)) {
     $buildDirectoy = New-Item -Path $buildDirectoy -ItemType Directory
-    $currentPath | Get-ChildItem -Filter "$moduleBaseName*" | Copy-Item -Recurse -Destination $buildDirectoy
-    $currentPath | Get-ChildItem -Filter '*.config' | Copy-Item -Recurse -Destination $buildDirectoy
+    $sourcePath | Get-ChildItem -Filter "$moduleBaseName*" | Copy-Item -Recurse -Destination $buildDirectoy
+    $sourcePath | Get-ChildItem -Filter "nuget.config" | Copy-Item -Destination $buildDirectoy
 }
-elseif ((Get-Item -Path $buildDirectoy).FullName -ne (Get-Item -Path $currentPath).FullName) {
+elseif ((Get-Item -Path $buildDirectoy).FullName -ne (Get-Item -Path $sourcePath).FullName) {
     Remove-Item -Path $buildDirectoy -Recurse -Force -Verbose
     $buildDirectoy = New-Item -Path $buildDirectoy -ItemType Directory
-    $currentPath | Get-ChildItem -Filter "$moduleBaseName*" | Copy-Item -Recurse -Destination $buildDirectoy
-    $currentPath | Get-ChildItem -Filter '*.config' | Copy-Item -Recurse -Destination $buildDirectoy
+    $sourcePath | Get-ChildItem -Filter "$moduleBaseName*" | Copy-Item -Recurse -Destination $buildDirectoy
+    $sourcePath | Get-ChildItem -Filter 'nuget.config' | Copy-Item -Destination $buildDirectoy
 }
 
 
-# Manipulate Files in Build-Path.
-Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
+
+$buildFolderModules = Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" 
+
+$buildFolderModules | ForEach-Object {
 
     $_modulePath = $_.FullName
-    $_moduleRootPath = Join-Path -Path $_.FullName -ChildPath "$($_.BaseName).psd1"
-    $_moduleMetaPath = Join-Path -Path $_.FullName -ChildPath 'meta.json'
+    $_moduleRootPath = Join-Path -Path $_modulePath -ChildPath "$($_.BaseName).psd1"
+    $_moduleMetaPath = Join-Path -Path $_modulePath -ChildPath 'meta.json'
     $_meta = Get-Content -Path $_moduleMetaPath | ConvertFrom-Json -Depth 3
 
     # Create the Module-Description Files.
@@ -124,7 +126,7 @@ Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
             }
         }
     }
-
+ 
     $rootModuleContent `
         -replace '{{LOAD_FROM_LOCAL_RELATIVE_PATH}}', ($buildNuget ? '$False' : '$True') `
         -replace '{{PSVERSION}}', $_meta.powershellversion | `
@@ -136,16 +138,19 @@ Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
     }
 
     # When building the nuget place all the files in a folder with the version as a name.
-    $_modulePath | Get-ChildItem | Where-Object -Property name -Like meta.json | Remove-Item -Force
+    Remove-Item -Path $_moduleMetaPath -Force
     $folderItems = $_modulePath | Get-ChildItem
-    $versionFolder = New-Item -ItemType Directory -Path (Join-Path -Path $_modulePath -ChildPath $_meta.Version) -Force
+    # Sub version Folder
+    $versionFolder = Join-Path -Path $_modulePath -ChildPath $_meta.Version
+    $versionFolder = New-Item -ItemType Directory -Path $versionFolder -Force
     $folderItems | Move-Item -Destination $versionFolder
     
     #########################################################################################################################################  
 
     # Create the nuspec-File for each Module.
-    Write-Host '##[section]Creating NuGet Specifications File'
-    $nuspecContent = Get-Content 'Package.nuspec.templ' -Raw
+    $moduleNuspecFileName = ($_.BaseName + '.nuspec')
+    Write-Host "Building $moduleNuspecFileName"
+    $nuspecContent = Get-Content -Path (Join-Path -Path $sourcePath -ChildPath 'Module.nuspec.templ') -Raw
     Write-Host 'Adding Type'
     $nuspecContent = $nuspecContent -replace '{{TYPE}}', 'psmodules' 
     Write-Host 'Adding Release Notes'
@@ -165,10 +170,27 @@ Get-ChildItem -Path $buildDirectoy -Filter "$moduleBaseName*" | ForEach-Object {
     Write-Host 'Adding Build Path'
     $nuspecContent = $nuspecContent -replace '{{MODULEPATHNAME}}', $_.BaseName
     Write-Host 'Creating nuspec file'
-    $nuspecFile = New-Item -Path $buildDirectoy -Name ('Package.DevOpsScripts.psmodules.' + $_.BaseName + '.nuspec') -Value $nuspecContent -ItemType File
+    $nuspecFile = New-Item -Path $buildDirectoy -Name $moduleNuspecFileName -Value $nuspecContent -ItemType File
     Write-Host "`"$($nuspecFile.Name)`" created"
     
+    # Create the csproj-File for each Module.
+    $moduleCsprojFileName = ($_.BaseName + '.csproj')
+    Write-Host "Building $moduleCsprojFileName"
+    $csprojContent = Get-Content -Path (Join-Path -Path $sourcePath -ChildPath 'Module.csproj.templ') -Raw
+    Write-Host 'Adding Package Id'
+    $csprojContent = $csprojContent -replace '{{PACKAGE_ID}}', $_.BaseName 
+    Write-Host 'Adding Version'
+    $csprojContent = $csprojContent -replace '{{VERSION}}', $_meta.Version
+    Write-Host 'Adding Authors'
+    $csprojContent = $csprojContent -replace '{{AUTHORS}}', $_meta.author
+    Write-Host 'Adding Description'
+    $csprojContent = $csprojContent -replace '{{DESCRIPTION}}', $_meta.description 
+    Write-Host 'Adding NUSPEC_FILE_PATH'
+    $csprojContent = $csprojContent -replace '{{NUSPEC_FILE_PATH}}', $nuspecFile.Name
+    $csprojFile = New-Item -Path $buildDirectoy -Name $moduleCsprojFileName -Value $csprojContent -ItemType File
+    Write-Host "`"$($csprojFile.Name)`" created"
 }
+
 
 Write-Host
 Write-Host '#########################################################################'

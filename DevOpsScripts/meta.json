@@ -3,7 +3,7 @@
     "version": "1.0.1",
     "owner": "Team DevOps",
     "author": "o.O",
-    "description": "",
+    "description": "Base Module for DevOpsScripts.",
     "tags": [],
     "powershellversion": "7.2",
     "dependencies": {

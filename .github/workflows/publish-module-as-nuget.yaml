@@ -17,8 +17,8 @@ on:
 
 env:
   MODULE_BASE_NAME: DevOpsScripts
-  NUGET_OUT_DIR: ./nugets
-  BUILD_PATH: ./build
+  NUGET_OUT_DIR: ./modules/nugets
+  BUILD_PATH: ./modules/build
   USER_NAME: LemurDaniel
     
 # Just For Testing
@@ -44,9 +44,9 @@ jobs:
       - name: Build NuGet package
         shell: pwsh
         run: |
-          Get-ChildItem -Path ${{ env.BUILD_PATH }} -Filter '*.nuspec' | ForEach-Object {
+          Get-ChildItem -Path ${{ env.BUILD_PATH }} -Filter '*.csproj' | ForEach-Object {
             $_
-            nuget pack $_.FullName -OutputDirectory  ${{ env.NUGET_OUT_DIR }}
+            dotnet pack $_.FullName -c Realease --output ${{ env.NUGET_OUT_DIR }}
           }
 
       - name: Push NuGet package

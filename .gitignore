@@ -20,11 +20,12 @@
 !.vscode/**
 !.scripts/**
 !.github/**
-!Package.nuspec.templ
-!packages.config
+!Module.nuspec.templ
+!Module.csproj.templ
 !nuget.config
 
 # Ignore additional folders
 .cache
 .context.*.json
-/build
+/modules
+/bin

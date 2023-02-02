@@ -74,7 +74,7 @@ $buildFolderModules | ForEach-Object {
         )
     }
 
-    $Parameters
+    #$Parameters
     $null = New-ModuleManifest @Parameters
 
 
@@ -119,7 +119,34 @@ $buildFolderModules | ForEach-Object {
         }
     }
 
-    $moduleImports = $buildFolderModules | Where-Object { $_.BaseName.toLower() -ne $moduleBaseName.toLower()} | ForEach-Object {
+    $moduleImportsUnsorted = [System.Collections.ArrayList]::new()
+    $moduleImportsSorted = [System.Collections.ArrayList]::new()
+    $null = $buildFolderModules | ` 
+    Where-Object { $_.BaseName.toLower() -ne $moduleBaseName.toLower()} | `
+    Select-Object -Property *, @{
+        Name = "dependencies";
+        Expression = {
+            (Get-Content -Path "$_/meta.json" | ConvertFrom-Json).dependencies
+        }
+    } | ForEach-Object { $moduleImportsUnsorted.Add($_) }
+  
+    while($moduleImportsUnsorted.Count -ne 0) {
+        
+        $item = $null
+        :Ordering
+        foreach ($item in $moduleImportsUnsorted) {
+            
+            $referenced = $moduleImportsUnsorted | Where-Object { $item.BaseName -in $_.dependencies.modules }
+            if($referenced -eq 0){
+                break Ordering
+            }
+        }
+
+        $null = $moduleImportsUnsorted.remove($item)
+        $null = $moduleImportsSorted.Add($item)
+    }
+$moduleImportsSorted
+    $moduleImportsSorted | ForEach-Object {
         $buildNuget ? "Import-Module $($_.BaseName) -Global" : ('Import-Module (Resolve-Path "$PSScriptRoot\..\'+($_.BaseName)+'") -Global')
     }
  
@@ -186,7 +213,7 @@ $buildFolderModules | ForEach-Object {
     $csprojFile = New-Item -Path $buildDirectoy -Name $moduleCsprojFileName -Value $csprojContent -ItemType File
     Write-Host "`"$($csprojFile.Name)`" created"
 }
-
+return
 
 Write-Host
 Write-Host '#########################################################################'

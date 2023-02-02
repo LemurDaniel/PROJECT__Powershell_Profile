@@ -33,7 +33,7 @@
                 -ResourceType 'Disks' `
                 -PreviousProperty previousDiskSizeBytes `
                 -NewProperty newDiskSizeBytes `
-                -Order Name, previousDiskSizeBytes, newDiskSizeBytes, skuName, skuTier, ResourceGroup
+                -Order Name, previousDiskSizeBytes, newDiskSizeBytes, skuName, skuTier, resourceGroup
 
     PS> $resourceReport | Out-File resourceReport.html
 #>
@@ -71,9 +71,7 @@ function Format-SendGridResourceReport {
         [System.String[]]
         $Order = '*'
     )
-
-    Write-Host -ForegroundColor Yellow "Converting Content to be send via SendGrid `n`n"
-      
+  
     $SendGridHTMLFormat = New-SendGridHtmlFormat
 
     $updatedResources = $resourceData | Where-Object -Property Operation -EQ 'Update' 
@@ -151,9 +149,6 @@ function Format-SendGridResourceReport {
             `$1
             "
     }
-
-
-    Write-Host -ForegroundColor Green "`n`n Finished Converting Content"
 
     return $SendGridHTMLFormat.toHTMLString()
 }

@@ -24,14 +24,17 @@ function Register-DevOpsFeedAsPSRepository {
         [System.String]
         $Organization, 
         
+        # An optional Project Name for Project-scoped feeds.
         [Parameter(Mandatory = $true)]
         [System.String]
         $ProjectName,
         
+        # The AzureDevOps Feed Name.
         [Parameter(Mandatory = $true)]
         [System.String]
         $ArtifactFeed, 
 
+        # An optional path where to save created credentials for operations.
         [Parameter(Mandatory = $false)]
         [System.String]
         $CredentialPath
@@ -39,7 +42,7 @@ function Register-DevOpsFeedAsPSRepository {
 
 
     $PSRepositoryName = "$ArtifactFeed-DevOpsFeed"
-    $credentials = Get-PAT -Organization $Organization -Path $CredentialPath -patScopes 'vso.packaging'
+    $credentials = Get-PAT -Organization $Organization -Path $CredentialPath -patScopes 'vso.packaging' -HoursValid 24
     $PSRepository = Get-PSRepository -Name $PSRepositoryName -ErrorAction SilentlyContinue
 
     if([System.String]::IsNullOrEmpty($ProjectName)){
@@ -50,7 +53,7 @@ function Register-DevOpsFeedAsPSRepository {
 
 
     if($PSRepository){
-        $PSRepository = Set-PSRepository -Name $PSRepositoryName -Credential $credentials -HoursValid 1
+        $PSRepository = Set-PSRepository -Name $PSRepositoryName -Credential $credentials
     } else {
         $PSRepository = Register-PSRepository `
             -Name $PSRepositoryName `

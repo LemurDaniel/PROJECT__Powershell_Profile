@@ -1,32 +1,53 @@
+
+<#
+    .SYNOPSIS
+    Generates a new PAT-Token for the DevOps API with specified Permissions.
+
+    .DESCRIPTION
+    Generates a new PAT-Token for the DevOps API with specified Permissions.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The API-Response containing the PAT as Plaint-text.
+
+
+    .EXAMPLE
+
+    Get a new PAT-Token to access repositories:
+
+    Get-PAT -Organization 'baugruppe' -patScope vso.code_status, vso.code_status
+
+
+    .LINK
+        
+#>
+
 function New-PAT {
 
     [CmdletBinding()]
     param (
-        [Parameter()]
+        # A list of permission scopes for the PAT.
+        [Parameter(Mandatory = $true)]
         [System.String[]]
-        $patScopes = $(
-            'vso.build_execute',
-            'vso.code_full',
-            'vso.code_status',
-            'vso.project',
-            'vso.release',
-            'vso.threads_full',
-            'vso.tokens',
-            'vso.work_write'
-        ),
+        $patScopes,
 
+        # The Organization in which the PAT shoul be created. Defaults to current Context.
         [Parameter()]
         [System.String]
         $Organization,
 
+        # How many Hours the generated PAT will be valid.
         [Parameter()]
         [System.Int32]
         $HoursValid = 8
     )
-    
-    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
+
     $CurrentUser = (Get-AzContext).Account.id
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
     $PatName = "User_$CurrentUser` API-generated PAT"
+
     $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
     $Request = @{
         METHOD  = 'POST'
@@ -43,7 +64,6 @@ function New-PAT {
         } | ConvertTo-Json
     }
 
-    $response = Invoke-RestMethod @Request
+    return Invoke-RestMethod @Request | Select-Object -ExpandProperty patToken
 
-    return $response.patToken
 }

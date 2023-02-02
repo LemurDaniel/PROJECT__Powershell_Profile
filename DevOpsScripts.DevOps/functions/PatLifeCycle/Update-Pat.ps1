@@ -1,18 +1,40 @@
+
+<#
+    .SYNOPSIS
+    Extends the Lifetime of a PAT if still valid.
+
+    .DESCRIPTION
+    Extends the Lifetime of a PAT if still valid.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The API-Response.
+
+
+
+    .LINK
+        
+#>
 function Update-PAT {
 
     [CmdletBinding()]
     param (
+        # The Organozation in which the PAT shoul be created. Defaults to current Context.
         [Parameter()]
         [System.String]
         $Organization,
 
+        # The unique Authorization ID identifing the PAT.
         [Parameter()]
         [System.Int32]
         $authorizationId,
 
+        # How many Hours the generated PAT will be valid.
         [Parameter()]
         [System.Int32]
-        $DaysValid
+        $HoursValid = 8
     )
     
     $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
@@ -28,7 +50,7 @@ function Update-PAT {
         }
         Body    = @{
             displayName     = $PatName
-            validTo         = ([DateTime]::now).AddDays($DaysValid)
+            validTo         = ([DateTime]::now).AddHours($HoursValid)
             authorizationId = $authorizationId
             allOrgs         = $false
         } | ConvertTo-Json

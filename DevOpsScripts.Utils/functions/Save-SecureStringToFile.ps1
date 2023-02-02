@@ -45,7 +45,7 @@ function Save-SecureStringToFile {
     )
 
     $Path = [System.String]::IsNullOrEmpty($Path) ? $env:USERPROFILE : $Path
-    $directory = "$Path/.devopsscripts/"
+    $directory = "$Path/.secure_devopsscripts/"
     if (!(Test-Path -Path $directory)) {
         $null = New-Item -ItemType Directory -Path $directory
     }

@@ -54,5 +54,5 @@ function Invoke-GitRest {
 
     Write-Verbose $Request.uri
 
-    Invoke-RestMethod @Request
+    return Invoke-RestMethod @Request 
 }

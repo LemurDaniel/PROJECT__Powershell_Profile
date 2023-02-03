@@ -39,6 +39,7 @@ function Open-RepositoryGithub {
         $replace
     )
 
+
     $repository = Get-GithubData 'repositories' | Where-Object -Property Name -EQ -Value $Name
     $repositoryPath = $repository.LocalPath
 
@@ -53,9 +54,10 @@ function Open-RepositoryGithub {
         git -C $repository.LocalPath clone $repository.clone_url .
     }
     
+    $user = Get-GitUser
     $null = git config --global --add safe.directory ($repository.LocalPath -replace '[\\]+', '/' )
-    $null = git -C $repository.LocalPath config --local user.name "$env:GIT_USER" 
-    $null = git -C $repository.LocalPath config --local user.email "$env:GIT_MAIL"
+    $null = git -C $repository.LocalPath config --local user.name $user.login 
+    $null = git -C $repository.LocalPath config --local user.email $user.email
 
     if (!$noCode) {
         code $repository.LocalPath

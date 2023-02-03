@@ -67,7 +67,50 @@ $null = Add-PimProfile -ProfileName WebContrib -Scope 'managementGroups/acfroot-
 $null = Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
 
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
-Switch-GitConfig -config ($env:USERNAME -eq 'M01947' ? 'brz' : 'git')
+
+
+
+
+if($env:USERNAME -ne'M01947'){
+
+    # Overwrite settings for gpg-agent to set passphrase
+    # Then Reload agent and set acutal Passphrase
+    $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
+    $null = git config --global --unset gpg.format
+    $null = git config --global user.signingkey $env:GIT_GPG_ID   
+
+    $gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
+    @(
+        'default-cache-ttl 345600'
+        'max-cache-ttl 345600'
+        'allow-preset-passphrase'
+    ) -join "`r`n" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
+    $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
+    $null = gpgconf --launch gpg-agent
+    $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase --preset $env:GIT_GPG_GRIP
+
+    Write-Host 'Current Global Git Profile:'
+    Write-Host "    $(git config --global user.name )"
+    Write-Host "    $(git config --global user.email )"
+    Write-Host ''
+
+    git -C . rev-parse >nul 2>&1; 
+    if ($?) {
+
+        $localMail = git config --local user.email
+        $localUser = git config --local user.name
+
+        if ($localMail -AND $LocalUser) {
+
+            Write-Host 'Current Local Git Profile:'
+            Write-Host "    $localUser"
+            Write-Host "    $localMail"
+            Write-Host ''
+
+        }
+
+    }
+}
 
 
 Write-Host ''

@@ -70,10 +70,10 @@ RequiredAssemblies = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Add-EnvPaths', 'Get-DailyMsRewards', 'Get-MsRewards', 
-               'Get-ScrambledText', 'Prompt', 'Switch-Terraform', 
-               'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
-               'Get-SecretStore', 'Set-VersionActiveTF', 'Update-SecretStore', 
-               'Get-BlenderFiles', 'Open-BlenderFile'
+               'Get-ScrambledText', 'Prompt', 'Push-Profile', 'Switch-GitConfig', 
+               'Switch-Terraform', 'Convert-SecretObject', 'Get-SecretFromStore', 
+               'Get-SecretsFromStore', 'Get-SecretStore', 'Set-VersionActiveTF', 
+               'Update-SecretStore', 'Get-BlenderFiles', 'Open-BlenderFile'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -82,7 +82,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'tf'
+AliasesToExport = 'sc', 'tf'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

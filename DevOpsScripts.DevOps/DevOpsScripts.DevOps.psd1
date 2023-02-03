@@ -82,12 +82,12 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-AzureDevOpsCac
                'Get-PAT', 'New-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
                'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
                'New-AutomatedTag', 'Remove-AutomatedTags', 'Get-GithubData', 
-               'Invoke-GitRest', 'Open-RepositoryGithub', 'Push-Profile', 
-               'Switch-GitConfig', 'Register-DevOpsFeedAsPSRepository', 
-               'Get-ProjectInfo', 'Get-RepositoryInfo', 'Show-DevOpsContext', 
-               'Switch-Organization', 'Switch-Project', 'Switch-QuickContext', 
-               'Add-SprintIncrement', 'Connect-Workitem', 'Get-SprintIterations', 
-               'Get-Workitem', 'Get-WorkItemQueries', 'New-BranchFromWorkItem', 
+               'Get-GitUser', 'Invoke-GitRest', 'Open-RepositoryGithub', 
+               'Register-DevOpsFeedAsPSRepository', 'Get-ProjectInfo', 
+               'Get-RepositoryInfo', 'Show-DevOpsContext', 'Switch-Organization', 
+               'Switch-Project', 'Switch-QuickContext', 'Add-SprintIncrement', 
+               'Connect-Workitem', 'Get-SprintIterations', 'Get-Workitem', 
+               'Get-WorkItemQueries', 'New-BranchFromWorkItem', 
                'New-SprintIteration', 'New-Workitem', 'Search-WorkItemInIteration', 
                'Select-Workitems'
 
@@ -98,8 +98,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'vc', 'repoBrowser', 'vcp', 'sc', 'Set-OrgContext', 'swo', 
-               'Set-ProjectContext', 'swp', 'swc', 'gitW'
+AliasesToExport = 'vc', 'repoBrowser', 'vcp', 'Set-OrgContext', 'swo', 'Set-ProjectContext', 
+               'swp', 'swc', 'gitW'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -40,7 +40,7 @@ function Invoke-OpenAIMoodToColor {
     param (
         # The Prompt to send to Open AI.
         [Parameter(
-            Mandatory = $true,
+            Mandatory = $false,
             Position = 0,
             ValueFromRemainingArguments = $true
         )]
@@ -74,12 +74,25 @@ function Invoke-OpenAIMoodToColor {
         Throw 'Nothing was returned'
     }
 
-    $window = New-WindowFromXAML -Path "$PSScriptRoot/ui/MoodToColorDialog.xaml"
-    $window.FindName('HexDisplay').Background = $HexCode
-    $window.FindName('Prompt').Text = $textResponse
-    $window.FindName('HexText').Content = $HexCode
-    $null = $window.Activate()
+    #"$PSScriptRoot/ui/MoodToColorDialog.xaml" `
+    $window = New-WindowFromXAML -Path (Get-ChildItem '.' -Filter "*.xaml" -recurse) ` -Bind @{
+        'HexDisplay.Background' = $HexCode
+        'Prompt.Text' = $textResponse
+        'HexText.Content' = $HexCode    
+        TestButton = @{
+            Width = 0
+            Height = 0
+            Visibility = [System.Windows.Visibility]::Hidden
+            Add_Click = {
+                Write-Host 'Test'
+                Write-Host 'Test'
+                Write-Host 'Test'
+                Write-Host 'Test'
+                Write-Host 'Test'
+            }          
+        }
+    }
 
     Write-Host -ForeGround GREEN 'If no Window appears look at the Taskbar. Window might not be focused.'
-    $null = $window.ShowDialog()
+    return $window.ShowDialog()
 }

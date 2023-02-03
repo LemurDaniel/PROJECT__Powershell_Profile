@@ -11,10 +11,11 @@
                 <Label x:Name="HexText" Content="A Hex Code" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="13" FontFamily="Arial" FontWeight="Bold"/>
             </Border>
             <Border x:Name="HexDisplay" Height="150" Width="150" Margin="0,5,0,15" Background="blue" BorderBrush="blue" BorderThickness="0" CornerRadius="2" />
- 
+      
             <TextBox x:Name="Prompt"  TextWrapping="Wrap"  Text="Some Open AI Prompt Some Open AI Prompt Some Open AI Prompt Some Open AI Prompt Some Open AI Prompt Some Open AI Prompt " IsReadOnly="True" BorderThickness="0" Background="Transparent"  FontSize="11" FontFamily="Arial"/>
             <Border BorderBrush="#CDCDCD" BorderThickness=".5" Margin="5,4,5,0"/>
+            <Button x:Name="TestButton" Height="10" Width="10" Background="Yellow"></Button>
         </StackPanel>
-  
+
     </Grid>
 </Window>

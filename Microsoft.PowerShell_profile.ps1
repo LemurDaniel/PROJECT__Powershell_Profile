@@ -77,16 +77,16 @@ if($gpgSigning){
 
     $gpg_id = Read-SecureStringFromFile -Identifier gitGpgId -AsPlainText 
     $gpg_grip = Read-SecureStringFromFile -Identifier gitGpgGrip -AsPlainText 
-    $gpg_phrase = Read-SecureStringFromFile -Identifier gitGpgPhrase -AsPlainText 
+    $gpg_phrase = Read-SecureStringFromFile -Identifier gitGpgPhrase
 
     if(!$gpg_id -OR !$gpg_grip -OR !$gpg_phrase){
-        $gpg_id     = Read-Host -Prompt "Pleasse Enter GPG Id"
-        $gpg_grip   = Read-Host -Prompt "Pleasse Enter GPG Grip"
-        $gpg_phrase = Read-Host -Prompt "Pleasse Enter GPG Phrase"
+        $gpg_id     = Read-Host -Prompt "Please Enter GPG Id"
+        $gpg_grip   = Read-Host -Prompt "Please Enter GPG Grip"
+        $gpg_phrase = Read-Host -AsSecureString -Prompt "Please Enter GPG Phrase"
 
-        Save-SecureStringToFile -PlaintText $gpg_id -Identifier gitGpgId
-        Save-SecureStringToFile -PlaintText $gpg_grip -Identifier gitGpgGrip
-        Save-SecureStringToFile -PlaintText $gpg_phrase -Identifier gitGpgPhrase
+        Save-SecureStringToFile -PlainText $gpg_id -Identifier gitGpgId
+        Save-SecureStringToFile -PlainText $gpg_grip -Identifier gitGpgGrip
+        Save-SecureStringToFile -SecureString $gpg_phrase -Identifier gitGpgPhrase
     }
 
     # Overwrite settings for gpg-agent to set passphrase
@@ -103,7 +103,7 @@ if($gpgSigning){
     ) -join "`r`n" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
     $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
     $null = gpgconf --launch gpg-agent
-    $null = $env:gpg_phrase | gpg-preset-passphrase --preset $env:gpg_grip
+    $null = $gpg_phrase | ConvertFrom-SecureString -AsPlainText | gpg-preset-passphrase --preset $env:gpg_grip
 
     Write-Host 'Current Global Git Profile:'
     Write-Host "    $(git config --global user.name )"

@@ -79,10 +79,10 @@ if($gpgSigning){
     $gpg_grip = Read-SecureStringFromFile -Identifier gitGpgGrip -AsPlainText 
     $gpg_phrase = Read-SecureStringFromFile -Identifier gitGpgPhrase -AsPlainText 
 
-    if(!$gpg_id){
-        $gpg_id     = Read-Host -Prompt "Pleasse Enter GPG Id:"
-        $gpg_grip   = Read-Host -Prompt "Pleasse Enter GPG Grip:"
-        $gpg_phrase = Read-Host -Prompt "Pleasse Enter GPG Phrase:"
+    if(!$gpg_id -OR !$gpg_grip -OR !$gpg_phrase){
+        $gpg_id     = Read-Host -Prompt "Pleasse Enter GPG Id"
+        $gpg_grip   = Read-Host -Prompt "Pleasse Enter GPG Grip"
+        $gpg_phrase = Read-Host -Prompt "Pleasse Enter GPG Phrase"
 
         Save-SecureStringToFile -PlaintText $gpg_id -Identifier gitGpgId
         Save-SecureStringToFile -PlaintText $gpg_grip -Identifier gitGpgGrip

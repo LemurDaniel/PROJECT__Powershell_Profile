@@ -40,7 +40,7 @@ function Invoke-OpenAIMoodToColor {
     param (
         # The Prompt to send to Open AI.
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             Position = 0,
             ValueFromRemainingArguments = $true
         )]

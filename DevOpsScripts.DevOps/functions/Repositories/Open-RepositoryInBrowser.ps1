@@ -35,7 +35,7 @@
 
     PS> Open-RepositoryInBrowser -Project '<autocompleted_projectname>' '<autocompleted_repository_name>' -PullRequest
 
-    repoBrowser -Project 'BRZ365 Galaxy' brz365-cpm-core -PullRequest
+    
     .LINK
         
 #>

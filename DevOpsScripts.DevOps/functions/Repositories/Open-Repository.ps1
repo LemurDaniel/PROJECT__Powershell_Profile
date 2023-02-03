@@ -20,6 +20,13 @@
     PS> Open-Repository '<repository_name>'
 
 
+    .EXAMPLE
+
+    Open a repository from another Project in the current Project-Context:
+
+    PS> vc -Project '<autocompleted_projectname>' '<autocompleted_repository_name>'
+
+
     .LINK
         
 #>
@@ -27,26 +34,61 @@ function Open-Repository {
 
     [Alias('vc')]
     [cmdletbinding(
+        DefaultParameterSetName = 'currentContext',
         SupportsShouldProcess,
         ConfirmImpact = 'high'
     )]
     param (
-        # The Name of the Repository.
+        # The name of the Project to swtich to in which you want to open a repository. Will default to curren tproject context.
         [Parameter(
-            Mandatory = $true,
-            Position = 0,
-            ParameterSetName = 'repositoryName'
-        )]
+            ParameterSetName = 'Projectspecific',
+            Mandatory = $false,
+            Position = 1
+        )]   
         [ValidateScript(
             { 
-                $_ -in (Get-ProjectInfo 'repositories.name')
+               [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify a correct Projectname.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project,
+
+
+
+        # The Name of the Repository.
+        [Parameter(
+            ParameterSetName = 'Projectspecific',
+            Mandatory = $true,
+            Position = 0
+        )]
+        [Parameter(
+            ParameterSetName = 'currentContext',
+            Mandatory = $false,
+            Position = 0
+        )]   
+        [ValidateScript(
+            { 
+                # NOTE cannot access Project when changes dynamically with tab-completion
+                $true # $_ -in (Get-ProjectInfo 'repositories.name')
             },
             ErrorMessage = 'Please specify an correct Name.'
         )]
         [ArgumentCompleter(
             {
-                param($cmd, $param, $wordToComplete)
-                $validValues = Get-ProjectInfo 'repositories.name' 
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = Get-ProjectInfo -Name $fakeBoundParameters['Project'] -return 'repositories.name'
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -75,8 +117,12 @@ function Open-Repository {
         $replace
     )
 
-
-    $repository = ![System.String]::IsNullOrEmpty($RepositoryId) ? (Get-RepositoryInfo -id $RepositoryId) : (Get-RepositoryInfo -name $name)
+    if(![System.String]::IsNullOrEmpty($RepositoryId)){
+        $repository = Get-RepositoryInfo -id $RepositoryId
+    }
+    else {
+        $repository = Get-RepositoryInfo -Project $Project -Name $Name
+    }
 
     $userName = Get-CurrentUser 'displayName'
     $userMail = Get-CurrentUser 'emailAddress'

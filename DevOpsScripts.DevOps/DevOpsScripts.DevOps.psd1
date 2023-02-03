@@ -69,27 +69,25 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-AzureDevOpsCache', 
-               'Get-CurrentUser', 'Get-DevOpsCurrentContext', 
+FunctionsToExport = 'Invoke-DevOpsRest', 'Get-AzureDevOpsCache', 'Get-DevOpsContext', 
                'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 
-               'Get-DevOpsProjects', 'Get-QuickContexts', 
-               'Get-WorkItemRelationTypes', 'Remove-QuickContext', 
-               'Set-AzureDevOpsCache', 'Set-DevOpsCurrentContext', 
-               'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 'Get-RepositoryRefs', 
-               'New-MasterPR', 'New-PullRequest', 'Open-Repository', 
-               'Open-RepositoryInBrowser', 'Remove-MovedBlocks', 
+               'Get-DevOpsProjects', 'Get-DevOpsUser', 'Get-QuickContexts', 
+               'Get-WorkItemRelationTypes', 'Set-AzureDevOpsCache', 
+               'Set-DevOpsContext', 'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 
+               'Get-RepositoryRefs', 'New-MasterPR', 'New-PullRequest', 
+               'Open-Repository', 'Open-RepositoryInBrowser', 'Remove-MovedBlocks', 
                'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
                'Get-PAT', 'New-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
                'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
                'New-AutomatedTag', 'Remove-AutomatedTags', 'Get-GithubData', 
                'Get-GitUser', 'Invoke-GitRest', 'Open-RepositoryGithub', 
-               'Register-DevOpsFeedAsPSRepository', 'Get-ProjectInfo', 
-               'Get-RepositoryInfo', 'Show-DevOpsContext', 'Switch-Organization', 
-               'Switch-Project', 'Switch-QuickContext', 'Add-SprintIncrement', 
-               'Connect-Workitem', 'Get-SprintIterations', 'Get-Workitem', 
-               'Get-WorkItemQueries', 'New-BranchFromWorkItem', 
-               'New-SprintIteration', 'New-Workitem', 'Search-WorkItemInIteration', 
-               'Select-Workitems'
+               'Register-DevOpsFeedAsPSRepository', 'Add-QuickContext', 
+               'Get-ProjectInfo', 'Get-RepositoryInfo', 'Remove-QuickContext', 
+               'Show-DevOpsContext', 'Switch-Organization', 'Switch-Project', 
+               'Switch-QuickContext', 'Add-SprintIncrement', 'Connect-Workitem', 
+               'Get-SprintIterations', 'Get-Workitem', 'Get-WorkItemQueries', 
+               'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
+               'Search-WorkItemInIteration', 'Select-Workitems'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

@@ -29,6 +29,11 @@ function Open-RepositoryGithub {
         [System.String]
         $Name,
 
+        # Only open the repository in the browser.
+        [Parameter()]
+        [switch]
+        $Browser,
+
         [Parameter()]
         [switch]
         $noCode,
@@ -39,9 +44,11 @@ function Open-RepositoryGithub {
         $replace
     )
 
-
     $repository = Get-GithubData 'repositories' | Where-Object -Property Name -EQ -Value $Name
-    $repositoryPath = $repository.LocalPath
+    if($Browser){
+        Start-Process $repository.html_url
+        return
+    }
 
     if ($replace) {
         if ($PSCmdlet.ShouldProcess($repository.LocalPath, 'Do you want to replace the existing repository and any data in it.')) {

@@ -16,12 +16,13 @@
 
     Set the current Organization-Context by name.
 
-    PS> Switch-Organization <Organization_name>
+    PS> swo <autocompleted_Organization_name> <autocompleted_Project_name>
 
 
     .LINK
         
 #>
+
 function Switch-Organization {
 
     [Alias('Set-OrgContext', 'swo')]
@@ -36,7 +37,7 @@ function Switch-Organization {
             { 
                 $_ -in (Get-DevOpsOrganizations).accountName
             },
-            ErrorMessage = 'Please specify an correct Name.'
+            ErrorMessage = 'Please specify an correct Organization Name.'
         )]
         [ArgumentCompleter(
             {
@@ -49,10 +50,33 @@ function Switch-Organization {
             }
         )]
         [System.String]
-        $Name
+        $Name,
+
+        # The name of the Project in the Organization to switch to.
+        [Parameter(
+            Mandatory = $true,
+            Position = 1
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                
+                $validValues = Get-DevOpsProjects -Organization $fakeBoundParameters['Name'] | Select-Object -ExpandProperty name
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project
     )
 
-    $null = Set-DevOpsCurrentContext -Organization $Name
-    Write-Host -ForegroundColor GREEN "`n   Set Organization Context to '$Name'`n"
-    
+    $matches = Get-DevOpsProjects -Organization $Name | Where-Object -Property Name -eq $Project | Measure-Object
+    if($matches.Count -eq 0){
+        Throw "'$Project' is not a valid Projectname in the Organization '$Name'"
+    }   
+
+    $null = Set-DevOpsContext -Organization $Name -Project $Project
+    Show-DevOpsContext
 }

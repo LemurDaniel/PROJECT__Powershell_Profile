@@ -16,7 +16,7 @@
 
     Gets all organizations conected to the user.
 
-    PS> Get-DevOpsCurrentContext -Organization
+    PS> Get-DevOpsContext -Organization
     
     .LINK
         
@@ -38,14 +38,14 @@ function Get-DevOpsOrganizations {
         Domain = 'app.vssps.visualstudio'
         API    = '_apis/accounts?api-version=6.0'
         Query  = @{
-            memberId = Get-CurrentUser 'publicAlias'
+            memberId = Get-DevOpsUser 'publicAlias'
         }
     }
 
     $Organizations = Invoke-DevOpsRest @Request -return 'value'
 
     if (($Organizations | Measure-Object).Count -eq 0) {
-        Throw "Couldnt find any DevOps Organizations associated with User: '$(Get-CurrentUser 'displayName')' - '$(Get-CurrentUser 'emailAddress')'"
+        Throw "Couldnt find any DevOps Organizations associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
     }
     return Set-UtilsCache -Object $Organizations -Type Organization -Identifier ((Get-AzContext).Account.id)
 

@@ -77,7 +77,7 @@ function Connect-Workitem {
                     url        = $linkElementUrl
                     attributes = @{
                         name    = $RelationType
-                        comment = "$((Get-CurrentUser).displayName) created $RelationType"
+                        comment = "$((Get-DevOpsUser).displayName) created $RelationType"
                     }
                 }
             }

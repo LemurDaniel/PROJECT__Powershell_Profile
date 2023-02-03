@@ -56,7 +56,7 @@ function Get-PAT {
     $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes($patScopes) 
     $hex = [System.Convert]::ToHexString($bytes)
 
-    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
     $localPat = Read-SecureStringFromFile -Identifier "$hex.$Organization.pat" -AsPlainText -Path $Path | ConvertFrom-Json
 
     if ($null -eq $localPat -OR $localPat.validTo -lt [DateTime]::now) {

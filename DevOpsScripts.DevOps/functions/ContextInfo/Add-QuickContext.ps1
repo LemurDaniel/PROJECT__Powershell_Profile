@@ -78,8 +78,8 @@ function Add-QuickContext {
     }
     $contexts[$ContextName] = @{
         ContextName  = $ContextName
-        Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization 
-        Project      = [System.String]::IsNullOrEmpty($Project) ? (Get-DevOpsCurrentContext -Project) : $Project   
+        Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization 
+        Project      = [System.String]::IsNullOrEmpty($Project) ? (Get-DevOpsContext -Project) : $Project   
     }
 
     return Set-UtilsCache -Object $contexts -Type Context -Identifier quick -Forever

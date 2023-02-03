@@ -124,8 +124,8 @@ function Open-Repository {
         $repository = Get-RepositoryInfo -Project $Project -Name $Name
     }
 
-    $userName = Get-CurrentUser 'displayName'
-    $userMail = Get-CurrentUser 'emailAddress'
+    $userName = Get-DevOpsUser 'displayName'
+    $userMail = Get-DevOpsUser 'emailAddress'
 
     if ($replace) {
         if ($PSCmdlet.ShouldProcess($repository.Localpath, 'Do you want to replace the existing repository and any data in it.')) {

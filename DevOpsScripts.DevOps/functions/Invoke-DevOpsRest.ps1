@@ -122,7 +122,7 @@ function Invoke-DevOpsRest {
     )
 
 
-    $Organization = Get-DevOpsCurrentContext -Organization
+    $Organization = Get-DevOpsContext -Organization
     $APIEndpoint = ($API -split '\?')[0]
     
     # Build a hashtable of providedy Query params and Query params in provied api-url.

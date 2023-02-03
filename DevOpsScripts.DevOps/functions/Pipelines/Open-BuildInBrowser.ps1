@@ -96,7 +96,7 @@ function Open-BuildInBrowser {
         }
     }
 
-    $Organization = Get-DevOpsCurrentContext -Organization
+    $Organization = Get-DevOpsContext -Organization
     $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
 
     # Open in Browser.

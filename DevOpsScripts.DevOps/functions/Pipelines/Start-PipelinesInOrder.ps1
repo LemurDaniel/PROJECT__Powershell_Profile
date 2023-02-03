@@ -72,7 +72,7 @@ function Start-PipelinesInOrder {
             $build = Start-PipelineOnBranch -id $pipelineid -ref "refs/heads/$($environment.ToLower())"
 
             if ($OpenBrowser) {
-                $Organization = Get-DevOpsCurrentContext -Organization
+                $Organization = Get-DevOpsContext -Organization
                 $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
                 $pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build?definitionId=$($Pipeline.id)"
                 Start-Process $pipelineUrl

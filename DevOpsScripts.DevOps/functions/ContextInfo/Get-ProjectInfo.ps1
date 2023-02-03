@@ -78,8 +78,8 @@ function Get-ProjectInfo {
     )
 
 
-    $ProjectName = ![System.String]::IsNullOrEmpty($Name) ? $Name : (Get-DevOpsCurrentContext -Project)
-    $Organization = Get-DevOpsCurrentContext -Organization
+    $ProjectName = ![System.String]::IsNullOrEmpty($Name) ? $Name : (Get-DevOpsContext -Project)
+    $Organization = Get-DevOpsContext -Organization
 
     $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName
     if (-not $refresh -AND $Cache) {

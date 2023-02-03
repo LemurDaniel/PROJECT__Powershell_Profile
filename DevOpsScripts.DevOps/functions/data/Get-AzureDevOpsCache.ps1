@@ -32,10 +32,14 @@ function Get-AzureDevOpsCache {
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identifier
+        $Identifier,
+
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Organization
     )
 
-    $Organization = Get-DevOpsCurrentContext -Organization
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
     return Get-UtilsCache -Type $Type -Identifier "$Organization.$Identifier"
 
 }

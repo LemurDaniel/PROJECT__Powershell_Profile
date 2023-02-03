@@ -16,18 +16,18 @@
 
     Gets the Current-Context Organization:
 
-    PS> Get-DevOpsCurrentContext -Organization
+    PS> Get-DevOpsContext -Organization
 
     .EXAMPLE
 
     Gets the Current-Context Project:
 
-    PS> Get-DevOpsCurrentContext -Project
+    PS> Get-DevOpsContext -Project
     
     .LINK
         
 #>
-function Get-DevOpsCurrentContext {
+function Get-DevOpsContext {
 
     [CmdletBinding()]
     param (
@@ -40,11 +40,11 @@ function Get-DevOpsCurrentContext {
         $Organization
     )
 
-    $Context = Get-Content -Path "$PSScriptRoot/.context.current.json" -ErrorAction SilentlyContinue | ConvertFrom-Json -ErrorAction SilentlyContinue
+    $Context = Get-UtilsCache -Type Context -Identifier DevOps
 
     if (!$Context) {
         Write-Warning 'No Context Set! Setting Default Context!'
-        $Context = Set-DevOpsCurrentContext -Default
+        $Context = Set-DevOpsContext -Default
     }
     
     if ($Project) {

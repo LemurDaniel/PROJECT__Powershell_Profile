@@ -41,6 +41,10 @@ function Set-AzureDevOpsCache {
         [System.String]
         $Identifier,
 
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Organization,
+
         # The TTL of the cache in Minutes.
         [Parameter(Mandatory = $false)]
         [System.int32]
@@ -52,7 +56,7 @@ function Set-AzureDevOpsCache {
         $Forever
     )
 
-    $Organization = Get-DevOpsCurrentContext -Organization
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
     return Set-UtilsCache -Object $Object -Type $Type -Identifier "$Organization.$Identifier" -Alive $Alive -Forever:$Forever
 
 }

@@ -8,7 +8,7 @@
     .LINK
         
 #>
-function Set-DevOpsCurrentContext {
+function Set-DevOpsContext {
 
     [CmdletBinding()]
     param (
@@ -34,12 +34,11 @@ function Set-DevOpsCurrentContext {
     else {
 
         $Context = @{
-            Project      = [System.String]::IsNullOrEmpty($Project) ? (Get-DevOpsCurrentContext -Project) : $Project
-            Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsCurrentContext -Organization) : $Organization
+            Project      = [System.String]::IsNullOrEmpty($Project) ? (Get-DevOpsContext -Project) : $Project
+            Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
         } 
     }
 
-    $Context | ConvertTo-Json -Depth 2 | Out-File "$PSScriptRoot/.context.current.json"
-    return $Context
+    return Set-UtilsCache -Object $Context -Type Context -Identifier DevOps -Forever
     
 }

@@ -16,7 +16,7 @@
 
     Set the current Project-Context by name.
 
-    PS> Switch-Project <Project_name>
+    PS> Switch-Project <autocompleted_Project_name>
 
 
     .LINK
@@ -53,7 +53,7 @@ function Switch-Project {
         $Name
     )
      
-    $null = Set-DevOpsCurrentContext -Project $Name
-    Write-Host -ForegroundColor GREEN "`n   Set Project Context to '$Name'`n"
+    $null = Set-DevOpsContext -Project $Name
+    Show-DevOpsContext
     
 }

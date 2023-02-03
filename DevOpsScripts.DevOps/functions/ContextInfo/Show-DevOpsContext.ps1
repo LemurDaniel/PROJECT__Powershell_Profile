@@ -27,8 +27,8 @@ function Show-DevOpsContext {
     [CmdletBinding()]
     param ()
 
-    $Organization = Get-DevOpsCurrentContext -Organization
-    $Project = Get-DevOpsCurrentContext -Project
+    $Organization = Get-DevOpsContext -Organization
+    $Project = Get-DevOpsContext -Project
      
     Write-Host -ForegroundColor GREEN "`nCurrent Context:"
     Write-Host -ForegroundColor GREEN "     Organization: $Organization "

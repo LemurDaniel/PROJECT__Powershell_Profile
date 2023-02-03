@@ -16,13 +16,13 @@
 
     Gets the Current User in Azure DevOps:
 
-    PS> Get-CurrentUser
+    PS> Get-DevOpsUser
 
     
     .LINK
         
 #>
-function Get-CurrentUser {
+function Get-DevOpsUser {
 
     [cmdletbinding()]
     param(
@@ -31,7 +31,7 @@ function Get-CurrentUser {
         $Property
     )
 
-    $Cache = Get-UtilsCache -Type User -Identifier 'current'
+    $Cache = Get-UtilsCache -Type User -Identifier 'devops'
     
     if ($Cache -AND $Cache.emailAddress.toLower() -eq (Get-AzContext).Account.Id.ToLower()) {
         return Get-Property -Object $Cache -Property $Property
@@ -47,6 +47,6 @@ function Get-CurrentUser {
 
     $User = Invoke-DevOpsRest @Request
 
-    $null = Set-UtilsCache -Object $User -Type User -Identifier 'current'
+    $null = Set-UtilsCache -Object $User -Type User -Identifier 'devops'
     return Get-Property -Object $User -Property $Property
 }

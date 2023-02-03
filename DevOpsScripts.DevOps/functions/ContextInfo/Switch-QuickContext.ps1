@@ -54,7 +54,7 @@ function Switch-QuickContext {
 
     $Organization = (Get-QuickContexts)[$ContextName].Organization
     $Project = (Get-QuickContexts)[$ContextName].Project
-    $null = Set-DevOpsCurrentContext -Organization $Organization -Project $Project
+    $null = Set-DevOpsContext -Organization $Organization -Project $Project
 
     Show-DevOpsContext
 }

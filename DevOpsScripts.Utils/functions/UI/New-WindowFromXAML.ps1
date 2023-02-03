@@ -48,38 +48,22 @@ function New-WindowFromXAML {
 
         $Bind.GetEnumerator() | ForEach-Object {
             
-            if($_.Value.GetType() -eq [System.Collections.Hashtable]){
-                $UIobject = $window.FindName($_.Key)
+            $attributes = $_.Key.split('.') 
+            $UIobject = $window.FindName($attributes[0])
 
-                if($null -eq $UIobject){
-                    throw "Cannot find an UI-Element with x:Name '$($_.Key)'"
-                }
-
-                $_.Value.GetEnumerator() | ForEach-Object {
-
-                    if($_.Value.getType() -eq [System.Management.Automation.ScriptBlock]){
-                        $UIobject."$($_.Key)"($_.Value)
-                    }
-                    else {
-                        $UIobject."$($_.Key)" = $_.Value
-                    }
-                }
+            if($null -eq $UIobject){
+                throw "Cannot find an UI-Element with x:Name '$($_.Key)'"
             }
 
-            else {
-                # TODO
-                $attributes = $_.Key.split('.') 
-                $UIobject = $window.FindName($attributes[0])
+            $hashtable = $_.Value.GetType() -eq [System.Collections.Hashtable] ? $_.Value : @{ $attributes[1] = $_.Value }
 
-                if($null -eq $UIobject){
-                    throw "Cannot find an UI-Element with x:Name '$($attributes[0])'"
-                }
+            $hashtable.GetEnumerator() | ForEach-Object {
 
-                if($null -ne $_.Value -AND $_.Value.getType() -eq [System.Management.Automation.ScriptBlock]){
-                    $UIobject."$($attributes[1])"($_.Value)
+                if($_.Value.getType() -eq [System.Management.Automation.ScriptBlock]){
+                    $UIobject."$($_.Key)"($_.Value)
                 }
                 else {
-                    $UIobject."$($attributes[1])" = $_.Value
+                    $UIobject."$($_.Key)" = $_.Value
                 }
             }
 

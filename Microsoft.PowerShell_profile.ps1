@@ -71,13 +71,29 @@ Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 
 
 
-if($env:USERNAME -ne'M01947'){
+$gpgSigning = $true
+
+if($gpgSigning){
+
+    $gpg_id = Read-SecureStringFromFile -Identifier gitGpgId -AsPlainText 
+    $gpg_grip = Read-SecureStringFromFile -Identifier gitGpgGrip -AsPlainText 
+    $gpg_phrase = Read-SecureStringFromFile -Identifier gitGpgPhrase -AsPlainText 
+
+    if(!$gpg_id){
+        $gpg_id     = Read-Host -Prompt "Pleasse Enter GPG Id:"
+        $gpg_grip   = Read-Host -Prompt "Pleasse Enter GPG Grip:"
+        $gpg_phrase = Read-Host -Prompt "Pleasse Enter GPG Phrase:"
+
+        Save-SecureStringToFile -PlaintText $gpg_id -Identifier gitGpgId
+        Save-SecureStringToFile -PlaintText $gpg_grip -Identifier gitGpgGrip
+        Save-SecureStringToFile -PlaintText $gpg_phrase -Identifier gitGpgPhrase
+    }
 
     # Overwrite settings for gpg-agent to set passphrase
     # Then Reload agent and set acutal Passphrase
     $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
     $null = git config --global --unset gpg.format
-    $null = git config --global user.signingkey $env:GIT_GPG_ID   
+    $null = git config --global user.signingkey $env:gpg_id   
 
     $gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
     @(
@@ -87,7 +103,7 @@ if($env:USERNAME -ne'M01947'){
     ) -join "`r`n" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
     $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
     $null = gpgconf --launch gpg-agent
-    $null = $env:GIT_GPG_PHRASE | gpg-preset-passphrase --preset $env:GIT_GPG_GRIP
+    $null = $env:gpg_phrase | gpg-preset-passphrase --preset $env:gpg_grip
 
     Write-Host 'Current Global Git Profile:'
     Write-Host "    $(git config --global user.name )"

@@ -46,12 +46,13 @@ function Save-SecureStringToFile {
 
     $Path = [System.String]::IsNullOrEmpty($Path) ? $env:USERPROFILE : $Path
     $directory = "$Path/.secure_devopsscripts/"
+    $filename = ".$Identifier.secure" | Get-CleanFilename
+    $filePath = Join-Path -Path $directory -ChildPath $filename
+
     if (!(Test-Path -Path $directory)) {
         $null = New-Item -ItemType Directory -Path $directory
     }
 
-    $filename = ".$Identifier.secure" | Get-CleanFilename
-    $filePath = Join-Path -Path $directory -ChildPath $filename
 
     if (![System.String]::isNullOrEmpty($PlainText)) {
         $PlainText | ConvertTo-SecureString -AsPlainText | ConvertFrom-SecureString | Out-File $filePath

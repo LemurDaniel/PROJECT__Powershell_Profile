@@ -42,13 +42,16 @@ function Get-OpenAIAPIAuthentication {
         $OpenAIapiKey = Read-Host -AsSecureString -Prompt 'Please Enter your OpenAI API Token'
         $OpenAIapiOrgId = Read-Host -AsSecureString -Prompt 'Please Enter the Organization ID (Leave Empty if not applicaple)'
  
-        Save-SecureStringToFile -SecureString $OpenAIapiKey -Identifier OpenAIapiAuthKey
-        Save-SecureStringToFile -SecureString $OpenAIapiOrgId -Identifier OpenAIapiOrgId
+
+        Save-SecureStringToFile -SecureString $OpenAIapiKey -Identifier OpenAIapiKey
+        if($OpenAIapiOrgId.Length -gt 0){
+            Save-SecureStringToFile -SecureString $OpenAIapiOrgId -Identifier OpenAIapiOrgId
+        }
     }
 
     return @{
         OpenAIapiKey   = $OpenAIapiKey | ConvertFrom-SecureString -AsPlainText
-        OpenAIapiOrgId = $OpenAIapiOrgId | ConvertFrom-SecureString -AsPlainText
+        OpenAIapiOrgId = $null -ne $OpenAIapiOrgId ? ($OpenAIapiOrgId | ConvertFrom-SecureString -AsPlainText) : $null
     }
 
 }

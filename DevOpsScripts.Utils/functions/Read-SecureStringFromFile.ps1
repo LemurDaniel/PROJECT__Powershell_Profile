@@ -35,8 +35,11 @@ function Read-SecureStringFromFile {
     )
 
     $Path = [System.String]::IsNullOrEmpty($Path) ? $env:USERPROFILE : $Path
+    $directory = "$Path/.secure_devopsscripts/"
     $filename = ".$Identifier.secure" | Get-CleanFilename
-    $filePath = Join-Path -Path "$Path/.secure_devopsscripts/" -ChildPath $filename
+    $filePath = Join-Path -Path $directory -ChildPath $filename
+
+
     $Content = Get-Content -Path $filePath -ErrorAction SilentlyContinue | ConvertTo-SecureString -ErrorAction SilentlyContinue 
     if ($Content -AND $AsPlainText) {
         return $Content | ConvertFrom-SecureString -AsPlainText

@@ -22,7 +22,7 @@
 
     .EXAMPLE
 
-    Open a repository from another Project in the current Project-Context:
+    Open a repository from another Project in the current Organization-Context:
 
     PS> vc -Project '<autocompleted_projectname>' '<autocompleted_repository_name>'
 

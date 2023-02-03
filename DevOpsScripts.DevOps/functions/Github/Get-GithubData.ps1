@@ -10,21 +10,30 @@ function Get-GithubData {
         $Refresh
     )
 
-    $Cache = Get-UtilsCache -Type Github -Identifier 'data'
+    $userName = Get-GitUser | Get-Property login
+    $Cache = Get-UtilsCache -Type Github -Identifier $userName
 
     if ($Cache -AND !$Refresh) {
         return Get-Property -Object $Cache -Property $Property
     }
 
-    $repositories = Invoke-GitRest -Method GET -apiEndpoint repos
+    $repositories = Invoke-GitRest -Method GET -API 'user/repos'
     $githubData = @{
         owners       = $repositories.owner | Get-Unique -AsString
         repositories = $repositories | `
             Select-Object -Property @{
-            Name = 'login'; Expression = { $_.owner.login }
+            Name = 'login'; 
+            Expression = { 
+                $_.owner.login 
+            }
+        },@{
+            Name = 'LocalPath';
+            Expression = {
+                "$env:GIT_RepositoryPath\$($_.owner.login)\$($_.name)"
+            }
         }, id, permissions, default_branch, name, full_name, description, private, visibility, html_url, url, clone_url, created_at, updated_at, pushed_at
     }
 
-    $null = Set-UtilsCache -Object $githubData -Type Github -Identifier 'data'
+    $null = Set-UtilsCache -Object $githubData -Type Github -Identifier $userName
     return Get-Property -Object $githubData -Property $Property
 }

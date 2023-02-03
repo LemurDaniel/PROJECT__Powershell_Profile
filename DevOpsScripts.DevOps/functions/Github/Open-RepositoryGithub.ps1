@@ -40,29 +40,26 @@ function Open-RepositoryGithub {
     )
 
     $repository = Get-GithubData 'repositories' | Where-Object -Property Name -EQ -Value $Name
-    $repositoryPath = "$env:GIT_RepositoryPath\$($repository.login)\$($repository.name)"
+    $repositoryPath = $repository.LocalPath
 
     if ($replace) {
-        if ($PSCmdlet.ShouldProcess($repositoryPath, 'Do you want to replace the existing repository and any data in it.')) {
-            Remove-Item -Path $repositoryPath -Recurse -Force -Confirm:$false
+        if ($PSCmdlet.ShouldProcess($repository.LocalPath, 'Do you want to replace the existing repository and any data in it.')) {
+            Remove-Item -Path $repository.LocalPath -Recurse -Force -Confirm:$false
         }
     }
 
-    if (!(Test-Path -Path $repositoryPath)) {
-        $repositoryPath = New-Item -ItemType Directory -Path $repositoryPath
-        git -C $repositoryPath.FullName clone $repository.clone_url .
+    if (!(Test-Path -Path $repository.LocalPath)) {
+        $repository.LocalPath = New-Item -ItemType Directory -Path $repository.LocalPath
+        git -C $repository.LocalPath clone $repository.clone_url .
     }
-    else {
-        $repositoryPath = Get-Item $repositoryPath
-    }
-
-    $null = git config --global --add safe.directory ($repositoryPath.FullName -replace '[\\]+', '/' )
-    $null = git -C $repositoryPath.FullName config --local user.name "$env:GIT_USER" 
-    $null = git -C $repositoryPath.FullName config --local user.email "$env:GIT_MAIL"
+    
+    $null = git config --global --add safe.directory ($repository.LocalPath -replace '[\\]+', '/' )
+    $null = git -C $repository.LocalPath config --local user.name "$env:GIT_USER" 
+    $null = git -C $repository.LocalPath config --local user.email "$env:GIT_MAIL"
 
     if (!$noCode) {
-        code $repositoryPath.FullName
+        code $repository.LocalPath
     }
 
-    return $repositoryPath
+    return Get-Item $repository.LocalPath
 }

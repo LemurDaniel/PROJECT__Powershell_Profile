@@ -6,16 +6,12 @@ function Invoke-GitRest {
         $Method,
 
         [parameter()]
-        [validateSet('user', 'users', 'org', 'orgs', 'organizations', 'issues', 'hub', 'events', 'search')]
-        $apiGroup = 'user',
+        [System.String]
+        $API,
 
         [parameter()]
         [System.String]
-        $apiEndpoint,
-
-        [parameter()]
-        [System.String]
-        $contentType = 'application/vnd.github+json',
+        $ContentType = 'application/vnd.github+json',
 
         [parameter()]
         [System.String]
@@ -53,8 +49,10 @@ function Invoke-GitRest {
             'X-GitHub-Api-Version' = $apiVersion
             Authorization          = "Bearer $GIT_PATH"
         }
-        uri    = "https://api.github.com/$apiGroup/$apiEndpoint`?$QueryString"
+        uri    = "https://api.github.com/$API`?$QueryString"
     }
+
+    Write-Verbose $Request.uri
 
     Invoke-RestMethod @Request
 }

@@ -10,8 +10,8 @@ function Push-Profile {
         $byteArray = (1..4 | ForEach-Object { [byte](Get-Random -Max 256) })
         $hex = [System.Convert]::ToHexString($byteArray)
 
-        git -C $fileItem.FullName  config --local $gitUser.email
-        git -C $fileItem.FullName  config --local $gitUser.login
+        git -C $fileItem.FullName  config --local user.email $gitUser.email
+        git -C $fileItem.FullName  config --local user.name $gitUser.login
         git -C $fileItem.FullName  config --local commit.gpgsign true
 
         git -C $fileItem.FullName pull origin
@@ -24,8 +24,8 @@ function Push-Profile {
     $byteArray = (1..4 | ForEach-Object { [byte](Get-Random -Max 256) })
     $hex = [Convert]::ToHexString($byteArray)
 
-    git -C "$PSScriptRoot/../.." config --local $gitUser.email
-    git -C "$PSScriptRoot/../.." config --local $gitUser.login
+    git -C "$PSScriptRoot/../.." config --local user.email $gitUser.email
+    git -C "$PSScriptRoot/../.." config --local user.name $gitUser.login
     git -C "$PSScriptRoot/../.." config --local commit.gpgsign true
 
     git -C "$PSScriptRoot/../.." pull origin

@@ -148,10 +148,7 @@ function Get-RepositoryInfo {
     }
 
     if (!$repository) {
-        Throw "Repository '$($repoName)' not found in current Project '$(Get-ProjectInfo 'name')'"
-    }
-    if(!$repository.currentPath){
-        $repository | Add-Member NoteProperty currentPath $repository.LocalPath
+        Throw "Repository '$($repoName)' not found in current Project '$(Get-ProjectInfo -Project $Project 'name')'"
     }
 
     return $repository | Get-Property -return $Property

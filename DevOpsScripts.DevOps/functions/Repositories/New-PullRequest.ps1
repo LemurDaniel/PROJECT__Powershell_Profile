@@ -58,7 +58,7 @@ function New-PullRequest {
     )
 
     $repository = Get-RepositoryInfo -path $path -id $id
-    $repostoryPath = $repository.currentPath
+    $repostoryPath = [System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
 
     $currentBranch = git -C $repostoryPath branch --show-current
     git -C $repostoryPath push --set-upstream origin $currentBranch

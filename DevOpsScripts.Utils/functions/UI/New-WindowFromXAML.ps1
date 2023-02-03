@@ -38,8 +38,6 @@ function New-WindowFromXAML {
         $Bind = @{}
     )
 
-    Add-Type -AssemblyName PresentationFramework
-
     try {
         $reader = [System.Xml.XmlNodeReader]::Create((Get-Item $Path))
         $window = [System.Windows.Markup.XamlReader]::Load($reader)
@@ -55,7 +53,7 @@ function New-WindowFromXAML {
                 throw "Cannot find an UI-Element with x:Name '$($_.Key)'"
             }
 
-            $hashtable = $_.Value.GetType() -eq [System.Collections.Hashtable] ? $_.Value : @{ $attributes[1] = $_.Value }
+            $hashtable = $null -ne $_.Value -AND $_.Value.GetType() -eq [System.Collections.Hashtable] ? $_.Value : @{ $attributes[1] = $_.Value }
 
             $hashtable.GetEnumerator() | ForEach-Object {
 
@@ -81,3 +79,7 @@ function New-WindowFromXAML {
     }
 
 }
+
+Add-Type -AssemblyName PresentationFramework
+# Create a window from a XAMl which apperently causes all necessery assemblies to be loaded?
+$window = New-WindowFromXAML -Path "$PSScriptRoot/template/empty.xaml"

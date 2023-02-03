@@ -81,7 +81,7 @@ function Invoke-OpenAIMoodToColor {
         TestButton = @{
             Width = 0
             Height = 0
-            #Visibility = [System.Windows.Visibility]::Hidden
+            Visibility = [System.Windows.Visibility]::Hidden
             Add_Click = {
                 Write-Host 'Test'
                 Write-Host 'Test'

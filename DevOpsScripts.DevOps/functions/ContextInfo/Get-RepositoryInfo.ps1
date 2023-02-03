@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Gets Repository Info for a repository in the current project.
+    Gets Repository Info for a repository in the current project or a project in the current organization-Context.
 
     .DESCRIPTION
-    Gets Repository Info for a repository in the current project.
+    Gets Repository Info for a repository in the current project or a project in the current organization-Context.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -26,29 +26,70 @@
     PS> Get-RepositoryInfo '<repository_name>' -return id
 
 
+    .EXAMPLE
+
+    Get the id of a repository in the current Organization Context.
+
+    PS> Get-RepositoryInfo -Project '<autocompleted_projectname>' '<autocompleted_repository_name>' -return id
+
+
     .LINK
         
 #>
 
 function Get-RepositoryInfo {
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        DefaultParameterSetName = 'currentProjectContext'
+    )]
     param ( 
-        # The Name of the Repository. If null will default to current repository where command is executed.
+        # The Name of the Project. If null will default to current Project-Context.
         [Parameter(
             Mandatory = $false,
-            Position = 0
+            Position = 1,
+            ParameterSetName = 'projectspecific'
         )]
         [ValidateScript(
             { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-ProjectInfo repositories.name)
+                $null -eq $_ -OR [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
             },
-            ErrorMessage = 'Please specify an correct Name.'
+            ErrorMessage = 'Please specify a correct Projectname.'
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = Get-ProjectInfo repositories.name
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project,
+
+        # The Name of the Repository. If null will default to current repository where command is executed.
+        [Parameter(
+            Mandatory = $false,
+            Position = 0,
+            ParameterSetName = 'currentProjectContext'
+        )]
+        [Parameter(
+            Mandatory = $true,
+            Position = 0,
+            ParameterSetName = 'projectspecific'
+        )]
+        [ValidateScript(
+            { 
+                $true #[System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-ProjectInfo repositories.name)
+            },
+            ErrorMessage = 'Please specify a correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                
+                $validValues = Get-ProjectInfo -Name $fakeBoundParameters['Project'] -return 'repositories.name'
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -59,12 +100,18 @@ function Get-RepositoryInfo {
         $Name,
 
         # Optional Path to a repository
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = 'currentProjectContext'
+        )]
         [System.String]
         $path,
 
         # Optional Id of a repository
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = 'currentProjectContext'
+        )]
         [System.String]
         $id,
 
@@ -81,8 +128,8 @@ function Get-RepositoryInfo {
         $refresh
     )  
 
+    $repositories = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$refresh
 
-    $repositories = Get-ProjectInfo 'repositories' -refresh:$refresh
     if (![System.String]::IsNullOrEmpty($Name)) {
         $repository = $repositories | Where-Object -Property Name -EQ -Value $Name
     }

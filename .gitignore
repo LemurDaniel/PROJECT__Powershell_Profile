@@ -22,7 +22,8 @@
 !.github/**
 !Module.nuspec.templ
 !Module.csproj.templ
-!nuget.config
+# Don't include copy in build-folder
+!/nuget.config 
 
 # Ignore additional folders
 .cache

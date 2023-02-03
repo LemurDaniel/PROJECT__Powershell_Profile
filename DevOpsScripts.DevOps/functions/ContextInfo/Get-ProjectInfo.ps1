@@ -46,7 +46,7 @@ function Get-ProjectInfo {
         )]
         [ValidateScript(
             { 
-                $_ -in (Get-DevOpsProjects).name
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
             },
             ErrorMessage = 'Please specify an correct Name.'
         )]
@@ -78,7 +78,7 @@ function Get-ProjectInfo {
     )
 
 
-    $ProjectName = $PSBoundParameters.ContainsKey('Name') ? $Name : (Get-DevOpsCurrentContext -Project)
+    $ProjectName = ![System.String]::IsNullOrEmpty($Name) ? $Name : (Get-DevOpsCurrentContext -Project)
     $Organization = Get-DevOpsCurrentContext -Organization
 
     $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName

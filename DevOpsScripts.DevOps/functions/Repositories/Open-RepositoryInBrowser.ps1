@@ -1,11 +1,12 @@
 
 <#
     .SYNOPSIS
-    Automatically opens a DevOps-Repository in the Browser. Different Sites can be opened by switches.
+    Automatically opens any DevOps-Repository in the Browser. Different Sites can be opened by switches.
 
     .DESCRIPTION
     Automatically opens a DevOps-Repository in the Browser. Different Sites can be opened by switches. 
     For easy access from cmd, without click through DevOps-Portal.
+    Prepending a Projectname can open any other Project without switching context.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,6 +15,27 @@
     None
 
 
+    .EXAMPLE
+
+    Open a repository in the current Project-Context (Tab for autocompletion):
+
+    PS> Open-RepositoryInBrowser '<autocompleted_reponame>'
+
+
+    .EXAMPLE
+
+    Open a repository from another project in the current Organization-Context:
+
+    PS> Open-RepositoryInBrowser -Project '<autocompleted_projectname>' '<autocompleted_repository_name>'
+
+    
+    .EXAMPLE
+
+    Open the pullrequest in a repository from another project in the current Organization-Context:
+
+    PS> Open-RepositoryInBrowser -Project '<autocompleted_projectname>' '<autocompleted_repository_name>' -PullRequest
+
+    repoBrowser -Project 'BRZ365 Galaxy' brz365-cpm-core -PullRequest
     .LINK
         
 #>
@@ -26,6 +48,58 @@ function Open-RepositoryInBrowser {
         ConfirmImpact = 'high'
     )]
     param (
+        # The name of the Project to swtich to in which you want to open a repository. Will default to curren tproject context.
+        [Parameter(
+            ParameterSetName = 'files',
+            Mandatory = $false,
+            Position = 1
+        )]
+        [Parameter(
+            ParameterSetName = 'PullRequest',
+            Mandatory = $false,
+            Position = 1
+        )]
+        [Parameter(
+            ParameterSetName = 'Branch',
+            Mandatory = $false,
+            Position = 1
+        )]
+        [Parameter(
+            ParameterSetName = 'Tags',
+            Mandatory = $false,
+            Position = 1
+        )]
+        [Parameter(
+            ParameterSetName = 'Commits',
+            Mandatory = $false,
+            Position = 1
+        )]
+        [Parameter(
+            ParameterSetName = 'Pushes',
+            Mandatory = $false,
+            Position = 1
+        )]
+        [ValidateScript(
+            { 
+               [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify a correct Projectname.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project,
+
+
+
         # The Name of the Repository. If null will default to current repository where command is executed.
         [Parameter(
             ParameterSetName = 'files',
@@ -59,14 +133,16 @@ function Open-RepositoryInBrowser {
         )]
         [ValidateScript(
             { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-ProjectInfo 'repositories.name')
+                # Todo, somehow by accessing $Project in here
+               $true #$_ -in (Get-ProjectInfo -Name $Project 'repositories.name')
             },
-            ErrorMessage = 'Please specify an correct Name.'
+            ErrorMessage = 'Please specify a correct Repositoryname.'
         )]
         [ArgumentCompleter(
             {
-                param($cmd, $param, $wordToComplete)
-                $validValues = Get-ProjectInfo 'repositories.name' 
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = Get-ProjectInfo -Name $fakeBoundParameters['Project'] -return 'repositories.name'
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -75,6 +151,8 @@ function Open-RepositoryInBrowser {
         )]
         [System.String]
         $Name,
+        
+        
 
         # Switch to open the Active-PullRequests-Site of the repository. Default is the repository itself.
         [Alias('pr')]
@@ -113,7 +191,7 @@ function Open-RepositoryInBrowser {
         $Pushes
     )
 
-    $repositoryUrl = Get-RepositoryInfo -name $name -return 'webUrl'
+    $repositoryUrl = Get-RepositoryInfo -Project $Project -name $name -return 'webUrl'
 
     if ($Branch) {
         $repositoryUrl = "$repositoryUrl/branches"

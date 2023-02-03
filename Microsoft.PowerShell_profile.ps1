@@ -93,7 +93,7 @@ if($gpgSigning){
     # Then Reload agent and set acutal Passphrase
     $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
     $null = git config --global --unset gpg.format
-    $null = git config --global user.signingkey $env:gpg_id   
+    $null = git config --global user.signingkey $gpg_id   
 
     $gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
     @(
@@ -103,7 +103,7 @@ if($gpgSigning){
     ) -join "`r`n" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
     $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
     $null = gpgconf --launch gpg-agent
-    $null = $gpg_phrase | ConvertFrom-SecureString -AsPlainText | gpg-preset-passphrase --preset $env:gpg_grip
+    $null = $gpg_phrase | ConvertFrom-SecureString -AsPlainText | gpg-preset-passphrase --preset $gpg_grip
 
     Write-Host 'Current Global Git Profile:'
     Write-Host "    $(git config --global user.name )"

@@ -74,7 +74,6 @@ function Invoke-OpenAIMoodToColor {
         Throw 'Nothing was returned'
     }
 
-    
     $window = New-WindowFromXAML -Path "$PSScriptRoot/ui/MoodToColorDialog.xaml" -Bind @{
         'HexDisplay.Background' = $HexCode
         'Prompt.Text' = $textResponse
@@ -82,7 +81,7 @@ function Invoke-OpenAIMoodToColor {
         TestButton = @{
             Width = 0
             Height = 0
-            Visibility = [System.Windows.Visibility]::Hidden
+            #Visibility = [System.Windows.Visibility]::Hidden
             Add_Click = {
                 Write-Host 'Test'
                 Write-Host 'Test'

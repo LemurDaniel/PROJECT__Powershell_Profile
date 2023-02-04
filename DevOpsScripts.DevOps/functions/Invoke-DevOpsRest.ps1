@@ -118,11 +118,16 @@ function Invoke-DevOpsRest {
         # A String to override the content-type. Get automatically set for Get and Post. May not be right for specifig Endpoints.
         [parameter()]
         [string]
-        $contentType
+        $contentType,
+
+        # A String to override the Organization.
+        [parameter()]
+        [string]
+        $Organization
     )
 
 
-    $Organization = Get-DevOpsContext -Organization
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
     $APIEndpoint = ($API -split '\?')[0]
     
     # Build a hashtable of providedy Query params and Query params in provied api-url.

@@ -50,23 +50,26 @@ function Get-DevOpsProjects {
         $Organization
     )
 
-    $Cache = Get-AzureDevOpsCache -Type Project -Organization $Organization -Identifier 'all'
-    if ($Cache) {
-        return $Cache
-    }
-    
-    $RequestBlueprint = @{
-        METHOD   = 'GET'
-        SCOPE    = 'ORG'
-        DOMAIN   = 'dev.azure'
-        API      = '_apis/projects?api-version=6.0'
-        Property = 'value'
-    }
-    $projects = Invoke-DevOpsRest @RequestBlueprint
+    $Projects = Get-AzureDevOpsCache -Type Project -Organization $Organization -Identifier 'all'
+    if (!$Projects) {
 
-    if (($projects | Measure-Object).Count -eq 0) {
-        Throw "Couldnt find any DevOps Projects associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
+        $RequestBlueprint = @{
+            METHOD          = 'GET'
+            SCOPE           = 'ORG'
+            DOMAIN          = 'dev.azure'
+            Organization    = $Organization
+            API             = '_apis/projects?api-version=6.0'
+            Property        = 'value'
+        }
+        $projects = Invoke-DevOpsRest @RequestBlueprint
+
+        if (($projects | Measure-Object).Count -eq 0) {
+            Throw "Couldnt find any DevOps Projects associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
+        }
+
+        $projects = Set-AzureDevOpsCache -Object $projects -Type Project -Organization $Organization -Identifier 'all'
+
     }
 
-    return Set-AzureDevOpsCache -Object $projects -Type Project -Organization $Organization -Identifier 'all'
+    return $projects
 }

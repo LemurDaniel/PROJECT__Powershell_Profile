@@ -90,13 +90,6 @@ function Register-DevOpsFeedAsPSRepository {
     $credentials = Get-PAT -Organization $Organization -Path $CredentialPath -patScopes 'vso.packaging' -HoursValid 24
     $PSRepository = Get-PSRepository -Name $PSRepositoryName -ErrorAction SilentlyContinue
 
-    if([System.String]::IsNullOrEmpty($ProjectName)){
-        $source = "https://pkgs.dev.azure.com/$Organization/_packaging/$ArtifactFeed/nuget/v2" -replace ' ','%20'
-    } else {
-        $source = "https://pkgs.dev.azure.com/$Organization/$ProjectName/_packaging/$ArtifactFeed/nuget/v2" -replace ' ','%20'
-    }
-
-
     if($PSRepository){
         $PSRepository = Set-PSRepository -Name $PSRepositoryName -Credential $credentials
     } else {

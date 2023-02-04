@@ -120,10 +120,15 @@ function Invoke-DevOpsRest {
         [string]
         $contentType,
 
-        # A String to override the Organization.
+        # A String to override the Project-Context.
         [parameter()]
         [string]
-        $Organization
+        $Organization,
+
+        # A String to override the Project-Context.
+        [parameter()]
+        [string]
+        $Project
     )
 
 
@@ -162,14 +167,14 @@ function Invoke-DevOpsRest {
             break
         }
         'PROJ' { 
-            $project = Get-ProjectInfo 'id'
+            $project = Get-ProjectInfo -Project $Project 'id'
             $TargetURL = "https://$Domain.com/$Organization/$project/$APIEndpoint`?$QueryString"
             break
         }
         'TEAM' { 
-            $project = Get-ProjectInfo 'id'
-            $team = Search-In (Get-ProjectInfo 'teams') -where name -has $team
-            $TargetURL = "https://$Domain.com/$Organization/$($project)/$($team.id)/$APIEndpoint`?$QueryString"
+            $project = Get-ProjectInfo -Project $Project
+            $team = Search-In $project.teams -where name -has $team
+            $TargetURL = "https://$Domain.com/$Organization/$($project.id)/$($team.id)/$APIEndpoint`?$QueryString"
             break
         }
     }

@@ -44,13 +44,13 @@ function Connect-Workitem {
         # Workitem Relation Type => Parent, Child, etc.
         [ValidateScript(
             {
-                $_ -in (Get-WorkItemRelationTypes -All -return name)
+                $_ -in (Get-WorkItemRelationTypes -All).name
             }
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = Get-WorkItemRelationTypes -All -return name
+                $validValues = Get-WorkItemRelationTypes -All | Select-Object -ExpandProperty name
      
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -73,7 +73,7 @@ function Connect-Workitem {
                 op    = 'add'
                 path  = '/relations/-'
                 value = @{
-                    rel        = Get-WorkItemRelationTypes $RelationType -return 'referenceName'
+                    rel        = Get-WorkItemRelationTypes $RelationType | Select-Object -ExpandProperty 'referenceName'
                     url        = $linkElementUrl
                     attributes = @{
                         name    = $RelationType

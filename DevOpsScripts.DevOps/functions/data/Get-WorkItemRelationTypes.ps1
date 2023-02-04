@@ -34,13 +34,13 @@ function Get-WorkItemRelationTypes {
         )]
         [ValidateScript(
             {
-                $_ -in ((Get-Content "$PSScriptRoot\.workItemRelationTypes.json") | ConvertFrom-Json).value.name
+                $_ -in (Get-WorkItemRelationTypes -All).name
             }
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = ((Get-Content "$PSScriptRoot\.workItemRelationTypes.json") | ConvertFrom-Json).value.name
+                $validValues = Get-WorkItemRelationTypes -All | Select-Object -ExpandProperty name
      
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -55,20 +55,26 @@ function Get-WorkItemRelationTypes {
             ParameterSetName = 'all'
         )]
         [switch]
-        $All,
-
-
-        # The Property to return from the items. If null will return full Properties.
-        [Alias('return')]
-        [Parameter()]
-        [System.String]
-        $Property
+        $All
     )
 
-    $workItemRelationTypes = ((Get-Content "$PSScriptRoot\.workItemRelationTypes.json") | ConvertFrom-Json).value
+
+    $workItemRelationTypes = Get-UtilsCache -Type WorkItemRelationTypes -Identifier all
+        
+    if(!$workItemRelationTypes){
+        $Request = @{
+            Method = 'GET'
+            CALL   = 'ORG'
+            API    = '_apis/wit/workitemrelationtypes?api-version=7.1-preview'
+        }
+        $workItemRelationTypes = Invoke-DevOpsRest @Request | Select-Object -ExpandProperty value
+        $workItemRelationTypes = Set-UtilsCache -Object $workItemRelationTypes -Type WorkItemRelationTypes -Identifier all
+    }
+
     if (!$All) {
-        $workItemRelationTypes = $workItemRelationTypes | Where-Object -Property name -EQ -Value $RelationType 
-    } 
+        return $workItemRelationTypes | Where-Object -Property name -EQ -Value $RelationType 
+    } else {
+        return $workItemRelationTypes
+    }
     
-    return Get-Property -Object $workItemRelationTypes -Property $Property
 }

@@ -27,9 +27,9 @@ function Set-AzureDevOpsCache {
     [CmdletBinding()]
     param (
         # The Powershell Object to be cached.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [PSCustomObject]
-        $Object,
+        $Object = @{},
 
         # The Type of the cache like Pipeline, Project, etc.
         [Parameter(Mandatory = $true)]

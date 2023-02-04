@@ -68,7 +68,7 @@ function Invoke-DevOpsRest {
         [Alias('Type')]
         [Parameter()]
         [System.String]
-        [ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev', 'app.vssps.visualstudio')]
+        [ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev', 'app.vssps.visualstudio', 'feeds.dev.azure')]
         $DOMAIN = 'dev.azure',
 
         # The scope to call. None, Organization, Project, Team.
@@ -198,5 +198,5 @@ function Invoke-DevOpsRest {
 
     Write-Verbose ($response | ConvertTo-Json -Depth 8)
 
-    Get-Property -Object $response -Property $Property
+    return Get-Property -Object $response -Property $Property
 }

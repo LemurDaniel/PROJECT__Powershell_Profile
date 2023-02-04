@@ -43,14 +43,17 @@ function Get-PAT {
         $HoursValid = 1,
 
         # An optional custom path to determine where to save/search existing PATs
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false
+        )]
         [System.String]
-        $Path = "$PSScriptRoot/.local"
+        $Path
     )
 
+    $Path = [System.String]::IsNullOrEmpty($Path) ? "$PSScriptRoot/.local" : $Path
 
-    if(!(Test-Path -Path $path)){
-        $null = New-Item -ItemType Directory -Path $path
+    if(!(Test-Path -Path $Path)){
+        $null = New-Item -ItemType Directory -Path $Path
     }
 
     $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes($patScopes) 

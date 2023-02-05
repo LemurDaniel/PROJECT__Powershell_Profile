@@ -58,10 +58,6 @@ class Tetromino {
         $this.TetrominoColor = [Tetromino]::Colors[$randomColor]
     }
 
-    [System.Void] Fall() {
-        $this.Position.Y += 1
-    }
-
     static [System.Windows.Shapes.Rectangle] drawTile($BlockWidth, $posX, $posY, $Color, $Opacity = 1) {
 
         $SolidColorBrush = [System.Windows.Media.SolidColorBrush]::new($Color)
@@ -93,14 +89,16 @@ class Tetromino {
                 # From Left to right
                 $hasBlock = ($bitRow -band (0b1000 -shr $col)) -gt 0
 
-                $posY = $this.Position.y + ($BlockWidth * $row)
-                $posX = $this.Position.x + ($BlockWidth * $col)
-        
-                $Block = [Tetromino]::drawTile($BlockWidth, $posX, $posY, $this.TetrominoColor, 1)
-                $Canvas.Children.Add($Block)
+                if($hasBlock){
+                    $posY = $this.Position.y * $BlockWidth + ($BlockWidth * $row)
+                    $posX = $this.Position.x * $BlockWidth + ($BlockWidth * $col)
+            
+                    $Block = [Tetromino]::drawTile($BlockWidth, $posX, $posY, $this.TetrominoColor, 1)
+                    $Canvas.Children.Add($Block)
+                }
             }
-        }
 
+        }
     }
 }
 

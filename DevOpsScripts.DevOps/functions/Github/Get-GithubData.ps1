@@ -29,7 +29,7 @@ function Get-GithubData {
         },@{
             Name = 'LocalPath';
             Expression = {
-                "$env:GIT_RepositoryPath\$($_.owner.login)\$($_.name)"
+                "$([System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\git\repos" : $env:GIT_RepositoryPath)\$($_.owner.login)\$($_.name)"
             }
         }, id, permissions, default_branch, name, full_name, description, private, visibility, html_url, url, clone_url, created_at, updated_at, pushed_at
     }

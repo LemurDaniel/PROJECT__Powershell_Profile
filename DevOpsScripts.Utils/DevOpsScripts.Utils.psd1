@@ -77,7 +77,7 @@ FunctionsToExport = 'Get-CleanFilename', 'Get-Property', 'Get-UtilsCache', 'Join
                'New-WindowWPF', 'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
                'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
                'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
-               'New-Tetromino', 'Tetris'
+               'New-TetrisGame', 'New-Tetromino'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

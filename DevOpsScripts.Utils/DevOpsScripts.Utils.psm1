@@ -5,6 +5,8 @@
                 }
             }
 
+            Add-Type -AssemblyName PresentationFramework
+
             @(
                 'functions'
             ) | `

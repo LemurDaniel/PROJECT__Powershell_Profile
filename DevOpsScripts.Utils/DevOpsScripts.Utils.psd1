@@ -54,7 +54,7 @@ PowerShellVersion = '7.2'
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @()
+RequiredAssemblies = 'PresentationFramework'
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
@@ -77,7 +77,7 @@ FunctionsToExport = 'Get-CleanFilename', 'Get-Property', 'Get-UtilsCache', 'Join
                'New-WindowWPF', 'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
                'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
                'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
-               'New-MiniGameBounds', 'New-Tetromino', 'Tetris'
+               'New-Tetromino', 'Tetris'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

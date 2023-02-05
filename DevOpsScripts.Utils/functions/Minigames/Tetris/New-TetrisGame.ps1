@@ -22,8 +22,7 @@ class Tetris {
 
         $BlockWidth  = [System.int32]($ActualWidth / $this.Size.x)
         $this.CurrentTetromino.draw($Canvas, $BlockWidth)
-
-        Write-Host 'Hello'
+        
     }
 
 
@@ -54,4 +53,11 @@ class Tetris {
 }
 
 
-#$Tetris = [Tetris]::new().Start()
+function New-TetrisGame {
+    param ()
+    
+    # Not finsihed, Distraction.
+    return [Tetris]::new().Start()
+
+}
+

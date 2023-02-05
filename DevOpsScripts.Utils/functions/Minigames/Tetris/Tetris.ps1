@@ -5,19 +5,13 @@ class Tetris {
     # Width and Height
     [System.Numerics.Vector2] $Size = [System.Numerics.Vector2]::new(10,24)
     [System.Diagnostics.Stopwatch] $GameTimer = [System.Diagnostics.Stopwatch]::new()
+    [System.Windows.Threading.DispatcherTimer] $DispatcherTimer
     [System.int16[]] $GameField
     [Tetromino] $CurrentTetromino
 
     Tetris() {
         $this.GameField = [System.int16[]]::new($this.Size.y)
         $this.CurrentTetromino = New-Tetromino -X 0 -Y 0
-
-        $this.GameTimer.start()
-    }
-
-    [System.Void] Tick() {
-        $this.CurrentTetromino.Position += [System.Numerics.Vector2]::UnitY
-        Write-Host $this.CurrentTetromino.Position
     }
 
     [System.Void] draw($Canvas) {
@@ -31,29 +25,33 @@ class Tetris {
 
         Write-Host 'Hello'
     }
-}
 
 
-$Tetris = [Tetris]::new()
-$item = Get-ChildItem -Recurse -Filter '*tetris.xaml' | Select -first 1
+    [System.Void] Start() {
 
-$window = New-WindowWPF -Path $item 
+        $item = Get-ChildItem -Recurse -Filter '*tetris.xaml' | Select -first 1
+        $window = New-WindowWPF -Path $item 
+       
+        
+        if($null -eq $this.DispatcherTimer) {
+            $this.GameTimer.start()
+            $this.DispatcherTimer = [System.Windows.Threading.DispatcherTimer]::new()
+            $this.DispatcherTimer.Interval = [timespan]::FromMilliseconds(1000)
 
-$window = New-WindowBindings -Window $window -Bind @{
-    Test = @{
+            $Tetris = $this
+            $this.DispatcherTimer.Add_Tick({              
+                $Tetris.CurrentTetromino.Position += [System.Numerics.Vector2]::UnitY
+                $Tetris.CurrentTetromino.Position
+                $Tetris.draw($window.FindName('Canvas'))
+                $window.FindName('Timer').Content = [System.String]::Format('{0:mm}:{0:ss}', $Tetris.GameTimer.Elapsed)
+            })
+        }
+            
+        $this.DispatcherTimer.start()
+        $window.ShowDialog()
 
     }
 }
 
-$dispatcherTimer = [System.Windows.Threading.DispatcherTimer]::new()
-$dispatcherTimer.Interval = [timespan]::FromMilliseconds(1000)
-$dispatcherTimer.Add_Tick({ 
-    
-    $Tetris.Tick()
-    $Tetris.draw($window.FindName('Canvas'))
-    $window.FindName('Timer').Content = [System.String]::Format('{0:mm}:{0:ss}', $Tetris.GameTimer.Elapsed)
-})
 
-#$dispatcherTimer.start()
-#$window.ShowDialog()
-
+#$Tetris = [Tetris]::new().Start()

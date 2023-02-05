@@ -30,6 +30,13 @@
     PS> Get-ProjectInfo 'name' 'BRZ365 Galaxy'
 
 
+    .EXAMPLE
+
+    Get a Property in the Projectinfo:
+
+    PS> Get-ProjectInfo 'autocompleted_property'
+    PS> Get-ProjectInfo 'Teams.<autocomleted_property'
+
     .LINK
         
 #>
@@ -67,6 +74,32 @@ function Get-ProjectInfo {
         [Alias('return')]
         [Parameter(
             Position = 0
+        )]
+        # Just for testing
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundsParameters)
+
+                $object = Get-ProjectInfo -name $fakeBoundsParameters['Name']
+                $autoCompletePrefix = @()
+
+                if($wordToComplete.contains('.')){
+                    # Won't work for thins like, 'System.Title' which is one Property with a dot in it.
+                    $wordToComplete.split('.') | Select-Object -SkipLast 1 | ForEach-Object {
+                        $autoCompletePrefix += $_
+                        $object = $object."$_" | Select-Object -First 1
+                    }
+                }
+                
+                $validValues = $object.PSObject.Properties.Name | ForEach-Object { 
+                    $autoCompletePrefix.Length -eq 0 ? $_ : "$($autoCompletePrefix -join '.').$_"
+                }
+                
+                $validValues | `
+                    Where-Object {
+                        $_.toLower() -like ($wordToComplete.Length -lt 3 ? "$wordToComplete*" : "*$wordToComplete*").toLower() 
+                    } | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
         )]
         [System.String]
         $Property,

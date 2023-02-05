@@ -148,7 +148,7 @@ function Get-RepositoryInfo {
     }
 
     if (!$repository) {
-        Throw "Repository '$($repoName)' not found in current Project '$(Get-ProjectInfo -Project $Project 'name')'"
+        Throw "Repository '$($repoName)' not found in current Project '$(Get-ProjectInfo -Name $Project 'name')'"
     }
 
     return $repository | Get-Property -return $Property

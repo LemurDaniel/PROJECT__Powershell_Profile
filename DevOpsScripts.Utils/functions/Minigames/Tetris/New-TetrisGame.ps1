@@ -30,8 +30,8 @@ class Tetris {
 
     [System.Void] Start() {
 
-        $item = Get-ChildItem -Recurse -Filter '*tetris.xaml' | Select -first 1
-        $window = New-WindowWPF -Path $item 
+        #$item = Get-ChildItem -Recurse -Filter '*tetris.xaml' | Select -first 1
+        $window = New-WindowWPF -Path "$PSScriptRoot/tetris.xaml"
        
         
         if($null -eq $this.DispatcherTimer) {

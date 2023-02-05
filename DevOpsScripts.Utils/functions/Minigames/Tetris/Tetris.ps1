@@ -26,6 +26,7 @@ class Tetris {
     }
 }
 
+<#
 $Tetris = [Tetris]::new()
 $item = Get-ChildItem -Recurse -Filter '*tetris.xaml'
 
@@ -41,3 +42,5 @@ $window = New-WindowBindings -Window $window -Bind @{
 }
 
 $window.ShowDialog()
+
+#>

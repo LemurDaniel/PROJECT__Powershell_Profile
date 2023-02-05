@@ -8,6 +8,8 @@
     "powershellversion": "7.2",
     "dependencies": {
         "modules": [],
-        "assemblies": []
+        "assemblies": [
+            "PresentationFramework"
+        ]
     }
 }

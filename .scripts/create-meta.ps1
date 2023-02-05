@@ -92,6 +92,8 @@ $buildFolderModules | ForEach-Object {
                 }
             }
 
+            {{ASSEMBLIES}}
+
             @(
                 'functions'
             ) | `
@@ -114,11 +116,15 @@ $buildFolderModules | ForEach-Object {
                 }
             }
 
+            {{ASSEMBLIES}}
+
             # For Testing
             {{MODULE_IMPORTS}}
         }
     }
 
+
+    # Import Modules in correct Order
     $moduleImportsUnsorted = [System.Collections.ArrayList]::new()
     $moduleImportsSorted = [System.Collections.ArrayList]::new()
     $null = $buildFolderModules | ` 
@@ -149,8 +155,14 @@ $buildFolderModules | ForEach-Object {
     $moduleImports = $moduleImportsSorted | ForEach-Object {
         $buildNuget ? "Import-Module $($_.BaseName) -Global" : ('Import-Module (Resolve-Path "$PSScriptRoot\..\'+($_.BaseName)+'") -Global')
     }
- 
+
+    # Import Assemblies
+    $assemblies = $_meta.dependencies.Assemblies | ForEach-Object {
+        "Add-Type -AssemblyName $_"
+    }
+
     $rootModuleContent `
+        -replace '{{ASSEMBLIES}}', ($assemblies -Join "`n") `
         -replace '{{MODULE_IMPORTS}}', ($moduleImports -Join "`n")`
         -replace '{{PSVERSION}}', $_meta.powershellversion | `
         Out-File -FilePath (Join-Path -Path $_modulePath -ChildPath "$($_.Name).psm1")

@@ -43,7 +43,7 @@ function New-WindowWPF {
         $window = [System.Windows.Markup.XamlReader]::Load($reader)
         $window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::CenterScreen
         $null = $window.Activate()
-        $null = New-WindowBindings -Window $window -Bind $Bind        
+        #$null = New-WindowBindings -Window $window -Bind $Bind        
 
         # Note: Finally will also be executed on return.
         # https://stackoverflow.com/questions/345091/will-code-in-a-finally-statement-fire-if-i-return-a-value-in-a-try-block
@@ -58,6 +58,5 @@ function New-WindowWPF {
 
 }
 
-Add-Type -AssemblyName PresentationFramework
 # Create a window from a XAMl which apperently causes all necessery assemblies to be loaded?
 $window = New-WindowWPF -Path "$PSScriptRoot/template/empty.xaml"

@@ -62,8 +62,27 @@ class Tetromino {
         $this.Position.Y += 1
     }
 
+    static [System.Windows.Shapes.Rectangle] drawTile($BlockWidth, $posX, $posY, $Color, $Opacity = 1) {
 
-    draw($Canvas, $BlockWidth) {
+        $SolidColorBrush = [System.Windows.Media.SolidColorBrush]::new($Color)
+        $Block = [System.Windows.Shapes.Rectangle]::new()
+        $Block.Stroke = [System.Windows.Media.Brushes]::Black
+        $Block.StrokeThickness = 1
+        $Block.Fill    = $SolidColorBrush
+        $Block.Opacity = $Opacity
+    
+        $Block.Width  = $BlockWidth 
+        $Block.Height = $BlockWidth
+        $Block.Effect = [System.Windows.Media.Effects.DropShadowEffect]::new()
+        $Block.Effect.Color = $Color
+        $Block.Effect.Opacity = 0.5
+
+        [System.Windows.Media.TranslateTransform] $translate = [System.Windows.Media.TranslateTransform]::new($posX, $posY)
+        $Block.RenderTransform = $translate
+        return $Block
+    }
+
+    [System.Void] draw($Canvas, $BlockWidth) {
     
         # Always two rows and 4 columns
         for ($row = 0; $row -lt 2; $row++) {
@@ -74,31 +93,11 @@ class Tetromino {
                 # From Left to right
                 $hasBlock = ($bitRow -band (0b1000 -shr $col)) -gt 0
 
-                Write-Host $hasBlock
-                if($hasBlock){
-                
-                    $SolidColorBrush = [System.Windows.Media.SolidColorBrush]::new($this.TetrominoColor)
-
-                    $Block = [System.Windows.Shapes.Rectangle]::new()
-                    $Block.Stroke = [System.Windows.Media.Brushes]::Black
-                    $Block.Fill   = $SolidColorBrush
-                    $Block.StrokeThickness = 1
-                
-                    $Block.Width  =  $BlockWidth 
-                    $Block.Height =  $BlockWidth 
-
-                    $Block.Effect = [System.Windows.Media.Effects.DropShadowEffect]::new()
-                    $Block.Effect.Color = $this.TetrominoColor
-                    $Block.Effect.Opacity = 0.5
-            
-                    $posY = $this.Position.y + ($BlockWidth * $row)
-                    $posX = $this.Position.x + ($BlockWidth * $col)
-                    Write-Host Test, $posX, $posY
-                    [System.Windows.Media.TranslateTransform] $translate = [System.Windows.Media.TranslateTransform]::new($posX, $posY)
-                    $Block.RenderTransform = $translate
-                    $Canvas.Children.Add($Block)
-
-                }
+                $posY = $this.Position.y + ($BlockWidth * $row)
+                $posX = $this.Position.x + ($BlockWidth * $col)
+        
+                $Block = [Tetromino]::drawTile($BlockWidth, $posX, $posY, $this.TetrominoColor, 1)
+                $Canvas.Children.Add($Block)
             }
         }
 

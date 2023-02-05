@@ -13,7 +13,6 @@
                 <Canvas x:Name="Canvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
             </Border>
-            <Button x:Name="Test">Draw Stuff</Button>
         </StackPanel>
 
     </Grid>

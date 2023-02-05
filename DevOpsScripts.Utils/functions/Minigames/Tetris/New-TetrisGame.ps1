@@ -4,14 +4,16 @@ class Tetris {
     
     # Width and Height
     [System.Numerics.Vector2] $Size = [System.Numerics.Vector2]::new(10,24)
+
     [System.Diagnostics.Stopwatch] $GameTimer = [System.Diagnostics.Stopwatch]::new()
     [System.Windows.Threading.DispatcherTimer] $DispatcherTimer
+
     [System.int16[]] $GameField
     [Tetromino] $CurrentTetromino
 
     Tetris() {
         $this.GameField = [System.int16[]]::new($this.Size.y)
-        $this.CurrentTetromino = New-Tetromino -X 0 -Y 0
+        $this.CurrentTetromino = New-TetrisBlock -X 0 -Y 0
     }
 
     [System.Void] draw($Canvas) {
@@ -57,6 +59,7 @@ function New-TetrisGame {
     param ()
     
     # Not finsihed, Distraction.
+    Write-Host -Foreground GREEN "(Not finished yet) Look at the Taskbar. Window might not be focused."
     return [Tetris]::new().Start()
 
 }

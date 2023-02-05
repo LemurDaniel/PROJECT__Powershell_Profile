@@ -103,7 +103,7 @@ class Tetromino {
 }
 
 
-function New-Tetromino {
+function New-TetrisBlock {
 
     [CmdletBinding()]
     param (

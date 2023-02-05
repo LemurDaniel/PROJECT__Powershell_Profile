@@ -36,9 +36,10 @@ class Tetromino {
 
     static [System.Windows.Media.Color[]]$Colors = @(
         [System.Windows.Media.Color]::FromArgb(255,255,255,0),
-        [System.Windows.Media.Color]::FromArgb(255,0,0,0),
-        [System.Windows.Media.Color]::FromArgb(0,0,255,0),
-        [System.Windows.Media.Color]::FromArgb(0,255,0,0)
+        [System.Windows.Media.Color]::FromArgb(255,0,255,255),
+        [System.Windows.Media.Color]::FromArgb(255,0,0,255),
+        [System.Windows.Media.Color]::FromArgb(255,0,255,0),
+        [System.Windows.Media.Color]::FromArgb(255,255,0,0)
     )
 
     #################################################
@@ -76,8 +77,7 @@ class Tetromino {
                 Write-Host $hasBlock
                 if($hasBlock){
                 
-                    $Color = [System.Windows.Media.Color]::FromArgb(255,255,255,0)
-                    $SolidColorBrush = [System.Windows.Media.SolidColorBrush]::new($Color)
+                    $SolidColorBrush = [System.Windows.Media.SolidColorBrush]::new($this.TetrominoColor)
 
                     $Block = [System.Windows.Shapes.Rectangle]::new()
                     $Block.Stroke = [System.Windows.Media.Brushes]::Black
@@ -86,6 +86,10 @@ class Tetromino {
                 
                     $Block.Width  =  $BlockWidth 
                     $Block.Height =  $BlockWidth 
+
+                    $Block.Effect = [System.Windows.Media.Effects.DropShadowEffect]::new()
+                    $Block.Effect.Color = $this.TetrominoColor
+                    $Block.Effect.Opacity = 0.5
             
                     $posY = $this.Position.y + ($BlockWidth * $row)
                     $posX = $this.Position.x + ($BlockWidth * $col)

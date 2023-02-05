@@ -17,6 +17,8 @@ class Tetris {
         $ActualHeight = $Canvas.ActualHeight
         $ActualWidth = $Canvas.ActualWidth
 
+        $Canvas.Children.Clear()
+
         $BlockWidth  = [System.int32]($ActualWidth / $this.Size.x)
         $this.CurrentTetromino.draw($Canvas, $BlockWidth)
 

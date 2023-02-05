@@ -73,10 +73,11 @@ FunctionsToExport = 'Get-CleanFilename', 'Get-Property', 'Get-UtilsCache', 'Join
                'Read-SecureStringFromFile', 'Save-SecureStringToFile', 'Search-In', 
                'Set-UtilsCache', 'Format-SendGridContent', 
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'New-SendGridHtmlFormat', 'New-Stylesheet', 'New-WindowFromXAML', 
-               'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
+               'New-SendGridHtmlFormat', 'New-Stylesheet', 'New-WindowBindings', 
+               'New-WindowWPF', 'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
                'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
-               'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor'
+               'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
+               'New-MiniGameBounds', 'New-Tetromino', 'Tetris'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

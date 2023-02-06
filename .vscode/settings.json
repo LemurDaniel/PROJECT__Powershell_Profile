@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "*.wiql": "sql"
-    }
+    },
+    "liveServer.settings.port": 5501
 }

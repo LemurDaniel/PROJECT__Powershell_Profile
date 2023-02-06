@@ -33,7 +33,8 @@
                 -ResourceType 'Disks' `
                 -PreviousProperty previousDiskSizeBytes `
                 -NewProperty newDiskSizeBytes `
-                -Order Name, previousDiskSizeBytes, newDiskSizeBytes, skuName, skuTier, resourceGroup
+                -Order TimeStamp, Name, previousDiskSizeBytes, newDiskSizeBytes, skuName, skuTier, ResourceGroup `
+                -PropertiesAsLink @{ Name = 'ResourceUrl' }
 
     PS> $resourceReport | Out-File resourceReport.html
 #>
@@ -66,13 +67,51 @@ function Format-SendGridResourceReport {
         [System.String]
         $newProperty,
 
+        # Parameter for defining which Property gets interpreted as a Link. If the key is Found, will use elements from the Key as LinkNames.
+        [Parameter(Mandatory = $false)]
+        [System.Collections.Hashtable]
+        $PropertiesAsLink = @{},
+
         # Defines which properties of the Input will be put in the table in which order.
         [Parameter(Mandatory = $false)]
         [System.String[]]
-        $Order = '*'
+        $Order = '*',
+
+        # Defines how the Timestamp gets interpreted.
+        [Parameter(Mandatory = $false)]
+        [ValidateSet(
+            'Central Europe Standard Time'
+        )]
+        [System.String]
+        $timeZone = 'Central Europe Standard Time'
     )
-  
+
+    $LookupTable = @{
+        'UTC' = 1440
+        'Central Europe Standard Time' = 37
+    }
+    $timeZoneInfo  = [System.TimeZoneInfo]::FindSystemTimeZoneById($timeZone)
+    $TimeStampName = "TimeStamp ($($timeZone -creplace '[a-z\s]', ''))"
+    $TimeConversionLink = "https://www.timeanddate.com/worldclock/converter.html?iso={0}&p1=$($LookupTable['UTC'])&p2=$($LookupTable[$timeZone])"
+
+    $null  = $PropertiesAsLink.Add($TimeStampName, 'TimeStampConversionLink')
+    $Order = $Order | ForEach-Object { $_ -eq 'TimeStamp' ? $TimeStampName : $_ }
+
+    Write-Host -ForegroundColor Yellow "Converting Content to be send via SendGrid `n`n"
+      
     $SendGridHTMLFormat = New-SendGridHtmlFormat
+
+    $ResourceData = $ResourceData | Select-Object *, @{
+        Name       = $TimeStampName
+        Expression = {
+            ([System.TimeZoneInfo]::ConvertTimeFromUtc($_.TimeStamp, $timeZoneInfo).toString('dd.MM.yyyy  HH:mm:ss'))
+        }
+    }, @{
+        Name       = 'TimeStampConversionLink'
+        Expression = {
+            [System.String]::Format($TimeConversionLink, $_.TimeStamp.toString('yyyyMMddTHHmmss'))
+        }
+    }
 
     $updatedResources = $resourceData | Where-Object -Property Operation -EQ 'Update' 
     $createdResources = $resourceData | Where-Object -Property Operation -EQ 'Create' 
@@ -84,7 +123,7 @@ function Format-SendGridResourceReport {
 
         $SendGridHTMLFormat = $updatedResources | `
             Format-SendGridContent -SendGridHTMLFormat $SendGridHTMLFormat `
-            -PropertiesAsLink @{ Name = 'resourceUrl' } `
+            -PropertiesAsLink $PropertiesAsLink `
             -Order $Order -ExcludeProperty TimeLived `
             -CSS_STYLE 'TABLE_STYLE_BLUE' `
             -ContentInsert "
@@ -98,7 +137,7 @@ function Format-SendGridResourceReport {
 
         $SendGridHTMLFormat = $createdResources | `
             Format-SendGridContent -SendGridHTMLFormat $SendGridHTMLFormat `
-            -PropertiesAsLink @{ Name = 'resourceURL' } `
+            -PropertiesAsLink $PropertiesAsLink `
             -Order $Order -ExcludeProperty $previousProperty, TimeLived `
             -CSS_STYLE 'TABLE_STYLE_GREEN' `
             -ContentInsert "
@@ -112,7 +151,7 @@ function Format-SendGridResourceReport {
 
         $SendGridHTMLFormat = $deletedResources | `
             Format-SendGridContent -SendGridHTMLFormat $SendGridHTMLFormat `
-            -PropertiesAsLink @{ Name = 'resourceURL' } `
+            -PropertiesAsLink $PropertiesAsLink `
             -Order $Order -ExcludeProperty $newProperty, TimeLived `
             -CSS_STYLE 'TABLE_STYLE_RED' `
             -ContentInsert "
@@ -126,7 +165,7 @@ function Format-SendGridResourceReport {
 
         $SendGridHTMLFormat = $recreatedResources | `
             Format-SendGridContent -SendGridHTMLFormat $SendGridHTMLFormat `
-            -PropertiesAsLink @{ Name = 'resourceURL' } `
+            -PropertiesAsLink $PropertiesAsLink `
             -Order $Order -ExcludeProperty $previousProperty, TimeLived `
             -CSS_STYLE 'TABLE_STYLE_YELLOW' `
             -ContentInsert "
@@ -140,7 +179,7 @@ function Format-SendGridResourceReport {
 
         $SendGridHTMLFormat = $createdAndDeletedResources | `
             Format-SendGridContent -SendGridHTMLFormat $SendGridHTMLFormat `
-            -PropertiesAsLink @{ Name = 'resourceURL' } `
+            -PropertiesAsLink $PropertiesAsLink `
             -Order $Order `
             -CSS_STYLE 'TABLE_STYLE_ORANGE' `
             -ContentInsert "
@@ -149,6 +188,9 @@ function Format-SendGridResourceReport {
             `$1
             "
     }
+
+
+    Write-Host -ForegroundColor Green "`n`n Finished Converting Content"
 
     return $SendGridHTMLFormat.toHTMLString()
 }

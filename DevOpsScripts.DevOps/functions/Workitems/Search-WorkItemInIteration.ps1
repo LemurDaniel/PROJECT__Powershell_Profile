@@ -132,7 +132,7 @@ function Search-WorkItemInIteration {
 
     $TargetIteration = $Current ? (Get-SprintIterations -Current) : ((Get-SprintIterations) | Where-Object -Property name -EQ -Value $Iteration)
     
-    $workItems = Get-AzureDevOpsCache -Type WITSearch -Identifier "$($TargetIteration.id)"
+    #$workItems = Get-AzureDevOpsCache -Type WITSearch -Identifier "$($TargetIteration.id)"
     if (!$workItems) {
         $Request = @{
             Method = 'GET'
@@ -164,7 +164,7 @@ function Search-WorkItemInIteration {
         }
 
         $workItems = (Invoke-DevOpsRest @Request).value.fields
-        $workItems = Set-AzureDevOpsCache -Object $workItems -Type WITSearch -Identifier "$($TargetIteration.id)" -Alive 10
+        #$workItems = Set-AzureDevOpsCache -Object $workItems -Type WITSearch -Identifier "$($TargetIteration.id)" -Alive 10
     }
 
 

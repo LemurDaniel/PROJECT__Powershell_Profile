@@ -138,10 +138,6 @@ function Open-Repository {
         git -C $repository.Localpath clone $repository.remoteUrl .
     }      
 
-
-    git config --global --get-all safe.directory | ForEach-Object { $_.contains('sssss') }
-
-
     $item = Get-Item -Path $repository.Localpath 
     $safeDirectoyPath = ($item.Fullname -replace '[\\]+', '/' )
     $included = (git config --global --get-all safe.directory | Where-Object { $_ -eq $safeDirectoyPath } | Measure-Object).Count -gt 0

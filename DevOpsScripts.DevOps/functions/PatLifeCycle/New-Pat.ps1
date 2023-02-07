@@ -31,7 +31,7 @@ function New-PAT {
         # A list of permission scopes for the PAT.
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $patScopes,
+        $PatScopes,
 
         # The Organization in which the PAT shoul be created. Defaults to current Context.
         [Parameter()]
@@ -58,8 +58,8 @@ function New-PAT {
         }
         Body    = @{
             displayName = $PatName
-            scope       = $patScopes -join ' '
-            validTo     = ([DateTime]::now).AddHours($HoursValid)
+            scope       = $PatScopes -join ' '
+            validTo     = [DateTime]::now.ToUniversalTime().AddHours($HoursValid)
             allOrgs     = $false
         } | ConvertTo-Json
     }

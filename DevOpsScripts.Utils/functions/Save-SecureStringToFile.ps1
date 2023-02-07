@@ -44,8 +44,7 @@ function Save-SecureStringToFile {
         $Path
     )
 
-    $Path = [System.String]::IsNullOrEmpty($Path) ? $env:USERPROFILE : $Path
-    $directory = "$Path/.secure_devopsscripts/"
+    $directory = [System.String]::IsNullOrEmpty($Path) ? "$env:USERPROFILE/.secure_devopsscripts/" : $Path
     $filename = ".$Identifier.secure" | Get-CleanFilename
     $filePath = Join-Path -Path $directory -ChildPath $filename
 

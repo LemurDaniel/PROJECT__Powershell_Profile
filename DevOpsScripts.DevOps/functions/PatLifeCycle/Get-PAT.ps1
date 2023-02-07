@@ -35,7 +35,7 @@ function Get-PAT {
         # A list of permission scopes for the PAT.
         [Parameter()]
         [System.String[]]
-        $patScopes = @(),
+        $PatScopes = @(),
 
        # How many Hours the generated PAT will be valid.
         [Parameter()]
@@ -47,7 +47,12 @@ function Get-PAT {
             Mandatory = $false
         )]
         [System.String]
-        $Path
+        $Path,
+
+        # Optional Parameter to return null if not PAT is found or expired, instead of creating a new one.
+        [Parameter()]
+        [switch]
+        $OnlyRead
     )
 
     $Path = [System.String]::IsNullOrEmpty($Path) ? "$PSScriptRoot/.local" : $Path
@@ -56,14 +61,21 @@ function Get-PAT {
         $null = New-Item -ItemType Directory -Path $Path
     }
 
-    $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes($patScopes) 
+    $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes($PatScopes) 
     $hex = [System.Convert]::ToHexString($bytes)
 
     $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
     $localPat = Read-SecureStringFromFile -Identifier "$hex.$Organization.pat" -AsPlainText -Path $Path | ConvertFrom-Json
 
-    if ($null -eq $localPat -OR $localPat.validTo -lt [DateTime]::now) {
-        $localPat = New-PAT -Organization $Organization -patScopes $patScopes -HoursValid $HoursValid | `
+    if ($null -eq $localPat -OR $localPat.validTo -lt [DateTime]::now.ToUniversalTime()) {
+
+        if($OnlyRead){
+            return $null
+        }
+
+        Write-Verbose 'Generating new PAT'
+
+        $localPat = New-PAT -Organization $Organization -PatScopes $PatScopes -HoursValid $HoursValid | `
             Select-Object -Property displayName, validTo, scope, authorizationId, @{
                 Name = 'pass';
                 Expression = {
@@ -80,5 +92,5 @@ function Get-PAT {
     }
 
     $localPat.pass = $localPat.pass | ConvertTo-SecureString
-    return New-Object System.Management.Automation.PSCredential($localPat.user, $localPat.pass)
+    return [System.Management.Automation.PSCredential]::new($localPat.user, $localPat.pass)
 }

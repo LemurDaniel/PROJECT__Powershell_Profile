@@ -61,8 +61,13 @@ function Open-RepositoryGithub {
         git -C $repository.LocalPath clone $repository.clone_url .
     }
     
+    $safeDirectoyPath = ($repository.LocalPath -replace '[\\]+', '/' )
+    $included = (git config --global --get-all safe.directory | Where-Object { $_ -eq $safeDirectoyPath } | Measure-Object).Count -gt 0
+    if (!$included) {
+        $null = git config --global --add safe.directory $safeDirectoyPath
+    }
+
     $user = Get-GitUser
-    $null = git config --global --add safe.directory ($repository.LocalPath -replace '[\\]+', '/' )
     $null = git -C $repository.LocalPath config --local user.name $user.login 
     $null = git -C $repository.LocalPath config --local user.email $user.email
 

@@ -138,8 +138,17 @@ function Open-Repository {
         git -C $repository.Localpath clone $repository.remoteUrl .
     }      
 
+
+    git config --global --get-all safe.directory | ForEach-Object { $_.contains('sssss') }
+
+
     $item = Get-Item -Path $repository.Localpath 
-    $null = git config --global --add safe.directory ($item.Fullname -replace '[\\]+', '/' )
+    $safeDirectoyPath = ($item.Fullname -replace '[\\]+', '/' )
+    $included = (git config --global --get-all safe.directory | Where-Object { $_ -eq $safeDirectoyPath } | Measure-Object).Count -gt 0
+    if(!$included){
+        $null = git config --global --add safe.directory $safeDirectoyPath
+    }
+ 
     $null = git -C $repository.Localpath config --local commit.gpgsign false
     $null = git -C $repository.Localpath config --local user.name "$userName" 
     $null = git -C $repository.Localpath config --local user.email "$userMail"

@@ -30,3 +30,6 @@
 .context.*.json
 /modules
 /bin
+
+
+**/PatLifeCycle/.local/**

@@ -13,7 +13,7 @@ class Tetris {
 
     Tetris() {
         $this.GameField = [System.int16[]]::new($this.Size.y)
-        $this.CurrentTetromino = New-TetrisBlock -X 0 -Y -1
+        $this.CurrentTetromino = New-TetrisBlock -X 0 -Y -1 -TetrisSize $this.Size
     }
 
     [System.Void] draw($Canvas) {
@@ -24,7 +24,7 @@ class Tetris {
         $Canvas.Children.Clear()
 
         if ($this.CurrentTetromino.Position.Y -lt $this.Size.Y -2) {
-            Write-Host $this.CurrentTetromino.Position.Y
+            #Write-Host $this.CurrentTetromino.Position.Y
             $this.CurrentTetromino.Position += [System.Numerics.Vector2]::UnitY
         }
         $this.CurrentTetromino.draw($Canvas, $BlockWidth)
@@ -50,10 +50,20 @@ class Tetris {
                 $window.FindName('Timer').Content = [System.String]::Format('{0:mm}:{0:ss}', $Tetris.GameTimer.Elapsed)
             }
 
+            $keyEventHandler = {
+                param($eventSender, $keyEventArgs)
+                
+                if ($keyEventArgs.Key -in @([System.Windows.Input.Key]::Left, [System.Windows.Input.Key]::Right)) {
+                    $Tetris.CurrentTetromino.LastKeyEventBeforeTick = $keyEventArgs
+                }
+            }
+
             $Tetris.DispatcherTimer.Add_Tick($eventHandler)
+            $window.Add_KeyDown($keyEventHandler)
             $window.Add_Closing({
                     $Tetris.DispatcherTimer.stop()
                     $Tetris.DispatcherTimer.Remove_Tick($eventHandler)
+                    $window.Remove_KeyDown($keyEventHandler)
                 })
         }
             

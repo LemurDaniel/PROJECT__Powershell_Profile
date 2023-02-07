@@ -32,7 +32,7 @@ function Get-CleanFilename {
         $regex = [System.String]::Format('[{0}]', [regex]::Escape( $invalidChars))
     }
     PROCESS {
-        [regex]::Replace($Filename, $regex, '_')
+        [regex]::Replace($Filename, $regex, '_').toLower()
     }
     END {}
 }

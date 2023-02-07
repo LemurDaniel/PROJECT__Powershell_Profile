@@ -27,17 +27,28 @@
 
 function Get-PAT {
     param (
+        # The optional Name of the retrieved or newly created pat.
+        [Parameter(
+          Mandatory = $false
+        )]
+        [System.String]
+        $Name = "",
+
         # The Organozation in which the PAT shoul be created. Defaults to current Context.
-        [Parameter()]
+        [Parameter(
+          Mandatory = $true
+        )]
         [System.String]
         $Organization,
 
         # A list of permission scopes for the PAT.
-        [Parameter()]
+        [Parameter(
+          Mandatory = $true
+        )]
         [System.String[]]
-        $PatScopes = @(),
+        $PatScopes,
 
-       # How many Hours the generated PAT will be valid.
+        # How many Hours the generated PAT will be valid.
         [Parameter()]
         [System.Int32]
         $HoursValid = 1,
@@ -61,11 +72,12 @@ function Get-PAT {
         $null = New-Item -ItemType Directory -Path $Path
     }
 
-    $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes($PatScopes) 
-    $hex = [System.Convert]::ToHexString($bytes)
-
-    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
-    $localPat = Read-SecureStringFromFile -Identifier "$hex.$Organization.pat" -AsPlainText -Path $Path | ConvertFrom-Json
+    $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes(@(
+        ($PatScopes | ForEach-Object { $_ }), $name, $Organization
+    )) 
+    $identifier = [System.Convert]::ToHexString($bytes)
+    
+    $localPat = Read-SecureStringFromFile -Identifier "$identifier.pat" -AsPlainText -Path $Path | ConvertFrom-Json
 
     if ($null -eq $localPat -OR $localPat.validTo -lt [DateTime]::now.ToUniversalTime()) {
 
@@ -88,7 +100,7 @@ function Get-PAT {
                 }
             }
 
-        Save-SecureStringToFile -PlainText ($localPat | ConvertTo-Json -Compress) -Identifier "$hex.$Organization.pat" -Path $Path
+        Save-SecureStringToFile -PlainText ($localPat | ConvertTo-Json -Compress) -Identifier "$identifier.pat" -Path $Path
     }
 
     $localPat.pass = $localPat.pass | ConvertTo-SecureString

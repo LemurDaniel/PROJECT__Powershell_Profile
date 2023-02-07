@@ -28,15 +28,26 @@ function New-PAT {
 
     [CmdletBinding()]
     param (
-        # A list of permission scopes for the PAT.
-        [Parameter(Mandatory = $true)]
-        [System.String[]]
-        $PatScopes,
+         # The optional Name of the retrieved or newly created pat.
+        [Parameter(
+          Mandatory = $false
+        )]
+        [System.String]
+        $Name,
 
-        # The Organization in which the PAT shoul be created. Defaults to current Context.
-        [Parameter()]
+        # The Organozation in which the PAT shoul be created. Defaults to current Context.
+        [Parameter(
+          Mandatory = $true
+        )]
         [System.String]
         $Organization,
+
+        # A list of permission scopes for the PAT.
+        [Parameter(
+          Mandatory = $true
+        )]
+        [System.String[]]
+        $PatScopes,
 
         # How many Hours the generated PAT will be valid.
         [Parameter()]
@@ -45,8 +56,8 @@ function New-PAT {
     )
 
     $CurrentUser = (Get-AzContext).Account.id
-    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
-    $PatName = "User_$CurrentUser` API-generated PAT"
+    
+    $PatName =  [System.String]::IsNullOrEmpty($Name) ? "User_$CurrentUser` API-generated PAT" : $Name
 
     $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
     $Request = @{

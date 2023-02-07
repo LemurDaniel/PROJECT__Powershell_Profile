@@ -3,7 +3,7 @@
 class Tetris {
     
     # Width and Height
-    [System.Numerics.Vector2] $Size = [System.Numerics.Vector2]::new(10,24)
+    [System.Numerics.Vector2] $Size = [System.Numerics.Vector2]::new(10, 20)
 
     [System.Diagnostics.Stopwatch] $GameTimer = [System.Diagnostics.Stopwatch]::new()
     [System.Windows.Threading.DispatcherTimer] $DispatcherTimer
@@ -13,16 +13,20 @@ class Tetris {
 
     Tetris() {
         $this.GameField = [System.int16[]]::new($this.Size.y)
-        $this.CurrentTetromino = New-TetrisBlock -X 0 -Y 0
+        $this.CurrentTetromino = New-TetrisBlock -X 0 -Y -1
     }
 
     [System.Void] draw($Canvas) {
-        $ActualHeight = $Canvas.ActualHeight
-        $ActualWidth = $Canvas.ActualWidth
+
+        $BlockWidth = [System.int32]($Canvas.ActualWidth / $this.Size.x)
+        $Canvas.Height = $BlockWidth * $this.Size.Y
 
         $Canvas.Children.Clear()
 
-        $BlockWidth  = [System.int32]($ActualWidth / $this.Size.x)
+        if ($this.CurrentTetromino.Position.Y -lt $this.Size.Y -2) {
+            Write-Host $this.CurrentTetromino.Position.Y
+            $this.CurrentTetromino.Position += [System.Numerics.Vector2]::UnitY
+        }
         $this.CurrentTetromino.draw($Canvas, $BlockWidth)
         
     }
@@ -31,21 +35,26 @@ class Tetris {
     [System.Void] Start() {
 
         #$item = Get-ChildItem -Recurse -Filter '*tetris.xaml' | Select -first 1
-        $window = New-WindowWPF -Path "$PSScriptRoot/tetris.xaml"
+        $window = New-WindowWPF -Path (Get-ChildItem -Path "$PSScriptRoot" -Recurse -Filter '*tetris.xaml') #"$PSScriptRoot/tetris.xaml"
        
         
-        if($null -eq $this.DispatcherTimer) {
+        if ($null -eq $this.DispatcherTimer) {
             $this.GameTimer.start()
             $this.DispatcherTimer = [System.Windows.Threading.DispatcherTimer]::new()
             $this.DispatcherTimer.Interval = [timespan]::FromMilliseconds(1000)
 
             $Tetris = $this
-            $this.DispatcherTimer.Add_Tick({              
-                $Tetris.CurrentTetromino.Position += [System.Numerics.Vector2]::UnitY
-                $Tetris.CurrentTetromino.Position
+
+            $eventHandler = {              
                 $Tetris.draw($window.FindName('Canvas'))
                 $window.FindName('Timer').Content = [System.String]::Format('{0:mm}:{0:ss}', $Tetris.GameTimer.Elapsed)
-            })
+            }
+
+            $Tetris.DispatcherTimer.Add_Tick($eventHandler)
+            $window.Add_Closing({
+                    $Tetris.DispatcherTimer.stop()
+                    $Tetris.DispatcherTimer.Remove_Tick($eventHandler)
+                })
         }
             
         $this.DispatcherTimer.start()
@@ -59,7 +68,7 @@ function New-TetrisGame {
     param ()
     
     # Not finsihed, Distraction.
-    Write-Host -Foreground GREEN "(Not finished yet) Look at the Taskbar. Window might not be focused."
+    Write-Host -Foreground GREEN '(Not finished yet) Look at the Taskbar. Window might not be focused.'
     return [Tetris]::new().Start()
 
 }

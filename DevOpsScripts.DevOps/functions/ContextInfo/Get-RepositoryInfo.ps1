@@ -75,7 +75,7 @@ function Get-RepositoryInfo {
             ParameterSetName = 'currentProjectContext'
         )]
         [Parameter(
-            Mandatory = $true,
+            Mandatory = $false,
             Position = 0,
             ParameterSetName = 'projectspecific'
         )]

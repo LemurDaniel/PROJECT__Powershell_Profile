@@ -72,7 +72,7 @@ function Start-Pipeline {
 
   
     Write-Host -Foreground Green '      '
-    Write-Host -Foreground Green " 🎉 Started Pipeline '$($Pipeline.folder)/folder$($Pipeline.name)'  on $environment 🎉  "
+    Write-Host -Foreground Green " 🎉 Started Pipeline '$($Pipeline.folder)/$($Pipeline.name)'  on $environment 🎉  "
     Write-Host -Foreground Green '      '
 
     Open-BuildInBrowser -buildId $build.id

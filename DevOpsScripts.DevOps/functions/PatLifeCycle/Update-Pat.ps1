@@ -60,24 +60,3 @@ function Update-PAT {
 
     return $response.patToken
 }
-
-
-
-
-    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
-    $Request = @{
-        METHOD  = 'GET'
-        URI     = "https://vssps.dev.azure.com/baugruppe/_apis/tokens/pats?api-version=7.0-preview.1"
-        Headers = @{
-            'Authorization' = 'Bearer ' + $token
-            'Content-Type'  = 'application/json; charset=utf-8'    
-        }
-        Body    = @{
-            displayName     = $PatName
-            validTo         = ([DateTime]::now).AddHours($HoursValid)
-            authorizationId = $authorizationId
-            allOrgs         = $false
-        } | ConvertTo-Json
-    }
-
-    $response = Invoke-RestMethod @Request

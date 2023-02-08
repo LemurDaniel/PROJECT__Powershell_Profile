@@ -16,7 +16,7 @@ function Get-RoleManagmentPoliciyAssignmentsForScope {
             API    = '/providers/Microsoft.Authorization/roleManagementPolicyAssignments?api-version=2020-10-01'
         }
     
-        $roleManagementPoliciyAssignments = Invoke-AzureRest @Request -return 'value'
+        $roleManagementPoliciyAssignments = Invoke-AzureRest @Request | Select-Object -ExpandProperty value
         $roleManagementPoliciyAssignments = Set-UtilsCache -Object $roleManagementPoliciyAssignments -Type roleManagmentPolicyAssignments -Identifier $scope
     } 
       

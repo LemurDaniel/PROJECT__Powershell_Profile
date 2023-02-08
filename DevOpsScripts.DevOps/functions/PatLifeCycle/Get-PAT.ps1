@@ -87,7 +87,7 @@ function Get-PAT {
 
         Write-Verbose 'Generating new PAT'
 
-        $localPat = New-PAT -Organization $Organization -PatScopes $PatScopes -HoursValid $HoursValid | `
+        $localPat = New-PAT -Name $Name -Organization $Organization -PatScopes $PatScopes -HoursValid $HoursValid | `
             Select-Object -Property displayName, validTo, scope, authorizationId, @{
                 Name = 'pass';
                 Expression = {

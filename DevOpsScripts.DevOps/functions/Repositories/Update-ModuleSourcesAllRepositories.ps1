@@ -22,6 +22,9 @@ function Update-ModuleSourcesAllRepositories {
         $refresh = $false
     )
 
+    if ((Get-DevOpsContext -Project) -ne 'DC Azure Migration'){
+        throw 'Set Context to DC Azure Migration'
+    }
     
     
     # Peform regex on following last
@@ -77,11 +80,11 @@ function Update-ModuleSourcesAllRepositories {
         
             if ($repoRefs[0].name.contains('dev')) {
                 New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'dev' `
-                    -repositoryId ($repository.id) -repositoryPath ($repository.Localpath) -projectName ($repository.remoteUrl.split('/')[4])
+                    -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
             }
             else {
                 New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
-                    -repositoryId ($repository.id) -repositoryPath ($repository.Localpath) -projectName ($repository.remoteUrl.split('/')[4])
+                    -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
             }
 
         }
@@ -94,7 +97,7 @@ function Update-ModuleSourcesAllRepositories {
             git -C $repository.Localpath push origin dev
         
             New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
-                -repositoryId ($repository.id) -repositoryPath ($repository.Localpath) -projectName ($repository.remoteUrl.split('/')[4])
+                -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
 
         }
     }

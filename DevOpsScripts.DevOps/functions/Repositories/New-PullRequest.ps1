@@ -54,11 +54,41 @@ function New-PullRequest {
         # A repository id. If not specified will default to current location.
         [Parameter(Mandatory = $false)]
         [System.String]
-        $id   
+        $id
+
+        <## The name of the project, if not set default to the Current-Project-Context.
+        [Parameter(
+            Mandatory = $false,
+            Position = 1
+        )]
+        [ValidateScript(
+            { 
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify an correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $ProjectName   
+
+        #>
     )
 
+    
+
     $repository = Get-RepositoryInfo -path $path -id $id
-    $repostoryPath = [System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
+    $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
+
+    
 
     $currentBranch = git -C $repostoryPath branch --show-current
     git -C $repostoryPath push --set-upstream origin $currentBranch

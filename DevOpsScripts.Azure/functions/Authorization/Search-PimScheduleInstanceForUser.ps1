@@ -48,8 +48,10 @@ function Search-PimScheduleInstanceForUser {
         ApiResource = 'users'
         ApiEndpoint    = "$aadUserId/transitiveMemberOf"
     }
-    $responseGroups = Invoke-GraphApi @Request -return 'value.id'
+    $responseGroups = Invoke-GraphApi @Request | Select-Object -ExpandProperty value | Select-Object -ExpandProperty id
 
+    Write-Verbose "Found AAD Groups"
+    Write-Verbose "$($responseGroups | ConvertTo-Json)"
 
     # Get Eligiblity Schedule Instance on Scope
     $Request = @{
@@ -57,11 +59,14 @@ function Search-PimScheduleInstanceForUser {
         Scope  = $scope
         API    = 'providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01'
     }
-    $eligibleScheduleInstance = Invoke-AzureRest @Request -return 'value.properties' | `
+    $eligibleScheduleInstance = Invoke-AzureRest @Request | Select-Object -ExpandProperty value | Select-Object -ExpandProperty properties | `
         Where-Object { $_.expandedProperties.roleDefinition.displayName -eq $role } | `
-        Where-Object -Property principalId -In ($responseGroups)
+        Where-Object -Property principalId -In $responseGroups
         #Sort-Object memberType
     
+    Write-Verbose 'Found Schedule Instances'
+    Write-Verbose "$($eligibleScheduleInstance | ConvertTo-Json)"
+
     if (-not $eligibleScheduleInstance) {
         throw "Not Eligible Schedule Instance found for Role '$role' on scope '$scope' on principalId '$aadUserId'"
     }

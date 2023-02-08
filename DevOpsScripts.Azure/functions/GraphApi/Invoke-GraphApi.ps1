@@ -24,24 +24,13 @@ function Invoke-GraphApi {
         [Microsoft.PowerShell.Commands.WebRequestMethod]
         $METHOD,
 
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('users', 'me')]
-        $ApiResource,
-
         [Parameter()]
         [System.String]
-        $ApiEndpoint,
-
-        # The Property to return from the items. If null will return full Properties.
-        [Alias('return')]
-        [Parameter()]
-        [System.String]
-        $Property
+        $ApiEndpoint
     )
 
-    $uri = "https://graph.microsoft.com/v1.0/$(Join-Path -Path $ApiResource -ChildPath $ApiEndpoint)"
+    $uri = "https://graph.microsoft.com/v1.0/$ApiEndpoint"
+    Write-Verbose $uri
     $response = Invoke-AzRestMethod -Method $Method -Uri $uri -Verbose
-
-    $response = ($response.Content | ConvertFrom-Json -Depth 8)
-    return Get-Property -Object $response -Property $Property
+    return ($response.Content | ConvertFrom-Json -Depth 8)
 }

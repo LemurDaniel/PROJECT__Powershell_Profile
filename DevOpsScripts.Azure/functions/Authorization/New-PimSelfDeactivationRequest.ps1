@@ -104,5 +104,5 @@ function New-PimSelfDeactivationRequest {
         }
     }
 
-    return Invoke-AzureRest @Request -return 'properties'
+    return Invoke-AzureRest @Request | Select-Object -ExpandProperty 'properties'
 }

@@ -46,8 +46,8 @@ function Search-PimScheduleInstance {
         Scope  = $scope
         API    = 'providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01'
     }
-    $eligibleScheduleInstance = Invoke-AzureRest @Request -return 'value.properties' | `
-        Where-Object { $_.expandedProperties.roleDefinition.displayName -eq $role }
+    $eligibleScheduleInstance = Invoke-AzureRest @Request | Select-Object -ExpandProperty value | Select-Object -ExpandProperty properties | `
+        Where-Object { $_.expandedProperties.roleDefinition.displayName -eq $role } | `
 
     
     

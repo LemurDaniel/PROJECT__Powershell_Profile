@@ -41,6 +41,6 @@ function Search-AzFunctionAppSettings {
         Scope               = $FunctionApp.ResourceId
         API                 = '/config/appsettings/list?api-version=2021-02-01'
     }
-    $response = Invoke-AzureRest @Request -return 'properties'
+    $response = Invoke-AzureRest @Request | Select-Object -ExpandProperty 'properties'
     return Get-Property -Object $response -return $Property
 }

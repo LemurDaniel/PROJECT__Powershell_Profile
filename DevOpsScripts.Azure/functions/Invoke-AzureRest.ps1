@@ -77,5 +77,5 @@ function Invoke-AzureRest {
     }
     Write-Verbose ($response | ConvertTo-Json -Depth 16)
 
-    return Get-Property -Object ($response.Content | ConvertFrom-Json -Depth 16) -Property $Property
+    return $response.Content | ConvertFrom-Json -Depth 16
 }

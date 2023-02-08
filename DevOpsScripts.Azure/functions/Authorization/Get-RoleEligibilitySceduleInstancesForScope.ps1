@@ -16,7 +16,7 @@ function Get-RoleEligibilitySceduleInstancesForScope {
             API    = 'providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01'
         }
     
-        $RoleEligibilitySceduleInstances = Invoke-AzureRest @Request -return 'value.properties'
+        $RoleEligibilitySceduleInstances = Invoke-AzureRest @Request | Select-Object -ExpandProperty value | Select-Object -ExpandProperty properties
         $RoleEligibilitySceduleInstances = Set-UtilsCache -Object $RoleEligibilitySceduleInstances -Type RoleEligibilitySceduleInstances -Identifier $scope
     } 
       

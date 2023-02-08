@@ -34,7 +34,7 @@ function Update-ModuleSourcesInPath {
 
     $totalReplacements = [System.Collections.ArrayList]::new()
     $taggedRepositories = Get-RecentSubmoduleTags -refresh:$refresh
-    $replacementPath = [System.String]::IsNullOrEmpty($replacementPath) ? $replacementPath : ((Get-Location).Path) 
+    $replacementPath = ![System.String]::IsNullOrEmpty($replacementPath) ? $replacementPath : ((Get-Location).Path) 
   
     # Implements Confirmation
     if ($PSCmdlet.ShouldProcess("$replacementPath" , 'Do Subfolder Regex-Operations')) {

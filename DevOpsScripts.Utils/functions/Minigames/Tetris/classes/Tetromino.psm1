@@ -1,5 +1,4 @@
 
-
 # Fun Fact: The apperently official Name for Tetris Blocks.
 class Tetromino {
 
@@ -116,24 +115,3 @@ class Tetromino {
         }
     }
 }
-
-
-function New-TetrisBlock {
-
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory = $true)]
-        [System.int32]
-        $X,
-
-        [Parameter(Mandatory = $true)]
-        [System.int32]
-        $Y,
-
-        [Parameter(Mandatory = $true)]
-        [System.Numerics.Vector2]
-        $TetrisSize
-    )
-
-    return [Tetromino]::new($X, $Y, $TetrisSize)
-} 

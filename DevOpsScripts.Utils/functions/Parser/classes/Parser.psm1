@@ -11,6 +11,7 @@ class Parser {
         $this.tokenizer = [Tokenizer]::new($Configuration)
     }
 
+    # Intialize parse
     [AstNode] parse($content) {
         $this.tokenizer.set($content)
         $null = $this.tokenizer.advanceNextToken()
@@ -21,15 +22,18 @@ class Parser {
         )
     }
 
-    ##################
+
     [AstNode[]] StatementList() {
         return $this.StatementList($null)
     }
     [AstNode[]] StatementList($stopLookahead) {
+        return $this.StatementList($stopLookahead, 'Statement')
+    }
+    [AstNode[]] StatementList($stopLookahead, $StatementMethod) {
         $statementList = @()
 
         while ($stopLookahead -ne $this.tokenizer.current.Type) {
-            $statement = $this.Statement()
+            $statement = $this.$StatementMethod()
             if ($null -ne $statement) {
                 $statementList += $statement
             }
@@ -38,13 +42,21 @@ class Parser {
         return $statementList
     }
 
-    ##################
+
+    # Expectes either seperators or an Assignment.
     [AstNode] Statement() {
         switch ($this.tokenizer.current.Type) {
             SEPERATOR {
                 $this.eat($this.Seperator.Type)
                 return $null
             }
+        }
+        return $this.AssignmentExpression()
+    }
+
+    # Expect either Blocks, Array or Literals.
+    [AstNode] BasicStatement() {
+        switch ($this.tokenizer.current.Type) {
             BLOCK_START {
                 $this.eat('BLOCK_START')
                 $body = $this.tokenizer.current.Type -eq 'BLOCK_END' ? @() : $this.StatementList('BLOCK_END')
@@ -54,44 +66,45 @@ class Parser {
                     $body
                 )
             }
-        }
-        return $this.ExpressionStatement()
-    }
-
-    [AstNode] ExpressionStatement() {
-
-        switch ($this.tokenizer.current.Type) {
-
-            'VARIABLE' {
-                return $this.AssignmentExpression()
+            ARRAY_START {
+                $this.eat('ARRAY_START')
+                $body = $this.tokenizer.current.Type -eq 'ARRAY_END' ? @() : $this.StatementList('ARRAY_END', 'ArrayExpression')
+                $this.eat('ARRAY_END')
+                return [AstNode]::new(
+                    'Array',
+                    $body
+                )
             }
-
-            Default {}
         }
-
         return $this.Literal()
     }
 
+    # Expectes Elements and ArrayEnd or ArraySeperators
+    [AstNode] ArrayExpression() {
 
+        $element = $this.BasicStatement()
+        if ($this.tokenizer.current.type -ne 'ARRAY_END') {
+           $this.eat('ARRAY_SEPERATOR')
+        }
+        return $element
 
-    ##################
+    }
+
+    # Assignment Expressions expect a Variable identifier and a following BasicStatement
     [AstNode] AssignmentExpression() {
-        $variable = $this.Variable()
+        $variable = $this.eat('VARIABLE')
         $this.eat('ASSIGNMENT')
         return [AstNode]::new(
             'AssignmentExpression',
             @(
                 $variable,
-                $this.Statement()
+                $this.BasicStatement()
             )
         )
     }
 
-    [AstNode] Variable() {
-        return $this.eat('VARIABLE')
-    }
 
-    ##################
+    # Literals expect NumberLiterals or StringLiterals
     [AstNode] Literal() {
 
         switch ($this.tokenizer.current.Type) {
@@ -124,6 +137,7 @@ class Parser {
     }
 
 
+    # Consumes and advances to the next token.
     [AstNode] eat($tokenType) {
         return $this.eat($tokenType, $false)
     }

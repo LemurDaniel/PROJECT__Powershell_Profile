@@ -22,7 +22,7 @@ abc = {
     property1 = 123
     # property2 = 123
     property3 = {
-        property1 = 123
+        property1 = "123"
         # property2 = 123
     }
 }
@@ -52,4 +52,4 @@ abc = {
     return [Parser]::new($Configuration).parse($test) | ConvertTo-Json -Depth 99
 }
 
-Start-TFVarsParser
+#Start-TFVarsParser

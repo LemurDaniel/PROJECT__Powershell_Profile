@@ -7,8 +7,12 @@ class Parser {
 
     [Tokenizer] $tokenizer
 
+    Parser($Configuration) {
+        $this.tokenizer = [Tokenizer]::new($Configuration)
+    }
+
     [AstNode] parse($content) {
-        $this.tokenizer = [Tokenizer]::new($content)
+        $this.tokenizer.set($content)
         $null = $this.tokenizer.advanceNextToken()
 
         return [AstNode]::new(

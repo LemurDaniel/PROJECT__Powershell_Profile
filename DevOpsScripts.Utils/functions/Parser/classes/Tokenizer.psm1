@@ -3,31 +3,24 @@ Using module './AstNode.psm1'
 
 class Tokenizer {
 
-    static [AstNodeType[]] $CONFIGURATION = @(
-        [AstNodeType]::new('WHITESPACE', '^\s+', $true),
-
-        [AstNodeType]::new('COMMENT', @('^\/\/[^\n]+', '^\/\*[\s\S]*?\*\/'), $true),
-
-        [AstNodeType]::new('StatementSeperator', '^\n|^;+'),
-
-        [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
-        [AstNodeType]::new('NUMBER', '^\d+')
-
-
-        [AstNodeType]::new('{'),
-        [AstNodeType]::new('}')
-    )
-
-
+    [AstNodeType[]] $Configuration
 
     [System.String] $content
     [System.int32] $pointer
     [AstNode] $current
 
-    Tokenizer($content) {
-        $this.content = $content
+    Tokenizer($Configuration) {
+        $this.Configuration = $Configuration
+        $this.content = ""
         $this.pointer = 0
     }
+
+    [Tokenizer] set($content) {
+        $this.content = $content
+        $this.pointer = 0
+        return $this
+    }
+
 
     [AstNode] advanceNextToken() {
         $this.current = $this._advance()
@@ -41,7 +34,7 @@ class Tokenizer {
   
         $substring = $this.content.Substring($this.pointer)
 
-        foreach ($config in [Tokenizer]::CONFIGURATION) {
+        foreach ($config in $this.CONFIGURATION) {
 
             foreach ($regex in $config.Regex) {
       

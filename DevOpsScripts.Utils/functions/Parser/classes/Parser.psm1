@@ -7,8 +7,20 @@ class Parser {
 
     [Tokenizer] $tokenizer
 
+    [AstNodeType] $Seperator = $null
+
     Parser($Configuration) {
+        $Configuration += @(
+            [AstNodeType]::new('{'),
+            [AstNodeType]::new('}'),
+            [AstNodeType]::new('WHITESPACE', '^\s+', $true),
+            [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
+            [AstNodeType]::new('NUMBER', '^\d+')
+        )
+
         $this.tokenizer = [Tokenizer]::new($Configuration)
+
+        $this.Seperator = $Configuration | Where-Object -Property Type -IEQ 'Seperator' | Select-Object -First 1
     }
 
     [AstNode] parse($content) {
@@ -26,10 +38,13 @@ class Parser {
         return $this.StatementList($null)
     }
     [AstNode[]] StatementList($stopLookahead) {
-        $statementList = @($this.Statement())
+        $statementList = @()
 
         while ($stopLookahead -ne $this.tokenizer.current.Type) {
-            $statementList += $this.Statement()
+            $statement = $this.Statement()
+            if($null -ne $statement) {
+                $statementList += $statement
+            }
         }
 
         return $statementList
@@ -38,6 +53,10 @@ class Parser {
     ##################
     [AstNode] Statement() {
         switch ($this.tokenizer.current.Type) {
+            $this.Seperator.Type {
+                $this.eat($this.Seperator.Type)
+                return $null
+            }
             '{' {
                 $this.eat('{')
                 $body = $this.tokenizer.current.Type -eq '}' ? @() : $this.StatementList('}')
@@ -53,7 +72,7 @@ class Parser {
 
     [AstNode] ExpressionStatement() {
         $expression = $this.Expression()
-        $this.eat('StatementSeperator')
+        $this.eat($this.Seperator.Type, $true)
         return [AstNode]::new(
             'ExpressionStatement',
             $expression
@@ -87,8 +106,12 @@ class Parser {
                 )
             }
 
+            $null {
+                return $null
+            }
+
             Default {
-                throw "Unexpected Literal $($this.tokenizer.current.Type)"
+                throw "Unexpected Literal '$($this.tokenizer.current.Type)'"
             }
         }
 
@@ -96,12 +119,19 @@ class Parser {
     }
 
 
-
     [AstNode] eat($tokenType) {
+        return $this.eat($tokenType, $false)
+    }
+    [AstNode] eat($tokenType, $optional) {
         $token = $this.tokenizer.current
 
         if ($null -eq $token) {
-            throw "unexpected EOF, expected: '$tokenType'"
+            if ($optional) {
+                return $null
+            }
+            else {
+                throw "unexpected EOF, expected: '$tokenType'"
+            }
         }
 
         if ($token.type -ne $tokenType) {

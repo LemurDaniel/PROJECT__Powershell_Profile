@@ -7,20 +7,8 @@ class Parser {
 
     [Tokenizer] $tokenizer
 
-    [AstNodeType] $Seperator = $null
-
     Parser($Configuration) {
-        $Configuration += @(
-            [AstNodeType]::new('{'),
-            [AstNodeType]::new('}'),
-            [AstNodeType]::new('WHITESPACE', '^\s+', $true),
-            [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
-            [AstNodeType]::new('NUMBER', '^\d+')
-        )
-
         $this.tokenizer = [Tokenizer]::new($Configuration)
-
-        $this.Seperator = $Configuration | Where-Object -Property Type -IEQ 'Seperator' | Select-Object -First 1
     }
 
     [AstNode] parse($content) {
@@ -42,7 +30,7 @@ class Parser {
 
         while ($stopLookahead -ne $this.tokenizer.current.Type) {
             $statement = $this.Statement()
-            if($null -ne $statement) {
+            if ($null -ne $statement) {
                 $statementList += $statement
             }
         }
@@ -53,14 +41,14 @@ class Parser {
     ##################
     [AstNode] Statement() {
         switch ($this.tokenizer.current.Type) {
-            $this.Seperator.Type {
+            SEPERATOR {
                 $this.eat($this.Seperator.Type)
                 return $null
             }
-            '{' {
-                $this.eat('{')
-                $body = $this.tokenizer.current.Type -eq '}' ? @() : $this.StatementList('}')
-                $this.eat('}')
+            BLOCK_START {
+                $this.eat('BLOCK_START')
+                $body = $this.tokenizer.current.Type -eq 'BLOCK_END' ? @() : $this.StatementList('BLOCK_END')
+                $this.eat('BLOCK_END')
                 return [AstNode]::new(
                     'BlockStatement',
                     $body
@@ -71,19 +59,36 @@ class Parser {
     }
 
     [AstNode] ExpressionStatement() {
-        $expression = $this.Expression()
-        $this.eat($this.Seperator.Type, $true)
-        return [AstNode]::new(
-            'ExpressionStatement',
-            $expression
-        )
+
+        switch ($this.tokenizer.current.Type) {
+
+            'VARIABLE' {
+                return $this.AssignmentExpression()
+            }
+
+            Default {}
+        }
+
+        return $this.Literal()
     }
 
 
 
     ##################
-    [AstNode] Expression() {
-        return $this.Literal()
+    [AstNode] AssignmentExpression() {
+        $variable = $this.Variable()
+        $this.eat('ASSIGNMENT')
+        return [AstNode]::new(
+            'AssignmentExpression',
+            @(
+                $variable,
+                $this.Statement()
+            )
+        )
+    }
+
+    [AstNode] Variable() {
+        return $this.eat('VARIABLE')
     }
 
     ##################

@@ -2,9 +2,6 @@ Using module './classes/AstNodeType.psm1'
 Using module './classes/AstObjectConverter.psm1'
 Using module './classes/Parser.psm1'
 
-
-
-
 <#
     .SYNOPSIS
     Very Very Basic Parser with Limited Functionality to convert '.tfvars' File into a PSObject and from there to it's JSON-Representation.
@@ -52,10 +49,93 @@ testtesttest = [
 #>
 
 function Convert-TFVarsToObject {
+
+    [CmdletBinding(
+        DefaultParameterSetName = 'FilePath'
+    )]
     param (
-        [Parameter(Mandatory = $false)]
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            ParameterSetName = 'FilePath'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-ChildItem -Filter '*tfvars*').name
+                
+                $validValues | `
+                    Where-Object {
+                    $_.toLower() -like ($wordToComplete.Length -lt 3 ? "$wordToComplete*" : "*$wordToComplete*").toLower() 
+                } | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
         [System.String]
-        $Content = @'
+        $FilePath,
+
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = 'FilePath'
+        )]
+        [Switch]
+        $OutFileJson,
+
+        [Parameter(
+            Mandatory = $true,
+            ParameterSetName = 'Content'
+        )]
+        [System.String]
+        $Content
+    )
+    
+    $Configuration = @(
+
+        [AstNodeType]::new('WHITESPACE', '^\s+', $true),
+        [AstNodeType]::new('COMMENT', @('^#[^\n]+', '^\/\*[\s\S]*?\*\/'), $true),
+        #[AstNodeType]::new('IGNORE', @('^;'), $true)
+        #[AstNodeType]::new('SEPERATOR', '^\n+|^;+')
+
+
+        [AstNodeType]::new('SEPERATOR', '^\n+')
+
+        [AstNodeType]::new('BLOCK_END', '^}'),
+        [AstNodeType]::new('BLOCK_START', '^{'),
+
+        [AstNodeType]::new('ARRAY_END', '^\]'),
+        [AstNodeType]::new('ARRAY_START', '^\['),
+        [AstNodeType]::new('ARRAY_SEPERATOR', '^,'),
+
+        
+        [AstNodeType]::new('HEREDOC_STRING', '^<<-{0,1}(\w+)\s*\n((?:[\s\S])*?)\s*\n\s*\1[\s\n]{0,1}'),
+
+        [AstNodeType]::new('VARIABLE', '^(?!false\b.*\n|true\b.*\n|null\b.*\n)[A-Za-z_]{1}[\w_\-]*\s+')
+
+        [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
+        [AstNodeType]::new('BOOLEAN', '^true|^false'),
+        [AstNodeType]::new('NULL', '^null'),
+        [AstNodeType]::new('NUMBER', '^\d+')
+
+        [AstNodeType]::new('ASSIGNMENT', '^=')
+    )
+
+    if ($PSBoundParameters.ContainsKey('FilePath')) {
+        $Content = Get-Content -Path $FilePath -Raw
+    }
+
+    $parsed = [Parser]::new($Configuration).parse($Content)
+    $psObject = [AstObjectConverter]::Convert($parsed)
+
+    if ($PSBoundParameters.ContainsKey('FilePath') -AND $OutFileJson) {
+        $FileInfo = Get-Item -Path $FilePath
+        $psObject | ConvertTo-Json -Depth 99 | Out-File -Path "$($FileInfo.Directory.FullName)/$($FileInfo.BaseName).json"
+    }
+
+    return $psObject
+}
+
+<#
+
+Convert-TFVarsToObject -Content @'
 
 # Terraform lower level remote State
 lowerlevel_subscription_id      = "24234342-24-234-234-24"
@@ -149,43 +229,5 @@ heredocString = <<EOF
     }
 }
 '@
-    )
-    
-    $Configuration = @(
 
-        [AstNodeType]::new('WHITESPACE', '^\s+', $true),
-        [AstNodeType]::new('COMMENT', @('^#[^\n]+', '^\/\*[\s\S]*?\*\/'), $true),
-        #[AstNodeType]::new('IGNORE', @('^;'), $true)
-        #[AstNodeType]::new('SEPERATOR', '^\n+|^;+')
-
-
-        [AstNodeType]::new('SEPERATOR', '^\n+')
-
-        [AstNodeType]::new('BLOCK_END', '^}'),
-        [AstNodeType]::new('BLOCK_START', '^{'),
-
-        [AstNodeType]::new('ARRAY_END', '^\]'),
-        [AstNodeType]::new('ARRAY_START', '^\['),
-        [AstNodeType]::new('ARRAY_SEPERATOR', '^,'),
-
-        
-        [AstNodeType]::new('HEREDOC_STRING', '^<<-{0,1}(\w+)\s*\n((?:[\s\S])*?)\s*\n\s*\1[\s\n]{0,1}'),
-
-        [AstNodeType]::new('VARIABLE', '^(?!false\b.*\n|true\b.*\n|null\b.*\n)[A-Za-z_]{1}[\w_\-]*\s+')
-
-        [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
-        [AstNodeType]::new('BOOLEAN', '^true|^false'),
-        [AstNodeType]::new('NULL', '^null'),
-        [AstNodeType]::new('NUMBER', '^\d+')
-
-        [AstNodeType]::new('ASSIGNMENT', '^=')
-    )
-
-    $parsed = [Parser]::new($Configuration).parse($Content)
-    return [AstObjectConverter]::Convert($parsed)
-}
-
-#Convert-TFVarsToObject
-#Convert-TFVarsToObject | ConvertTo-Json -Depth 99 | Out-File Tfvars_JsonRepresentation.json
-
-
+#>

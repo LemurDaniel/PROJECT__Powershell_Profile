@@ -1,13 +1,61 @@
 Using module './classes/AstNodeType.psm1'
+Using module './classes/AstObjectConverter.psm1'
 Using module './classes/Parser.psm1'
 
 
-# Not finishied. Very Very basic attempt at a parser. This is not supposed to be a Full-Parser, just very basic attempt.
-function Start-TFVarsParser {
+
+
+<#
+    .SYNOPSIS
+    Very Very Basic Parser with Limited Functionality to convert '.tfvars' File into a PSObject and from there to it's JSON-Representation.
+
+    .DESCRIPTION
+    Very Very Basic Parser with Limited Functionality to convert '.tfvars' File into a PSObject and from there to it's JSON-Representation.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The PSObject Representation of the parsed Input.
+
+
+    .EXAMPLE
+
+    Convert Some Example '.tfvars' Data to a PSObject and then to JSON:
+
+    PS> $object = Convert-TFVarsToObject -Content @'
+
+# Set of tags for resource groups
+tags = {
+  govAccountable         = "name.surname@brz.eu"
+  govBilling             = "Corporate"
+  govResponsible         = "name.surname@brz.eu"
+  govWorkloadDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna"
+}
+
+data_actions = ["sss", "ssss", "adasdasd"]
+testtesttest = [
+    {  
+        Property1 = 123
+        Property2 = "123"
+    }
+]
+
+'@
+
+    PS> $object | ConvertTo-Json
+
+
+
+    .LINK
+        
+#>
+
+function Convert-TFVarsToObject {
     param (
         [Parameter(Mandatory = $false)]
         [System.String]
-        $test = @'
+        $Content = @'
 
 # Terraform lower level remote State
 lowerlevel_subscription_id      = "24234342-24-234-234-24"
@@ -99,7 +147,11 @@ permissions = {
         [AstNodeType]::new('ASSIGNMENT', '^=')
     )
 
-    return [Parser]::new($Configuration).parse($test) | ConvertTo-Json -Depth 99
+    $parsed = [Parser]::new($Configuration).parse($Content)
+    return [AstObjectConverter]::Convert($parsed)
 }
 
-#Start-TFVarsParser
+#Convert-TFVarsToObject
+#Convert-TFVarsToObject | ConvertTo-Json -Depth 99 | Out-File Tfvars_JsonRepresentation.json
+
+

@@ -47,7 +47,7 @@ class Parser {
     [AstNode] Statement() {
         switch ($this.tokenizer.current.Type) {
             SEPERATOR {
-                $this.eat($this.Seperator.Type)
+                $this.eat('SEPERATOR')
                 return $null
             }
         }
@@ -152,10 +152,10 @@ class Parser {
 
             HEREDOC_STRING { 
                 $token = $this.eat('HEREDOC_STRING')
-                $content = $token.Value -split '\n'
+                $content = ($token.Value -split '\n') | ForEach-Object { $_.trim() }
                 return [AstNode]::new(
                     'StringLiteral', 
-                    $content[1..($content.length - 2)] -join '\n'
+                    $content[1..($content.length - 2)] # -join '\n' #Convert heredoc to array of string for each line
                 )
             }
 

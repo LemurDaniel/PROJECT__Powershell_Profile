@@ -155,7 +155,9 @@ heredocString = <<EOF
 
         [AstNodeType]::new('WHITESPACE', '^\s+', $true),
         [AstNodeType]::new('COMMENT', @('^#[^\n]+', '^\/\*[\s\S]*?\*\/'), $true),
-        [AstNodeType]::new('IGNORE', @('^;'), $true),
+        #[AstNodeType]::new('IGNORE', @('^;'), $true)
+        #[AstNodeType]::new('SEPERATOR', '^\n+|^;+')
+
 
         [AstNodeType]::new('SEPERATOR', '^\n+')
 

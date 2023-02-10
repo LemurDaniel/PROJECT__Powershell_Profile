@@ -51,6 +51,7 @@ class Parser {
                 return $null
             }
         }
+
         return $this.AssignmentExpression()
     }
 
@@ -75,6 +76,15 @@ class Parser {
                     $body
                 )
             }
+            HEREDOC_STRING_START {
+                $this.eat('HEREDOC_STRING_START')
+                $body = $this.tokenizer.current.Type -eq 'ARRAY_END' ? @() : $this.StatementList('ARRAY_END', 'ArrayExpression')
+                $this.eat('ARRAY_END')
+                return [AstNode]::new(
+                    'Array',
+                    $body
+                )
+            }
         }
         return $this.Literal()
     }
@@ -86,7 +96,6 @@ class Parser {
             $this.eat('ARRAY_SEPERATOR')
         }
         return $element
-
     }
 
     # Assignment Expressions expect a Variable identifier and a following BasicStatement
@@ -98,7 +107,7 @@ class Parser {
                 $variable = $this.eat('VARIABLE')
             }
             STRING {
-                $variable = $this.eat('STRING')
+                $variable = $this.Literal()
             }
 
             Default {
@@ -107,11 +116,18 @@ class Parser {
         }
 
         $this.eat('ASSIGNMENT')
+        $assigne = $this.BasicStatement()
+
+        # Terraform allows for Commas after Assignment Expressions
+        if ($this.tokenizer.current.Type -eq 'ARRAY_SEPERATOR') {
+            $this.eat('ARRAY_SEPERATOR')
+        }
+
         return [AstNode]::new(
             'AssignmentExpression',
             @(
                 $variable,
-                $this.BasicStatement()
+                $assigne 
             )
         )
     }
@@ -123,10 +139,16 @@ class Parser {
         switch ($this.tokenizer.current.Type) {
             NUMBER { 
                 $token = $this.eat('NUMBER')
-                return [AstNode]::new(
-                    'NumericLiteral', 
-                    [System.int32]::Parse($token.Value)
-                )
+                try {
+                    return [AstNode]::new(
+                        'NumericLiteral', 
+                        [System.int32]::Parse($token.Value)
+                    )
+                }
+                catch {
+                    Write-Host ($token | ConvertTo-Json)
+                    throw $_
+                }
             }
 
             STRING { 
@@ -137,12 +159,27 @@ class Parser {
                 )
             }
 
+            HEREDOC_STRING { 
+                $token = $this.eat('HEREDOC_STRING')
+                $content = $token.Value -split '\n'
+                return [AstNode]::new(
+                    'StringLiteral', 
+                    $content[1..($content.length - 2)] -join '\n'
+                )
+            }
+
             BOOLEAN { 
                 $token = $this.eat('BOOLEAN')
-                return [AstNode]::new(
-                    'Boolean', 
-                    [Boolean]::Parse($token.Value)
-                )
+                try {
+                    return [AstNode]::new(
+                        'Boolean', 
+                        [Boolean]::Parse($token.Value)
+                    )
+                }
+                catch {
+                    Write-Host ($token | ConvertTo-Json)
+                    throw $_
+                }
             }
 
             NULL {
@@ -174,12 +211,7 @@ class Parser {
         $token = $this.tokenizer.current
 
         if ($null -eq $token) {
-            if ($optional) {
-                return $null
-            }
-            else {
-                throw "unexpected EOF, expected: '$tokenType' at '$($token.Value)'"
-            }
+            throw "unexpected EOF, expected: '$tokenType' at '$($token.Value)'"
         }
 
         if ($token.type -ne $tokenType) {

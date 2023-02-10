@@ -1,5 +1,5 @@
 
-param ($moduleBaseName, $buildPath, $buildNuget)
+param ($moduleBaseName, $buildPath, $buildNuget, $buildLocal)
 
 # Stupid code completion
 $moduleBaseName = [System.String]::IsNullOrEmpty($moduleBaseName) ? 'DevOpsScripts' : $moduleBaseName
@@ -92,6 +92,8 @@ $buildFolderModules | ForEach-Object {
                 }
             }
 
+            $ErrorActionPreference = 'Stop'
+
             {{ASSEMBLIES}}
 
             @(
@@ -116,6 +118,8 @@ $buildFolderModules | ForEach-Object {
                 }
             }
 
+            $ErrorActionPreference = 'Stop'
+
             {{ASSEMBLIES}}
 
             # For Testing
@@ -128,22 +132,22 @@ $buildFolderModules | ForEach-Object {
     $moduleImportsUnsorted = [System.Collections.ArrayList]::new()
     $moduleImportsSorted = [System.Collections.ArrayList]::new()
     $null = $buildFolderModules | ` 
-    Where-Object { $_.BaseName.toLower() -ne $moduleBaseName.toLower()} | `
-    Select-Object -Property *, @{
-        Name = "dependencies";
+    Where-Object { $_.BaseName.toLower() -ne $moduleBaseName.toLower() } | `
+        Select-Object -Property *, @{
+        Name       = 'dependencies';
         Expression = {
             (Get-Content -Path "$_/meta.json" | ConvertFrom-Json).dependencies
         }
     } | ForEach-Object { $moduleImportsUnsorted.Add($_) }
   
-    while($moduleImportsUnsorted.Count -ne 0) {
+    while ($moduleImportsUnsorted.Count -ne 0) {
         
         $item = $null
         :Ordering
         foreach ($item in $moduleImportsUnsorted) {
             
             $referenced = $moduleImportsUnsorted | Where-Object { $item.BaseName -in $_.dependencies.modules }
-            if($referenced -eq 0){
+            if ($referenced -eq 0) {
                 break Ordering
             }
         }
@@ -153,7 +157,7 @@ $buildFolderModules | ForEach-Object {
     }
 
     $moduleImports = $moduleImportsSorted | ForEach-Object {
-        $buildNuget ? "Import-Module $($_.BaseName) -Global" : ('Import-Module (Resolve-Path "$PSScriptRoot\..\'+($_.BaseName)+'") -Global')
+        $buildNuget ? "Import-Module $($_.BaseName) -Global" : ('Import-Module (Resolve-Path "$PSScriptRoot\..\' + ($_.BaseName) + '") -Global')
     }
 
     # Import Assemblies
@@ -225,7 +229,6 @@ $buildFolderModules | ForEach-Object {
     $csprojFile = New-Item -Path $buildDirectoy -Name $moduleCsprojFileName -Value $csprojContent -ItemType File
     Write-Host "`"$($csprojFile.Name)`" created"
 }
-return
 
 Write-Host
 Write-Host '#########################################################################'

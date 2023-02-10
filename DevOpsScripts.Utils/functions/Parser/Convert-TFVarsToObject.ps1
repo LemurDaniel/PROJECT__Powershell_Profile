@@ -121,6 +121,12 @@ permissions = {
   not_data_actions = []
 }
 
+heredocString = <<EOF 
+    asasfasf
+    fflflfl
+    assas
+    EOF
+
 
   bool1 = true
   bool2 = false
@@ -134,6 +140,12 @@ permissions = {
     "string2" = {
         bla = true
         blabla = false
+
+        heredocString2 = <<QUERY 
+            asasfasf
+            fflflfl
+            assas
+        QUERY
     }
 }
 '@
@@ -154,12 +166,15 @@ permissions = {
         [AstNodeType]::new('ARRAY_START', '^\['),
         [AstNodeType]::new('ARRAY_SEPERATOR', '^,'),
 
+        
+        [AstNodeType]::new('HEREDOC_STRING', '^<<-{0,1}(\w+)\s*\n((?:[\s\S])*?)\s*\n\s*\1[\s\n]{0,1}'),
+
+        [AstNodeType]::new('VARIABLE', '^(?!false\b.*\n|true\b.*\n|null\b.*\n)[A-Za-z_]{1}[\w_\-]*\s+')
+
         [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
-        [AstNodeType]::new('BOOLEAN', "^[tT][rR][uU][eE]|^[fF][aA][lL][sS][eE]"),
+        [AstNodeType]::new('BOOLEAN', '^true|^false'),
         [AstNodeType]::new('NULL', '^null'),
         [AstNodeType]::new('NUMBER', '^\d+')
-
-        [AstNodeType]::new('VARIABLE', '^[A-Za-z_0-9]{1}[A-Za-z_0-9]*')
 
         [AstNodeType]::new('ASSIGNMENT', '^=')
     )

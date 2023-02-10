@@ -49,12 +49,12 @@ class Tokenizer {
                     return $this.advanceNextToken()
                 }
 
-                return [AstNode]::new($Config.Type, $match.Value)
+                return [AstNode]::new($Config.Type, $match.Value.Trim())
             }
 
         }
 
-        throw "Unexpected Token '$($substring[0])'"
+        throw "Unexpected Token '$($substring[0])' at; '$($substring.Substring(0,[System.Math]::Min(30, $Substring.Length-1)))'"
     }
     
 }

@@ -5,6 +5,8 @@
                 }
             }
 
+            $ErrorActionPreference = 'Stop'
+
             
 
             @(

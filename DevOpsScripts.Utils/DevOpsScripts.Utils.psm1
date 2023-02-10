@@ -5,6 +5,8 @@
                 }
             }
 
+            $ErrorActionPreference = 'Stop'
+
             Add-Type -AssemblyName PresentationFramework
 
             @(

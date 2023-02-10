@@ -45,6 +45,12 @@ class AstObjectConverter {
             NumericLiteral { 
                 return $parsed.Value
             }
+            Boolean { 
+                return $parsed.Value
+            }
+            Null { 
+                return $parsed.Value
+            }
             BlockStatement { 
                 return $this.ConvertParsedBlockStatement($parsed)
             }
@@ -52,7 +58,7 @@ class AstObjectConverter {
                 return $this.ConvertParsedArray($parsed)
             }
             Default {
-                throw "Expected on of 'StringLiteral', 'NumericLiteral', 'BlockStatement', 'Array', got '$($parsed.Type)'"
+                throw "Expected on of 'Boolean', 'StringLiteral', 'NumericLiteral', 'BlockStatement', 'Array', got '$($parsed.Type)'"
             }
         }
 

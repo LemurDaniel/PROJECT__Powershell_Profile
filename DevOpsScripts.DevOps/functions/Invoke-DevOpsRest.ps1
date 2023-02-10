@@ -179,16 +179,17 @@ function Invoke-DevOpsRest {
         }
     }
 
-    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
-    $Request = @{
-        Method  = $Method
-        Body    = $body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray
-        Headers = @{ 
-            username       = 'O.o'
-            Authorization  = "Bearer $token"
-            'Content-Type' = $calculatedContentType
-        }
-        Uri     = [System.String]::IsNullOrEmpty($Uri) ? $TargetURL : $Uri
+    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token   
+    $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   
+    $Request = @{        
+        Method  = $Method       
+        Body    = $bodyByteArray        
+        Headers = @{            
+            username       = 'O.o'          
+            Authorization  = "Bearer $token"           
+            'Content-Type' = $calculatedContentType       
+        }        
+        Uri     = [System.String]::IsNullOrEmpty($Uri) ? $TargetURL : $Uri    
     }
 
     Write-Verbose 'BODY START'

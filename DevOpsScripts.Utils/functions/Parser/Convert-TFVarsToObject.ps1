@@ -121,6 +121,21 @@ permissions = {
   not_data_actions = []
 }
 
+
+  bool1 = true
+  bool2 = false
+  nullValued = null
+
+  Property123 = {
+    "string" = {
+        bla = true
+        blabla = false
+    }
+    "string2" = {
+        bla = true
+        blabla = false
+    }
+}
 '@
     )
     
@@ -140,6 +155,8 @@ permissions = {
         [AstNodeType]::new('ARRAY_SEPERATOR', '^,'),
 
         [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
+        [AstNodeType]::new('BOOLEAN', "^[tT][rR][uU][eE]|^[fF][aA][lL][sS][eE]"),
+        [AstNodeType]::new('NULL', '^null'),
         [AstNodeType]::new('NUMBER', '^\d+')
 
         [AstNodeType]::new('VARIABLE', '^[A-Za-z_0-9]{1}[A-Za-z_0-9]*')

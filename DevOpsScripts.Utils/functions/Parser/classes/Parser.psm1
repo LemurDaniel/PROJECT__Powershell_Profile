@@ -76,15 +76,6 @@ class Parser {
                     $body
                 )
             }
-            HEREDOC_STRING_START {
-                $this.eat('HEREDOC_STRING_START')
-                $body = $this.tokenizer.current.Type -eq 'ARRAY_END' ? @() : $this.StatementList('ARRAY_END', 'ArrayExpression')
-                $this.eat('ARRAY_END')
-                return [AstNode]::new(
-                    'Array',
-                    $body
-                )
-            }
         }
         return $this.Literal()
     }

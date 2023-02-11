@@ -113,7 +113,8 @@ function Convert-TFVarsToObject {
         [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
         [AstNodeType]::new('BOOLEAN', '^true|^false'),
         [AstNodeType]::new('NULL', '^null'),
-        [AstNodeType]::new('NUMBER', '^\d+')
+        [AstNodeType]::new('FLOAT', '^[+-]?\d+\.\d+')
+        [AstNodeType]::new('NUMBER', '^[+-]?\d+')
 
         [AstNodeType]::new('ASSIGNMENT', '^=')
     )
@@ -228,6 +229,12 @@ heredocString = <<EOF
         QUERY
     }
 }
+
+positiveNumber = [1, 2, 3]
+negativeNumbers = [-1, -2, -3]
+
+positiveFloats = [1.023, 2.012, 3.001]
+negativeFloats = [-1.44, -2.99, -3.34]
 '@
 
 #>

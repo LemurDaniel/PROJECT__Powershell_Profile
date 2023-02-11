@@ -42,6 +42,9 @@ class AstObjectConverter {
             StringLiteral { 
                 return $parsed.Value
             }
+            FloatingPointLiteral {
+                return $parsed.Value
+            }
             NumericLiteral { 
                 return $parsed.Value
             }

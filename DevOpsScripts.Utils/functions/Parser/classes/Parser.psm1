@@ -142,6 +142,21 @@ class Parser {
                 }
             }
 
+            FLOAT { 
+                $token = $this.eat('FLOAT')
+                try {
+                    return [AstNode]::new(
+                        'FloatingPointLiteral', 
+                        # System.Single is the Float in .NET
+                        [System.Single]::Parse($token.Value.replace('.', ','))
+                    )
+                }
+                catch {
+                    Write-Host ($token | ConvertTo-Json)
+                    throw $_
+                }
+            }
+
             STRING { 
                 $token = $this.eat('STRING')
                 return [AstNode]::new(

@@ -1,16 +1,10 @@
 class AstNodeType {
 
     [System.String] $Type
-    [System.String[]] $Regex
+    [System.String] $Regex
     [System.Boolean] $Skip
 
     # No Constructor Chaining in Powershell
-    AstNodeType($Type) {
-        $this.Type = $Type
-        $this.Regex = "^$Type"
-        $this.Skip = $false
-    }
-
     AstNodeType($Type, $Regex) {
         $this.Type = $Type
         $this.Regex = $Regex

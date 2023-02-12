@@ -6,55 +6,49 @@ class Tokenizer {
     [AstNodeType[]] $Configuration
 
     [System.String] $content
-    [System.int32] $pointer
     [AstNode] $current
 
     Tokenizer($Configuration) {
         $this.Configuration = $Configuration
-        $this.content = ""
-        $this.pointer = 0
+        $this.content = ''
     }
 
     [Tokenizer] set($content) {
         $this.content = $content
-        $this.pointer = 0
         return $this
     }
-
-
     [AstNode] advanceNextToken() {
         $this.current = $this._advance()
         return $this.current
     }
 
+
     [AstNode] _advance() {
-        if ($this.pointer -ge $this.content.length) {
+        if ($this.content.Length -le 0) {
             return $null
         }
-  
-        $substring = $this.content.Substring($this.pointer)
 
         foreach ($config in $this.CONFIGURATION) {
 
-            foreach ($regex in $config.Regex) {
-      
-                $match = [regex]::Match($substring, $regex)
-                if (!$match.Success) {
-                    continue
-                }
+            $match = [regex]::Match($this.content, $Config.regex)
 
-                $this.pointer += $match.Value.length
+            if ($match.Success) {
+                $this.content = $this.content.Substring($match.Value.length)
 
                 if ($Config.Skip) {
                     return $this.advanceNextToken()
                 }
-
-                return [AstNode]::new($Config.Type, $match.Value.Trim())
+                else {
+                    return [AstNode]::new($Config.Type, $match.Value.Trim())
+                }
             }
-
         }
 
-        throw "Unexpected Token '$($substring[0])' at; '$($substring.Substring(0,[System.Math]::Min(30, $Substring.Length-1)))'"
+        throw "Unexpected Token '$($this.content[0])' at '$($this.position())'"
+    }
+
+    [System.String] position() {
+        return $this.content.Substring(0, [System.Math]::Max(0, [System.Math]::Min(30, $this.content.Length - 1)))
     }
     
 }

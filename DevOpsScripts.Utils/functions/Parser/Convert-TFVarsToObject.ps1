@@ -91,7 +91,7 @@ function Convert-TFVarsToObject {
     $Configuration = @(
 
         [AstNodeType]::new('WHITESPACE', '^\s+', $true),
-        [AstNodeType]::new('COMMENT', @('^#[^\n]+', '^\/\*[\s\S]*?\*\/'), $true),
+        [AstNodeType]::new('COMMENT', @('^#[^\n]+|^\/\*[\s\S]*?\*\/'), $true),
         #[AstNodeType]::new('IGNORE', @('^;'), $true)
         #[AstNodeType]::new('SEPERATOR', '^\n+|^;+')
 

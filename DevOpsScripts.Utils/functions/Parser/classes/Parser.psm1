@@ -18,22 +18,15 @@ class Parser {
 
         return [AstNode]::new(
             'File',
-            $this.StatementList()
+            $this.StatementList($null)
         )
     }
 
-
-    [AstNode[]] StatementList() {
-        return $this.StatementList($null)
-    }
     [AstNode[]] StatementList($stopLookahead) {
-        return $this.StatementList($stopLookahead, 'Statement')
-    }
-    [AstNode[]] StatementList($stopLookahead, $StatementMethod) {
         $statementList = @()
 
         while ($stopLookahead -ne $this.tokenizer.current.Type) {
-            $statement = $this.$StatementMethod()
+            $statement = $this.Statement()
             if ($null -ne $statement) {
                 $statementList += $statement
             }
@@ -56,7 +49,7 @@ class Parser {
     }
 
     # Expect either Blocks, Array or Literals.
-    [AstNode] BasicStatement() {
+    [AstNode] Expression() {
         switch ($this.tokenizer.current.Type) {
             BLOCK_START {
                 $this.eat('BLOCK_START')
@@ -68,28 +61,26 @@ class Parser {
                 )
             }
             ARRAY_START {
+
+                $list = @()
                 $this.eat('ARRAY_START')
-                $body = $this.tokenizer.current.Type -eq 'ARRAY_END' ? @() : $this.StatementList('ARRAY_END', 'ArrayExpression')
+                while ($this.tokenizer.current.type -ne 'ARRAY_END') {
+                    $list += $this.Expression()
+                    if ($this.tokenizer.current.Type -ne 'ARRAY_END') {
+                        $this.eat('ARRAY_SEPERATOR')
+                    }
+                } 
                 $this.eat('ARRAY_END')
                 return [AstNode]::new(
                     'Array',
-                    $body
+                    $list
                 )
             }
         }
         return $this.Literal()
     }
 
-    # Expectes Elements and ArrayEnd or ArraySeperators
-    [AstNode] ArrayExpression() {
-        $element = $this.BasicStatement()
-        if ($this.tokenizer.current.type -ne 'ARRAY_END') {
-            $this.eat('ARRAY_SEPERATOR')
-        }
-        return $element
-    }
-
-    # Assignment Expressions expect a Variable identifier and a following BasicStatement
+    # Assignment Expressions expect a Variable identifier and a following Expression
     [AstNode] AssignmentExpression() {
 
         $variable = $null
@@ -102,12 +93,12 @@ class Parser {
             }
 
             Default {
-                throw "Unexpected Token '$($this.tokenizer.current.Type)', expected one of 'VARIABLE', 'STRING'; at '$($this.tokenizer.current.Value)'"
+                throw "Unexpected Token '$($this.tokenizer.current.Type)', expected one of 'VARIABLE', 'STRING'; got '$($this.tokenizer.current.Value)' at '$($this.tokenizer.position())'"
             }
         }
 
         $this.eat('ASSIGNMENT')
-        $assigne = $this.BasicStatement()
+        $assigne = $this.Expression()
 
         # Terraform allows for Commas after Assignment Expressions
         if ($this.tokenizer.current.Type -eq 'ARRAY_SEPERATOR') {
@@ -195,13 +186,9 @@ class Parser {
                     $null
                 )
             }
-
-            $null {
-                return $null
-            }
-
+            
             Default {
-                throw "Unexpected Literal '$($this.tokenizer.current.Type)' at '$($this.tokenizer.current.Value)'"
+                throw "Unexpected Literal '$($this.tokenizer.current.Type)'; got '$($this.tokenizer.current.Value)' at '$($this.tokenizer.position())'"
             }
         }
 
@@ -211,17 +198,14 @@ class Parser {
 
     # Consumes and advances to the next token.
     [AstNode] eat($tokenType) {
-        return $this.eat($tokenType, $false)
-    }
-    [AstNode] eat($tokenType, $optional) {
         $token = $this.tokenizer.current
 
         if ($null -eq $token) {
-            throw "unexpected EOF, expected: '$tokenType' at '$($token.Value)'"
+            throw "unexpected EOF, expected: '$tokenType'"
         }
 
         if ($token.type -ne $tokenType) {
-            throw "unexpected token: '$($token.type)', expected '$tokenType' at '$($token.Value)'"
+            throw "unexpected token: '$($token.type)', expected '$tokenType'; got '$($this.tokenizer.current.Value)' at '$($this.tokenizer.position())'"
         }
 
         $null = $this.tokenizer.advanceNextToken()

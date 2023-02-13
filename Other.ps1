@@ -122,14 +122,6 @@ $SettingsJsonDefaults = [PSCustomObject]@{
             )
             'icon' = 'terminal-cmd'
         }
-        #'CMD'                            = @{
-        #    'path' = @(
-        #        "${env:windir}/Sysnative/cmd.exe",
-        #        "${env:windir}/System32/cmd.exe"
-        #    )
-        #    'args' = @()
-        #    'icon' = 'terminal-cmd'
-        #}
         'Node'                           = @{
             'path' = @(
                 "$($global:DefaultEnvPaths['NodeJs'])/node.exe"
@@ -145,12 +137,10 @@ $SettingsJsonDefaults = [PSCustomObject]@{
 
 $null = Start-Job -ArgumentList $SettingsJsonDefaults -ScriptBlock {
     
-        
     $settingsJsonItems = @(
         Get-Item -Path "$env:APPDATA\Code\User\settings.json"
         Get-ChildItem -Path "$env:APPDATA\Code\User\Profiles" -Filter 'settings.json' -Recurse | ForEach-Object { $_ }
     )
-
 
     foreach ($settingsItem in $settingsJsonItems) {
 
@@ -161,6 +151,7 @@ $null = Start-Job -ArgumentList $SettingsJsonDefaults -ScriptBlock {
             $settingsJsonContent | Add-Member -MemberType $setting.MemberType `
                 -Name $setting.Name -Value $setting.Value -Force
         }
+
         $settingsJsonContent | ConvertTo-Json -Depth 8 | Out-File -FilePath $settingsItem.FullName
 
     }

@@ -26,6 +26,6 @@ function  Get-onPremisesExtensionAttributes {
     )
 
     $userId = (Get-AzADUser -Mail $usermail).id
-    return Invoke-GraphApi -ApiEndpoint "users/$userId/onPremisesExtensionAttributes"
+    return Invoke-GraphApi -Api "users/$userId/onPremisesExtensionAttributes"
   
 }

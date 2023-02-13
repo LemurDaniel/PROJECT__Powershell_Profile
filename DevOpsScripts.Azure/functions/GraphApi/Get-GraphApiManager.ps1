@@ -27,6 +27,6 @@ function Get-GraphApiManager {
     )
 
     $userId = (Get-AzADUser -Mail $usermail).id
-    return Invoke-GraphApi -ApiEndpoint "/users/$userId/manager"
+    return Invoke-GraphApi -Api "/users/$userId/manager"
 
 }

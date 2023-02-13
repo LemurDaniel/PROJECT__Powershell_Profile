@@ -26,10 +26,10 @@ function Invoke-GraphApi {
 
         [Parameter()]
         [System.String]
-        $ApiEndpoint
+        $Api
     )
 
-    $uri = "https://graph.microsoft.com/v1.0/$ApiEndpoint"
+    $uri = "https://graph.microsoft.com/v1.0/$Api"
     Write-Verbose $uri
     $response = Invoke-AzRestMethod -Method $Method -Uri $uri -Verbose
     return ($response.Content | ConvertFrom-Json -Depth 8)

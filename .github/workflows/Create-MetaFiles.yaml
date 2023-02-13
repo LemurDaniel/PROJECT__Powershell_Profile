@@ -9,6 +9,7 @@ on:
       - ".github/workflows/*.yaml"
       - ".scripts/create-meta.ps1"
       - "**/DevOpsScripts*/**.ps1"
+      - "**/DevOpsScripts*/meta.json"
 
 env:
   MODULE_BASE_NAME: DevOpsScripts

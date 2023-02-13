@@ -13,6 +13,12 @@
     None
 
     .LINK
+
+    src: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/convertfrom-securestring?view=powershell-7.3#description
+
+    If an encryption key is specified by using the Key or SecureKey parameters, the Advanced Encryption Standard (AES) encryption algorithm is used. 
+    The specified key must have a length of 128, 192, or 256 bits because those are the key lengths supported by the AES encryption algorithm. 
+    If no key is specified, the Windows Data Protection API (DPAPI) is used to encrypt the standard string representation.
         
 #>
 function Save-SecureStringToFile {

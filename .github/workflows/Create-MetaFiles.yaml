@@ -7,7 +7,7 @@ on:
       - master
     paths:
       - ".github/workflows/*.yaml"
-      - ".scripts/Create-MetaFiles.ps1"
+      - ".scripts/create-meta.ps1"
       - "**/DevOpsScripts*/**.ps1"
       - "**/DevOpsScripts*/meta.json"
 

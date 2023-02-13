@@ -43,7 +43,7 @@ function Search-PimScheduleInstanceForUser {
 
 
     # Get PIM Groups, User is Member of.
-    $responseGroups = Invoke-GraphApi -Method GET -Api "$aadUserId/transitiveMemberOf" | Select-Object -ExpandProperty value | Select-Object -ExpandProperty id
+    $responseGroups = Invoke-GraphApi -Method GET -Api "users/$aadUserId/transitiveMemberOf" | Select-Object -ExpandProperty value | Select-Object -ExpandProperty id
 
     Write-Verbose "Found AAD Groups"
     Write-Verbose "$($responseGroups | ConvertTo-Json)"

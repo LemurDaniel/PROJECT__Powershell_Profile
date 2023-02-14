@@ -35,7 +35,7 @@ function Start-PipelinesInOrder {
         [System.String]
         $environment = 'Dev',
 
-        # All Layers of Pipelines
+        # All Layers of Pipelines in DC Azure Migration
         [Parameter()]
         [System.String[][]]
         $Layers = @(

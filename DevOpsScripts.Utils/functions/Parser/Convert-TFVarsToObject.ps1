@@ -45,7 +45,11 @@ testtesttest = [
 
 
     .LINK
-        
+
+    Implementation of a basic recursive-decent parser
+
+    Credits / In Depth Explanation:
+    https://www.youtube.com/watch?v=4m7ubrdbWQU
 #>
 
 function Convert-TFVarsToObject {

@@ -17,7 +17,7 @@ Refers only to the DevOpsScripts-Module.
    1. Switch-Organization - Short 'swo'
    > PS> swo 'autocompleted_org_names' 'autocompleted_project_names'
    2. Project-Context can be switched in Organization with
-   > PS> swp 'autocompltede_project_names'
+   > PS> swp 'autocompleted_project_names'
 5. All DevOps related functions should now use current context.
    1. Get-ProjectInfo get info of current Project 
    2. Get-RepositoryInfo gets info about a repository in the curren Project.

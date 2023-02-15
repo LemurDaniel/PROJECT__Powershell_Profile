@@ -1,3 +1,6 @@
+
+Using Module "./Stylesheet.psm1"
+
 class SendGridHTMLFormat {
     
     # For Each Execution of FormatSendGrid another CSS-Head for those Elements is appended.
@@ -8,7 +11,7 @@ class SendGridHTMLFormat {
         $randomString = -join ((97..122) | Get-Random -Count 14 | ForEach-Object { [char]$_ })
         $DivContent = $ContentInsert -replace '\$1', $DivContent
         $Div = "<div id='$randomString'>$DivContent</div>"
-        $Css = (New-Stylesheet)::GetCSSContentTargetedToId($CSSFileName, $randomString)
+        $Css = [Stylesheet]::GetCSSContentTargetedToId($CSSFileName, $randomString)
 
         $this.CSSHeads += $Css
         $this.BodyDivs += $Div

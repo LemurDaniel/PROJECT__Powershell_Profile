@@ -19,13 +19,3 @@ class Stylesheet : System.Management.Automation.IValidateSetValuesGenerator {
         return @($null, '') + [Stylesheet]::GetCssFiles().BaseName
     }
 }
-  
-
-function New-Stylesheet {
-
-    [CmdletBinding()]
-    param ()
-
-    return [Stylesheet]::new()
-    
-}

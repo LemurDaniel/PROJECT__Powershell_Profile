@@ -1,3 +1,5 @@
+Using Module "./classes/Stylesheet.psm1"
+
 <#
 .Synopsis
     Formats Content into an HTML-Table with some custom CSS and ability to create href-links.
@@ -78,12 +80,7 @@ function Format-SendGridContent {
         # The Filename of a predfined Table-Css-Style.
         [Parameter()]
         [System.String]
-        [ValidateScript(
-            {
-                $_ -in (New-Stylesheet).GetValidValues()
-            },
-            ErrorMessage = ''
-        )]
+        [ValidateSet([Stylesheet])]
         $CSS_STYLE
     )
 

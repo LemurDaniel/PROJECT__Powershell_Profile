@@ -25,49 +25,92 @@
 #>
 function Start-Pipeline {
     
-    [cmdletbinding()]
+    [cmdletbinding(
+        DefaultParameterSetName = "currentContext"
+    )]
     param (
-        # The Name of the Pipeline in the Current Project.
-        [Parameter()]
+        # The name of the Project to swtich to in which you want to open a repository. Will default to curren tproject context.
+        [Parameter(
+            ParameterSetName = 'Projectspecific',
+            Mandatory = $false,
+            Position = 2
+        )]   
         [ValidateScript(
-            {
-                $_ -in (Get-DevOpsPipelines 'name')
-            }
+            { 
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify a correct Projectname.'
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = Get-DevOpsPipelines 'name'
+                $validValues = (Get-DevOpsProjects).name 
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
+        [System.String]
+        $Project,
+
+        # The Name of the Pipeline in the Current Project.
+        [Parameter(
+            ParameterSetName = 'Projectspecific',
+            Mandatory = $true,
+            Position = 0
+        )]
+        [Parameter(
+            ParameterSetName = 'currentContext',
+            Mandatory = $false,
+            Position = 0
+        )]   
+        [ValidateScript(
+            { 
+                # NOTE cannot access Project when changes dynamically with tab-completion
+                $true 
+            },
+            ErrorMessage = 'Please specify an correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = Get-DevOpsPipelines -Project $fakeBoundParameters['Project']
+                
+                $validValues.name | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
         $Name,
 
         # Where to start the Pipeline. Master/Dev or Current-Branch of repository.
-        [Parameter()]
+        [Parameter(
+            Mandatory = $true,
+            Position  = 1
+        )]
         [ValidateSet('Branch', 'Dev', 'Master', 'Both')]
         [System.String]
         $environment = 'Branch'
     )
 
 
-    $Pipeline = Get-DevOpsPipelines | Where-Object -Property name -EQ -Value $name
+    $Pipeline = Get-DevOpsPipelines -Project $Project | Where-Object -Property name -EQ -Value $name
     
     # Run Pipeline from Branch, dev or master
     if ($environment -eq 'Branch') {
         $currentBranch = git branch --show-current
-        $build = Start-PipelineOnBranch -id $Pipeline.id -ref "refs/heads/$currentBranch"
+        $build = Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref "refs/heads/$currentBranch"
     }
 
     if ($environment -eq 'dev' -OR $environment -eq 'both') {
-        $build = Start-PipelineOnBranch -id $Pipeline.id -ref 'refs/heads/dev'
+        $build = Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref 'refs/heads/dev'
     }
 
     if ($environment -eq 'master' -OR $environment -eq 'both') {
-        $build = Start-PipelineOnBranch -id $Pipeline.id -ref 'refs/heads/master'
+        $build = Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref 'refs/heads/master'
     }
 
   
@@ -75,6 +118,6 @@ function Start-Pipeline {
     Write-Host -Foreground Green " 🎉 Started Pipeline '$($Pipeline.folder)/$($Pipeline.name)'  on $environment 🎉  "
     Write-Host -Foreground Green '      '
 
-    Open-BuildInBrowser -buildId $build.id
+    Open-BuildInBrowser -Project $Project -buildId $build.id
 
 }

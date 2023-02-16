@@ -39,30 +39,79 @@ function Open-BuildInBrowser {
     
     [cmdletbinding()]
     param (
-        # The Pipeline name in the current Project autocompleted.
+        # The name of the Project to swtich to in which you want to open a repository. Will default to curren tproject context.
         [Parameter(
-            Position = 0,
+            ParameterSetName = 'Projectspecific',
             Mandatory = $true,
-            ParameterSetName = 'pipeLineName'
-        )]
+            Position = 1
+        )] 
+        [Parameter(
+            ParameterSetName = 'ProjectspecificBuildId',
+            Mandatory = $true,
+            Position = 1
+        )]   
+        [Parameter(
+            ParameterSetName = 'ProjectspecificPipeLineId',
+            Mandatory = $true,
+            Position = 1
+        )]     
         [ValidateScript(
-            {
-                $_ -in (Get-DevOpsPipelines 'name')
-            }
+            { 
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify a correct Projectname.'
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = Get-DevOpsPipelines 'name'
+                $validValues = (Get-DevOpsProjects).name 
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
+        [System.String]
+        $Project,
+
+        # The Pipeline name in the current Project autocompleted.
+        [Parameter(
+            ParameterSetName = 'Projectspecific',
+            Mandatory = $true,
+            Position = 0
+        )]
+        [Parameter(
+            ParameterSetName = 'currentContext',
+            Mandatory = $false,
+            Position = 0
+        )]   
+        [ValidateScript(
+            { 
+                # NOTE cannot access Project when changes dynamically with tab-completion
+                $true 
+            },
+            ErrorMessage = 'Please specify an correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = Get-DevOpsPipelines -Project $fakeBoundParameters['Project']
+                
+                $validValues.name | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
         $Name,
 
-        # The Pipeline-Id in the Current-Project.
+
+        # The Pipeline name in the current Project autocompleted.
+        [Parameter(
+            ParameterSetName = 'ProjectspecificPipeLineId',
+            Mandatory = $true
+        )]
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'pipeLineId'
@@ -70,7 +119,11 @@ function Open-BuildInBrowser {
         [System.String]
         $pipeLineId,
 
-        # The Build-Id in the current-Project.
+        # The Pipeline name in the current Project autocompleted.
+        [Parameter(
+            ParameterSetName = 'ProjectspecificBuildId',
+            Mandatory = $true
+        )]
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'buildId'
@@ -81,23 +134,24 @@ function Open-BuildInBrowser {
 
     if ([System.String]::IsNullOrEmpty($buildId)) {
         if ([System.String]::IsNullOrEmpty($pipeLineId)) {
-            $pipeLineId = Search-In (Get-DevOpsPipelines) -where name -has $name -return id
+            $pipeLineId = Get-DevOpsPipelines -Project $Project | Where-Object -Property Name -EQ $Name | Select-Object -ExpandProperty id
         }
 
         # Get Latest Build for Pipeline
         if ($pipeLineId) {
             $Request = @{
-                Method = 'GET'
-                Domain = 'dev.azure'
-                SCOPE  = 'PROJ'
-                API    = "/_apis/build/latest/$($pipeLineId)?api-version=7.0-preview.1"
+                Project = $Project
+                Method  = 'GET'
+                Domain  = 'dev.azure'
+                SCOPE   = 'PROJ'
+                API     = "/_apis/build/latest/$($pipeLineId)?api-version=7.0-preview.1"
             }
             $buildId = Invoke-DevOpsRest @Request -return 'id'
         }
     }
 
     $Organization = Get-DevOpsContext -Organization
-    $projectNameUrlEncoded = (Get-ProjectInfo 'name') -replace ' ', '%20'
+    $projectNameUrlEncoded = (Get-ProjectInfo -Name $Project).name -replace ' ', '%20'
 
     # Open in Browser.
     $pipelineUrl = "https://dev.azure.com/$Organization/$projectNameUrlEncoded/_build/results?buildId=$($buildId)&view=logs"

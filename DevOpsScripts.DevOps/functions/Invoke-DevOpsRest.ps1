@@ -57,7 +57,10 @@
 #>
 
 function Invoke-DevOpsRest {
-    [cmdletbinding()]
+
+    [CmdletBinding(
+        SupportsShouldProcess = $true
+    )]
     param(
         # The Rest-Method to use.
         [Parameter(Mandatory = $true)]
@@ -192,22 +195,26 @@ function Invoke-DevOpsRest {
         Uri     = [System.String]::IsNullOrEmpty($Uri) ? $TargetURL : $Uri    
     }
 
-    Write-Verbose 'BODY START'
-    Write-Verbose ($Request | ConvertTo-Json -Depth 8)
-    Write-Verbose 'BODY END'
+    Write-Verbose "Method: $([String]$Request.Method)"
+    Write-Verbose "URI: $($Request.Uri)"
+    Write-Verbose "BODY: $($body | ConvertTo-Json -Depth 8 -AsArray:$AsArray)"
 
-    $response = Invoke-RestMethod @Request
+    
+    if ($PSCmdlet.ShouldProcess($Request.Uri, $($Request.Method))) {
+    
+        $response = Invoke-RestMethod @Request
+        # TODO. If DevOps wants user to sign out and in for security reasons.
+        if ($response.GetType() -eq [System.String] -AND $response.toLower().contains('sign out')) {
+            Disconnect-AzAccount 
+            Connect-AzAccount
+            $response | ConvertTo-Json | Out-File test.json
+            $response | Out-File test.html
+        }
 
+        Write-Verbose ($response | ConvertTo-Json -Depth 8)
 
-    # TODO. If DevOps wants user to sign out and in for security reasons.
-    if ($response.GetType() -eq [System.String] -AND $response.toLower().contains('sign out')) {
-        Disconnect-AzAccount 
-        Connect-AzAccount
-        $response | ConvertTo-Json | Out-File test.json
-        $response | Out-File test.html
+        return Get-Property -Object $response -Property $Property
+
     }
 
-    Write-Verbose ($response | ConvertTo-Json -Depth 8)
-
-    return Get-Property -Object $response -Property $Property
 }

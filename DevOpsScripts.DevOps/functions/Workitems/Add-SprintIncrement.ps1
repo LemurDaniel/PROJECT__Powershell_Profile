@@ -25,7 +25,9 @@
 #>
 function Add-SprintIncrement {
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        SupportsShouldProcess = $true
+    )]
     param(
         [parameter()]
         [System.String]
@@ -33,7 +35,7 @@ function Add-SprintIncrement {
     )
 
     # Get Latest Sprint Iteration.
-    $LatesSprint = Get-SprintIterations -Refresh | Sort-Object -Property { $_.attributes.startDate } | Select-Object -Last 1
+    $LatesSprint = Get-SprintIterations | Sort-Object -Property { $_.attributes.startDate } | Select-Object -Last 1
 
     $lastFinishDate = [System.DateTime]$LatesSprint.attributes.finishDate
    

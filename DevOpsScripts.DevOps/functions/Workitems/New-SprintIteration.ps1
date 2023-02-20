@@ -26,7 +26,9 @@
 
 function New-SprintIteration {
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        SupportsShouldProcess = $true
+    )]
     param(
 
         [parameter(Mandatory = $true)]

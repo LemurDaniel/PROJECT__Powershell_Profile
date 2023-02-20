@@ -84,8 +84,10 @@ function New-PullRequest {
     )
 
     
-
+    
     $repository = Get-RepositoryInfo -path $path -id $id
+    $project = $repository.project
+
     $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
 
     
@@ -93,7 +95,7 @@ function New-PullRequest {
     $currentBranch = git -C $repostoryPath branch --show-current
     git -C $repostoryPath push --set-upstream origin $currentBranch
 
-    $remoteBranches = Get-RepositoryRefs -id $repository.id
+    $remoteBranches = Get-RepositoryRefs -Project $project.Name -Name $repository.name
     $preferencedBranch = Search-In $remoteBranches -has $currentBranch -return 'name'
 
     $hasDevBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/dev' | Measure-Object).Count -gt 0

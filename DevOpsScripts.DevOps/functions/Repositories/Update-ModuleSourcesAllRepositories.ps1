@@ -54,7 +54,7 @@ function Update-ModuleSourcesAllRepositories {
         $null = Open-Repository -Name ($repository.name) -onlyDownload
 
         Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
-        $repoRefs = Get-RepositoryRefs -id $repository.id | `
+        $repoRefs = Get-RepositoryRefs -Project $repository.project.name -Name $repository.Name | `
             Where-Object -Property name -In @('refs/heads/dev' , 'refs/heads/main' , 'refs/heads/master' ) | `
             Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
           

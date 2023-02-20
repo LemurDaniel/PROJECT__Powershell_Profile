@@ -54,7 +54,7 @@ function Get-RecentSubmoduleTags {
 
         Write-Host "Fetching Repository $($repository.name)"
         # Call Api to get all tags on Repository and sort them by newest
-        $sortedTags = Get-RepositoryRefs -id $repository.id -Tags | `
+        $sortedTags = Get-RepositoryRefs -Project $repository.project.name -Name $repository.name -Tags | `
             Select-Object -Property `
         @{
             Name       = 'Tag'; 

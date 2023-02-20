@@ -32,7 +32,6 @@
 function New-Workitem {
 
     [CmdletBinding(
-        DefaultParameterSetName = 'ParentId',
         SupportsShouldProcess = $true
     )]
     param(
@@ -64,11 +63,6 @@ function New-Workitem {
         [System.String]
         $Description = $null,
 
-        # Team association.
-        [Parameter()]
-        [System.String]
-        $Team = 'DC Azure Migration Team',
-
         # Iteration Path.
         [Parameter()]
         [ValidateScript(
@@ -91,14 +85,14 @@ function New-Workitem {
         $IterationPath = 'Backlog',
 
         # Optional Parent of newly created workitem.
-        [Parameter(ParameterSetName = 'ParentId')]
-        [System.String]
+        [Parameter()]
+        [System.Int32]
         $ParentId,
 
-        # Optional Parent of newly created workitem.
-        [Parameter(ParameterSetName = 'ParentUrl')]
-        [System.String]
-        $ParentUrl
+        # Optional Id of a related workitem
+        [Parameter()]
+        [System.Int32]
+        $RelatedId
     )
 
     BEGIN {
@@ -153,13 +147,25 @@ function New-Workitem {
             )
         }
 
-        if ($ParentId -OR $ParentUrl) {
+        if ($PSBoundParameters.ContainsKey('ParentId')) {
             $Request.Body += @{
                 op    = 'add'
                 path  = '/relations/-'
                 value = @{
                     rel        = Get-WorkItemRelationTypes -RelationType Parent | Select-Object -ExpandProperty referenceName
-                    url        = [System.String]::IsNullOrEmpty($ParentUrl) ? (Get-WorkItem -Id $ParentId).url : $ParentUrl
+                    url        = (Get-WorkItem -Id $ParentId).url
+                    attributes = @{}
+                }
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('RelatedId')) {
+            $Request.Body += @{
+                op    = 'add'
+                path  = '/relations/-'
+                value = @{
+                    rel        = Get-WorkItemRelationTypes -RelationType Related | Select-Object -ExpandProperty referenceName
+                    url        = (Get-WorkItem -Id $RelatedId).url
                     attributes = @{}
                 }
             }

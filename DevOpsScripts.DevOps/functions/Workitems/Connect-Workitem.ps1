@@ -26,6 +26,9 @@
 
 function Connect-Workitem {
 
+    [CmdletBinding(
+        SupportsShouldProcess = $true
+    )]
     param(
         # Workitem for Relation.
         [Parameter(
@@ -36,7 +39,8 @@ function Connect-Workitem {
 
         # LinkElement for Relation. Workitem url or artifact id, etc.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $true,
+            ValueFromPipeline = $true
         )]
         [System.String]
         $linkElementUrl,
@@ -61,29 +65,33 @@ function Connect-Workitem {
         $RelationType
 
     )
-    $WorkItem
-    $Request = @{
-        METHOD      = 'PATCH'
-        DOMAIN      = 'dev.azure'
-        CALL        = 'PROJ'
-        API         = "_apis/wit/workitems/$($WorkItemId)?api-version=4.1"
-        ContentType = 'application/json-patch+json'
-        Body        = @(
-            @{
-                op    = 'add'
-                path  = '/relations/-'
-                value = @{
-                    rel        = Get-WorkItemRelationTypes $RelationType | Select-Object -ExpandProperty 'referenceName'
-                    url        = $linkElementUrl
-                    attributes = @{
-                        name    = $RelationType
-                        comment = "$((Get-DevOpsUser).displayName) created $RelationType"
+
+    BEGIN {}
+    PROCESS {
+        $Request = @{
+            METHOD      = 'PATCH'
+            DOMAIN      = 'dev.azure'
+            CALL        = 'PROJ'
+            API         = "_apis/wit/workitems/$($WorkItemId)?api-version=4.1"
+            ContentType = 'application/json-patch+json'
+            Body        = @(
+                @{
+                    op    = 'add'
+                    path  = '/relations/-'
+                    value = @{
+                        rel        = Get-WorkItemRelationTypes $RelationType | Select-Object -ExpandProperty 'referenceName'
+                        url        = $linkElementUrl
+                        attributes = @{
+                            name    = $RelationType
+                            comment = "$((Get-DevOpsUser).displayName) created $RelationType"
+                        }
                     }
                 }
-            }
-        )
-        AsArray     = $true
-    }
+            )
+            AsArray     = $true
+        }
 
-    return Invoke-DevOpsRest @Request
+        return Invoke-DevOpsRest @Request
+    }
+    END {}
 }

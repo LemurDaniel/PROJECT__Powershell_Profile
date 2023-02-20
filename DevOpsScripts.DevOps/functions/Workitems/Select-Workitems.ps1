@@ -39,8 +39,8 @@ function Select-Workitems {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $predefined = (Get-ChildItem -Path "$PSScriptRoot\predefinedQueries" -Filter '*.wiql').name -replace '.wiql', ''
-                $validValues = @((Get-WorkItemQueries | Get-Property name), $predefined) 
+                $predefined = @() #(Get-ChildItem -Path "$PSScriptRoot\predefinedQueries" -Filter '*.wiql').name -replace '.wiql', ''
+                $validValues = @((Get-WorkItemQueries).name, $predefined) 
 
                 $validValues | `
                     ForEach-Object { $_ } | `
@@ -52,7 +52,7 @@ function Select-Workitems {
         $Query
     )
 
-    if ($Query -in (Get-WorkItemQueries name)) {
+    if ($Query -in (Get-WorkItemQueries).name) {
 
         $id = Get-WorkItemQueries | Where-Object -Property name -EQ -Value $Query | Select-Object -ExpandProperty id
         $Request = @{

@@ -32,6 +32,30 @@ function Get-SprintIterations {
 
     [CmdletBinding()]
     param(
+        # The name of the Project. Will default to current project context.
+        [Parameter(
+            Mandatory = $false,
+            Position = 1
+        )]   
+        [ValidateScript(
+            { 
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify a correct Projectname.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project,
+
         # Switch to only return the most current Sprint-Iteration.
         [Parameter()]
         [switch]
@@ -39,19 +63,15 @@ function Get-SprintIterations {
     )
 
     $Request = @{
-        Method = 'GET'
-        SCOPE  = 'PROJ'
-        API    = '/_apis/work/teamsettings/iterations?api-version=7.0'
-        Query  = $Current ? @{
+        Project = $Project
+        Method  = 'GET'
+        SCOPE   = 'PROJ'
+        API     = '/_apis/work/teamsettings/iterations?api-version=7.0'
+        Query   = $Current ? @{
             '$timeframe' = $Current ? 'current' : $Iteration
         } : $null
     }
 
-    if ($Current) {
-        return Invoke-DevOpsRest @Request -return 'value'
-    }
-    
-    $iterations = Invoke-DevOpsRest @Request -return 'value'
-    $iterations = Set-AzureDevOpsCache -Object $iterations -Type Iteration -Identifier (Get-ProjectInfo 'name')
-    return $iterations
+    return Invoke-DevOpsRest @Request | Select-Object -ExpandProperty value
+    #$iterations = Set-AzureDevOpsCache -Object $iterations -Type Iteration -Identifier (Get-ProjectInfo 'name')
 }

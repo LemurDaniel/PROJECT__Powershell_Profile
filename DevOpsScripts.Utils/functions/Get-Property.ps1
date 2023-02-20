@@ -22,7 +22,7 @@
 
     Get A an Attribute for all workitems in the current Iteration:
 
-    PS> Search-WorkItemInIteration -Current | get-property 'System.AssignedTo.displayName'
+    PS> Search-WorkItemInIteration -Current | get-property 'fields.System.AssignedTo.displayName'
 
     .EXAMPLE
 

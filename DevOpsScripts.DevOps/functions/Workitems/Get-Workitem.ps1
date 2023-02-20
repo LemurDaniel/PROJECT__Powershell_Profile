@@ -32,7 +32,7 @@
 
 function Get-WorkItem {
 
-    [CmdletBinding(DefaultParameterSetName="expand")]
+    [CmdletBinding(DefaultParameterSetName = 'expand')]
     param(
         # List of workitem ids to return
         [Parameter(
@@ -43,18 +43,17 @@ function Get-WorkItem {
         $Id,
 
         # The Property to return from the items. If null will return full Properties.
-        [Parameter(ParameterSetName="fields")]
+        [Parameter(ParameterSetName = 'fields')]
         [System.String]
         $fields,
 
-        [ValidateSet("None", "Relations", "Fields", "Links", "All")]
-        [Parameter(ParameterSetName="expand")]
+        [ValidateSet('None', 'Relations', 'Fields', 'Links', 'All')]
+        [Parameter(ParameterSetName = 'expand')]
         [System.String]
         $expand
 
     )
-    Begin {
-    }
+    Begin {}
     Process {
         $Request = @{
             Method = 'GET'
@@ -62,16 +61,14 @@ function Get-WorkItem {
             API    = '_apis/wit/workitems/' + $Id + '?api-version=7.0'
             Query  = @{}
         }
-        if ($PSBoundParameters.ContainsKey("fields")) {
+        if ($PSBoundParameters.ContainsKey('fields')) {
             $Request.Query.fields = $fields -join ','
         }
-        if($PSBoundParameters.ContainsKey("expand")){
+        if ($PSBoundParameters.ContainsKey('expand')) {
             $Request.Query.'$expand' = $expand
         }
 
-        $response = Invoke-DevOpsRest @Request
+        return Invoke-DevOpsRest @Request
     }
-    End {
-        return $response
-    }   
+    End {}   
 }

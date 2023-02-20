@@ -33,7 +33,7 @@ function New-BranchFromWorkitem {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = Search-WorkItemInIteration -SearchTags '*' -Current -Personal -return 'System.Title'  
+                $validValues = Search-WorkItemInIteration -SearchTags '*' -Current -Personal -return 'fields.System.Title'  
 
                 $validValues | `
                     ForEach-Object { $_ } | `
@@ -51,8 +51,8 @@ function New-BranchFromWorkitem {
     }
 
     $workItem = Search-WorkItemInIteration -Current -Personal -Single -SearchTags $workitemTitle
-    $transformedTitle = $workItem.'System.Title'.toLower() -replace '[?!:\/\\\-\s]+', '_' -replace '[\[\]]+', '__'
-    $branchName = "features/$($workItem.'System.id')-$transformedTitle"
+    $transformedTitle = $workItem.fields.'System.Title'.toLower() -replace '[?!:\/\\\-\s]+', '_' -replace '[\[\]]+', '__'
+    $branchName = "features/$($workItem.id)-$transformedTitle"
         
     git checkout master
     git pull origin master

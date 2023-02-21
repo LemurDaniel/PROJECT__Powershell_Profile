@@ -48,13 +48,8 @@ Import-Module "$PSScriptRoot\DevOpsScripts"
 . "$PSScriptRoot/Other.ps1"
  
 Add-EnvPaths
-
-
-$null = Switch-Terraform
-$activeVersionTF = Get-UtilsCache -Type TerraformVersion -Identifier Current
-if ($activeVersionTF) {
-    Switch-Terraform -TFVersion $activeVersionTF
-} 
+Switch-Terraform
+Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 
 $null = Add-QuickContext -ContextName Teamsbuilder -Organization baugruppe -Project 'Teamsbuilder' -Force
 $null = Add-QuickContext -ContextName 'DC Migration' -Organization baugruppe -Project 'DC Azure Migration' -Force
@@ -63,11 +58,6 @@ $null = Add-QuickContext -ContextName 'DC Redeploy' -Organization baugruppe -Pro
 
 $null = Add-PimProfile -ProfileName WebContrib -Scope 'managementGroups/acfroot-prod' -Role 'Website Contributor' -duration 3 -Force
 $null = Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
-
-Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
-
-
-
 
 $gpgSigning = $true
 

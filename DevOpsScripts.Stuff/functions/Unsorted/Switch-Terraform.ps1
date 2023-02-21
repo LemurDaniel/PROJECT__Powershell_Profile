@@ -76,18 +76,21 @@ function Switch-Terraform {
     Begin {
         $null = $PsBoundParameters.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value -ErrorAction 'SilentlyContinue' }
         $TerraformFolder = $env:TerraformPath
-        $TerraformInstallations = Get-ChildItem -Path $env:TerraformPath
-        $TerraformTarget = ''
+        $TerraformInstallations = Get-ChildItem -Path $TerraformFolder
     }
     Process {
 
         if ([string]::IsNullOrEmpty($TFVersion)) {
             $TFVersion = $ValidateSetOptions | Sort-Object | Select-Object -Last 1
         }
+        else {
+            $null = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active
+        }
         
-        $TerraformTarget = Join-Path -Path $TerraformFolder -ChildPath "v$($TFVersion)"
-        if ("v$($TFVersion)" -notin $TerraformInstallations.Name) {
+
+        if ("v$TFVersion" -notin $TerraformInstallations.Name) {
            
+            $TerraformTarget = Join-Path -Path $TerraformFolder -ChildPath "v$TFVersion"
             $remoteTarget = $remoteVersions | Where-Object -Property 'Version' -EQ -Value $TFVersion
             $downloadZipFile = "$env:USERPROFILE\downloads/terraform_$TFVersion`_temp-$(Get-Random).zip"
             Invoke-WebRequest -Method GET -Uri $remoteTarget.Target -OutFile $downloadZipFile
@@ -98,10 +101,18 @@ function Switch-Terraform {
 
     }
     End {
-        Add-EnvPaths -AdditionalPath Terraform -AdditionalValue $TerraformTarget
+        $activeVersion = Get-UtilsCache -Type TerraformVersion -Identifier Active
+        if ([string]::IsNullOrEmpty($activeVersion)) {
+            $null = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active
+        }
+
+        $activeVersion = Get-UtilsCache -Type TerraformVersion -Identifier Active
+        $terraformTarget = $TerraformInstallations | Where-Object -Property Name -EQ "v$activeVersion"
+        Add-EnvPaths -AdditionalPath Terraform -AdditionalValue $terraformTarget
 
         Write-Host
         terraform --version
         Write-Host
+
     }
 }

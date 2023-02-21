@@ -26,7 +26,7 @@
 function Start-Pipeline {
     
     [cmdletbinding(
-        DefaultParameterSetName = "currentContext"
+        DefaultParameterSetName = 'currentContext'
     )]
     param (
         # The name of the Project to swtich to in which you want to open a repository. Will default to curren tproject context.
@@ -89,7 +89,7 @@ function Start-Pipeline {
         # Where to start the Pipeline. Master/Dev or Current-Branch of repository.
         [Parameter(
             Mandatory = $true,
-            Position  = 1
+            Position = 1
         )]
         [ValidateSet('Branch', 'Dev', 'Master', 'Both')]
         [System.String]
@@ -97,6 +97,7 @@ function Start-Pipeline {
     )
 
 
+    $Project  = Get-ProjectInfo -Name $Project | Select-Object -ExpandProperty name
     $Pipeline = Get-DevOpsPipelines -Project $Project | Where-Object -Property name -EQ -Value $name
     
     # Run Pipeline from Branch, dev or master

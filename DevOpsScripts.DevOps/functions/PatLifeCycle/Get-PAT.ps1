@@ -73,7 +73,7 @@ function Get-PAT {
     }
 
     $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes(@(
-        ($PatScopes | ForEach-Object { $_ }), $name, $Organization
+        ($PatScopes | Sort-Object | ForEach-Object { $_ }), $name, $Organization
     )) 
     $identifier = [System.Convert]::ToHexString($bytes)
     

@@ -51,13 +51,17 @@ function Set-UtilsCache {
 
         [Parameter(Mandatory = $false)]
         [Switch]
-        $Forever
+        $Forever,
+
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Path = "$PSScriptRoot/.cache/"
     )
 
-    $cachePath = Join-Path -Path "$PSScriptRoot/.cache/" -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
+    $cachePath = Join-Path -Path $Path -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
     
-    if (-not (Test-Path -Path "$PSScriptRoot/.cache")) {
-        $null = New-Item -Path "$PSScriptRoot/.cache" -ItemType Directory -Force
+    if (-not (Test-Path -Path $Path)) {
+        $null = New-Item -Path $Path -ItemType Directory -Force
     }
     
     $Alive = $Forever ? [System.Int32]::MaxValue : $Alive

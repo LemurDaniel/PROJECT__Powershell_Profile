@@ -45,10 +45,14 @@ function Get-UtilsCache {
         # Return the cache as a hashtable.
         [Parameter()]
         [Switch]
-        $AsHashtable
+        $AsHashtable,
+
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Path = "$PSScriptRoot/.cache/"
     )
 
-    $cachePath = Join-Path -Path "$PSScriptRoot/.cache/" -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
+    $cachePath = Join-Path -Path $Path -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
     $Cache = Get-Content $cachePath -ErrorAction SilentlyContinue | ConvertFrom-Json -AsHashtable:$AsHashtable -ErrorAction SilentlyContinue
     
     Write-Verbose $cachePath

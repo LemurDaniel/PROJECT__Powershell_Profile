@@ -201,8 +201,21 @@ function Invoke-DevOpsRest {
 
     
     if ($PSCmdlet.ShouldProcess($Request.Uri, $($Request.Method))) {
-    
-        $response = Invoke-RestMethod @Request
+
+        try {
+            $response = Invoke-RestMethod @Request
+        }
+        catch {
+            if ($_ -is [System.String]) {
+                $excpetion = $_ | ConvertFrom-Json
+                $excpetion
+                if ($excpetion.typeKey -eq 'UnauthorizedRequestException') {
+                    Connect-AzAccount
+                    $response = Invoke-RestMethod @Request
+                }
+            }
+        }
+
         # TODO. If DevOps wants user to sign out and in for security reasons.
         if ($response.GetType() -eq [System.String] -AND $response.toLower().contains('sign out')) {
             Disconnect-AzAccount 

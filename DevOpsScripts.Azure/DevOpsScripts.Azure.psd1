@@ -69,11 +69,11 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Backup-AzTables', 'Invoke-AzureRest', 'Restore-AzTables', 
-               'Switch-AzTenant', 'Get-GraphApiManager', 
-               'Get-onPremisesExtensionAttributes', 'Invoke-GraphApi', 
-               'Add-PimProfile', 'Get-PimAssignments', 'Get-PimProfiles', 
-               'Get-RBACPermissions', 
+FunctionsToExport = 'Backup-AzTables', 'Get-NonCompliantRoleAssignments', 
+               'Invoke-AzureRest', 'Restore-AzTables', 'Switch-AzTenant', 
+               'Get-GraphApiManager', 'Get-onPremisesExtensionAttributes', 
+               'Invoke-GraphApi', 'Add-PimProfile', 'Get-PimAssignments', 
+               'Get-PimProfiles', 'Get-RBACPermissions', 
                'Get-RoleEligibilitySceduleInstancesForScope', 
                'Get-RoleManagmentPoliciyAssignmentsForScope', 
                'New-PimSelfActivationRequest', 'New-PimSelfDeactivationRequest', 

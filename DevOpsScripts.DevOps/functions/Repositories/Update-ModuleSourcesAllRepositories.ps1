@@ -64,6 +64,7 @@ function Update-ModuleSourcesAllRepositories {
             Write-Host -ForegroundColor Red '   The script will fetch all tags again!'
             Write-Host "`n---------------------------------------------------------------`n"
             $null = Get-RecentSubmoduleTags -refresh
+            $EnteredNonModules = $true
         }
     
         Write-Host "`n------------------------------`n"
@@ -83,8 +84,12 @@ function Update-ModuleSourcesAllRepositories {
         Write-Host -ForegroundColor Yellow 'Search and Replace Submodule Source Paths'
         $replacements = Update-ModuleSourcesInPath -replacementPath ($repository.Localpath) -Confirm:$false
 
+        if ($replacements.Count -ne 0) {
+            continue
+        }
+
         # Case when feature branch is needed
-        if ($replacements.Count -ne 0 -AND $nonModules.Contains($repository.name)) {
+        if ($nonModules.Contains($repository.name)) {
         
             if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Pull Request')) {
                 Write-Host -ForegroundColor Yellow 'Create Feature Branch and create Pull Request'
@@ -108,10 +113,7 @@ function Update-ModuleSourcesAllRepositories {
             }
 
         }
-
-        # Case when no feature branch is needed
-        if ($replacements.Count -ne 0 -AND !$nonModules.Contains($repository.name)) {
-        
+        else {
             Write-Host -ForegroundColor Yellow 'Update Dev Branch and create Pull Request'
             git -C $repository.Localpath checkout -B dev
             git -C $repository.Localpath add -A
@@ -120,14 +122,11 @@ function Update-ModuleSourcesAllRepositories {
         
             New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
                 -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
-
         }
     
-
-     
         if ($repository.Name -in $moduleUpdatesRequired) {
             Write-Host "`n---------------------------------------------------------------`n"
-            Write-Host -ForegroundColor Red "   '$($repository.Name)' is referenced by Successor-Modules."
+            Write-Host -ForegroundColor Red "   '$($repository.Name)' was changed and is referenced by Successor-Modules."
             Write-Host -ForegroundColor Red '   Please update the Module before proceeding.'
             Write-Host -ForegroundColor Red '   The script will fetch all tags again!'
             Write-Host "`n---------------------------------------------------------------`n"

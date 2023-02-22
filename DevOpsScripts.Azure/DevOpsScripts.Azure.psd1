@@ -83,8 +83,8 @@ FunctionsToExport = 'Backup-AzTables', 'Get-NonCompliantRoleAssignments',
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
                'Search-AzFunctionAppSettings', 'Search-AzResource', 
-               'Search-AzStorageAccount', 'Search-AzStorageContext', 'Search-AzVm', 
-               'Test'
+               'Search-AzResourceGraphResults', 'Search-AzStorageAccount', 
+               'Search-AzStorageContext', 'Search-AzVm', 'Test'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

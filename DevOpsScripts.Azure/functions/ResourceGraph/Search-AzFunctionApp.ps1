@@ -17,6 +17,10 @@
         
 #>
 function Search-AzFunctionApp {
+
+    [CmdletBinding(
+        DefaultParameterSetName = 'Take'
+    )]
     param (
         # The Name the Function App must contain.
         [Parameter(

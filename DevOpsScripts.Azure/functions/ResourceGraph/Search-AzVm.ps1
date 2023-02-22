@@ -18,6 +18,10 @@
 #>
 
 function Search-AzVm {
+
+    [CmdletBinding(
+        DefaultParameterSetName = 'Take'
+    )]
     param (
         # The Name the virtual machine must contain.
         [Parameter(

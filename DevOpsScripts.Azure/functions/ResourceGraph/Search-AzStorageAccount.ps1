@@ -18,18 +18,20 @@
 #>
 function Search-AzStorageAccount {
 
-     [CmdletBinding(DefaultParameterSetName = 'Take')]
+    [CmdletBinding(
+        DefaultParameterSetName = 'Take'
+    )]
     param (
         # The Name the storage account must contain.
         [Parameter(
             Position = 0,
             Mandatory = $true,
-             ParameterSetName = 'Take'
+            ParameterSetName = 'Take'
         )]
         [Parameter(
             Position = 0,
             Mandatory = $true,
-             ParameterSetName = 'All'
+            ParameterSetName = 'All'
         )]
         [System.String[]]
         $StorageAccountName,

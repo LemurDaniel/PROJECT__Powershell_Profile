@@ -178,7 +178,7 @@ function Get-AzResourceGraphChangesUpdate {
     $UpdatePropertyName = [System.Char]::ToUpper($UpdateProperty.split('.')[-1][0]) + $UpdateProperty.split('.')[-1].Substring(1)
     $propertyNameOld = "previous$UpdatePropertyName"
     $propertyNameNew = "new$UpdatePropertyName"
-    return Search-AzGraph -ManagementGroup $managementGroup -Query "
+    return Search-AzResourceGraphResults -ManagementGroup $managementGroup -Query "
         resourcechanges
         | where properties.targetResourceType $ResourceTypeFilter '$ResourceType' 
         // Get only Changes after Timestamp of Type Update.

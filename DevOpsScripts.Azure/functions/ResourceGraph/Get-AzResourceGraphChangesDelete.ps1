@@ -51,6 +51,7 @@ function Get-AzResourceGraphChangesDelete {
 
 
     [CmdletBinding()]
+    [OutputType([System.Array])]
     param (
         # A resource type filter to allow for more customization. Default ist '=~' Equals-CaseInsensitive
         [Parameter(
@@ -127,16 +128,16 @@ function Get-AzResourceGraphChangesDelete {
         [System.String]
         $managementGroup
     )
+    
+    $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
 
     $TimeStamp = $TimeStamp ? $TimeStamp : [DateTime]::Now.AddDays(-7)
     $TimeStampEnd = $TimeStampEnd ? $TimeStampEnd : [DateTime]::Now.AddDays(1)
 
-    $managementGroup = [System.String]::IsNullOrEmpty($managementGroup) ? (Get-AzContext).Tenant.Id : $managementGroup
-
     $ResourceType = $ResourceType | ForEach-Object { "'$_'" }
     $ResourceTypeQuery = $ResourceType.Count -eq 1 ? $($ResourceType[0]) : "($($ResourceType -join ', '))" 
 
-    return Search-AzGraph -ManagementGroup $managementGroup -Query "
+    return Search-AzResourceGraphResults -ManagementGroup $managementGroup -Query "
         resourcechanges
         | where properties.targetResourceType $ResourceTypeFilter $ResourceTypeQuery
         // Get only Changes after Timestamp of Type Delete.

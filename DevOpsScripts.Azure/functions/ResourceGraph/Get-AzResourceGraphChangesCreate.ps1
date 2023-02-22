@@ -173,7 +173,7 @@ function Get-AzResourceGraphChangesCreate {
     $ResourceType = $ResourceType | ForEach-Object { "'$_'" }
     $ResourceTypeQuery = $ResourceType.Count -eq 1 ? $($ResourceType[0]) : "($($ResourceType -join ', '))" 
 
-    return Search-AzGraph -ManagementGroup $managementGroup -Query "
+    return Search-AzResourceGraphResults -ManagementGroup $managementGroup -Query "
         resourcechanges
         | where properties.targetResourceType $ResourceTypeFilter $ResourceTypeQuery
         // Get only Changes after Timestamp of Type Create.

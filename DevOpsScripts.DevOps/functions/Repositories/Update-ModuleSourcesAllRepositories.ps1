@@ -84,7 +84,7 @@ function Update-ModuleSourcesAllRepositories {
         Write-Host -ForegroundColor Yellow 'Search and Replace Submodule Source Paths'
         $replacements = Update-ModuleSourcesInPath -replacementPath ($repository.Localpath) -Confirm:$false
 
-        if ($replacements.Count -ne 0) {
+        if ($replacements.Count -eq 0) {
             continue
         }
 

@@ -29,8 +29,8 @@ function Get-OpenAIAPIAuthentication {
 
     if (![System.String]::isNullOrEmpty($env:OPEN_AI_API_KEY)) {
         return @{
-            OpenAIapiKey = $env:OPEN_AI_API_KEY
-            OpenAIapiOrgId  = $env:OPEN_AI_ORD_ID
+            OpenAIapiKey   = $env:OPEN_AI_API_KEY
+            OpenAIapiOrgId = $env:OPEN_AI_ORD_ID
         }
     }
 
@@ -44,14 +44,14 @@ function Get-OpenAIAPIAuthentication {
  
 
         Save-SecureStringToFile -SecureString $OpenAIapiKey -Identifier OpenAIapiKey
-        if($OpenAIapiOrgId.Length -gt 0){
+        if ($OpenAIapiOrgId.Length -gt 0) {
             Save-SecureStringToFile -SecureString $OpenAIapiOrgId -Identifier OpenAIapiOrgId
         }
     }
 
     return @{
         OpenAIapiKey   = $OpenAIapiKey | ConvertFrom-SecureString -AsPlainText
-        OpenAIapiOrgId = $null -ne $OpenAIapiOrgId ? ($OpenAIapiOrgId | ConvertFrom-SecureString -AsPlainText) : $null
+        OpenAIapiOrgId = $null -ne $OpenAIapiOrgId -AND $OpenAIapiOrgId.Length -gt 0 ? ($OpenAIapiOrgId | ConvertFrom-SecureString -AsPlainText) : $null
     }
 
 }

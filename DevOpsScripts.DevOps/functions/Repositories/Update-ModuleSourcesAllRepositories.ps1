@@ -114,7 +114,10 @@ function Update-ModuleSourcesAllRepositories {
                     git -C $repository.Localpath branch --delete $targetBranchName
                 }
 
-                git -C $repository.Localpath push origin --delete $targetBranchName
+                try {
+                    git -C $repository.Localpath push origin --delete $targetBranchName
+                }
+                catch {}
 
                 git -C $repository.Localpath checkout -B $targetBranchName
                 git -C $repository.Localpath add -A

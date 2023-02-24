@@ -46,6 +46,11 @@ function New-PullRequest {
         [System.String]
         $Target = 'dev',
 
+        # The target source branch. Will default to current branch
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Source,
+
         # A repository path. If not specified will default to current location.
         [Parameter(Mandatory = $false)]
         [System.String]
@@ -88,45 +93,44 @@ function New-PullRequest {
     $repository = Get-RepositoryInfo -path $path -id $id
     $project = $repository.project
 
-    $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
-
-    
-
-    $currentBranch = git -C $repostoryPath branch --show-current
-    git -C $repostoryPath push --set-upstream origin $currentBranch
-
     $remoteBranches = Get-RepositoryRefs -Project $project.Name -Name $repository.name
-    $preferencedBranch = Search-In $remoteBranches -has $currentBranch -return 'name'
+    
+    if ([System.String]::IsNullOrEmpty($Source)) {
+        $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
+        $currentBranch = git -C $repostoryPath branch --show-current
+        git -C $repostoryPath push --set-upstream origin $currentBranch
+        $preferencedBranch = Search-In $remoteBranches -has $currentBranch -return 'name'
+    }
+    else {
+        $preferencedBranch = "refs/heads/$Source"
+    }
+
 
     $hasDevBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/dev' | Measure-Object).Count -gt 0
-    #$hasMainBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/main' | Measure-Object).Count -gt 0
+    $hasMainBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/main' | Measure-Object).Count -gt 0
     $hasMasterBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/master' | Measure-Object).Count -gt 0
 
     if (-not $hasDevBranch -AND $Target -eq 'dev') {
         throw 'Repository has no DEV Branch Set Up'
     }
-
-    if ($Target -eq 'default') {
-        $preferencedBranch = 'refs/heads/dev'
-        $targetBranch = $hasMasterBranch ? 'refs/heads/master' : 'refs/heads/main' 
-        $branchName = 'DEV'
-    }
-    else {
-        $targetBranch = 'refs/heads/dev'
-        $branchName = $preferencedBranch
+    $targetBranch = $Target -eq 'default' ? $repository.defaultBranch :  'refs/heads/dev'
+    if ($targetBranch -notin $remoteBranches.Name) {
+        throw "Remote branch doesn't exist - $targetBranch"
     }
 
 
     # Check
-    if ($preferencedBranch -eq 'refs/heads/dev' -AND $Target -eq 'dev') {
-        throw "Can't create Pullrequest from DEV to itself"
+    if ($preferencedBranch -eq $targetBranch) {
+        throw "Can't create Pullrequest from to itself - '$preferencedBranch' to '$targetBranch'"
     }
 
     ##############################################
     ########## Prepare and create PR  ############
     ##############################################
+    $sourceBranchName = $preferencedBranch -replace 'refs/heads/'
+    $targetBranchName = $targetBranch -replace 'refs/heads/'
     $PRtitle = ![System.String]::IsNullOrEmpty($PRtitle) ? $PRtitle : ($currentBranch -replace 'features/\d*-{1}', '')
-    $PRtitle = "$branchName into $targetBranch - $PRtitle"
+    $PRtitle = "$sourceBranchName into $targetBranchName - $PRtitle"
 
     $Request = @{
         Method = 'GET'

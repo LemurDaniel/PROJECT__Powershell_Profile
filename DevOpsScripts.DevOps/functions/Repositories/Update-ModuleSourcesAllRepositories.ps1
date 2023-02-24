@@ -24,7 +24,12 @@ function Update-ModuleSourcesAllRepositories {
         # Refresh cached values.
         [Parameter()]
         [switch]
-        $refresh = $false
+        $refresh,
+
+        # Refresh cached values.
+        [Parameter()]
+        [switch]
+        $skipModules
     )
 
     if ((Get-DevOpsContext -Project) -ne 'DC Azure Migration') {
@@ -58,27 +63,36 @@ function Update-ModuleSourcesAllRepositories {
 
     foreach ($repository in $repositoriesInOrder) {
 
+        if($skipModules -AND $repository.name -notin $nonModules) {
+            continue
+        }
+
         if (!$EnteredNonModules -AND $repository.Name -in $nonModules) {
             Write-Host "`n---------------------------------------------------------------`n"
             Write-Host -ForegroundColor Red '   Fnished Processing all Modules'
+            Write-Host -ForegroundColor Red '   Confirm that all modules have been updated'
             Write-Host -ForegroundColor Red '   The script will fetch all tags again!'
             Write-Host "`n---------------------------------------------------------------`n"
-            $null = Get-RecentSubmoduleTags -refresh
-            $EnteredNonModules = $true
+            if ($PSCmdlet.ShouldProcess($repository.Name , 'Fetch tags again')) {
+                $null = Get-RecentSubmoduleTags -refresh
+                $EnteredNonModules = $true
+            }
+            else {
+                Write-Host -ForegroundColor Red "`n The Script will exit now! `n"
+                return 
+            }
         }
     
         Write-Host "`n------------------------------`n"
         Write-Host -ForegroundColor Yellow "Searching Respository '$($repository.name)' locally"
         $null = Open-Repository -Name ($repository.name) -onlyDownload
 
-        Write-Host -ForegroundColor Yellow "Update Master and Dev Branch '$($repository.name)'"
-        $repoRefs = Get-RepositoryRefs -Project $repository.project.name -Name $repository.Name | `
-            Where-Object -Property name -In @('refs/heads/dev' , 'refs/heads/main' , 'refs/heads/master' ) | `
-            Sort-Object { @('dev', 'main', 'master').IndexOf($_.name.split('/')[-1]) }
-          
-        git -C $repository.Localpath checkout ($repoRefs[0].name -split '/')[-1]
-        git -C $repository.Localpath pull
-
+        Write-Host -ForegroundColor Yellow "Update default branch '$($repository.name)'"
+        $repoRefs = Get-RepositoryRefs -Name $repository.name
+        $defaultBranch = $repository.defaultBranch -replace 'refs/heads/'
+        git -C $repository.Localpath stash
+        git -C $repository.Localpath checkout $defaultBranch
+        git -C $repository.Localpath pull origin $defaultBranch
 
 
         Write-Host -ForegroundColor Yellow 'Search and Replace Submodule Source Paths'
@@ -87,23 +101,32 @@ function Update-ModuleSourcesAllRepositories {
         if ($replacements.Count -eq 0) {
             continue
         }
-
+                
         # Case when feature branch is needed
         if ($nonModules.Contains($repository.name)) {
         
             if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Pull Request')) {
                 Write-Host -ForegroundColor Yellow 'Create Feature Branch and create Pull Request'
-                git -C $repository.Localpath checkout -B features/AUTO__Update-Submodule-source-path
+
+                $targetBranchName = "AUTO--Update Submodule Source Paths - ($((Get-DevOpsUser).displayName))" -replace ' ', '_'
+                $existingBranches = git -C $repository.Localpath branch --all --format '%(refname:short)' | Where-Object { $_ -eq 'master' } | Measure-Object
+                if ($existingBranches) {
+                    git -C $repository.Localpath branch --delete $targetBranchName
+                }
+
+                git -C $repository.Localpath push origin --delete $targetBranchName
+
+                git -C $repository.Localpath checkout -B $targetBranchName
                 git -C $repository.Localpath add -A
-                git -C $repository.Localpath commit -m 'AUTO--Update Submodule Source Paths'
-                git -C $repository.Localpath push origin features/AUTO__Update-Submodule-source-path
+                git -C $repository.Localpath commit -m $targetBranchName
+                git -C $repository.Localpath push origin $targetBranchName
         
-                if ($repoRefs[0].name.contains('dev')) {
-                    New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'dev' `
+                if ('refs/heads/dev' -in $repoRefs.name) {
+                    New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'dev' `
                         -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
                 }
-                else {
-                    New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
+                if ($PSCmdlet.ShouldProcess($repository.Name , 'Create additional Pull Request from dev to Master?')) {
+                    New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Source 'dev' -Target 'default' `
                         -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
                 }
             }
@@ -120,7 +143,7 @@ function Update-ModuleSourcesAllRepositories {
             git -C $repository.Localpath commit -m 'AUTO--Update Submodule Source Paths'
             git -C $repository.Localpath push origin dev
         
-            New-PullRequest -PRtitle 'DEV - AUTO--Update Submodule Source Paths' -Target 'default' `
+            New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'default' `
                 -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
         }
     

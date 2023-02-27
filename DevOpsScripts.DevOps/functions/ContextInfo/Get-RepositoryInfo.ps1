@@ -128,21 +128,22 @@ function Get-RepositoryInfo {
         $refresh
     )  
 
-    $repositories = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$refresh
-
     if (![System.String]::IsNullOrEmpty($Name)) {
-        $repository = $repositories | Where-Object -Property Name -EQ -Value $Name
+        $repository = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$refresh | Where-Object -Property Name -EQ -Value $Name
     }
     elseif (![System.String]::IsNullOrEmpty($id)) {
-        $repository = $repositories | Where-Object -Property id -EQ -Value $id
+        $repository = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$refresh | Where-Object -Property Name -EQ -Value $Name
     }
     else {
         # Get Current repository from VSCode Terminal, if nothing is specified.
         $path = [System.String]::IsNullOrEmpty($path) ? (git rev-parse --show-toplevel) : $path
         $repoName = $path.split('/')[-1]
-        $repository = Search-In $repositories -where 'name' -has $repoName
+        $projectName = $path.split('/')[-2]
+
+        $projectName = $projectName -in (Get-DevOpsProjects).name ? $projectName : $null
+        $repository = Get-ProjectInfo -Name $projectName -return 'repositories' -refresh:$refresh | Where-Object -Property Name -EQ -Value $repoName
         
-        if($repository){
+        if ($repository) {
             $repository | Add-Member NoteProperty currentPath $path
         }
     }

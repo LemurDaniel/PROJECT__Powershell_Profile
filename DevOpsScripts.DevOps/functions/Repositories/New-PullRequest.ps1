@@ -90,7 +90,7 @@ function New-PullRequest {
 
     
     
-    $repository = Get-RepositoryInfo -path $path -id $id
+    $repository = Get-RepositoryInfo -path $path -id $id 
     $project = $repository.project
 
     $remoteBranches = Get-RepositoryRefs -Project $project.Name -Name $repository.name
@@ -133,9 +133,10 @@ function New-PullRequest {
     $PRtitle = "$sourceBranchName into $targetBranchName - $PRtitle"
 
     $Request = @{
-        Method = 'GET'
-        SCOPE  = 'PROJ'
-        API    = "/_apis/git/repositories/$($repository.id)/pullrequests?api-version=7.0"
+        Project = $project.name
+        Method  = 'GET'
+        SCOPE   = 'PROJ'
+        API     = "/_apis/git/repositories/$($repository.id)/pullrequests?api-version=7.0"
     }
     $activePullRequests = Invoke-DevOpsRest @Request
     $chosenPullRequest = $activePullRequests.value | Where-Object { $_.targetRefName -eq $targetBranch -AND $_.sourceRefName -eq $preferencedBranch }
@@ -144,6 +145,7 @@ function New-PullRequest {
     if (!$pullRequestId) {
         # Request for creating new Pull Request
         $Request = @{
+            Project  = $project.name
             Method   = 'POST'
             SCOPE    = 'PROJ'
             Property = 'pullRequestId'
@@ -153,27 +155,19 @@ function New-PullRequest {
                 targetRefName = $targetBranch
                 title         = $PRtitle
                 description   = $workItem.'System.Title'
-                workItemRefs  = @(
-                    @{
-                        id  = ''#$workItem.'System.id'
-                        url = ''#$workItem.'System.id'
-                    }
-                )
                 reviewers     = $()
             }
         }
         $pullRequestId = Invoke-DevOpsRest @Request
     }
 
-    
-    $projectName = (Get-ProjectInfo 'name').replace(' ', '%20')
+    $projectName = $project.name.replace(' ', '%20')
     $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($repository.name)/pullrequest/$pullRequestId"
 
     Write-Host -Foreground Green '      '
-    Write-Host -Foreground Green ' 🎉 New Pull-Request created  🎉  '
+    Write-Host -Foreground Green ' 🎉 New Pull-Request created 🎉  '
     Write-Host -Foreground Green "    $pullRequestUrl "
     Write-Host -Foreground Green '      '
-
     Start-Process $pullRequestUrl
 
 }

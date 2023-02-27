@@ -84,6 +84,14 @@ $SettingsJsonDefaults = [PSCustomObject]@{
     'blockman.n31RenderIncrementBeforeAndAfterVisibleRange'    = 50
     'blockman.n20CustomColorOfDepth0Border'                    = 'none'
 
+    'powershell.developer.editorServicesLogLevel'              = 'Normal'
+    'powershell.powerShellAdditionalExePaths'                  = @( 
+        @{
+            'versionName' = 'PS Core 7'
+            'exePath'     = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
+        }
+    )
+    'powershell.powerShellDefaultVersion'                      = 'PS Core 7'
 
     ############################################
     'workbench.iconTheme'                                      = 'vscode-icons'

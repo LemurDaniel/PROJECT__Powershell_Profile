@@ -182,7 +182,17 @@ function Invoke-DevOpsRest {
         }
     }
 
-    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token   
+    try {
+        $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
+    }
+    catch {
+        Connect-AzAccount
+        # Automatically call login, when authentication failed
+        #if ($_.Exception.Message.Contains('ClientSecretCredential authentication failed')) {
+        #    Connect-AzAccount
+        #}
+    }
+
     $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   
     $Request = @{        
         Method  = $Method       
@@ -214,6 +224,10 @@ function Invoke-DevOpsRest {
                     $response = Invoke-RestMethod @Request
                 }
             }
+        }
+
+        if ($null -eq $response) {
+            throw "Request received no value. Current User: $((Get-DevOpsUser).emailAddress)"
         }
 
         # TODO. If DevOps wants user to sign out and in for security reasons.

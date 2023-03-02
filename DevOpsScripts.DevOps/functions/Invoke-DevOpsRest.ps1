@@ -217,11 +217,9 @@ function Invoke-DevOpsRest {
         }
         catch {
             if ($_ -is [System.String]) {
-                $excpetion = $_ | ConvertFrom-Json
-                $excpetion
-                if ($excpetion.typeKey -eq 'UnauthorizedRequestException') {
+                if (($_ | ConvertFrom-Json).typeKey -eq 'UnauthorizedRequestException') {
                     Connect-AzAccount
-                    $response = Invoke-RestMethod @Request
+                    return Invoke-DevOpsRest @PSBoundParameters
                 }
             }
         }

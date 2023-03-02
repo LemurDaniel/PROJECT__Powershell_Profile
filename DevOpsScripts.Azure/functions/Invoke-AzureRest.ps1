@@ -69,8 +69,15 @@ function Invoke-AzureRest {
     }
 
     Write-Verbose ($Request | ConvertTo-Json -Depth 16)
-    $response = Invoke-AzRestMethod @Request
-
+    try {
+        $response = Invoke-AzRestMethod @Request
+    }
+    catch {
+        if ($_.Exception.Message.Contains('Your Azure credentials have not been set up or have expired')) {
+            Connect-AzAccount
+            return Invoke-AzureRest @PSBoundParameters
+        }
+    }
 
     if ($response.StatusCode -lt 200 -OR $response.StatusCode -gt 201) {
         throw "$($response.StatusCode) - $($response.Content)"

@@ -144,6 +144,16 @@ function New-PimSelfActivationRequest {
         }
     }
 
-    return Invoke-AzureRest @Request | Select-Object -ExpandProperty 'properties'
+    try {
+        return Invoke-AzureRest @Request | Select-Object -ExpandProperty 'properties'
+    }
+    catch {
+        if ($_.Exception.Message.Contains('RoleAssignmentExists')) {
+            Write-Host -ForegroundColor Green "`nNot Action required - Role Assigmnet is already active.`n"
+        }
+        else {
+            throw $_
+        }
+    }
 
 }

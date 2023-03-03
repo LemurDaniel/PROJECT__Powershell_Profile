@@ -59,18 +59,22 @@ $null = Add-QuickContext -ContextName 'DC Redeploy' -Organization baugruppe -Pro
 $null = Add-PimProfile -ProfileName WebContrib -Scope 'managementGroups/acfroot-prod' -Role 'Website Contributor' -duration 3 -Force
 $null = Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
 
-$gpgSigning = $true
+$gpgSigning = Read-SecureStringFromFile -Identifier gitGpgEnable -AsPlainText
 
-if($gpgSigning){
+while ($null -eq $gpgSigning -OR $gpgSigning.toLower() -notin ('true', 'false')) {
+    $gpgSigning = Read-Host -Prompt 'Enable Gpg-Signing [true/false]'
+}
+
+if ([System.Boolean]::parse($gpgSigning)) {
 
     $gpg_id = Read-SecureStringFromFile -Identifier gitGpgId -AsPlainText 
     $gpg_grip = Read-SecureStringFromFile -Identifier gitGpgGrip -AsPlainText 
     $gpg_phrase = Read-SecureStringFromFile -Identifier gitGpgPhrase
 
-    if(!$gpg_id -OR !$gpg_grip -OR !$gpg_phrase){
-        $gpg_id     = Read-Host -Prompt "Please Enter GPG Id"
-        $gpg_grip   = Read-Host -Prompt "Please Enter GPG Grip"
-        $gpg_phrase = Read-Host -AsSecureString -Prompt "Please Enter GPG Phrase"
+    if (!$gpg_id -OR !$gpg_grip -OR !$gpg_phrase) {
+        $gpg_id = Read-Host -Prompt 'Please Enter GPG Id'
+        $gpg_grip = Read-Host -Prompt 'Please Enter GPG Grip'
+        $gpg_phrase = Read-Host -AsSecureString -Prompt 'Please Enter GPG Phrase'
 
         Save-SecureStringToFile -PlainText $gpg_id -Identifier gitGpgId
         Save-SecureStringToFile -PlainText $gpg_grip -Identifier gitGpgGrip

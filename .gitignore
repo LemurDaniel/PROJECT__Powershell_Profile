@@ -17,9 +17,10 @@
 !DevOpsScripts.OneDrive/**
 !DevOpsScripts.Utils/**
 !DevOpsScripts.Stuff/**
-!.vscode/**
-!.scripts/**
-!.github/**
+!/.vscode/**
+!/.scripts/**
+!/.github/**
+!/.resources/**
 !Module.nuspec.templ
 !Module.csproj.templ
 # Don't include copy in build-folder

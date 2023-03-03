@@ -20,6 +20,10 @@ function Get-PimProfiles {
     [cmdletbinding()]
     param()
 
+    if($null -eq (Get-AzContext).Account.Id){
+        Connect-AzAccount
+    }
+
     return (Get-UtilsCache -Type PIM_Profiles -Identifier (Get-AzContext).Account.Id -AsHashTable) ?? [System.Collections.Hashtable]::new()
 
 }

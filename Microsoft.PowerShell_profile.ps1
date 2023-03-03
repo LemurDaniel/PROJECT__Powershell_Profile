@@ -33,6 +33,13 @@ $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort
 ########################################################################################################################
 ########################################################################################################################
 
+$settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
+if($settingsFile) {
+    Get-Content -Raw -Path "$PSScriptRoot/.resources/settings.json" | Out-File -FilePath $settingsFile.FullName
+}
+
+
+
 <#
 # CREDITS: Tim Krehan (tim.krehand@brz.eu)
 #>
@@ -44,12 +51,17 @@ function Get-DumbJoke {
 
 }
 
+
+
+
 Import-Module "$PSScriptRoot\DevOpsScripts"
 . "$PSScriptRoot/Other.ps1"
  
 Add-EnvPaths
 Switch-Terraform
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
+
+
 
 $null = Add-QuickContext -ContextName Teamsbuilder -Organization baugruppe -Project 'Teamsbuilder' -Force
 $null = Add-QuickContext -ContextName 'DC Migration' -Organization baugruppe -Project 'DC Azure Migration' -Force
@@ -59,10 +71,12 @@ $null = Add-QuickContext -ContextName 'DC Redeploy' -Organization baugruppe -Pro
 $null = Add-PimProfile -ProfileName WebContrib -Scope 'managementGroups/acfroot-prod' -Role 'Website Contributor' -duration 3 -Force
 $null = Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
 
-$gpgSigning = Read-SecureStringFromFile -Identifier gitGpgEnable -AsPlainText
 
+
+$gpgSigning = Read-SecureStringFromFile -Identifier gitGpgEnable -AsPlainText
 while ($null -eq $gpgSigning -OR $gpgSigning.toLower() -notin ('true', 'false')) {
     $gpgSigning = Read-Host -Prompt 'Enable Gpg-Signing [true/false]'
+    Save-SecureStringToFile -PlainText $gpgSigning -Identifier gitGpgEnable
 }
 
 if ([System.Boolean]::parse($gpgSigning)) {

@@ -85,6 +85,13 @@ function Convert-TFVarsToObject {
         $OutFileJson,
 
         [Parameter(
+            Mandatory = $false,
+            ParameterSetName = 'FilePath'
+        )]
+        [Switch]
+        $OutDebug,
+
+        [Parameter(
             Mandatory = $true,
             ParameterSetName = 'Content'
         )]
@@ -130,9 +137,16 @@ function Convert-TFVarsToObject {
     $parsed = [Parser]::new($Configuration).parse($Content)
     $psObject = [AstObjectConverter]::Convert($parsed)
 
-    if ($PSBoundParameters.ContainsKey('FilePath') -AND $OutFileJson) {
-        $FileInfo = Get-Item -Path $FilePath
-        $psObject | ConvertTo-Json -Depth 99 | Out-File -Path "$($FileInfo.Directory.FullName)/$($FileInfo.BaseName).json"
+    if ($PSBoundParameters.ContainsKey('FilePath')) {
+        
+        if ($OutFileJson) {
+            $FileInfo = Get-Item -Path $FilePath
+            $psObject | ConvertTo-Json -Depth 99 | Out-File -Path "$($FileInfo.Directory.FullName)/$($FileInfo.BaseName).json"
+        }
+        if ($OutDebug) {
+            $FileInfo = Get-Item -Path $FilePath
+            $psObject | ConvertTo-Json -Depth 99 | Out-File -Path "$($FileInfo.Directory.FullName)/$($FileInfo.BaseName).debug.json"
+        }
     }
 
     return $psObject

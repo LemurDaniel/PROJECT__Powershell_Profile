@@ -52,17 +52,18 @@ function New-PullRequest {
         $Source,
 
         # A repository path. If not specified will default to current location.
-        [Parameter(Mandatory = $false)]
-        [System.String]
-        $path,
+        #[Parameter(Mandatory = $false)]
+        #[System.String]
+        #$path,
 
         # A repository id. If not specified will default to current location.
-        [Parameter(Mandatory = $false)]
-        [System.String]
-        $id
+        #[Parameter(Mandatory = $false)]
+        #[System.String]
+        #$id,
 
-        <## The name of the project, if not set default to the Current-Project-Context.
+        # The name of the project, if not set default to the Current-Project-Context.
         [Parameter(
+            ParameterSetName = 'projectSpecific',
             Mandatory = $false,
             Position = 1
         )]
@@ -83,17 +84,46 @@ function New-PullRequest {
             }
         )]
         [System.String]
-        $ProjectName   
+        $Project,
+        
+        # The Name of the Repository. If null will default to current repository where command is executed.
+        [Parameter(
+            ParameterSetName = 'projectSpecific',
+            Mandatory = $true,
+            Position = 0
+        )]
+        [Parameter(
+            ParameterSetName = 'currentContext',
+            Mandatory = $false,
+            Position = 0
+        )]
+        [ValidateScript(
+            { 
+                # Todo, somehow by accessing $Project in here
+                $true #$_ -in (Get-ProjectInfo -Name $Project 'repositories.name')
+            },
+            ErrorMessage = 'Please specify a correct Repositoryname.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-        #>
+                $validValues = Get-ProjectInfo -Name $fakeBoundParameters['Project'] -return 'repositories.name'
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $RepositoryName 
     )
 
     
-    
-    $repository = Get-RepositoryInfo -path $path -id $id 
-    $project = $repository.project
+    $Repository = Get-RepositoryInfo -Project $Project -Name $RepositoryName
+    $Project = $PSBoundParameters.ContainsKey('Project') ? $Project : $repository.project.name
 
-    $remoteBranches = Get-RepositoryRefs -Project $project.Name -Name $repository.name
+    $remoteBranches = Get-RepositoryRefs -Project $project -Name $repository.name
     
     if ([System.String]::IsNullOrEmpty($Source)) {
         $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
@@ -133,7 +163,7 @@ function New-PullRequest {
     $PRtitle = "$sourceBranchName into $targetBranchName - $PRtitle"
 
     $Request = @{
-        Project = $project.name
+        Project = $project
         Method  = 'GET'
         SCOPE   = 'PROJ'
         API     = "/_apis/git/repositories/$($repository.id)/pullrequests?api-version=7.0"
@@ -145,7 +175,7 @@ function New-PullRequest {
     if (!$pullRequestId) {
         # Request for creating new Pull Request
         $Request = @{
-            Project  = $project.name
+            Project  = $project
             Method   = 'POST'
             SCOPE    = 'PROJ'
             Property = 'pullRequestId'
@@ -161,8 +191,7 @@ function New-PullRequest {
         $pullRequestId = Invoke-DevOpsRest @Request
     }
 
-    $projectName = $project.name.replace(' ', '%20')
-    $pullRequestUrl = "https://dev.azure.com/baugruppe/$projectName/_git/$($repository.name)/pullrequest/$pullRequestId"
+    $pullRequestUrl = "https://dev.azure.com/baugruppe/$($project.replace(' ', '%20'))/_git/$($repository.name)/pullrequest/$pullRequestId"
 
     Write-Host -Foreground Green '      '
     Write-Host -Foreground Green ' 🎉 New Pull-Request created 🎉  '

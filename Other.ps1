@@ -37,10 +37,10 @@ $global:DefaultEnvPaths = @{
     nodejs              = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\nodejs\18.12.1" -ErrorAction SilentlyContinue).Path `
         ?? 'C:\Program Files\nodejs'
 
-    gitbin              = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.39\bin" -ErrorAction SilentlyContinue).Path 
-    gitcmd              = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.39\cmd" -ErrorAction SilentlyContinue).Path `
+    gitbin              = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.38\bin" -ErrorAction SilentlyContinue).Path 
+    gitcmd              = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.38\cmd" -ErrorAction SilentlyContinue).Path `
         ?? 'C:\Program Files\Git\cmd'
-    git                 = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.39" -ErrorAction SilentlyContinue).Path `
+    git                 = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.38" -ErrorAction SilentlyContinue).Path `
         ?? 'C:\Program Files\Git'
 
     dotnet              = (Get-ChildItem -Path 'C:\Program Files' -Directory -Filter 'dotnet').FullName

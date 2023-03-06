@@ -67,14 +67,14 @@ function New-Workitem {
         [Parameter()]
         [ValidateScript(
             { 
-                $_ -in @('Backlog', 'Current', (Get-SprintIterations).name | Select-Object -Last 10)
+                $_ -in (@('Backlog', 'Current') + (Get-SprintIterations).name)
             },
             ErrorMessage = 'Please specify the correct Iteration path.'
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = @('Backlog', 'Current', (Get-SprintIterations).name | Select-Object -Last 10)
+                $validValues = @('Backlog', 'Current') + ((Get-SprintIterations).name | Select-Object -Last 10)
 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `

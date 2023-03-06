@@ -126,11 +126,11 @@ function Update-ModuleSourcesAllRepositories {
         
                 if ('refs/heads/dev' -in $repoRefs.name) {
                     New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'dev' `
-                        -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
+                        -Project ($repository.project.name) -RepositoryName $repository.name
                 }
                 if ($PSCmdlet.ShouldProcess($repository.Name , 'Create additional Pull Request from dev to Master?')) {
                     New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Source 'dev' -Target 'default' `
-                        -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
+                        -Project ($repository.project.name) -RepositoryName $repository.name
                 }
             }
             else {
@@ -147,7 +147,7 @@ function Update-ModuleSourcesAllRepositories {
             git -C $repository.Localpath push origin dev
         
             New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'default' `
-                -Id ($repository.id) -Path ($repository.Localpath) #-projectName ($repository.remoteUrl.split('/')[4])
+                -Project ($repository.project.name) -RepositoryName $repository.name
         }
     
         if ($repository.Name -in $moduleUpdatesRequired) {

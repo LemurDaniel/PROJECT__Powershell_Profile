@@ -222,6 +222,8 @@ function Invoke-DevOpsRest {
                     return Invoke-DevOpsRest @PSBoundParameters
                 }
             }
+
+            throw $_
         }
 
         if ($null -eq $response) {

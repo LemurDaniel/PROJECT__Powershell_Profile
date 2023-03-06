@@ -145,7 +145,7 @@ function Convert-TFVarsToObject {
         }
         if ($OutDebug) {
             $FileInfo = Get-Item -Path $FilePath
-            $psObject | ConvertTo-Json -Depth 99 | Out-File -Path "$($FileInfo.Directory.FullName)/$($FileInfo.BaseName).debug.json"
+            $parsed | ConvertTo-Json -Depth 99 | Out-File -Path "$($FileInfo.Directory.FullName)/$($FileInfo.BaseName).debug.json"
         }
     }
 

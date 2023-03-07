@@ -109,8 +109,7 @@ function Get-PAT {
     }
 
     if ($Base64) {
-        $patPlainText = $patTokenCredentials.Password | ConvertFrom-SecureString -AsPlainText
-        $bytes = [System.Text.Encoding]::UTF8.GetBytes("$($patTokenCredentials.userName):$patPlainText")
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes("$($localPat.user):$($localPat.pass)")
         return [System.Convert]::ToBase64String($bytes)
     }
     else {

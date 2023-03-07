@@ -59,7 +59,7 @@ Function Select-ConsoleMenu {
 
 
     $prefixSelected = ' => '
-    $prefixNonSelected = ' '
+    $prefixNonSelected = '    '
     $selectionIndex = 0
 
     try {

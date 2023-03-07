@@ -29,21 +29,21 @@ function Get-PAT {
     param (
         # The optional Name of the retrieved or newly created pat.
         [Parameter(
-          Mandatory = $false
+            Mandatory = $false
         )]
         [System.String]
-        $Name = "",
+        $Name = '',
 
         # The Organozation in which the PAT shoul be created. Defaults to current Context.
         [Parameter(
-          Mandatory = $true
+            Mandatory = $true
         )]
         [System.String]
         $Organization,
 
         # A list of permission scopes for the PAT.
         [Parameter(
-          Mandatory = $true
+            Mandatory = $true
         )]
         [System.String[]]
         $PatScopes,
@@ -63,25 +63,30 @@ function Get-PAT {
         # Optional Parameter to return null if not PAT is found or expired, instead of creating a new one.
         [Parameter()]
         [switch]
-        $OnlyRead
+        $OnlyRead,
+
+        # Optional Parameter to return a base64 encoded token for API-Requests
+        [Parameter()]
+        [switch]
+        $Base64
     )
 
     $Path = [System.String]::IsNullOrEmpty($Path) ? "$PSScriptRoot/.local" : $Path
 
-    if(!(Test-Path -Path $Path)){
+    if (!(Test-Path -Path $Path)) {
         $null = New-Item -ItemType Directory -Path $Path
     }
 
     $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes(@(
         ($PatScopes | Sort-Object | ForEach-Object { $_ }), $name, $Organization
-    )) 
+        )) 
     $identifier = [System.Convert]::ToHexString($bytes)
     
     $localPat = Read-SecureStringFromFile -Identifier "$identifier.pat" -AsPlainText -Path $Path | ConvertFrom-Json
 
     if ($null -eq $localPat -OR $localPat.validTo -lt [DateTime]::now.ToUniversalTime()) {
 
-        if($OnlyRead){
+        if ($OnlyRead) {
             return $null
         }
 
@@ -89,20 +94,27 @@ function Get-PAT {
 
         $localPat = New-PAT -Name $Name -Organization $Organization -PatScopes $PatScopes -HoursValid $HoursValid | `
             Select-Object -Property displayName, validTo, scope, authorizationId, @{
-                Name = 'pass';
-                Expression = {
-                    $_.token | ConvertTo-SecureString -AsPlainText | ConvertFrom-SecureString
-                }
-            }, @{
-                Name = 'user';
-                Expression = {
-                    (Get-AzContext).Account.id
-                }
+            Name       = 'pass';
+            Expression = {
+                $_.token | ConvertTo-SecureString -AsPlainText | ConvertFrom-SecureString
             }
+        }, @{
+            Name       = 'user';
+            Expression = {
+                    (Get-AzContext).Account.id
+            }
+        }
 
         Save-SecureStringToFile -PlainText ($localPat | ConvertTo-Json -Compress) -Identifier "$identifier.pat" -Path $Path
     }
 
-    $localPat.pass = $localPat.pass | ConvertTo-SecureString
-    return [System.Management.Automation.PSCredential]::new($localPat.user, $localPat.pass)
+    if ($Base64) {
+        $patPlainText = $patTokenCredentials.Password | ConvertFrom-SecureString -AsPlainText
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes("$($patTokenCredentials.userName):$patPlainText")
+        return [System.Convert]::ToBase64String($bytes)
+    }
+    else {
+        $localPat.pass = $localPat.pass | ConvertTo-SecureString
+        return [System.Management.Automation.PSCredential]::new($localPat.user, $localPat.pass)
+    }
 }

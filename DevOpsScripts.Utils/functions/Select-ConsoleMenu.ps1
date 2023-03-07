@@ -15,6 +15,14 @@
     The Selected Item.
 
 
+    .EXAMPLE
+
+    Select a File to open in the Current Path:
+    
+    PS> $selectedItem = Select-ConsoleMenu -Options (Get-ChildItem -File) -Property Name
+    PS> Start-Process $selectedItem
+
+
     .LINK
         
 #>
@@ -87,6 +95,12 @@ Function Select-ConsoleMenu {
                     $selectionIndex = ($selectionIndex + $SelectionOptions.Length + 1) % $SelectionOptions.Length
                 }
 
+                default {
+                    $hint = ('**Use on of the Following Keys: (ArrowUP | ArrowDown | W | S | Enter)**' | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+                    Write-Host 
+                    Write-Host -ForegroundColor Magenta -Separator ' ' $hint, '... '
+                    $null = [System.Console]::ReadKey($true)
+                }
 
             }
 

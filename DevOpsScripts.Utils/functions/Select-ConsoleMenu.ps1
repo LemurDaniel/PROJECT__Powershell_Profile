@@ -41,7 +41,13 @@ Function Select-ConsoleMenu {
             Mandatory = $true
         )]
         [System.String]
-        $Property
+        $Property,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $Description = 'Please Choose from the Menu:'
     )
 
     $SelectionOptions = $Options | Select-Object -Property $Property
@@ -58,7 +64,7 @@ Function Select-ConsoleMenu {
             [System.Console]::CursorTop = 0
           
             # Show Selection
-            Write-Host -ForegroundColor Magenta ('**Please Choose from the Menu:**' | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+            Write-Host -ForegroundColor Magenta ("**$($description.trim())**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
 
             $SelectionOptions | ForEach-Object { $index = 0 } {
 

@@ -38,7 +38,7 @@ Function Select-ConsoleMenu {
         $Options,
 
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [System.String]
         $Property,
@@ -50,7 +50,13 @@ Function Select-ConsoleMenu {
         $Description = 'Please Choose from the Menu:'
     )
 
-    $SelectionOptions = $Options | Select-Object -Property $Property
+    if ($PSBoundParameters.ContainsKey('Property')) {
+        $SelectionOptions = $Options | Select-Object -ExpandProperty $Property
+    }
+    else {
+        $SelectionOptions = $Options
+    }
+
 
     $prefixSelected = ' => '
     $prefixNonSelected = ' '
@@ -70,11 +76,11 @@ Function Select-ConsoleMenu {
 
                 if ($index -eq $selectionIndex) {
                     Write-Host "$prefixSelected" -NoNewline
-                    Write-Host -BackgroundColor Magenta $_."$Property"
+                    Write-Host -BackgroundColor Magenta $_
                 } 
                 else {
                     Write-Host "$prefixNonSelected" -NoNewline
-                    Write-Host $_."$Property"
+                    Write-Host $_
                 }
 
                 $index++

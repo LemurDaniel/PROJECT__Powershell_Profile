@@ -51,7 +51,7 @@ PowerShellVersion = '7.2'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+RequiredModules = @('DevOpsScripts.Utils')
 
 # Assemblies that must be loaded prior to importing this module
 RequiredAssemblies = @()
@@ -76,10 +76,10 @@ FunctionsToExport = 'Backup-AzTables', 'Get-NonCompliantRoleAssignments',
                'Get-PimProfiles', 'Get-RBACPermissions', 
                'Get-RoleEligibilitySceduleInstancesForScope', 
                'Get-RoleManagmentPoliciyAssignmentsForScope', 
-               'New-PimSelfActivationRequest', 'New-PimSelfDeactivationRequest', 
-               'Search-PimScheduleInstance', 'Search-PimScheduleInstanceForUser', 
-               'Select-RBACPermissions', 'Backup-AzState', 
-               'Get-AzResourceGraphChangesCreate', 
+               'New-PimJustification', 'New-PimSelfActivationRequest', 
+               'New-PimSelfDeactivationRequest', 'Search-PimScheduleInstance', 
+               'Search-PimScheduleInstanceForUser', 'Select-RBACPermissions', 
+               'Backup-AzState', 'Get-AzResourceGraphChangesCreate', 
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
                'Search-AzFunctionAppSettings', 'Search-AzResource', 

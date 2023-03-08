@@ -45,7 +45,11 @@ function New-PimJustification {
 
         [Parameter()]
         [System.String]
-        $Project = 'DC Azure Migration'
+        $Project = 'DC Azure Migration',
+
+        [Parameter()]
+        [Switch]
+        $Refresh
     )
 
     Write-Host "`n"
@@ -64,7 +68,7 @@ function New-PimJustification {
         ############################################################
 
         $workItemsActive = Get-UtilsCache -Type PimWorkItem -Identifier active
-        if (!$workitemsActive) {
+        if (!$workitemsActive -OR $PSBoundParameters.ContainsKey('Refresh')) {
 
             $QueryStatement = @'
 SELECT  [System.Id], [System.Title], [System.State], [System.WorkItemType] 

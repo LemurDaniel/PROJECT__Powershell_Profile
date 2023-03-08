@@ -88,6 +88,7 @@ ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
                 Connect-AzAccount 
                 Write-Host -ForegroundColor Green "... Connected to Account '$((Get-AzContext).Account.Id)'"
             }
+            # Custom Request to aviod dependency on DevOpsScripts.DevOps
             $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token   
             $Request = @{
                 Headers = @{            

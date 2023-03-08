@@ -70,6 +70,11 @@ function New-PimSelfActivationRequest {
         [System.String]
         $justification,
 
+        # Generate a PIM-Justification from a workitem.
+        [Parameter()]
+        [switch]
+        $useWorkItem,
+
         # A duration for the activation.
         [Parameter(
             Mandatory = $false,
@@ -80,7 +85,7 @@ function New-PimSelfActivationRequest {
             ParameterSetName = 'custom'
         )]
         [System.int32]
-        [ValidateRange(1,8)]
+        [ValidateRange(1, 8)]
         $duration,
 
         # Scope for the PIM-Acitvation at the Moment only Management Groups.
@@ -108,6 +113,10 @@ function New-PimSelfActivationRequest {
         [System.String]
         $requestType = 'SelfActivate'
     )
+
+    if ($PSBoundParameters.ContainsKey('useWorkItem')) {
+        $justification = New-PimJustification -Justification $justification -noClipboard
+    }
 
     if (![System.String]::IsNullOrEmpty($ProfileName)) {
         $pimProfile = (Get-PimProfiles).GetEnumerator() | Where-Object -Property Key -EQ -Value $ProfileName | Select-Object -ExpandProperty Value

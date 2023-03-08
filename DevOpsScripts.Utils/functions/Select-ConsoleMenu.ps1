@@ -65,9 +65,9 @@ Function Select-ConsoleMenu {
     try {
 
         do {
-            [System.Console]::Clear()
-            [System.Console]::CursorVisible = $false
             [System.Console]::CursorTop = 0
+            [System.Console]::CursorVisible = $false
+            [System.Console]::Clear()
           
             # Show Selection
             Write-Host -ForegroundColor Magenta ("**$($description.trim())**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString

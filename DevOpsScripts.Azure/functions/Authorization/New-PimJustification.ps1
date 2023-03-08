@@ -37,7 +37,15 @@ function New-PimJustification {
 
         [Parameter()]
         [switch]
-        $noClipboard
+        $noClipboard,
+
+        [Parameter()]
+        [System.String]
+        $Organization = 'baugruppe',
+
+        [Parameter()]
+        [System.String]
+        $Project = 'DC Azure Migration'
     )
 
     Write-Host "`n"
@@ -93,10 +101,10 @@ function New-PimJustification {
                 Authorization  = "Bearer $token"           
                 'Content-Type' = 'application/x-www-form-urlencoded'      
             }   
-            Uri     = "https://dev.azure.com/baugruppe/625cb37d-7374-4306-b7e9-98f0ef6958a5/_apis/wit/workitems/$workItemId`?api-version=7.0"
+            Uri     = "https://dev.azure.com/$Organization/$Project/_apis/wit/workitems/$workItemId`?api-version=7.0" -replace ' ', '%20'
             Method  = 'GET'
         }
-
+  
         try {
             $workItem = Invoke-RestMethod @Request
             $workItem = Set-UtilsCache -Object $workItem -Type PimWorkItem -Identifier $workItemId -Alive 1440
@@ -129,6 +137,8 @@ function New-PimJustification {
         Write-Host -ForegroundColor Cyan $reason
         Write-Host
     } 
+    else {
+        return $reason
+    }
 
-    return $reason
 }

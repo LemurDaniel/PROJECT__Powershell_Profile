@@ -49,7 +49,7 @@
     "profiles": {
         "defaults": {
             "colorScheme": "Campbell Powershell",
-            "elevate": true,
+            "elevate": false,
             "experimental.retroTerminalEffect": false,
             "font": {
                 "face": "JetBrains Mono"

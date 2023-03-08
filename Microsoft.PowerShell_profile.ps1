@@ -33,13 +33,6 @@ $env:TerraformDocsNewestVersion = (Get-ChildItem -Path $env:TerraformDocs | Sort
 ########################################################################################################################
 ########################################################################################################################
 
-$settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
-if($settingsFile) {
-    Get-Content -Raw -Path "$PSScriptRoot/.resources/settings.json" | Out-File -FilePath $settingsFile.FullName
-}
-
-
-
 <#
 # CREDITS: Tim Krehan (tim.krehand@brz.eu)
 #>
@@ -61,6 +54,13 @@ Add-EnvPaths
 Switch-Terraform
 Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 
+$settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
+if ($settingsFile) {
+    $settingsFile.profiles.defaults.elevate = $env:USERNAME -ne 'M01947'
+    $terminalProfile = $settingsFile.profiles.list | Where-Object -Property name -EQ -Value 'PS 7'
+    $terminalProfile.commandline = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
+    Get-Content -Raw -Path "$PSScriptRoot/.resources/settings.json" | Out-File -FilePath $settingsFile.FullName
+}
 
 
 $null = Add-QuickContext -ContextName Teamsbuilder -Organization baugruppe -Project 'Teamsbuilder' -Force

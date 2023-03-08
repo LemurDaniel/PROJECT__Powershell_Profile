@@ -149,7 +149,7 @@ function New-PimSelfActivationRequest {
     }
     catch {
         if ($_.Exception.Message.Contains('RoleAssignmentExists')) {
-            Write-Host -ForegroundColor Green "`nNot Action required - Role Assigmnet is already active.`n"
+            Write-Host -ForegroundColor Green "`n... No Action required - Role Assigmnet already active.`n"
         }
         else {
             throw $_

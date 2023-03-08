@@ -56,10 +56,11 @@ Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 
 $settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
 if ($settingsFile) {
-    $settingsFile.profiles.defaults.elevate = $env:USERNAME -ne 'M01947'
-    $terminalProfile = $settingsFile.profiles.list | Where-Object -Property name -EQ -Value 'PS 7'
+    $settingsContent = Get-Content -Raw -Path "$PSScriptRoot/.resources/settings.json" | ConvertFrom-Json -Depth 99
+    $settingsContent.profiles.defaults.elevate = $env:USERNAME -ne 'M01947'
+    $terminalProfile = $settingsContent.profiles.list | Where-Object -Property name -EQ -Value 'PS 7'
     $terminalProfile.commandline = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
-    Get-Content -Raw -Path "$PSScriptRoot/.resources/settings.json" | Out-File -FilePath $settingsFile.FullName
+    $settingsContent | ConvertTo-Json | Out-File -FilePath $settingsFile.FullName
 }
 
 

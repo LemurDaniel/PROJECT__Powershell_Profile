@@ -60,7 +60,7 @@ if ($settingsFile) {
     $settingsContent.profiles.defaults.elevate = $env:USERNAME -ne 'M01947'
     $terminalProfile = $settingsContent.profiles.list | Where-Object -Property name -EQ -Value 'PS 7'
     $terminalProfile.commandline = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
-    $settingsContent | ConvertTo-Json | Out-File -FilePath $settingsFile.FullName
+    $settingsContent | ConvertTo-Json -Depth 99 | Out-File -FilePath $settingsFile.FullName
 }
 
 

@@ -56,28 +56,96 @@ function New-PimJustification {
         Write-Host -ForegroundColor Green "... Found Feature-Branch with workitem-Id: $workitemId"
     }
     else {
+
+        
         Write-Host -ForegroundColor Red "`n... Your not on a Feature-Branch!`n"
+        ############################################################
+        ################# Getting active workitems #################
+        ############################################################
 
-        $lastItem = Get-UtilsCache -Type PimWorkItem -Identifier last
-        if ($lastItem) {
+        $workItemsActive = Get-UtilsCache -Type PimWorkItem -Identifier active
+        if (!$workitemsActive) {
 
-            $pimWorkItemPollResult = Select-ConsoleMenu -Property display -Options @(
-                @{ display = "Use Last Workitem: [$($lastItem.fields.'System.WorkItemType') - $($($lastItem.id))] $($lastItem.fields.'System.Title')"; option = 0 },
-                @{ display = 'Enter new Workitem ID'; option = 1 }
-            )
+            $QueryStatement = @'
+SELECT  [System.Id], [System.Title], [System.State], [System.WorkItemType] 
 
-            if ($pimWorkItemPollResult.option -eq 0) {
-                $workItemId = $lastItem.id
+FROM    WorkItems 
+
+WHERE   [System.TeamProject]  = @project
+AND [System.State] = 'Active'
+AND [System.AssignedTo] = '{{USER}}'
+
+ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
+'@ -replace '{{USER}}', (Get-AzContext).Account.Id
+
+            if ((Get-AzContext).Account.Id.Contains('aadmin')) {
+                Write-Host -ForegroundColor Yellow ('**Please Choose your normal User to validate the Workitem!**' | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+
+                Connect-AzAccount 
+                Write-Host -ForegroundColor Green "... Connected to Account '$((Get-AzContext).Account.Id)'"
             }
-            Write-Host
+            $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token   
+            $Request = @{
+                Headers = @{            
+                    username       = 'O.o'          
+                    Authorization  = "Bearer $token"           
+                    'Content-Type' = 'application/json; charset=utf-8'      
+                }   
+                Uri     = "https://dev.azure.com/$Organization/$Project/_apis/wit/wiql?api-version=5.1" -replace ' ', '%20'
+                Method  = 'POST'
+                Body    = @{
+                    query = $QueryStatement
+                } | ConvertTo-Json -Compress
+            }
+            $workItemsActive = Invoke-RestMethod @Request
+
+            $Request.Uri = "https://dev.azure.com/$Organization/$Project/_apis/wit/workitemsbatch?`$expand=fields&api-version=7.0" -replace ' ', '%20'
+            $Request.Body = @{
+                ids = $workItemsActive.workItems.id
+            } | ConvertTo-Json -Compress
+            $workItemsActive = Invoke-RestMethod @Request
+
+            $workItemsActive = Set-UtilsCache -Object $workItemsActive.value -Type PimWorkItem -Identifier active -Alive 1440
+        }
+   
+        $lastItem = Get-UtilsCache -Type PimWorkItem -Identifier last
+        $workItemsActive = $workItemsActive | Where-Object -Property id -NE $lastItem.Id
+        $Options = @(
+            @{ display = 'Enter new Workitem ID'; workItemId = $null }
+        )
+
+        if ($lastItem) {
+            $options += @(
+                @{ 
+                    display    = "Last Workitem: [$($lastItem.fields.'System.WorkItemType') - $($($lastItem.id))] $($lastItem.fields.'System.Title')"
+                    workItemId = $lastItem.id
+                }
+            )
+        }
+        $workItemsActive | ForEach-Object {
+            $options += @(
+                @{ 
+                    display    = "[$($_.fields.'System.WorkItemType') - $($($_.id))] $($_.fields.'System.Title')"
+                    workItemId = $_.id
+                }
+            )
         }
   
-        if (!$workItemId) {
-            $workItemId = [regex]::Match((Read-Host -Prompt 'Please Enter a valid WorkItem ID'), '^\d+').Value
+        $pimWorkItemPollResult = Select-ConsoleMenu -Property display -Options $options
+
+        if ($null -eq $pimWorkItemPollResult.workItemId) {
+            $workItemId = [regex]::Match((Read-Host -Prompt "`n... Please Enter a valid WorkItem ID"), '^\d+').Value
+        }
+        else {
+            $workItemId = $pimWorkItemPollResult.workItemId
         }
 
     }
 
+
+    ############################################################
+    ################# Validating chosen Workitem. #################
+    ############################################################
 
     ################# Getting WorkItem from Cache #################
     Write-Host "`n"
@@ -119,6 +187,10 @@ function New-PimJustification {
     Write-Host -ForegroundColor Green '... Workitem was validated successfully!'
     $null = Set-UtilsCache -Object $workItem -Type PimWorkitem -Identifier last -Alive 1440
   
+    ############################################################
+    ##################### Generate Reason ######################
+    ############################################################
+
     $reason = "
     $justification
 

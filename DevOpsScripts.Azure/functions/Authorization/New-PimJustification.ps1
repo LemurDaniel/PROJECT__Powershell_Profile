@@ -40,6 +40,10 @@ function New-PimJustification {
         $noClipboard,
 
         [Parameter()]
+        [switch]
+        $ignoreBranch,
+
+        [Parameter()]
         [System.String]
         $Organization = 'baugruppe',
 
@@ -55,7 +59,7 @@ function New-PimJustification {
     Write-Host "`n"
     Write-Host -ForegroundColor Yellow ('**Checking branch for WorkItem Id**' | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
     $currentBranchName = git branch --show-current
-    if ($currentBranchName -match 'features/\d+-.*') {
+    if (!$ignoreBranch -AND $currentBranchName -match 'features/\d+-.*') {
         $workItemId = [regex]::Match(($currentBranchName -replace 'features/', ''), '^\d+').Value
         Write-Host -ForegroundColor Green "... Found Feature-Branch with workitem-Id: $workitemId"
     }
@@ -149,7 +153,7 @@ ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
 
 
     ############################################################
-    ################# Validating chosen Workitem. #################
+    # Validating chosen Workitem.
     ############################################################
 
     ################# Getting WorkItem from Cache #################

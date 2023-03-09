@@ -28,8 +28,7 @@
 
     Select a File to open in the Current Path:
     
-    PS> $selectedItem = Select-ConsoleMenu -Options (Get-ChildItem -File) -Property Name
-    PS> Start-Process $selectedItem
+    PS> (Select-ConsoleMenu -Options (Get-ChildItem -File) -Property Name) | Start-Process
 
 
     .LINK

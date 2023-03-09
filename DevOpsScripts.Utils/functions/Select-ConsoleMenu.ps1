@@ -8,6 +8,15 @@
     .DESCRIPTION
     Write a Menue to the Console with interactive selection.
 
+    Supports several Pages.
+        => Switchable via Left- and Right-Keyboard Keys.
+
+    Chosen Element is Highlighted.
+        => Switchable via Up- and Down-Keyboard Keys.
+
+    Wirting a Text highlights every entry with the specifed text.
+        => Pressing Backspace will remove the last letter from the text.
+
     .INPUTS
     None. You cannot pipe objects into the Function.
 

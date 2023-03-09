@@ -28,7 +28,7 @@
 
     Select a File to open in the Current Path:
     
-    PS> (Select-ConsoleMenu -Options (Get-ChildItem -File) -Property Name) | Start-Process
+    PS> Start-Process -FilePath (Select-ConsoleMenu -Options (Get-ChildItem -File) -Property Name)
 
 
     .LINK

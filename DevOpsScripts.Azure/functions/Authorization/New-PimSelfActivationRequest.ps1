@@ -75,6 +75,11 @@ function New-PimSelfActivationRequest {
         [switch]
         $useWorkItem,
 
+        # Ignore branch in combination with use workitem.
+        [Parameter()]
+        [switch]
+        $ignoreBranch,
+
         # A duration for the activation.
         [Parameter(
             Mandatory = $false,
@@ -115,7 +120,7 @@ function New-PimSelfActivationRequest {
     )
 
     if ($PSBoundParameters.ContainsKey('useWorkItem')) {
-        $justification = New-PimJustification -Justification $justification -noClipboard
+        $justification = New-PimJustification -Justification $justification -noClipboard -ignoreBranch:$ignoreBranch
     }
 
     if (![System.String]::IsNullOrEmpty($ProfileName)) {

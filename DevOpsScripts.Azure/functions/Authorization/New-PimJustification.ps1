@@ -140,7 +140,7 @@ ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
             )
         }
   
-        $pimWorkItemPollResult = Select-ConsoleMenu -Property display -Options $options
+        $pimWorkItemPollResult = Select-ConsoleMenu -Description "Please choose one of your active Workitems:" -Property display -Options $options
 
         if ($null -eq $pimWorkItemPollResult.workItemId) {
             $workItemId = [regex]::Match((Read-Host -Prompt "`n... Please Enter a valid WorkItem ID"), '^\d+').Value

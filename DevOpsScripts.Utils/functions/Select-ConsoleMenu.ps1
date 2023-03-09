@@ -76,14 +76,18 @@ Function Select-ConsoleMenu {
           
             Write-Host -ForegroundColor Magenta ("**$($Description.trim())**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
 
-            # Filter Options
-            $filteredOptions = $SelectionOptions | Where-Object { $_.name.toLower() -Like "*$searchString*" }
+            # Filter Options !!! Wrap in Array to make sure to still have an array, when only one element remains. !!!
+            $filteredOptions = @($SelectionOptions | Where-Object { $_.name.toLower() -Like "*$($searchString.ToLower())*" })
 
             # Do page and selection calculations.
             $maxSelectionsPerPage = $initialSelectionSize - $reservedLines
             $totalCountOfPages = [System.Math]::Ceiling($filteredOptions.Count / $maxSelectionsPerPage)
             $lastPageMaxIndex = $filteredOptions.Count % $maxSelectionsPerPage - 1
-            
+
+            # Fix if current Page if out-of-range.
+            $currentPage = $currentPage -GE $totalCountOfPages ? $totalCountOfPages - 1 : $currentPage
+
+            # Caluclation for current Page
             $isLastPage = $currentPage -EQ ($totalCountOfPages - 1)
             $selectionPageOffset = $currentPage * $maxSelectionsPerPage
             $selectionIndexOnPage = $selectionIndexOnPage -GT $lastPageMaxIndex -AND $isLastPage ? $lastPageMaxIndex : $selectionIndexOnPage
@@ -95,11 +99,20 @@ Function Select-ConsoleMenu {
 
                 if ($index -eq $selectionIndexOnPage) {
                     Write-Host "$prefixSelected" -NoNewline
-                    Write-Host -BackgroundColor Magenta $_.Name
+                    Write-Host $_.Name -BackgroundColor Magenta
                 } 
                 else {
+
+                    $startIndex = $_.Name.toLower().IndexOf($searchString.toLower())
+                    $firstPart = $_.Name.Substring(0, $startIndex)
+                    $highlightedPart = $_.Name.Substring($startIndex, $searchString.Length)
+                    $lastPart = $_.Name.Substring($startIndex + $searchString.Length)
+
                     Write-Host "$prefixNonSelected" -NoNewline
-                    Write-Host $_.Name
+                    Write-Host -NoNewline $firstPart
+                    Write-Host -NoNewline $highlightedPart -BackgroundColor Cyan
+                    Write-Host -NoNewline $lastPart 
+                    Write-Host
                 }
 
                 $index++
@@ -114,7 +127,7 @@ Function Select-ConsoleMenu {
     
             if ($searchString.Length -gt 0) {
                 Write-Host -NoNewline '     Searching For: '
-                Write-Host -NoNewline -BackgroundColor white "'$SearchString'"
+                Write-Host -NoNewline -BackgroundColor Cyan "'$SearchString'"
             }
                             
             Write-Host
@@ -165,7 +178,9 @@ Function Select-ConsoleMenu {
                 }
 
                 { $null -ne $_.KeyChar } {
-                    $searchString += $filteredOptions.Count -gt 0 ? $_.KeyChar : ''
+                    $temporarySearchString = $searchString + $_.KeyChar
+                    $remaining = $SelectionOptions | Where-Object { $_.name.toLower() -Like "*$($temporarySearchString.ToLower())*" }
+                    $searchString = $remaining.Length -gt 0 ? $temporarySearchString  : $searchString
                     break
                 }
 

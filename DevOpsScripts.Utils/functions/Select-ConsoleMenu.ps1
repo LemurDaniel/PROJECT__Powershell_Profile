@@ -50,17 +50,19 @@ Function Select-ConsoleMenu {
         $Description = 'Please Choose from the Menu:'
     )
 
-    if ($PSBoundParameters.ContainsKey('Property')) {
-        $SelectionOptions = $Options | Select-Object -ExpandProperty $Property
-    }
-    else {
-        $SelectionOptions = $Options
+    $SelectionOptions = $Options | ForEach-Object {
+        return @{
+            name        = $PSBoundParameters.ContainsKey('Property') ? ($_."$Property") : $_
+            returnValue = $_
+        }
     }
 
+    $reservedLines = 8
+    $initialSelectionSize = $Host.UI.RawUI.WindowSize.Height
     $selectionIndexOnPage = 0
-    $maxSelectionsPerPage = 10
-    $countOfPages = [System.Math]::Ceiling($Options.Count / 10)
     $currentPage = 0
+
+    $searchString = ''
 
     $prefixSelected = ' => '
     $prefixNonSelected = '    '
@@ -74,62 +76,97 @@ Function Select-ConsoleMenu {
           
             Write-Host -ForegroundColor Magenta ("**$($Description.trim())**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
 
+            # Filter Options
+            $filteredOptions = $SelectionOptions | Where-Object { $_.name.toLower() -Like "*$searchString*" }
 
-            $maxSelectionCurrentPage = $maxSelectionsPerPage
+            # Do page and selection calculations.
+            $maxSelectionsPerPage = $initialSelectionSize - $reservedLines
+            $totalCountOfPages = [System.Math]::Ceiling($filteredOptions.Count / $maxSelectionsPerPage)
+            $lastPageMaxIndex = $filteredOptions.Count % $maxSelectionsPerPage - 1
+            
+            $isLastPage = $currentPage -EQ ($totalCountOfPages - 1)
             $selectionPageOffset = $currentPage * $maxSelectionsPerPage
-            $selectionIndex = [System.Math]::Min($maxSelectionCurrentPag, $selectionIndexOnPage + $selectionPageOffset)
+            $selectionIndexOnPage = $selectionIndexOnPage -GT $lastPageMaxIndex -AND $isLastPage ? $lastPageMaxIndex : $selectionIndexOnPage
 
-            $SelectionOptions | `
+            $filteredOptions | `
                 Select-Object -Skip $selectionPageOffset | `
                 Select-Object -First $maxSelectionsPerPage | `
                 ForEach-Object { $index = 0 } {
 
                 if ($index -eq $selectionIndexOnPage) {
                     Write-Host "$prefixSelected" -NoNewline
-                    Write-Host -BackgroundColor Magenta $_
+                    Write-Host -BackgroundColor Magenta $_.Name
                 } 
                 else {
                     Write-Host "$prefixNonSelected" -NoNewline
-                    Write-Host $_
+                    Write-Host $_.Name
                 }
 
                 $index++
 
             }
 
-            if ($countOfPages -gt 0) {
+            if ($totalCountOfPages -gt 0) {
                 Write-Host
                 #Write-Host -NoNewline "Page " 
-                Write-Host -NoNewline -BackgroundColor white "$($currentPage+1)/$countOfPages"
-                Write-Host
+                Write-Host -NoNewline -BackgroundColor white "$($currentPage+1)/$totalCountOfPages"
             }
     
+            if ($searchString.Length -gt 0) {
+                Write-Host -NoNewline '     Searching For: '
+                Write-Host -NoNewline -BackgroundColor white "'$SearchString'"
+            }
+                            
+            Write-Host
+
             # Process and switch key presses
             $keyDownEvent = [System.Console]::ReadKey($true)
-            Switch ($keyDownEvent.Key) {
+            Switch ($keyDownEvent) {
     
-                { $_ -eq [System.ConsoleKey]::Enter } {
-                    return $Options[$selectionIndexOnPage + $selectionPageOffset]
+                { $_.Key -eq [System.ConsoleKey]::Enter } {
+                    return $filteredOptions[$selectionIndexOnPage].returnValue
                 }
 
-                { $_ -eq [System.ConsoleKey]::Escape } {
+                { $_.Key -EQ [System.ConsoleKey]::Escape } {
                     throw "Operation was Cancelled due to Input $($keyDownEvent.Key)"
                 }
 
-                { $_ -in @([System.ConsoleKey]::W, [System.ConsoleKey]::UpArrow) } {
-                    $selectionIndexOnPage = ($selectionIndexOnPage + $maxSelectionCurrentPage - 1) % $maxSelectionCurrentPage
+                { $_.Key -EQ [System.ConsoleKey]::UpArrow } {
+                    $selectionIndexOnPage = $selectionIndexOnPage - 1
+                    if ($selectionIndexOnPage -LT 0) {
+                        $currentPage = ($currentPage + $totalCountOfPages - 1) % $totalCountOfPages
+                        $selectionIndexOnPage = $maxSelectionsPerPage - 1
+                    }
+                    break
                 }
     
-                { $_ -in @([System.ConsoleKey]::S, [System.ConsoleKey]::DownArrow) } {
-                    $selectionIndexOnPage = ($selectionIndexOnPage + $maxSelectionCurrentPage + 1) % $maxSelectionCurrentPage
+                { $_.Key -EQ [System.ConsoleKey]::DownArrow } {
+                    $selectionIndexOnPage = $selectionIndexOnPage + 1
+                    if ($selectionIndexOnPage -GT $maxSelectionsPerPage - 1 -OR ($selectionIndexOnPage -GT $lastPageMaxIndex -AND $isLastPage)) {
+                        $currentPage = ($currentPage + $totalCountOfPages + 1) % $totalCountOfPages
+                        $selectionIndexOnPage = 0
+                    }
+                    break
                 }
 
-                { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) } {
-                    $currentPage = ($currentPage + $countOfPages - 1) % $countOfPages
+                { $_.Key -EQ [System.ConsoleKey]::LeftArrow } {
+                    $currentPage = ($currentPage + $totalCountOfPages - 1) % $totalCountOfPages
+                    break
+                }
+
+                { $_.Key -EQ [System.ConsoleKey]::RightArrow } {
+                    $currentPage = ($currentPage + $totalCountOfPages + 1) % $totalCountOfPages
+                    break
                 }
     
-                { $_ -in @([System.ConsoleKey]::D, [System.ConsoleKey]::RightArrow) } {
-                    $currentPage = ($currentPage + $countOfPages + 1) % $countOfPages
+                { $_.Key -EQ [System.ConsoleKey]::Backspace } {
+                    $searchString = $searchString.Substring(0, [System.Math]::Max(0, $searchString.Length - 1))
+                    break
+                }
+
+                { $null -ne $_.KeyChar } {
+                    $searchString += $filteredOptions.Count -gt 0 ? $_.KeyChar : ''
+                    break
                 }
 
                 default {

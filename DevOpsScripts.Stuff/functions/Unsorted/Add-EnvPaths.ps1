@@ -13,7 +13,8 @@ function Add-EnvPaths {
     $global:DefaultEnvPaths[$AdditionalPath] = $AdditionalValue
     $UniquePathsMap = [System.Collections.Hashtable]::new()
     $processedPaths + $global:DefaultEnvPaths.Values | Where-Object -Property Length -GT 0 | ForEach-Object { $UniquePathsMap[$_] = $_ } 
-    $env:Path = ($UniquePathsMap.Values -join ';')
-}
+    
+    #$env:Path = ($UniquePathsMap.Values -join ';')
 
-$global:DefaultEnvPaths = @{}
+    [System.Environment]::SetEnvironmentVariable('Path', ($UniquePathsMap.Values -join ';'), [System.EnvironmentVariableTarget]::User)
+}

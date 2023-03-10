@@ -52,7 +52,7 @@ function Get-DevOpsUser {
         Domain = 'vssps.dev.azure'
         API    = '_apis/identities?api-version=6.0'
         Query  = @{
-            filterValue     = 'daniel.landau@brz.eu'
+            filterValue     = $User.emailAddress
             queryMembership = 'None'
             searchFilter     = 'General'
         }

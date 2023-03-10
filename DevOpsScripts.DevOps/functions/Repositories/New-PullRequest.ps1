@@ -225,7 +225,7 @@ function New-PullRequest {
                     id = (Get-DevOpsUser).Identity.id
                 }
                 CompletionOptions = @{
-                    deleteSourceBranch = $deleteSourceBranch
+                    deleteSourceBranch = $PSBoundParameters.ContainsKey('deleteSourceBranch')
                     mergeStrategy      = $mergeStrategy
                 }
             }

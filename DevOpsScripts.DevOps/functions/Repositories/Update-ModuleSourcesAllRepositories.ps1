@@ -121,11 +121,9 @@ function Update-ModuleSourcesAllRepositories {
             git -C $repository.Localpath push origin $targetBranchName
         
             if ($EnteredNonModules) {
-                if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Pull Request')) {
-                    New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'dev' `
-                        -Project ($repository.project.name) -RepositoryName $repository.name
-                }
-      
+                New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'dev' `
+                    -Project ($repository.project.name) -RepositoryName $repository.name
+
                 if ($PSCmdlet.ShouldProcess($repository.Name , 'Create additional Pull Request from dev to Master?')) {
                     New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Source 'dev' -Target 'default' `
                         -Project ($repository.project.name) -RepositoryName $repository.name
@@ -137,7 +135,7 @@ function Update-ModuleSourcesAllRepositories {
                     -Project ($repository.project.name) -RepositoryName $repository.name `
                     -autocompletion -deleteSourceBranch
 
-                New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' Source 'dev' -Target 'default' `
+                New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Source 'dev' -Target 'default' `
                     -Project ($repository.project.name) -RepositoryName $repository.name `
                     -autocompletion -deleteSourceBranch
             }

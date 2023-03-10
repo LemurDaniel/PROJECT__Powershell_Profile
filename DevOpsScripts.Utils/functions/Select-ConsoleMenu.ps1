@@ -66,7 +66,7 @@ Function Select-ConsoleMenu {
     }
 
     $reservedLines = 8
-    $initialSelectionSize = $Host.UI.RawUI.WindowSize.Height
+    $initialSelectionSize = [System.Math]::Max($Host.UI.RawUI.WindowSize.Height, 10)
     $selectionIndexOnPage = 0
     $currentPage = 0
 
@@ -74,6 +74,10 @@ Function Select-ConsoleMenu {
 
     $prefixSelected = ' => '
     $prefixNonSelected = '    '
+
+    $shortendSuffix = '... '
+    $reservedWidth = [System.Math]::Max($prefixSelected.length, $prefixNonSelected.length) + 4
+    $initialSelectionWitdh = $Host.UI.RawUI.WindowSize.Width - $reservedWidth - $shortendSuffix.Length
 
     try {
 
@@ -105,16 +109,18 @@ Function Select-ConsoleMenu {
                 Select-Object -First $maxSelectionsPerPage | `
                 ForEach-Object { $index = 0 } {
 
+                $displayedText = $_.Name.Substring(0, [System.Math]::Min($_.Name.length, $initialSelectionWitdh))
+                $displayedText += $_.Name.length -GT $initialSelectionWitdh ? $shortendSuffix : ''
                 if ($index -eq $selectionIndexOnPage) {
                     Write-Host "$prefixSelected" -NoNewline
-                    Write-Host $_.Name -BackgroundColor Magenta
+                    Write-Host $displayedText -BackgroundColor Magenta
                 } 
                 else {
 
-                    $startIndex = $_.Name.toLower().IndexOf($searchString.toLower())
-                    $firstPart = $_.Name.Substring(0, $startIndex)
-                    $highlightedPart = $_.Name.Substring($startIndex, $searchString.Length)
-                    $lastPart = $_.Name.Substring($startIndex + $searchString.Length)
+                    $startIndex = $displayedText.toLower().IndexOf($searchString.toLower())
+                    $firstPart = $displayedText.Substring(0, $startIndex)
+                    $highlightedPart = $displayedText.Substring($startIndex, $searchString.Length)
+                    $lastPart = $displayedText.Substring($startIndex + $searchString.Length)
 
                     Write-Host "$prefixNonSelected" -NoNewline
                     Write-Host -NoNewline $firstPart
@@ -141,15 +147,14 @@ Function Select-ConsoleMenu {
             Write-Host
 
             # Process and switch key presses
-            $keyDownEvent = [System.Console]::ReadKey($true)
-            Switch ($keyDownEvent) {
+            Switch ([System.Console]::ReadKey($true)) {
     
                 { $_.Key -eq [System.ConsoleKey]::Enter } {
-                    return $filteredOptions[$selectionIndexOnPage].returnValue
+                    return $filteredOptions[$currentPage * $maxSelectionsPerPage + $selectionIndexOnPage].returnValue
                 }
 
                 { $_.Key -EQ [System.ConsoleKey]::Escape } {
-                    throw "Operation was Cancelled due to Input $($keyDownEvent.Key)"
+                    throw "Operation was Cancelled due to pressing '$($_.Key)'"
                 }
 
                 { $_.Key -EQ [System.ConsoleKey]::UpArrow } {

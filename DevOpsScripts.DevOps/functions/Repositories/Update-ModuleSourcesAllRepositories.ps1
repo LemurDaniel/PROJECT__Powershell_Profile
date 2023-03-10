@@ -43,7 +43,6 @@ function Update-ModuleSourcesAllRepositories {
         'terraform-azurerm-acf-monitoring'
     )
 
-    # Require feature branch and fetch Versions again.
     $EnteredNonModules = $false
     $nonModules = @(
         'terraform-acf-main',
@@ -63,7 +62,7 @@ function Update-ModuleSourcesAllRepositories {
 
     foreach ($repository in $repositoriesInOrder) {
 
-        if($skipModules -AND $repository.name -notin $nonModules) {
+        if ($skipModules -AND $repository.name -notin $nonModules) {
             continue
         }
 
@@ -101,54 +100,54 @@ function Update-ModuleSourcesAllRepositories {
         if ($replacements.Count -eq 0) {
             continue
         }
-                
-        # Case when feature branch is needed
-        if ($nonModules.Contains($repository.name)) {
         
-            if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Pull Request')) {
-                Write-Host -ForegroundColor Yellow 'Create Feature Branch and create Pull Request'
+        if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Pull Request')) {
+            Write-Host -ForegroundColor Yellow 'Create Feature Branch and create Pull Request'
 
-                $targetBranchName = "AUTO--Update Submodule Source Paths - ($((Get-DevOpsUser).displayName))" -replace ' ', '_'
-                $existingBranches = git -C $repository.Localpath branch --all --format '%(refname:short)' | Where-Object { $_ -eq 'master' } | Measure-Object
-                if ($existingBranches) {
-                    git -C $repository.Localpath branch --delete $targetBranchName
-                }
+            $targetBranchName = "AUTO--Update Submodule Source Paths - ($((Get-DevOpsUser).displayName))" -replace ' ', '_'
+            $existingBranches = git -C $repository.Localpath branch --all --format '%(refname:short)' | Where-Object { $_ -eq 'master' } | Measure-Object
+            if ($existingBranches) {
+                git -C $repository.Localpath branch --delete $targetBranchName
+            }
 
-                try {
-                    git -C $repository.Localpath push origin --delete $targetBranchName
-                }
-                catch {}
+            try {
+                git -C $repository.Localpath push origin --delete $targetBranchName
+            }
+            catch {}
 
-                git -C $repository.Localpath checkout -B $targetBranchName
-                git -C $repository.Localpath add -A
-                git -C $repository.Localpath commit -m $targetBranchName
-                git -C $repository.Localpath push origin $targetBranchName
+            git -C $repository.Localpath checkout -B $targetBranchName
+            git -C $repository.Localpath add -A
+            git -C $repository.Localpath commit -m $targetBranchName
+            git -C $repository.Localpath push origin $targetBranchName
         
-                if ('refs/heads/dev' -in $repoRefs.name) {
+            if ($EnteredNonModules) {
+                if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Pull Request')) {
                     New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'dev' `
                         -Project ($repository.project.name) -RepositoryName $repository.name
                 }
+      
                 if ($PSCmdlet.ShouldProcess($repository.Name , 'Create additional Pull Request from dev to Master?')) {
                     New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Source 'dev' -Target 'default' `
                         -Project ($repository.project.name) -RepositoryName $repository.name
                 }
-            }
+            } 
             else {
-                Write-Host -ForegroundColor Red "`n The Script will exit now! `n"
-                return 
-            }
+            
+                New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'dev' `
+                    -Project ($repository.project.name) -RepositoryName $repository.name `
+                    -autocompletion -deleteSourceBranch
 
+                New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' Source 'dev' -Target 'default' `
+                    -Project ($repository.project.name) -RepositoryName $repository.name `
+                    -autocompletion -deleteSourceBranch
+            }
         }
         else {
-            Write-Host -ForegroundColor Yellow 'Update Dev Branch and create Pull Request'
-            git -C $repository.Localpath checkout -B dev
-            git -C $repository.Localpath add -A
-            git -C $repository.Localpath commit -m 'AUTO--Update Submodule Source Paths'
-            git -C $repository.Localpath push origin dev
-        
-            New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'default' `
-                -Project ($repository.project.name) -RepositoryName $repository.name
+            Write-Host -ForegroundColor Red "`n The Script will exit now! `n"
+            return 
         }
+
+
     
         if ($repository.Name -in $moduleUpdatesRequired) {
             Write-Host "`n---------------------------------------------------------------`n"

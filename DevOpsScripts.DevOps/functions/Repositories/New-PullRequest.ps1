@@ -116,7 +116,28 @@ function New-PullRequest {
             }
         )]
         [System.String]
-        $RepositoryName 
+        $RepositoryName,
+
+        # Activates autocompletion on the Pull Request.
+        [Parameter()]
+        [switch]
+        $autocompletion,
+
+        # Delete Source Branch when autocompletion is enabled.
+        [Parameter()]
+        [switch]
+        $deleteSourceBranch,
+
+        # The Merge strategy for autocompletion enabled.
+        [Parameter()]
+        [ValidateSet(
+            'noFastForward',
+            'rebase',
+            'rebaseMerge',
+            'squash'
+        )]
+        [System.String]
+        $mergeStrategy = 'noFastForward'
     )
 
     
@@ -186,6 +207,27 @@ function New-PullRequest {
                 title         = $PRtitle
                 description   = $workItem.'System.Title'
                 reviewers     = $()
+            }
+        }
+        $pullRequestId = Invoke-DevOpsRest @Request
+    }
+
+    if ($PSBoundParameters.ContainsKey('autocompletion')) {
+        # Update PR for autocompletion
+        $Request = @{
+            Project  = $project
+            Method   = 'PATCH'
+            SCOPE    = 'PROJ'
+            Property = 'pullRequestId'
+            API      = "/_apis/git/repositories/$($repository.id)/pullrequests/$pullRequestId`?api-version=7.0"
+            Body     = @{
+                AutoCompleteSetBy = @{
+                    id = (Get-DevOpsUser).Identity.id
+                }
+                CompletionOptions = @{
+                    deleteSourceBranch = $deleteSourceBranch
+                    mergeStrategy      = $mergeStrategy
+                }
             }
         }
         $pullRequestId = Invoke-DevOpsRest @Request

@@ -44,8 +44,31 @@ function Get-DevOpsUser {
         Domain = 'app.vssps.visualstudio'
         API    = '_apis/profile/profiles/me?api-version=6.0'
     }
-
     $User = Invoke-DevOpsRest @Request
+
+    $Request = @{
+        Method = 'GET'
+        Call   = 'ORG'
+        Domain = 'vssps.dev.azure'
+        API    = '_apis/identities?api-version=6.0'
+        Query  = @{
+            filterValue     = 'daniel.landau@brz.eu'
+            queryMembership = 'None'
+            searchFilter     = 'General'
+        }
+    }
+    $Identity = Invoke-DevOpsRest @Request
+    $User | Add-Member NoteProperty Identity $Identity.Value -Force
+
+    $Request = @{
+        Method = 'GET'
+        Call   = 'ORG'
+        Domain = 'vssps.dev.azure'
+        API    = "_apis/graph/users/$($Identity.Value.subjectDescriptor)?api-version=5.0-preview.1"
+    }
+    $graphUser = Invoke-DevOpsRest @Request
+    $User | Add-Member NoteProperty GraphUser $graphUser -Force
+
 
     $null = Set-UtilsCache -Object $User -Type User -Identifier 'devops'
     return Get-Property -Object $User -Property $Property

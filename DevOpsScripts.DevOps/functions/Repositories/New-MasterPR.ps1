@@ -30,5 +30,5 @@ function New-MasterPR {
         $PRtitle
     )
 
-    New-PullRequest -Source 'dev' -Target 'default' -PRtitle $PRTitle
+    New-PullRequest -Source 'dev' -Target 'default' -autocompletion -PRtitle $PRTitle
 }

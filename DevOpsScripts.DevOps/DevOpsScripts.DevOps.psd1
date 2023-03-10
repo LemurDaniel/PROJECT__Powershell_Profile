@@ -85,10 +85,10 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-ProjectInfo',
                'Get-WorkItemRelationTypes', 'Set-AzureDevOpsCache', 
                'Set-DevOpsContext', 'Get-GithubData', 'Get-GitUser', 'Invoke-GitRest', 
                'Open-RepositoryGithub', 'Edit-RegexOnFiles', 
-               'Get-RecentSubmoduleTags', 'Get-RepositoryRefs', 'New-MasterPR', 
-               'New-PullRequest', 'Open-Repository', 'Open-RepositoryInBrowser', 
-               'Remove-MovedBlocks', 'Update-ModuleSourcesAllRepositories', 
-               'Update-ModuleSourcesInPath'
+               'Get-RecentSubmoduleTags', 'Get-RepositoryRefs', 'New-FeaturePR', 
+               'New-MasterPR', 'New-PullRequest', 'Open-Repository', 
+               'Open-RepositoryInBrowser', 'Remove-MovedBlocks', 
+               'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

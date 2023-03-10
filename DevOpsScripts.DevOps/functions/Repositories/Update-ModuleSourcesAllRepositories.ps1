@@ -87,7 +87,7 @@ function Update-ModuleSourcesAllRepositories {
         $null = Open-Repository -Name ($repository.name) -onlyDownload
 
         Write-Host -ForegroundColor Yellow "Update default branch '$($repository.name)'"
-        $repoRefs = Get-RepositoryRefs -Name $repository.name
+
         $defaultBranch = $repository.defaultBranch -replace 'refs/heads/'
         git -C $repository.Localpath stash
         git -C $repository.Localpath checkout $defaultBranch
@@ -101,19 +101,20 @@ function Update-ModuleSourcesAllRepositories {
             continue
         }
         
-        if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Pull Request')) {
+        if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Feature Branch and Pull Request')) {
             Write-Host -ForegroundColor Yellow 'Create Feature Branch and create Pull Request'
 
             $targetBranchName = "AUTO--Update Submodule Source Paths - ($((Get-DevOpsUser).displayName))" -replace ' ', '_'
             $existingBranches = git -C $repository.Localpath branch --all --format '%(refname:short)' | Where-Object { $_ -eq 'master' } | Measure-Object
-            if ($existingBranches) {
-                git -C $repository.Localpath branch --delete $targetBranchName
-            }
 
             try {
                 git -C $repository.Localpath push origin --delete $targetBranchName
             }
             catch {}
+
+            if ($existingBranches) {
+                git -C $repository.Localpath branch --delete $targetBranchName
+            }
 
             git -C $repository.Localpath checkout -B $targetBranchName
             git -C $repository.Localpath add -A
@@ -136,8 +137,7 @@ function Update-ModuleSourcesAllRepositories {
                     -autocompletion -deleteSourceBranch
 
                 New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Source 'dev' -Target 'default' `
-                    -Project ($repository.project.name) -RepositoryName $repository.name `
-                    -autocompletion -deleteSourceBranch
+                    -Project ($repository.project.name) -RepositoryName $repository.name -autocompletion
             }
         }
         else {

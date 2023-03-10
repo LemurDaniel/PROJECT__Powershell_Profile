@@ -40,26 +40,37 @@ function New-PullRequest {
         [System.String]
         $PRtitle = $null,
 
-        # The target branch. Dev or default for (master or main)
+        # The target branch.
         [Parameter()]
-        [ValidateSet('dev', 'default')]
+        [ArgumentCompleter(   
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = @('dev', 'default')
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }    
+        )]
         [System.String]
-        $Target = 'dev',
+        $Target,
 
         # The target source branch. Will default to current branch
         [Parameter(Mandatory = $false)]
+        [ArgumentCompleter(   
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = @('dev', 'default')
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }    
+        )]
         [System.String]
         $Source,
-
-        # A repository path. If not specified will default to current location.
-        #[Parameter(Mandatory = $false)]
-        #[System.String]
-        #$path,
-
-        # A repository id. If not specified will default to current location.
-        #[Parameter(Mandatory = $false)]
-        #[System.String]
-        #$id,
 
         # The name of the project, if not set default to the Current-Project-Context.
         [Parameter(
@@ -142,9 +153,7 @@ function New-PullRequest {
 
     
     $Repository = Get-RepositoryInfo -Project $Project -Name $RepositoryName
-    $Project = $PSBoundParameters.ContainsKey('Project') ? $Project : $repository.project.name
-
-    $remoteBranches = Get-RepositoryRefs -Project $project -Name $repository.name
+    $remoteBranches = Get-RepositoryRefs -Project $repository.project.name -Name $repository.name
     
     if ([System.String]::IsNullOrEmpty($Source)) {
         $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
@@ -156,35 +165,26 @@ function New-PullRequest {
         $preferencedBranch = "refs/heads/$Source"
     }
 
-
-    $hasDevBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/dev' | Measure-Object).Count -gt 0
-    $hasMainBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/main' | Measure-Object).Count -gt 0
-    $hasMasterBranch = ($remoteBranches | Where-Object -Property Name -EQ -Value 'refs/heads/master' | Measure-Object).Count -gt 0
-
-    if (-not $hasDevBranch -AND $Target -eq 'dev') {
-        throw 'Repository has no DEV Branch Set Up'
-    }
-    $targetBranch = $Target -eq 'default' ? $repository.defaultBranch :  'refs/heads/dev'
+    $targetBranch = $Target -eq 'default' ? $repository.defaultBranch :  "refs/heads/$target"
     if ($targetBranch -notin $remoteBranches.Name) {
         throw "Remote branch doesn't exist - $targetBranch"
     }
 
-
     # Check
     if ($preferencedBranch -eq $targetBranch) {
-        throw "Can't create Pullrequest from to itself - '$preferencedBranch' to '$targetBranch'"
+        throw "Can't create Pullrequest from itself to itself - '$preferencedBranch' to '$targetBranch'"
     }
 
     ##############################################
     ########## Prepare and create PR  ############
     ##############################################
-    $sourceBranchName = $preferencedBranch -replace 'refs/heads/'
-    $targetBranchName = $targetBranch -replace 'refs/heads/'
     $PRtitle = ![System.String]::IsNullOrEmpty($PRtitle) ? $PRtitle : ($currentBranch -replace 'features/\d*-{1}', '')
-    $PRtitle = "$sourceBranchName into $targetBranchName - $PRtitle"
+    #$sourceBranchName = $preferencedBranch -replace 'refs/heads/'
+    #$targetBranchName = $targetBranch -replace 'refs/heads/'
+    #$PRtitle = "$sourceBranchName into $targetBranchName - $PRtitle"
 
     $Request = @{
-        Project = $project
+        Project = $repository.project.name
         Method  = 'GET'
         SCOPE   = 'PROJ'
         API     = "/_apis/git/repositories/$($repository.id)/pullrequests?api-version=7.0"
@@ -196,7 +196,7 @@ function New-PullRequest {
     if (!$pullRequestId) {
         # Request for creating new Pull Request
         $Request = @{
-            Project  = $project
+            Project  = $repository.project.name
             Method   = 'POST'
             SCOPE    = 'PROJ'
             Property = 'pullRequestId'
@@ -215,7 +215,7 @@ function New-PullRequest {
     if ($PSBoundParameters.ContainsKey('autocompletion')) {
         # Update PR for autocompletion
         $Request = @{
-            Project  = $project
+            Project  = $repository.project.name
             Method   = 'PATCH'
             SCOPE    = 'PROJ'
             Property = 'pullRequestId'
@@ -233,7 +233,7 @@ function New-PullRequest {
         $pullRequestId = Invoke-DevOpsRest @Request
     }
 
-    $pullRequestUrl = "https://dev.azure.com/baugruppe/$($project.replace(' ', '%20'))/_git/$($repository.name)/pullrequest/$pullRequestId"
+    $pullRequestUrl = "https://dev.azure.com/baugruppe/$($repository.project.name.replace(' ', '%20'))/_git/$($repository.name)/pullrequest/$pullRequestId"
 
     Write-Host -Foreground Green '      '
     Write-Host -Foreground Green ' 🎉 New Pull-Request created 🎉  '

@@ -141,6 +141,7 @@ Function Select-ConsoleMenu {
             if ($searchString.Length -gt 0) {
                 Write-Host -NoNewline '     Searching For: '
                 Write-Host -NoNewline -BackgroundColor Cyan "'$SearchString'"
+                Write-Host -NoNewline " | Remaining $($filteredOptions.Count) of $($Options.Count) Elements"
             }
                             
             Write-Host

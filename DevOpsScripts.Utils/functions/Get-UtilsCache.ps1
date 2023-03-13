@@ -52,12 +52,18 @@ function Get-UtilsCache {
         $Path = "$PSScriptRoot/.cache/"
     )
 
-    $cachePath = Join-Path -Path $Path -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
-    $Cache = Get-Content $cachePath -ErrorAction SilentlyContinue | ConvertFrom-Json -AsHashtable:$AsHashtable -ErrorAction SilentlyContinue
-    
-    Write-Verbose $cachePath
-    if ($Cache -AND ([DateTime]$Cache.Date -gt [datetime]::Now)) {
-        return $Cache.Content
+    try {
+        $cachePath = Join-Path -Path $Path -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
+        $Cache = Get-Content $cachePath | ConvertFrom-Json -AsHashtable:$AsHashtable 
+
+        Write-Verbose $cachePath
+        
+        if ([DateTime]$Cache.Date -gt [datetime]::Now) {
+            return $Cache.Content
+        }      
+    }
+    catch {
+        return $null
     }
 
 }

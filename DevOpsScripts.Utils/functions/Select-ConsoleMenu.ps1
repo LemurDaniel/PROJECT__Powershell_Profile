@@ -71,11 +71,10 @@ Function Select-ConsoleMenu {
     $currentPage = 0
 
     $searchString = ''
-
     $prefixSelected = ' => '
     $prefixNonSelected = '    '
-
     $shortendSuffix = '... '
+
     $reservedWidth = [System.Math]::Max($prefixSelected.length, $prefixNonSelected.length) + 4
     $initialSelectionWitdh = $Host.UI.RawUI.WindowSize.Width - $reservedWidth - $shortendSuffix.Length
 

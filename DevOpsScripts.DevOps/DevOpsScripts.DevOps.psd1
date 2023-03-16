@@ -69,15 +69,15 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-DevOpsRest', 'Edit-RegexOnFiles', 'Get-RecentSubmoduleTags', 
+FunctionsToExport = 'Invoke-DevOpsRest', 'Edit-RegexOnFiles', 
+               'Edit-RepositoriesForRedeployment ', 'Get-RecentSubmoduleTags', 
                'Get-RepositoryRefs', 'New-FeaturePR', 'New-MasterPR', 
                'New-PullRequest', 'Open-Repository', 'Open-RepositoryInBrowser', 
-               'Remove-MovedBlocks', 'Replace-LaunchpadElements', 
-               'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
-               'Get-PAT', 'New-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
-               'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
-               'Get-GithubData', 'Get-GitUser', 'Invoke-GitRest', 
-               'Open-RepositoryGithub', 'Get-DevOpsArtifactFeeds', 
+               'Remove-MovedBlocks', 'Update-ModuleSourcesAllRepositories', 
+               'Update-ModuleSourcesInPath', 'Get-PAT', 'New-Pat', 'Update-Pat', 
+               'Open-BuildInBrowser', 'Start-Pipeline', 'Start-PipelineOnBranch', 
+               'Start-PipelinesInOrder', 'Get-GithubData', 'Get-GitUser', 
+               'Invoke-GitRest', 'Open-RepositoryGithub', 'Get-DevOpsArtifactFeeds', 
                'Register-DevOpsFeedAsPSRepository', 'Add-QuickContext', 
                'Get-ProjectInfo', 'Get-RepositoryInfo', 'Remove-QuickContext', 
                'Show-DevOpsContext', 'Switch-Organization', 'Switch-Project', 

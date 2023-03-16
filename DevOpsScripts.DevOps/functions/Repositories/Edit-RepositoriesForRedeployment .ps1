@@ -1,23 +1,23 @@
 
 <#
     .SYNOPSIS
-    Replacements for a full redeployment test.
+    Replacements for a full redeployment test. (DC Migration specific)
 
     .DESCRIPTION
-
+    Replacements for a full redeployment test. (DC Migration specific)
 
     .INPUTS
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
-
+    None.
 
 
     .LINK
         
 #>
 
-function Replace-LaunchpadElements {
+function Edit-RepositoriesForRedeployment {
 
     [cmdletbinding(
         SupportsShouldProcess,
@@ -157,7 +157,7 @@ function Replace-LaunchpadElements {
                         tfvcSource        = $null
                         gitSource         = @{
                             overwrite = $false
-                            url       = "https://dev.azure.com/baugruppe/DC%20Azure%20Migration/_git/terraform-azurerm-acf-application-gateway" #$_.webUrl
+                            url       = $_.webUrl
                         }
                     }
                 }
@@ -183,7 +183,6 @@ function Replace-LaunchpadElements {
 
     ##########################################################
 
-    
     $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
     if ($Redownload) {
         $projectTarget.respositories | ForEach-Object {

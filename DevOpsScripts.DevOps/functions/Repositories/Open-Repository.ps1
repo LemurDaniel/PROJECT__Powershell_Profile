@@ -47,7 +47,7 @@ function Open-Repository {
         )]   
         [ValidateScript(
             { 
-               [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
             },
             ErrorMessage = 'Please specify a correct Projectname.'
         )]
@@ -117,7 +117,7 @@ function Open-Repository {
         $replace
     )
 
-    if(![System.String]::IsNullOrEmpty($RepositoryId)){
+    if (![System.String]::IsNullOrEmpty($RepositoryId)) {
         $repository = Get-RepositoryInfo -id $RepositoryId
     }
     else {
@@ -127,21 +127,22 @@ function Open-Repository {
     $userName = Get-DevOpsUser 'displayName'
     $userMail = Get-DevOpsUser 'emailAddress'
 
-    if ($replace) {
-        if ($PSCmdlet.ShouldProcess($repository.Localpath, 'Do you want to replace the existing repository and any data in it.')) {
-            Remove-Item -Path $repository.Localpath -Recurse -Force -Confirm:$false
+
+    if ($replace -AND $PSCmdlet.ShouldProcess($repository.Localpath, 'Do you want to replace any existing repository and any data in it.')) {
+        if (Test-Path $repository.Localpath) {
+            $null = Remove-Item -Path $repository.Localpath -Recurse -Force -Confirm:$false
         }
     }
 
     if (!(Test-Path $repository.Localpath)) {
-        New-Item -Path $repository.Localpath -ItemType Directory
+        $null = New-Item -Path $repository.Localpath -ItemType Directory
         git -C $repository.Localpath clone $repository.remoteUrl .
     }      
 
     $item = Get-Item -Path $repository.Localpath 
     $safeDirectoyPath = ($item.Fullname -replace '[\\]+', '/' )
     $included = (git config --global --get-all safe.directory | Where-Object { $_ -eq $safeDirectoyPath } | Measure-Object).Count -gt 0
-    if(!$included){
+    if (!$included) {
         $null = git config --global --add safe.directory $safeDirectoyPath
     }
  

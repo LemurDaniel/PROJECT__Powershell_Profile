@@ -44,7 +44,15 @@ function Edit-RegexOnFiles {
         # The Regexquery to perform on all files.
         [Parameter(Mandatory = $true)]
         [System.String]
-        $regexQuery
+        $regexQuery,
+
+
+        # The Regexquery to perform on all files.
+        [Parameter(Mandatory = $true)]
+        [System.Text.RegularExpressions.RegexOptions[]]
+        $regexOptions = @(
+            [System.Text.RegularExpressions.RegexOptions]::Multiline
+        )
     )
 
     $totalReplacements = [System.Collections.ArrayList]::new()
@@ -55,23 +63,24 @@ function Edit-RegexOnFiles {
 
         # Make Regex Replace on all Child-Items.
         $childFiles = Get-ChildItem -Recurse -Path ($replacementPath) -Filter '*.tf' | `
-            ForEach-Object { 
-            [PSCustomObject]@{
-                FullName = $_.FullName
-                Content  = (Get-Content -Raw -Path $_.FullName)
-            } 
+            Select-Object -Property *, @{ 
+            Name       = 'Content';
+            Expression = {
+                Get-Content -Raw -Path $_.FullName
+            }
         } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
 
 
         foreach ($file in $childFiles) {
 
             # Find Regexmatches.
-            $regexMatches = [regex]::Matches($file.Content, $regexQuery)
+            $regexMatches = [regex]::Matches($file.Content, $regexQuery, $regexOptions)
             if (($regexMatches | Measure-Object).Count -le 0) {
                 continue
             }
       
-            $file.Content = $file.Content -replace $regexQuery, $replace
+            Write-Host -ForegroundColor Yellow ([System.String]::Format('{0:00} Hits |@{1}', $regexMatches.Count, $file.Name))
+            $file.Content = [regex]::replace($file.Content, $regexQuery, $replace, $regexOptions)
             $file.Content | Out-File -LiteralPath $file.FullName
         }  
     }

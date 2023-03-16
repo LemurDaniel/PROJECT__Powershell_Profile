@@ -66,17 +66,29 @@ function Replace-LaunchpadElements {
 
         [Parameter()]
         [switch]
-        $preventRedownload
+        $Redownload,
+
+        [Parameter()]
+        [switch]
+        $ImportRepositories
     )
 
-    $project = Get-ProjectInfo -Name 'DC ACF Redeployment'
-    if (!$preventRedownload) {
-        $project.respositories | ForEach-Object {
+    $projectSource = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
+    $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
+    if ($ImportRepositories) {
+        
+        #TODO
+        # Automatically Import Repos from DC Azure Migration
+    }
+
+    $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
+    if ($Redownload) {
+        $projectTarget.respositories | ForEach-Object {
             Open-Repository -Project 'DC ACF Redeployment' -Name $_.name -onlyDownload -replace 
         }
     }
 
-    Set-Location -Path $project.Projectpath
+    Set-Location -Path $projectTarget.Projectpath
 
     $replacingMappings.GetEnumerator() | ForEach-Object {
         Edit-RegexOnFiles -regexQuery $_.Key -replace $_.Value

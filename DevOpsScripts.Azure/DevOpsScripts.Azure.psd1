@@ -71,9 +71,8 @@ RequiredAssemblies = @()
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Backup-AzTables', 'Get-NonCompliantRoleAssignments', 
                'Invoke-AzureRest', 'Restore-AzTables', 'Switch-AzTenant', 
-               'Get-GraphApiManager', 'Get-onPremisesExtensionAttributes', 
-               'Invoke-GraphApi', 'Add-PimProfile', 'Get-PimAssignments', 
-               'Get-PimProfiles', 'Get-RBACPermissions', 
+               'Add-PimProfile', 'Get-PimAssignments', 'Get-PimProfiles', 
+               'Get-RBACPermissions', 
                'Get-RoleEligibilitySceduleInstancesForScope', 
                'Get-RoleManagementPolicyForScope', 
                'Get-RoleManagmentPolicyAssignmentsForScope', 
@@ -85,7 +84,8 @@ FunctionsToExport = 'Backup-AzTables', 'Get-NonCompliantRoleAssignments',
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
                'Search-AzFunctionAppSettings', 'Search-AzResource', 
                'Search-AzResourceGraphResults', 'Search-AzStorageAccount', 
-               'Search-AzStorageContext', 'Search-AzVm', 'Test'
+               'Search-AzStorageContext', 'Search-AzVm', 'Test', 'Get-GraphApiManager', 
+               'Get-onPremisesExtensionAttributes', 'Invoke-GraphApi'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

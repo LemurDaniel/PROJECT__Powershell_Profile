@@ -71,13 +71,13 @@ RequiredAssemblies = 'WindowsBase', 'PresentationFramework'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Get-CleanFilename', 'Get-Property', 'Get-UtilsCache', 'Join-PsObject', 
                'Read-SecureStringFromFile', 'Save-SecureStringToFile', 'Search-In', 
-               'Select-ConsoleMenu', 'Set-UtilsCache', 'New-WindowBindings', 
-               'New-WindowWPF', 'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
-               'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
-               'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
-               'Convert-TFVarsToObject', 'New-TetrisGame', 'Format-SendGridContent', 
-               'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'New-SendGridHtmlFormat'
+               'Select-ConsoleMenu', 'Set-UtilsCache', 'Convert-TFVarsToObject', 
+               'New-TetrisGame', 'New-WindowBindings', 'New-WindowWPF', 
+               'Format-SendGridContent', 'Format-SendGridResourceReport', 
+               'Send-SendGridEmail', 'New-SendGridHtmlFormat', 'Get-DallEFromJoke', 
+               'Get-OpenAIAPIAuthentication', 'Invoke-DalleRequest', 
+               'Invoke-OpenAICompletion', 'Invoke-OpenAIImageGeneration', 
+               'Invoke-OpenAIMoodToColor'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

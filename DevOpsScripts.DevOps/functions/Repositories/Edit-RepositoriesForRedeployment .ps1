@@ -259,7 +259,7 @@ function Edit-RepositoriesForRedeployment {
     ####################################
 
     ####################################
-    # Rebase Dev into Master
+    # Rebase Master into Dev
     ####################################
 
     $PullRequest = @{

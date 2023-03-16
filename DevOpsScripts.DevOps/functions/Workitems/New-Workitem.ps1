@@ -92,7 +92,12 @@ function New-Workitem {
         # Optional Id of a related workitem
         [Parameter()]
         [System.Int32]
-        $RelatedId
+        $RelatedId,
+
+        # Optional use the image saved in the clipboard
+        [Parameter()]
+        [switch]
+        $useImageFromClipboard
     )
 
     BEGIN {
@@ -169,6 +174,11 @@ function New-Workitem {
                     attributes = @{}
                 }
             }
+        }
+
+        #TODO
+        if ($PSBoundParameters.ContainsKey('useImageFromClipboard') -AND [System.Windows.Clipboard]::containsImage()) {
+            [System.Windows.Clipboard]::GetImage()
         }
 
         if ($PSCmdlet.ShouldProcess("[$Type] - '$Title' in $IterationPath", 'Create')) {

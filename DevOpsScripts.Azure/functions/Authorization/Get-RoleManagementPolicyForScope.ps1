@@ -37,7 +37,7 @@ function Get-RoleManagementPolicyForScope {
     )
 
     $roleManagementPolicyAssignment = Get-RoleManagmentPoliciyAssignmentsForScope -Scope $scope | Where-Object { $_.properties.policyAssignmentProperties.roleDefinition.displayName -eq $roleDefintion }
-      
+
     $Request = @{
         Method = 'GET'
         Scope  = $scope

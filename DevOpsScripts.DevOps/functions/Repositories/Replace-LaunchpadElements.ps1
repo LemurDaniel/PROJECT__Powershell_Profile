@@ -70,7 +70,7 @@ function Replace-LaunchpadElements {
     )
 
     $project = Get-ProjectInfo -Name 'DC ACF Redeployment'
-    if ($preventRedownload) {
+    if (!$preventRedownload) {
         $project.respositories | ForEach-Object {
             Open-Repository -Project 'DC ACF Redeployment' -Name $_.name -onlyDownload -replace 
         }

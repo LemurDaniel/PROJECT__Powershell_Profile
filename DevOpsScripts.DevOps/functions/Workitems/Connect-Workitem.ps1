@@ -82,7 +82,7 @@ function Connect-Workitem {
                         rel        = Get-WorkItemRelationTypes $RelationType | Select-Object -ExpandProperty 'referenceName'
                         url        = $linkElementUrl
                         attributes = @{
-                            name    = $RelationType
+                            name    = $linkElementUrl.Contains('vstfs:///Git/PullRequestId') ? 'Pull Request' : $RelationType
                             comment = "$((Get-DevOpsUser).displayName) created $RelationType"
                         }
                     }

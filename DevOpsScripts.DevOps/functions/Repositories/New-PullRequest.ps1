@@ -148,10 +148,16 @@ function New-PullRequest {
             'squash'
         )]
         [System.String]
-        $mergeStrategy = 'noFastForward'
+        $mergeStrategy = 'noFastForward',
+
+
+        # Workitem ids to connect to the Pull Request
+        [Parameter()]
+        [System.Int32[]]
+        $workItemIds = @()
     )
 
-    
+    $displayInformation = 'error'
     $Repository = Get-RepositoryInfo -Project $Project -Name $RepositoryName
     $remoteBranches = Get-RepositoryRefs -Project $repository.project.name -Name $repository.name
     
@@ -210,6 +216,28 @@ function New-PullRequest {
             }
         }
         $pullRequestId = Invoke-DevOpsRest @Request
+        $displayInformation = ' 🎉 New Pull-Request created! 🎉  '
+    }
+    else {
+        $displayInformation = ' ✨ Existent Pull Request Found! ✨  '
+    }
+
+
+    $isFeatureBranch = $preferencedBranch -match 'features\/\d+-'
+    $pullRequestArtifactUrl = "vstfs:///Git/PullRequestId/$($repository.project.id)%2F$($repository.id)%2F$($pullRequestId)"
+    Write-Verbose $pullRequestArtifactUrl
+    if ($isFeatureBranch) {
+        $workItemIds += [regex]::Match($preferencedBranch , 'features\/\d+-').Value -replace '[^\d]+', ''
+    }
+
+    $workItemIds | ForEach-Object {
+        try {
+            Connect-Workitem -WorkItemId $_ -linkElementUrl $pullRequestArtifactUrl -RelationType 'Artifact Link'
+        } catch {
+            if(!$_.ErrorDetails.Message.contains('Relation already exists')) {
+                throw $_
+            }
+        }
     }
 
     if ($PSBoundParameters.ContainsKey('autocompletion')) {
@@ -236,7 +264,7 @@ function New-PullRequest {
     $pullRequestUrl = "https://dev.azure.com/baugruppe/$($repository.project.name.replace(' ', '%20'))/_git/$($repository.name)/pullrequest/$pullRequestId"
 
     Write-Host -Foreground Green '      '
-    Write-Host -Foreground Green ' 🎉 New Pull-Request created 🎉  '
+    Write-Host -Foreground Green $displayInformation
     Write-Host -Foreground Green "    $pullRequestUrl "
     Write-Host -Foreground Green '      '
     Start-Process $pullRequestUrl

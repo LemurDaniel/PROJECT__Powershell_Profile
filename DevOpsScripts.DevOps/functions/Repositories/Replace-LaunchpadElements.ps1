@@ -76,8 +76,8 @@ function Replace-LaunchpadElements {
     $projectSource = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
     $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
     if ($ImportRepositories) {
-        
-        #TODO
+        $pat = Get-PAT -Organization baugruppe -Name redploymentImport -HoursValid 1 -PatScopes app_token 
+        #TODO https://learn.microsoft.com/en-us/rest/api/azure/devops/git/import-requests/create?view=azure-devops-rest-7.0&tabs=HTTP
         # Automatically Import Repos from DC Azure Migration
     }
 

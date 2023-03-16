@@ -76,9 +76,10 @@ function Edit-RepositoriesForRedeployment {
     $projectSource = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
     $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
 
-    ##########################################################
+    ####################################
     # Import Repositories
-    
+    ####################################
+
     if ($ImportRepositories) {
         $pat = Get-PAT -Organization baugruppe -Name redploymentImport -HoursValid 1 -PatScopes app_token 
 
@@ -181,7 +182,9 @@ function Edit-RepositoriesForRedeployment {
         }
     }
 
-    ##########################################################
+    ####################################
+    # Redownload Repositories
+    ####################################
 
     $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
     if ($Redownload) {
@@ -190,15 +193,84 @@ function Edit-RepositoriesForRedeployment {
         }
     }
 
+    
+    ####################################
+    # Regex Replacements
+    ####################################
+
     Set-Location -Path $projectTarget.Projectpath
 
     $replacingMappings.GetEnumerator() | ForEach-Object {
         Edit-RegexOnFiles -regexQuery $_.Key -replace $_.Value
     }
 
-    # TODO
+
+    ####################################
+    # Non-Acf-Spn
+    ####################################
+    
+    $repositoryAcfMain = Get-RepositoryInfo -Project $projectTarget.name -Name terraform-acf-main
+
+    $foundationTfVars = @()
+    $foundationTfVars += Get-Item -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_foundations/landingzone.dev.auto.tfvars"
+    $foundationTfVars += Get-Item -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_foundations/landingzone.prod.tfvars"
+
+    $foundationTfVars | ForEach-Object {
+        $parsedTfVar = Convert-TFVarsToObject -FilePath $_.FullName
+    
+        $parsedTfVar.governance_settings.management_groups.children_level_1.spn_role_assignments_non_acf
+        $parsedTfVar.governance_settings.management_groups.children_level_2.spn_role_assignments_non_acf
+    }
+
+    ####################################
     # Appzone-references-owners
-    # non_acf_spns
+    ####################################
+
+    $appzones = @()
+    $appzones += Get-ChildItem -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_appzone/configurations-dev" -Filter '*.json' -Recurse -File
+    $appzones += Get-ChildItem -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_appzone/configurations-prod" -Filter '*.json' -Recurse -File
+ 
+    $appzones | ForEach-Object {  
+    
+        $content = Get-Content -Path $_.FullName | ConvertFrom-Json -Depth 99
+
+        $changed = $false
+
+        if ($null -ne $content.rbac.owners -AND $content.rbac.owners.Length -gt 0) {
+            $content.rbac.owners = @()
+            $changed = $true
+        }
+        if ($null -ne $content.rbac.owners_groups -AND $content.rbac.owners_groups.Length -gt 0) {
+            $content.rbac.owners_groups = @()
+            $changed = $true
+        }
+
+        if ($changed) {
+            Write-Host -ForegroundColor Yellow $_.Name
+            $content | ConvertTo-Json -Depth 99 | Out-File -FilePath $_.FullName
+        }
+        else {
+            Write-Host -ForegroundColor Green $_.Name
+        }
+    }
+
+    ####################################
     # naming-module
+    ####################################
+
+    ####################################
+    # Rebase Dev into Master
+    ####################################
+
+    $PullRequest = @{
+        Project        = $projectTarget.Name
+        RepositoryName = $repositoryAcfMain.Name
+        PRtitle        = 'Rebase Master Into Dev'
+        Target         = 'dev'
+        Source         = 'master'
+        mergeStrategy  = 'Rebase' 
+        autocompletion = $true
+    }
+    New-PullRequest @PullRequest
 }
 

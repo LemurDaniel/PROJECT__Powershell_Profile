@@ -75,12 +75,115 @@ function Replace-LaunchpadElements {
 
     $projectSource = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
     $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
+
+    ##########################################################
+    # Import Repositories
+    
     if ($ImportRepositories) {
         $pat = Get-PAT -Organization baugruppe -Name redploymentImport -HoursValid 1 -PatScopes app_token 
-        #TODO https://learn.microsoft.com/en-us/rest/api/azure/devops/git/import-requests/create?view=azure-devops-rest-7.0&tabs=HTTP
-        # Automatically Import Repos from DC Azure Migration
+
+        $projectSource.repositories | ForEach-Object {
+
+            # Do Manually , to aviod accidental deletions.
+            #$existentRepository = projectTarget.repositories | Where-Object -Property name -EQ -Value $_.name 
+            #$Request = @{
+            #    Project = $projectTarget.name
+            #    Method  = 'DELETE'
+            #    SCOPE   = 'PROJ'
+            #    API     = "/_apis/git/repositories/$($existentRepository.id)?api-version=7.0"
+            #}
+            #$null = Invoke-DevOpsRest @Request
+
+        }
+
+        $Request = @{
+            Project = $projectTarget.name
+            Method  = 'POST'
+            SCOPE   = 'PROJ'
+            API     = "/_apis/git/repositories/$($existentRepository.id)?api-version=7.0"
+            Body    = @{
+                name = $_.name
+            }
+        }
+        $repository = Invoke-DevOpsRest @Request
+
+            
+        try {
+
+            $Request = @{
+                Method = 'POST'
+                SCOPE  = 'ORG'
+                API    = '/_apis/serviceendpoint/endpoints?api-version=7.0'
+                Body   = @{
+                    authorization                    = @{
+                        scheme     = 'UsernamePassword'
+                        parameters = @{
+                            username = $null
+                            password = $pat.password | ConvertFrom-SecureString -AsPlainText
+                        }
+                    }
+                    type                             = 'git'
+                    name                             = "endpoint-o.O-$($projectSource.id)-$($_.webUrl)"
+                    url                              = $_.webUrl
+                    serviceEndpointProjectReferences = @(
+                        @{ 
+                            projectReference = @{
+                                id   = $projectSource.id
+                                name = $projectSource.Name
+                            }
+                            name             = "endpoint-o.O-$($projectSource.id)-$($_.webUrl)"
+                        },
+                        @{ 
+                            projectReference = @{
+                                id   = $projectTarget.id
+                                name = $projectTarget.Name
+                            }
+                            name             = "endpoint-o.O-$($projectTarget.id)-$($_.webUrl)"
+                        }
+                    )
+                }
+            }
+            $serviceEndpoint = Invoke-DevOpsRest @Request
+
+            # Import Repository
+            $Request = @{
+                Project = $projectTarget.name
+                Method  = 'POST'
+                SCOPE   = 'PROJ'
+                API     = "/_apis/git/repositories/$($repository.id)/importRequests?api-version=7.0"
+                Body    = @{
+                    parameters = @{
+                        serviceEndpointId = $serviceEndpoint.id
+                        tfvcSource        = $null
+                        gitSource         = @{
+                            overwrite = $false
+                            url       = "https://dev.azure.com/baugruppe/DC%20Azure%20Migration/_git/terraform-azurerm-acf-application-gateway" #$_.webUrl
+                        }
+                    }
+                }
+            }
+            Invoke-DevOpsRest @Request
+
+        }
+        catch {
+            Write-Host -ForegroundColor Red $_
+        }
+        finally {
+            $Request = @{
+                Method = 'DELETE'
+                SCOPE  = 'ORG'
+                API    = "/_apis/serviceendpoint/endpoints/$($serviceEndpoint.id)?api-version=7.0"
+                Query  = @{
+                    projectIds = @($projectSource.id, $projectTarget.Id) -join ','
+                }
+            }
+            Invoke-DevOpsRest @Request
+        }
     }
 
+    ##########################################################
+
+    
     $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
     if ($Redownload) {
         $projectTarget.respositories | ForEach-Object {

@@ -89,17 +89,30 @@ function Edit-RepositoriesForRedeployment {
 
             $existentRepository = $projectTarget.repositories | Where-Object -Property name -EQ -Value $_.name 
             if ($existentRepository) {
-                
-                $existentRepositoryPoll = Select-ConsoleMenu -Property display `
-                    -Description "'$($_.name)' already exists in the Project '$($projectTarget.name)'" `
+                $DeletionRepositoryPoll = Select-ConsoleMenu -Property display -Description "'$($_.name)' already exists in the Project '$($projectTarget.name)'" `
                     -Options @(
-                    @{ display = 'Continue after MANUALLY Deleting the Repository'; option = 0 }
+                    @{ display = 'Open in Browser fon MANUALLY Deletion'; option = 0 }
                     @{ display = 'Skip this Repository'; option = 1 }
                 )
 
-                if ($existentRepositoryPoll.option -eq 1) {
+                if ($DeletionRepositoryPoll.option -eq 0) {
+                    Start-Process $existentRepository.webUrl
+                }
+                elseif ($DeletionRepositoryPoll.option -eq 1) {
                     return
                 }
+            }
+
+
+            $ImportRepositoryPoll = Select-ConsoleMenu -Property display `
+                -Description "Import '$($_.name)' in the Project '$($projectTarget.name)'" `
+                -Options @(
+                @{ display = 'Continue importing this Repository'; option = 0 }
+                @{ display = 'Skip this Repository'; option = 1 }
+            )
+            
+            if ($ImportRepositoryPoll.option -eq 1) {
+                return
             }
             # Do Manually , to aviod accidental deletions.
             #$Request = @{
@@ -114,7 +127,7 @@ function Edit-RepositoriesForRedeployment {
                 Project = $projectTarget.name
                 Method  = 'POST'
                 SCOPE   = 'PROJ'
-                API     = "/_apis/git/repositories?api-version=7.0"
+                API     = '/_apis/git/repositories?api-version=7.0'
                 Body    = @{
                     name = $_.name
                 }
@@ -159,6 +172,7 @@ function Edit-RepositoriesForRedeployment {
                 }
                 $serviceEndpoint = Invoke-DevOpsRest @Request
 
+                Start-Sleep -Milliseconds 500
                 # Import Repository
                 $Request = @{
                     Project = $projectTarget.name
@@ -177,6 +191,8 @@ function Edit-RepositoriesForRedeployment {
                     }
                 }
                 Invoke-DevOpsRest @Request
+
+                Start-Process $repository.webUrl
 
             }
             catch {

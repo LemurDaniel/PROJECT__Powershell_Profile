@@ -223,18 +223,21 @@ function New-PullRequest {
     }
 
 
-    $isFeatureBranch = $preferencedBranch -match 'features\/\d+-'
     $pullRequestArtifactUrl = "vstfs:///Git/PullRequestId/$($repository.project.id)%2F$($repository.id)%2F$($pullRequestId)"
     Write-Verbose $pullRequestArtifactUrl
+
+    $currentBranch = git -C $repostoryPath branch --show-current
+    $isFeatureBranch = $currentBranch -match 'features\/\d+-'
     if ($isFeatureBranch) {
-        $workItemIds += [regex]::Match($preferencedBranch , 'features\/\d+-').Value -replace '[^\d]+', ''
+        $workItemIds += [regex]::Match($currentBranch , 'features\/\d+-').Value -replace '[^\d]+', ''
     }
 
     $workItemIds | ForEach-Object {
         try {
             Connect-Workitem -WorkItemId $_ -linkElementUrl $pullRequestArtifactUrl -RelationType 'Artifact Link'
-        } catch {
-            if(!$_.ErrorDetails.Message.contains('Relation already exists')) {
+        }
+        catch {
+            if (!$_.ErrorDetails.Message.contains('Relation already exists')) {
                 throw $_
             }
         }

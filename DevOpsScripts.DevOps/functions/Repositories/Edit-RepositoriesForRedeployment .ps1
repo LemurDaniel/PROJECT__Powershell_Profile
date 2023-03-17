@@ -114,7 +114,7 @@ function Edit-RepositoriesForRedeployment {
                 Project = $projectTarget.name
                 Method  = 'POST'
                 SCOPE   = 'PROJ'
-                API     = "/_apis/git/repositories/$($existentRepository.id)?api-version=7.0"
+                API     = "/_apis/git/repositories?api-version=7.0"
                 Body    = @{
                     name = $_.name
                 }

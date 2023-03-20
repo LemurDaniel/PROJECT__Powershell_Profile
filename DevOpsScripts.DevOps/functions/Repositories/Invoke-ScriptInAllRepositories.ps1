@@ -74,7 +74,6 @@ function Invoke-ScriptInAllRepositories {
         $ScriptBlock
     )
 
-
     $projectTarget = Get-ProjectInfo -Name $Project
     $projectTarget.repositories | ForEach-Object {
     
@@ -87,14 +86,15 @@ function Invoke-ScriptInAllRepositories {
         Write-Host -ForegroundColor Yellow "Processing '$($_.Name)' in '$($_.project.name)'"
         Write-Host
 
-        git -C $path.FullName stash
+        $randomHex = New-RandomBytes -Type Hex -Bytes 2
+        $stashName = "$workItemTitle-$randomHex" -replace '\s', '_' -replace '[^\sA-Za-z0-9\\-]*', ''
+        git -C $path.FullName stash push -m $stashName
         git -C $path.FullName checkout master
         git -C $path.FullName pull origin master
 
         & $ScriptBlock -Repository $_ -Project $_.project
 
-        $count = git -C $path.FullName status --porcelain | Measure-Object | Select-Object -ExpandProperty Count
-        if ($count -gt 0) {
+        if ((git -C $path.FullName status --porcelain | Measure-Object).Count -gt 0) {
     
             Write-Host -ForegroundColor Yellow "Detected Changes in Repository '$($_.name)' in '$($projectTarget.name)'"
             if ($PSCmdlet.ShouldProcess($_.Name , 'Create Feature Pull Request?')) {
@@ -113,6 +113,7 @@ function Invoke-ScriptInAllRepositories {
             }
         }
 
+        git stash apply "stash^{/$stashName}"
     }
 }
 

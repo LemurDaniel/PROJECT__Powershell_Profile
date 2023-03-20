@@ -18,11 +18,27 @@
 function New-FeaturePR {
 
     param(
+        # The target branch.
+        [Parameter()]
+        [ArgumentCompleter(   
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = @('dev', 'default')
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }    
+        )]
+        [System.String]
+        $Target = 'dev', 
+
         # Enable autcompletion of PR.
         [Parameter()]
         [switch]
         $autocompletion
     )
 
-    New-PullRequest -Target 'dev' -autocompletion:$autocompletion -deleteSourceBranch
+    New-PullRequest -Target $Target -autocompletion:$autocompletion -deleteSourceBranch
 }

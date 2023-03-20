@@ -243,7 +243,7 @@ function New-PullRequest {
         }
     }
 
-    if ($PSBoundParameters.ContainsKey('autocompletion')) {
+    if ($autocompletion) {
         # Update PR for autocompletion
         $Request = @{
             Project  = $repository.project.name

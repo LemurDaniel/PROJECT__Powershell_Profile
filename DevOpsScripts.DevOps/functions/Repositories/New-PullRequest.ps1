@@ -160,12 +160,12 @@ function New-PullRequest {
     $displayInformation = 'error'
     $Repository = Get-RepositoryInfo -Project $Project -Name $RepositoryName
     $remoteBranches = Get-RepositoryRefs -Project $repository.project.name -Name $repository.name
-    
+    $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
+    $currentBranch = git -C $repostoryPath branch --show-current
+
     if ([System.String]::IsNullOrEmpty($Source)) {
-        $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
-        $currentBranch = git -C $repostoryPath branch --show-current
         git -C $repostoryPath push --set-upstream origin $currentBranch
-        $preferencedBranch = Search-In $remoteBranches -has $currentBranch -return 'name'
+        $preferencedBranch = "refs/heads/$currentBranch"
     }
     else {
         $preferencedBranch = "refs/heads/$Source"
@@ -226,9 +226,7 @@ function New-PullRequest {
     $pullRequestArtifactUrl = "vstfs:///Git/PullRequestId/$($repository.project.id)%2F$($repository.id)%2F$($pullRequestId)"
     Write-Verbose $pullRequestArtifactUrl
 
-    $currentBranch = git -C $repostoryPath branch --show-current
-    $isFeatureBranch = $currentBranch -match 'features\/\d+-'
-    if ($isFeatureBranch) {
+    if ($currentBranch -match 'features\/\d+-') {
         $workItemIds += [regex]::Match($currentBranch , 'features\/\d+-').Value -replace '[^\d]+', ''
     }
 

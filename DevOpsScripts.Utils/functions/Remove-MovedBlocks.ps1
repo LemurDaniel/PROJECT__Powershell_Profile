@@ -17,10 +17,14 @@
 
 function Remove-MovedBlocks {
 
-    param ()
+    param (
+        [Parameter()]
+        [System.String]
+        $Path = $null
+    )
 
     # Remove Moved-Blocks from Terraform configuration.
-    Edit-RegexOnFiles -regexQuery 'moved\s*\{[^\}]*\}' -regexOptions @(
+    Edit-RegexOnFiles -replacementPath $Path -regexQuery 'moved\s*\{[^\}]*\}' -regexOptions @(
         [System.Text.RegularExpressions.RegexOptions]::Multiline
     )
   

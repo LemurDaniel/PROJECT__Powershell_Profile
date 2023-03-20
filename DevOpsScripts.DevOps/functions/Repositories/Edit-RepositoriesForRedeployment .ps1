@@ -218,7 +218,7 @@ function Edit-RepositoriesForRedeployment {
 
     if ($Redownload) {
         $projectTarget.respositories | ForEach-Object {
-            Open-Repository -Project 'DC ACF Redeployment' -Name $_.name -onlyDownload -replace 
+            Open-Repository -Project $projectTarget.name -Name $_.name -onlyDownload -replace 
         }
     }
     

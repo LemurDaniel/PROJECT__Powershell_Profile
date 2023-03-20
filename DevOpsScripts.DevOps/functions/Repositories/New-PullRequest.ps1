@@ -46,7 +46,7 @@ function New-PullRequest {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = @('dev', 'default')
+                $validValues = @('current', 'dev', 'default')
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -163,7 +163,7 @@ function New-PullRequest {
     $repostoryPath = ![System.String]::IsNullOrEmpty($repository.currentPath) ? $repository.currentPath : $repository.LocalPath
     $currentBranch = git -C $repostoryPath branch --show-current
 
-    if ([System.String]::IsNullOrEmpty($Source)) {
+    if ([System.String]::IsNullOrEmpty($Source) -OR $Source -eq 'current') {
         git -C $repostoryPath push --set-upstream origin $currentBranch
         $preferencedBranch = "refs/heads/$currentBranch"
     }

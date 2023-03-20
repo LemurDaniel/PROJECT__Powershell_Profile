@@ -115,7 +115,7 @@ function New-BranchFromWorkitem {
 
     )    
 
-    $repositoryPath = (Get-Location).FullName
+    $repositoryPath = Get-Location
 
     if ($PSBoundParameters.ContainsKey('Project') -OR $PSBoundParameters.ContainsKey('Name')) {
         $repository = Get-RepositoryInfo -Project $Project -Name $Name

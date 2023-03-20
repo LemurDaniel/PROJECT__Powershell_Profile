@@ -42,25 +42,26 @@ function Filter-RepositoriesForMovedBlocks {
         $workitemTitle
     )
 
-    $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
-
-
-
-    $projectTarget | ForEach-Object {
+    $projectTarget = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
+    $projectTarget.repositories | ForEach-Object {
     
+        Write-Host
+        Write-Host -ForegroundColor Yellow "Checking '$($_.Name)'"
+        Write-Host
         $path = Open-Repository -Project $projectTarget.name -Name $_.name -onlyDownload
-        git -C $path.FullName stash
-        git -C $path.FullName checkout dev
-        git -C $path.FullName pull origin dev
 
+        git -C $path.FullName stash
+        git -C $path.FullName checkout master
+        git -C $path.FullName pull origin master
         Remove-MovedBlocks -Path $path.FullName
+
         $count = git -C $path.FullName status --porcelain | Measure-Object | Select-Object -ExpandProperty Count
         if ($count -gt 0) {
     
             Write-Host -ForegroundColor Yellow "Found Moved Blocks in Repository '$($_.name)' in '$($projectTarget.name)'"
             if ($PSCmdlet.ShouldProcess($_.Name , 'Create Feature Pull Request?')) {
 
-                New-BranchFromWorkitem -Project $Project -Name $Name -workitemTitle $workitemTitle
+                New-BranchFromWorkitem -Project $_.project.name -Name $_.name -workitemTitle $workitemTitle
                 git -C $path.FullName add -A
                 git -C $path.FullName commit -m 'AUTO--Remove terraform moved blocks'
                 git -C $path.FullName push

@@ -15,7 +15,7 @@
         
 #>
 
-function Filter-RepositoriesForMovedBlocks {
+function Remove-MovedBlocksAllRepositories {
 
     [cmdletbinding(
         SupportsShouldProcess,
@@ -39,10 +39,36 @@ function Filter-RepositoriesForMovedBlocks {
             }
         )]
         [System.String]
-        $workitemTitle
+        $workitemTitle,
+
+
+        # The name of the project, if not set default to the Current-Project-Context.
+        [Parameter(
+            ParameterSetName = 'projectSpecific',
+            Mandatory = $false,
+            Position = 1
+        )]
+        [ValidateScript(
+            { 
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify an correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project
     )
 
-    $projectTarget = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
+    $projectTarget = Get-ProjectInfo -Name $Project
     $projectTarget.repositories | ForEach-Object {
     
         Write-Host

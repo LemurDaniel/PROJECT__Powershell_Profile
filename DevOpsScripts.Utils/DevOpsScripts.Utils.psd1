@@ -70,7 +70,7 @@ RequiredAssemblies = 'WindowsBase', 'PresentationFramework'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Edit-RegexOnFiles', 'Get-CleanFilename', 'Get-Property', 
-               'Get-UtilsCache', 'Join-PsObject', 'New-RandomString', 
+               'Get-UtilsCache', 'Join-PsObject', 'New-RandomBytes', 
                'Read-SecureStringFromFile', 'Remove-MovedBlocks', 
                'Save-SecureStringToFile', 'Search-In', 'Select-ConsoleMenu', 
                'Set-UtilsCache', 'Test-IsRepository', 'Convert-TFVarsToObject', 

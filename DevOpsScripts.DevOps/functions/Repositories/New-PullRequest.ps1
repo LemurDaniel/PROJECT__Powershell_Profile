@@ -242,6 +242,22 @@ function New-PullRequest {
     }
 
     if ($autocompletion) {
+        $activeMasterPR = $activePullRequests.value | Where-Object { $_.targetRefName -eq 'refs/heads/master' -AND $_.sourceRefName -eq 'refs/heads/dev' }
+        if ($activeMasterPR -AND !($preferencedBranch -eq 'refs/heads/dev' -AND $targetBranch -eq 'refs/heads/master')) {
+            $activeMasterPRArtifactUrl = "vstfs:///Git/PullRequestId/$($repository.project.id)%2F$($repository.id)%2F$($activeMasterPR.pullRequestId)"
+            $activeMasterPR = Invoke-DevOpsRest @Request
+            $workItemIds | ForEach-Object {
+                try {
+                    Connect-Workitem -WorkItemId $_ -linkElementUrl $activeMasterPRArtifactUrl -RelationType 'Artifact Link'
+                }
+                catch {
+                    if (!$_.ErrorDetails.Message.contains('Relation already exists')) {
+                        throw $_
+                    }
+                }
+            }
+        }
+        
         # Update PR for autocompletion
         $Request = @{
             Project  = $repository.project.name

@@ -105,15 +105,19 @@ function Invoke-ScriptInAllRepositories {
                 git -C $path.FullName push
                 New-PullRequest -PRtitle "AUTO--$workitemTitle" -Source 'current' -Target 'dev' `
                     -Project ($_.project.name) -RepositoryName $_.name -autocompletion
+            
+                if ($PSCmdlet.ShouldProcess($_.Name , 'Create Master Pull Request?')) {
+                    New-PullRequest -PRtitle "AUTO--$workitemTitle" -Source 'dev' -Target 'default' `
+                        -Project ($_.project.name) -RepositoryName $_.name
+                }
+            } 
+            else {
+                git -C $path.FullName reset --hard
             }
 
-            if ($PSCmdlet.ShouldProcess($_.Name , 'Create Master Pull Request?')) {
-                New-PullRequest -PRtitle "AUTO--$workitemTitle" -Source 'dev' -Target 'default' `
-                    -Project ($_.project.name) -RepositoryName $_.name
-            }
         }
 
-        git stash apply "stash^{/$stashName}"
+        git -C $path.FullName stash apply "stash^{/$stashName}"
     }
 }
 

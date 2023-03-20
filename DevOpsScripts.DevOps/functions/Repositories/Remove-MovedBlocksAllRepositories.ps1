@@ -1,8 +1,10 @@
 
 <#
     .SYNOPSIS
+    Remove all terraform moved blocks across all repositories.
 
     .DESCRIPTION
+    Remove all terraform moved blocks across all repositories.
 
     .INPUTS
     None. You cannot pipe objects into the Function.

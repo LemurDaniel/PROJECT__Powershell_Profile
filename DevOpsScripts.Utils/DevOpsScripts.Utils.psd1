@@ -70,13 +70,13 @@ RequiredAssemblies = 'WindowsBase', 'PresentationFramework'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Edit-RegexOnFiles', 'Get-CleanFilename', 'Get-Property', 
-               'Get-UtilsCache', 'Join-PsObject', 'Read-SecureStringFromFile', 
-               'Remove-MovedBlocks', 'Save-SecureStringToFile', 'Search-In', 
-               'Select-ConsoleMenu', 'Set-UtilsCache', 'Test-IsRepository', 
-               'Convert-TFVarsToObject', 'New-TetrisGame', 'New-WindowBindings', 
-               'New-WindowWPF', 'Format-SendGridContent', 
-               'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'New-SendGridHtmlFormat', 'Get-DallEFromJoke', 
+               'Get-UtilsCache', 'Join-PsObject', 'New-RandomString', 
+               'Read-SecureStringFromFile', 'Remove-MovedBlocks', 
+               'Save-SecureStringToFile', 'Search-In', 'Select-ConsoleMenu', 
+               'Set-UtilsCache', 'Test-IsRepository', 'Convert-TFVarsToObject', 
+               'New-TetrisGame', 'New-WindowBindings', 'New-WindowWPF', 
+               'Format-SendGridContent', 'Format-SendGridResourceReport', 
+               'Send-SendGridEmail', 'New-SendGridHtmlFormat', 'Get-DallEFromJoke', 
                'Get-OpenAIAPIAuthentication', 'Invoke-DalleRequest', 
                'Invoke-OpenAICompletion', 'Invoke-OpenAIImageGeneration', 
                'Invoke-OpenAIMoodToColor'

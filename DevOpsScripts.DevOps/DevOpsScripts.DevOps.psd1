@@ -70,9 +70,9 @@ RequiredAssemblies = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Invoke-DevOpsRest', 'Edit-RepositoriesForRedeployment ', 
-               'Filter-RepositoriesForMovedBlocks', 'Get-RecentSubmoduleTags', 
-               'Get-RepositoryRefs', 'New-FeaturePR', 'New-MasterPR', 
-               'New-PullRequest', 'Open-Repository', 'Open-RepositoryInBrowser', 
+               'Get-RecentSubmoduleTags', 'Get-RepositoryRefs', 'New-FeaturePR', 
+               'New-MasterPR', 'New-PullRequest', 'Open-Repository', 
+               'Open-RepositoryInBrowser', 'Remove-MovedBlocksAllRepositories', 
                'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
                'Get-PAT', 'New-Pat', 'Update-Pat', 'Open-BuildInBrowser', 
                'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 

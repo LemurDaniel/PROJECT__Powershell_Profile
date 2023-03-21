@@ -73,14 +73,12 @@ function Switch-Terraform {
 
     Begin {
         $null = $PsBoundParameters.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value -ErrorAction 'SilentlyContinue' }
-        $TerraformFolder = $env:TerraformPath
-        $TerraformInstallations = Get-ChildItem -Path $TerraformFolder
 
-        if (!(Test-Path $global:DefaultEnvPaths['terraform'])) {
-            $null = New-Item -ItemType Directory -Path $global:DefaultEnvPaths['terraform']
-        }
-        if (!(Test-Path "$($global:DefaultEnvPaths['terraform'])/terraform.info.txt")) {
-            $null = New-Item -ItemType File -Path "$($global:DefaultEnvPaths['terraform'])/terraform.info.txt"
+        $TerraformInstallations = Get-ChildItem -Path $env:TerraformPath
+        $TerraformActiveFolder = $global:DefaultEnvPaths['terraform']
+
+        if (!(Test-Path $TerraformActiveFolder)) {
+            $null = New-Item -ItemType Directory -Path $TerraformActiveFolder
         }
     }
     Process {
@@ -89,19 +87,18 @@ function Switch-Terraform {
             $TFVersion = $ValidateSetOptions | Sort-Object | Select-Object -Last 1
         }
         else {
-            $null = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active
+            $null = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active -Forever
         }
         
 
         if ("v$TFVersion" -notin $TerraformInstallations.Name) {
-           
-            $TerraformTarget = Join-Path -Path $TerraformFolder -ChildPath "v$TFVersion"
+            $TerraformTarget = "$($TerraformInstallations[0].Parent)/v$TFVersion"
+            $TerraformInstallations += New-Item -Path $TerraformTarget -ItemType Directory -Force
+                           
             $remoteTarget = $remoteVersions | Where-Object -Property 'Version' -EQ -Value $TFVersion
-            $downloadZipFile = "$env:USERPROFILE\downloads/terraform_$TFVersion`_temp-$(Get-Random).zip"
-            Invoke-WebRequest -Method GET -Uri $remoteTarget.Target -OutFile $downloadZipFile
-            $null = New-Item -Path $TerraformTarget -ItemType Directory -Force
-            $terraformZip = [System.IO.Compression.ZipFile]::OpenRead($downloadZipFile)
-            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$TerraformTarget\terraform.exe", $true)
+            Invoke-WebRequest -Method GET -Uri $remoteTarget.Target -OutFile "$TerraformTarget/terraform.zip"
+            $terraformZip = [System.IO.Compression.ZipFile]::OpenRead("$terraformTarget/terraform.zip")
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$TerraformTarget/terraform.exe", $true)
         }
 
     }
@@ -111,12 +108,10 @@ function Switch-Terraform {
             $activeVersion = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active -Forever
         }
 
-        $terraformTarget = $TerraformInstallations | Where-Object -Property Name -EQ "v$activeVersion"
-        $terraformInfo = Get-ChildItem -Path $global:DefaultEnvPaths['terraform'] -Filter 'terraform.info.txt'
-        if (($terraformInfo | Get-Content -Raw).trim() -ne $activeVersion) {
-            $activeVersion | Out-File -FilePath $terraformInfo.FullName
-            $null = Remove-Item -Path "$($global:DefaultEnvPaths['terraform'])/terraform.exe" -ErrorAction SilentlyContinue
-            $null = Copy-Item -Path "$($terraformTarget.FullName)/terraform.exe" -Destination "$($global:DefaultEnvPaths['terraform'])/terraform.exe"
+        if ((terraform --version --json | ConvertFrom-Json).terraform_version -ne $activeVersion) {
+            $terraformTarget = $TerraformInstallations | Where-Object -Property Name -EQ "v$activeVersion"
+            $terraformZip = [System.IO.Compression.ZipFile]::OpenRead("$terraformTarget/terraform.zip")
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$($global:DefaultEnvPaths['terraform'])/terraform.exe", $true)
         }
 
         Write-Host

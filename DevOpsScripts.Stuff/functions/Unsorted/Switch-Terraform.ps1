@@ -103,7 +103,7 @@ function Switch-Terraform {
     End {
         $activeVersion = Get-UtilsCache -Type TerraformVersion -Identifier Active
         if ([System.String]::IsNullOrEmpty($activeVersion)) {
-            $activeVersion = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active
+            $activeVersion = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active -Forever
         }
 
         $terraformTarget = $TerraformInstallations | Where-Object -Property Name -EQ "v$activeVersion"

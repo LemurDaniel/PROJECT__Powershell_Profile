@@ -52,6 +52,7 @@ function New-Workitem {
 
         # Title of the new Workitem
         [parameter(
+            Position = 1,
             Mandatory = $true,
             ValueFromPipeline = $true
         )]
@@ -97,7 +98,12 @@ function New-Workitem {
         # Optional use the image saved in the clipboard
         [Parameter()]
         [switch]
-        $useImageFromClipboard
+        $useImageFromClipboard,
+
+        # Optional use the image saved in the clipboard
+        [Parameter()]
+        [switch]
+        $openInBrowser
     )
 
     BEGIN {
@@ -111,6 +117,31 @@ function New-Workitem {
         else {
             $sprintIteration = Get-SprintIterations | Search -has $IterationPath | Select-Object -ExpandProperty Path
         }
+
+
+        
+        $DescriptionHtml = "
+            <div>
+            $Description
+            {{IMAGE}}
+            </div>
+        " 
+    
+        if ($useImageFromClipboard -AND [System.Windows.Clipboard]::containsImage()) {
+            $bitmapFrame = [System.Windows.Media.Imaging.BitmapFrame]::Create([System.Windows.Clipboard]::GetImage())
+            $jpegEncoder = [System.Windows.Media.Imaging.JpegBitmapEncoder]::new()
+            $jpegEncoder.Frames.add($bitmapFrame)
+            $stream = [System.IO.MemoryStream]::new()
+            $jpegEncoder.save($stream)
+            $base64 = [System.Convert]::ToBase64String($stream.ToArray())
+            $imageUrl = "data:image/jpg;base64,$base64"
+
+            $DescriptionHtml = $DescriptionHtml -replace '{{IMAGE}}', "<img src=`"$imageUrl`" alt=`"Image`">"
+        }
+        else {
+            $DescriptionHtml = $DescriptionHtml -replace '{{IMAGE}}', ''
+        }
+
     }
     PROCESS {
 
@@ -141,7 +172,7 @@ function New-Workitem {
                     op    = 'add'
                     path  = '/fields/System.Description'
                     from  = $null
-                    value = $Description
+                    value = $DescriptionHtml
                 },
                 @{
                     op    = 'add'
@@ -176,13 +207,14 @@ function New-Workitem {
             }
         }
 
-        #TODO
-        if ($PSBoundParameters.ContainsKey('useImageFromClipboard') -AND [System.Windows.Clipboard]::containsImage()) {
-            [System.Windows.Clipboard]::GetImage()
-        }
-
         if ($PSCmdlet.ShouldProcess("[$Type] - '$Title' in $IterationPath", 'Create')) {
-            return Invoke-DevOpsRest @Request -ContentType 'application/json-patch+json' 
+            $workitem = Invoke-DevOpsRest @Request -ContentType 'application/json-patch+json' 
+
+            if ($openInBrowser) {
+                Start-Process ($workItem.url -replace '/_apis/wit/workItems/', '/_workitems/edit/')
+            }
+
+            return $workitem
         } 
     }
     END {}

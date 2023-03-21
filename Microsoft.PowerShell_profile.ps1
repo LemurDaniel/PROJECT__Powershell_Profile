@@ -8,6 +8,8 @@ $ErrorActionPreference = 'Stop'
 
 ###################################################################################
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 ## Resolve App Path
 $env:OneDrive = $env:OneDriveConsumer ?? $env:OneDrive
 $env:AppPath = "$env:OneDrive/_Apps/"

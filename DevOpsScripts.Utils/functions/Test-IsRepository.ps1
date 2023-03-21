@@ -37,6 +37,6 @@ function Test-IsRepository {
         $path = '.'
     )
     
-    $null = git -C $path rev-parse 2>$?
+    $null = git -C $path rev-parse 2>$null
     return $?
 }

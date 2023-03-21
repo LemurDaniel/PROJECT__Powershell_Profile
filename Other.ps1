@@ -28,7 +28,7 @@ $global:DefaultEnvPaths = @{
         ?? 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
     sqlcmd              = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
  
-    terraform           = $env:TerraformNewestVersion 
+    terraform           = "$env:AppPath\_EnvPath_Apps\terraform\active"
     terraformDocs       = $env:TerraformDocsNewestVersion
 
 

@@ -1,5 +1,3 @@
-
-
 <#
     .SYNOPSIS
     Switches the current Terraform Version.
@@ -77,6 +75,13 @@ function Switch-Terraform {
         $null = $PsBoundParameters.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value -ErrorAction 'SilentlyContinue' }
         $TerraformFolder = $env:TerraformPath
         $TerraformInstallations = Get-ChildItem -Path $TerraformFolder
+
+        if (!(Test-Path $global:DefaultEnvPaths['terraform'])) {
+            $null = New-Item -ItemType Directory -Path $global:DefaultEnvPaths['terraform']
+        }
+        if (!(Test-Path "$($global:DefaultEnvPaths['terraform'])/terraform.info.txt")) {
+            $null = New-Item -ItemType File -Path "$($global:DefaultEnvPaths['terraform'])/terraform.info.txt"
+        }
     }
     Process {
 
@@ -107,7 +112,12 @@ function Switch-Terraform {
         }
 
         $terraformTarget = $TerraformInstallations | Where-Object -Property Name -EQ "v$activeVersion"
-        Add-EnvPaths -AdditionalPath Terraform -AdditionalValue $terraformTarget
+        $terraformInfo = Get-ChildItem -Path $global:DefaultEnvPaths['terraform'] -Filter 'terraform.info.txt'
+        if (($terraformInfo | Get-Content -Raw).trim() -ne $activeVersion) {
+            $activeVersion | Out-File -FilePath $terraformInfo.FullName
+            $null = Remove-Item -Path "$($global:DefaultEnvPaths['terraform'])/terraform.exe" -ErrorAction SilentlyContinue
+            $null = Copy-Item -Path "$($terraformTarget.FullName)/terraform.exe" -Destination "$($global:DefaultEnvPaths['terraform'])/terraform.exe"
+        }
 
         Write-Host
         terraform --version

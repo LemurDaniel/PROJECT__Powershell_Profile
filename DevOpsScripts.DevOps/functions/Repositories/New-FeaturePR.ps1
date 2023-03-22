@@ -51,7 +51,7 @@ function New-FeaturePR {
     New-PullRequest -Target $Target -autocompletion:$autocompletion -deleteSourceBranch
     if ($deleteLocalBranch) {
         $currentBranchName = git branch --show-current
-        git checkout (Get-RepositoryInfo).defaultBranch
+        git checkout (Get-RepositoryInfo).defaultBranch.replace('refs/heads/', '')
         git branch -d $currentBranchName
     }
 }

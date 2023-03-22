@@ -108,10 +108,12 @@ function Switch-Terraform {
             $activeVersion = Set-UtilsCache -Object $TFVersion.ToString() -Type TerraformVersion -Identifier Active -Forever
         }
 
-        if ((terraform --version --json | ConvertFrom-Json).terraform_version -ne $activeVersion) {
+        $terraformExists = (Get-Command -Name 'terraform' -ErrorAction SilentlyContinue | Measure-Object).Count -gt 0
+        $terraformOutdated = $terraformExists -AND (terraform --version --json | ConvertFrom-Json).terraform_version -ne $activeVersion
+        if (!$terraformExists -OR $terraformOutdated) {
             $terraformTarget = $TerraformInstallations | Where-Object -Property Name -EQ "v$activeVersion"
             $terraformZip = [System.IO.Compression.ZipFile]::OpenRead("$terraformTarget/terraform.zip")
-            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$($global:DefaultEnvPaths['terraform'])/terraform.exe", $true)
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$TerraformActiveFolder/terraform.exe", $true)
         }
 
         Write-Host

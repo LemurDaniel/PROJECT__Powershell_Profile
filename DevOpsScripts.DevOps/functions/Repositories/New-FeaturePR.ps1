@@ -39,8 +39,19 @@ function New-FeaturePR {
         # Enable autcompletion of PR.
         [Parameter()]
         [switch]
-        $autocompletion
+        $autocompletion,
+
+        # Delete Local branch
+        [Parameter()]
+        [switch]
+        $deleteLocalBranch
     )
 
+
     New-PullRequest -Target $Target -autocompletion:$autocompletion -deleteSourceBranch
+    if ($deleteLocalBranch) {
+        $currentBranchName = git branch --show-current
+        git branch checkout (Get-RepositoryInfo).defaultBranch
+        git branch -d $currentBranchName
+    }
 }

@@ -27,6 +27,10 @@
 function New-BranchFromWorkitem {
 
     [Alias('gitW')]
+    [cmdletbinding(
+        SupportsShouldProcess = $true,
+        ConfirmImpact = 'High'
+    )]
     param (
         # Autocomplete list for workitems assigned to the user.
         [Parameter(
@@ -134,6 +138,25 @@ function New-BranchFromWorkitem {
     git -C $repositoryPath pull origin master
     git -C $repositoryPath checkout dev
     git -C $repositoryPath pull origin dev
-    git -C $repositoryPath checkout -b "$branchName"
 
-}
+
+    $branchExists = (git -C . branch | ForEach-Object { $_ -like "*$branchName*" } | Measure-Object).Count -gt 0
+    if ($branchExists) {
+        $menuPoll = Select-ConsoleMenu -Property display -Description "A Branch with the name '$branchName' already exists! \nPlease choose an action." -options @(
+            @{ option = 0; display = 'Switch to existing Branch' },    
+            @{ option = 1; display = 'Remove and Replace existing Branch' }
+        )
+
+        if ($menuPoll.option -eq 0) {
+            git -C $repositoryPath checkout "$branchName"
+        }
+        elseif ($menuPoll.option -eq 1) {
+            git -C $repositoryPath branch -Df "$branchName"
+            git -C $repositoryPath checkout -B "$branchName"
+        }
+    }
+    else {
+        git -C $repositoryPath checkout -b "$branchName"
+    }
+
+} 

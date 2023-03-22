@@ -48,7 +48,7 @@ function Edit-RegexOnFiles {
 
 
         # The Regexquery to perform on all files.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [System.Text.RegularExpressions.RegexOptions[]]
         $regexOptions = @(
             [System.Text.RegularExpressions.RegexOptions]::Multiline

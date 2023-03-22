@@ -26,8 +26,8 @@ function Edit-RepositoriesForRedeployment {
     param (
         # Root replacementpath. If not specified defaults to current location.
         [Parameter()]
-        [System.String]
-        $replacingMappings = @{
+        [System.Collections.Specialized.OrderedDictionary]
+        $replacingMappings = [Ordered]@{
             'kv-brzacflp'                             = 'kv-brzrdlp'
             'stbrzacfstate'                           = 'stbrzacfrdstate'
             'DC Azure Migration'                      = 'DC ACF Redeployment'
@@ -70,11 +70,19 @@ function Edit-RepositoriesForRedeployment {
 
         [Parameter()]
         [switch]
-        $ImportRepositories
+        $ImportRepositories,
+
+        [Parameter()]
+        [switch]
+        $OpenProjectFolder
     )
 
     $projectSource = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
     $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
+
+    if ($OpenProjectFolder) {
+        code $projectTarget.Projectpath
+    }
 
     ####################################
     # Import Repositories
@@ -181,9 +189,10 @@ function Edit-RepositoriesForRedeployment {
                     API     = "/_apis/git/repositories/$($repository.id)/importRequests?api-version=7.0"
                     Body    = @{
                         parameters = @{
-                            serviceEndpointId = $serviceEndpoint.id
-                            tfvcSource        = $null
-                            gitSource         = @{
+                            deleteServiceEndpointAfterImportIsDone = $true
+                            serviceEndpointId                      = $serviceEndpoint.id
+                            tfvcSource                             = $null
+                            gitSource                              = @{
                                 overwrite = $false
                                 url       = $_.webUrl
                             }
@@ -199,26 +208,29 @@ function Edit-RepositoriesForRedeployment {
                 Write-Host -ForegroundColor Red $_
             }
             finally {
-                $Request = @{
-                    Method = 'DELETE'
-                    SCOPE  = 'ORG'
-                    API    = "/_apis/serviceendpoint/endpoints/$($serviceEndpoint.id)?api-version=7.0"
-                    Query  = @{
-                        projectIds = @($projectSource.id, $projectTarget.Id) -join ','
-                    }
-                }
-                Invoke-DevOpsRest @Request
+                #$Request = @{
+                #    Method = 'DELETE'
+                #    SCOPE  = 'ORG'
+                #    API    = "/_apis/serviceendpoint/endpoints/$($serviceEndpoint.id)?api-version=7.0"
+                #    Query  = @{
+                #        projectIds = @($projectSource.id, $projectTarget.Id) -join ','
+                #    }
+                #}
+                #Invoke-DevOpsRest @Request
             }
         }
+
+        # Refresh cache after imported repositories
+        $projectTarget = Get-ProjectInfo -refresh -Name $projectTarget.name
     }
 
     ####################################
     # Redownload Repositories
     ####################################
 
-    if ($Redownload) {
-        $projectTarget.respositories | ForEach-Object {
-            Open-Repository -Project $projectTarget.name -Name $_.name -onlyDownload -replace 
+    if ($Redownload -OR $ImportRepositories) {
+        $projectTarget.repositories | ForEach-Object {
+            Open-Repository -Project $_.Project.name -Name $_.name -onlyDownload -replace -Confirm:$false
         }
     }
     
@@ -229,7 +241,16 @@ function Edit-RepositoriesForRedeployment {
     Set-Location -Path $projectTarget.Projectpath
 
     $replacingMappings.GetEnumerator() | ForEach-Object {
-        Edit-RegexOnFiles -regexQuery $_.Key -replace $_.Value
+        Write-Host -ForegroundColor Yellow "Perform replace of '$($_.Name)' to '$($_.Value)'"
+        Edit-RegexOnFiles -regexQuery $_.Name -replace $_.Value -Confirm:$false
+    }
+
+    $projectTarget.repositories | ForEach-Object {
+        Write-Host
+        Write-Host -ForegroundColor Yellow "Repository '$($_.Name)'"
+        git -C $_.Localpath add -A
+        git -C $_.Localpath commit -m 'AUTO-RedploymentScriptChanges'
+        git -C $_.Localpath push
     }
 
 

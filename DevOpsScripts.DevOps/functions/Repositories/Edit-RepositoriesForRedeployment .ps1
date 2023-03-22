@@ -74,7 +74,18 @@ function Edit-RepositoriesForRedeployment {
 
         [Parameter()]
         [switch]
-        $OpenProjectFolder
+        $OpenProjectFolder,
+
+        [Parameter()]
+        [switch]
+        $CreatePipelines,
+
+        [Parameter()]
+        [System.String[]]
+        $PipelineFiles = @(
+            'terraform-acf-main/.azurepipelines/deploy/*.yml'
+            'terraform-acf-main/.azurepipelines/destroy/*.yml'
+        )
     )
 
     $projectSource = Get-ProjectInfo -refresh -Name 'DC Azure Migration'
@@ -89,6 +100,9 @@ function Edit-RepositoriesForRedeployment {
     ####################################
 
     if ($ImportRepositories) {
+        Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
+        Write-Host -ForegroundColor Magenta 'Importing Repositories'
+        Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
 
         $pat = Get-PAT -Organization baugruppe -Name redploymentImport -HoursValid 1 -PatScopes app_token 
 
@@ -205,18 +219,16 @@ function Edit-RepositoriesForRedeployment {
 
             }
             catch {
+                $Request = @{
+                    Method = 'DELETE'
+                    SCOPE  = 'ORG'
+                    API    = "/_apis/serviceendpoint/endpoints/$($serviceEndpoint.id)?api-version=7.0"
+                    Query  = @{
+                        projectIds = @($projectSource.id, $projectTarget.Id) -join ','
+                    }
+                }
+                Invoke-DevOpsRest @Request
                 Write-Host -ForegroundColor Red $_
-            }
-            finally {
-                #$Request = @{
-                #    Method = 'DELETE'
-                #    SCOPE  = 'ORG'
-                #    API    = "/_apis/serviceendpoint/endpoints/$($serviceEndpoint.id)?api-version=7.0"
-                #    Query  = @{
-                #        projectIds = @($projectSource.id, $projectTarget.Id) -join ','
-                #    }
-                #}
-                #Invoke-DevOpsRest @Request
             }
         }
 
@@ -229,14 +241,84 @@ function Edit-RepositoriesForRedeployment {
     ####################################
 
     if ($Redownload -OR $ImportRepositories) {
+        Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
+        Write-Host -ForegroundColor Magenta 'Downloading Repositories'
+        Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
+
         $projectTarget.repositories | ForEach-Object {
             Open-Repository -Project $_.Project.name -Name $_.name -onlyDownload -replace -Confirm:$false
         }
     }
-    
+
+    ####################################
+    # Create Pipelines
+    ####################################
+
+    if ($CreatePipelines) {
+        Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
+        Write-Host -ForegroundColor Magenta 'Creating Pipelines'
+        Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
+
+        $PipelineFiles | ForEach-Object {
+
+            Write-Host -ForegroundColor Yellow '---------------------------------------------------------------'
+            Write-Host -ForegroundColor Yellow "Processing '$($_)'"
+
+            $repositoryName = $_.split('/') | Select-Object -First 1
+            $fileFilter = ($_.split('/') | Select-Object -Skip 1) -join '/'
+            $repository = $projectTarget.Repositories | Where-Object -Property Name -EQ -Value $repositoryName
+
+            if ($null -eq $repository) {
+                Write-Host -ForegroundColor Red "Couldn't Find Repository with name '$repositoryName' of '$_'"
+                return # returns ForEach not whole method
+            } 
+
+            Get-ChildItem -Path $repository.Localpath -Filter $fileFilter | ForEach-Object {
+
+                Write-Host
+                Write-Host -ForegroundColor Yellow "Creating Pipeline '$($_.BaseName)' | Directory '$($_.Directory.BaseName)' of '$($repository.Name)'"
+
+                $Request = @{
+                    Project = $projectTarget.Name
+                    Method  = 'POST'
+                    SCOPE   = 'PROJ'
+                    API     = '/_apis/pipelines?api-version=7.0'
+                    Body    = @{
+                        name          = $_.BaseName
+                        folder        = "$($repository.Name)\$($_.Directory.BaseName)"
+                        configuration = @{
+                            type       = 'yaml'
+                            path       = $_.FullName.replace($repository.Localpath, '')
+                            repository = @{
+                                id   = $repository.id
+                                type = 'azureReposGit'
+                            }
+                        }
+                    }
+                }
+                
+                try {
+                    Invoke-DevOpsRest @Request
+                } 
+                catch {
+                    if ($_.ErrorDetails.Message.contains('Microsoft.Azure.Pipelines.WebApi.PipelineExistsException')) {
+                        Write-Host -ForegroundColor Green 'Pipeline already exists!'
+                    }
+                    else {
+                        Write-Host -ForegroundColor Red $_.ErrorDetails.Message
+                    }
+                }
+            }
+        }
+    }
+
     ####################################
     # Regex Replacements
     ####################################
+
+    Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
+    Write-Host -ForegroundColor Magenta 'Perform Regex Replacements'
+    Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
 
     Set-Location -Path $projectTarget.Projectpath
 
@@ -257,7 +339,11 @@ function Edit-RepositoriesForRedeployment {
     ####################################
     # Non-Acf-Spn
     ####################################
-    
+
+    Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
+    Write-Host -ForegroundColor Magenta ''
+    Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
+        
     $repositoryAcfMain = Get-RepositoryInfo -Project $projectTarget.name -Name terraform-acf-main
 
     $foundationTfVars = @()
@@ -274,6 +360,10 @@ function Edit-RepositoriesForRedeployment {
     ####################################
     # Appzone-references-owners
     ####################################
+
+    Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
+    Write-Host -ForegroundColor Magenta 'Remove AppZone Owners'
+    Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
 
     $appzones = @()
     $appzones += Get-ChildItem -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_appzone/configurations-dev" -Filter '*.json' -Recurse -File
@@ -310,6 +400,10 @@ function Edit-RepositoriesForRedeployment {
     ####################################
     # Rebase Master into Dev
     ####################################
+
+    Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
+    Write-Host -ForegroundColor Magenta "Final Rebase of 'terraform-acf-main' Master into Dev"
+    Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
 
     $PullRequest = @{
         Project        = $projectTarget.Name

@@ -17,6 +17,7 @@
 !DevOpsScripts.OneDrive/**
 !DevOpsScripts.Utils/**
 !DevOpsScripts.Stuff/**
+!DevOpsScripts.Fresh/**
 !/.vscode/**
 !/.scripts/**
 !/.github/**

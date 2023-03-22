@@ -1,0 +1,15 @@
+{
+    "guid": "5d2c06bd-5783-41a4-85eb-c47498bc9f1c",
+    "version": "1.0.1",
+    "owner": "Team DevOps",
+    "author": "o.O",
+    "description": "SomeStuff",
+    "tags": [],
+    "powershellversion": "7.2",
+    "dependencies": {
+        "modules": [
+            "DevOpsScripts.Utils"
+        ],
+        "assemblies": []
+    }
+}

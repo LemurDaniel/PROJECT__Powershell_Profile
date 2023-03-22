@@ -19,7 +19,9 @@ function New-FeaturePR {
 
     param(
         # The target branch.
-        [Parameter()]
+        [Parameter(
+            Position = 0
+        )]
         [ArgumentCompleter(   
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)

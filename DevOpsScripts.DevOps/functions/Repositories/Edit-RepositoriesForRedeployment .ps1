@@ -104,9 +104,6 @@ function Edit-RepositoriesForRedeployment {
         Write-Host -ForegroundColor Magenta 'Importing Repositories'
         Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
 
-        $pat = Get-PAT -Organization baugruppe -Name redploymentImport -HoursValid 1 -PatScopes app_token 
-
-
         $projectSource.repositories | Sort-Object -Property name | ForEach-Object {
 
             $existentRepository = $projectTarget.repositories | Where-Object -Property name -EQ -Value $_.name 
@@ -125,7 +122,6 @@ function Edit-RepositoriesForRedeployment {
                 }
             }
 
-
             $ImportRepositoryPoll = Select-ConsoleMenu -Property display `
                 -Description "Import '$($_.name)' in the Project '$($projectTarget.name)'" `
                 -Options @(
@@ -133,103 +129,10 @@ function Edit-RepositoriesForRedeployment {
                 @{ display = 'Skip this Repository'; option = 1 }
             )
             
-            if ($ImportRepositoryPoll.option -eq 1) {
-                return
+            if ($ImportRepositoryPoll.option -eq 0) {
+                Start-RepositoryImport -SourceProject $projectSource.name -TargetProject $projectTarget.name -SourceRepositoryName $_.name -openBrowser
             }
-            # Do Manually , to aviod accidental deletions.
-            #$Request = @{
-            #    Project = $projectTarget.name
-            #    Method  = 'DELETE'
-            #    SCOPE   = 'PROJ'
-            #    API     = "/_apis/git/repositories/$($existentRepository.id)?api-version=7.0"
-            #}
-            #$null = Invoke-DevOpsRest @Request
-    
-            $Request = @{
-                Project = $projectTarget.name
-                Method  = 'POST'
-                SCOPE   = 'PROJ'
-                API     = '/_apis/git/repositories?api-version=7.0'
-                Body    = @{
-                    name = $_.name
-                }
-            }
-            $repository = Invoke-DevOpsRest @Request
 
-
-            try {
-
-                $Request = @{
-                    Method = 'POST'
-                    SCOPE  = 'ORG'
-                    API    = '/_apis/serviceendpoint/endpoints?api-version=7.0'
-                    Body   = @{
-                        authorization                    = @{
-                            scheme     = 'UsernamePassword'
-                            parameters = @{
-                                username = $null
-                                password = $pat.password | ConvertFrom-SecureString -AsPlainText
-                            }
-                        }
-                        type                             = 'git'
-                        name                             = "endpoint-o.O-$($projectSource.id)-$($_.webUrl)"
-                        url                              = $_.webUrl
-                        serviceEndpointProjectReferences = @(
-                            @{ 
-                                projectReference = @{
-                                    id   = $projectSource.id
-                                    name = $projectSource.Name
-                                }
-                                name             = "endpoint-o.O-$($projectSource.id)-$($_.webUrl)"
-                            },
-                            @{ 
-                                projectReference = @{
-                                    id   = $projectTarget.id
-                                    name = $projectTarget.Name
-                                }
-                                name             = "endpoint-o.O-$($projectTarget.id)-$($_.webUrl)"
-                            }
-                        )
-                    }
-                }
-                $serviceEndpoint = Invoke-DevOpsRest @Request
-
-                Start-Sleep -Milliseconds 500
-                # Import Repository
-                $Request = @{
-                    Project = $projectTarget.name
-                    Method  = 'POST'
-                    SCOPE   = 'PROJ'
-                    API     = "/_apis/git/repositories/$($repository.id)/importRequests?api-version=7.0"
-                    Body    = @{
-                        parameters = @{
-                            deleteServiceEndpointAfterImportIsDone = $true
-                            serviceEndpointId                      = $serviceEndpoint.id
-                            tfvcSource                             = $null
-                            gitSource                              = @{
-                                overwrite = $false
-                                url       = $_.webUrl
-                            }
-                        }
-                    }
-                }
-                Invoke-DevOpsRest @Request
-
-                Start-Process $repository.webUrl
-
-            }
-            catch {
-                $Request = @{
-                    Method = 'DELETE'
-                    SCOPE  = 'ORG'
-                    API    = "/_apis/serviceendpoint/endpoints/$($serviceEndpoint.id)?api-version=7.0"
-                    Query  = @{
-                        projectIds = @($projectSource.id, $projectTarget.Id) -join ','
-                    }
-                }
-                Invoke-DevOpsRest @Request
-                Write-Host -ForegroundColor Red $_
-            }
         }
 
         # Refresh cache after imported repositories
@@ -278,36 +181,15 @@ function Edit-RepositoriesForRedeployment {
                 Write-Host
                 Write-Host -ForegroundColor Yellow "Creating Pipeline '$($_.BaseName)' | Directory '$($_.Directory.BaseName)' of '$($repository.Name)'"
 
-                $Request = @{
-                    Project = $projectTarget.Name
-                    Method  = 'POST'
-                    SCOPE   = 'PROJ'
-                    API     = '/_apis/pipelines?api-version=7.0'
-                    Body    = @{
-                        name          = $_.BaseName
-                        folder        = "$($repository.Name)\$($_.Directory.BaseName)"
-                        configuration = @{
-                            type       = 'yaml'
-                            path       = $_.FullName.replace($repository.Localpath, '')
-                            repository = @{
-                                id   = $repository.id
-                                type = 'azureReposGit'
-                            }
-                        }
-                    }
+                $Definition = @{
+                    Project        = $projectTarget.Name
+                    Name           = $_.BaseName
+                    Folder         = "$($repository.Name)\$($_.Directory.BaseName)"
+                    DefinitionPath = $_.FullName.replace($repository.Localpath, '')
+                    repository     = $repository.name
                 }
+                New-Pipeline @Definition
                 
-                try {
-                    Invoke-DevOpsRest @Request
-                } 
-                catch {
-                    if ($_.ErrorDetails.Message.contains('Microsoft.Azure.Pipelines.WebApi.PipelineExistsException')) {
-                        Write-Host -ForegroundColor Green 'Pipeline already exists!'
-                    }
-                    else {
-                        Write-Host -ForegroundColor Red $_.ErrorDetails.Message
-                    }
-                }
             }
         }
     }

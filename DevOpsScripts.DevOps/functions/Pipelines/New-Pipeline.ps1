@@ -109,16 +109,6 @@ function New-Pipeline {
         }
     }
                 
-    try {
-        Invoke-DevOpsRest @Request
-    } 
-    catch {
-        if ($_.ErrorDetails.Message.contains('Microsoft.Azure.Pipelines.WebApi.PipelineExistsException')) {
-            Write-Host -ForegroundColor Green 'Pipeline already exists!'
-        }
-        else {
-            Write-Host -ForegroundColor Red $_.ErrorDetails.Message
-        }
-    }
+    Invoke-DevOpsRest @Request
 
 }

@@ -188,8 +188,18 @@ function Edit-RepositoriesForRedeployment {
                     DefinitionPath = $_.FullName.replace($repository.Localpath, '')
                     repository     = $repository.name
                 }
-                New-Pipeline @Definition
-                
+
+                try {
+                    New-Pipeline @Definition
+                } 
+                catch {
+                    if ($_.ErrorDetails.Message.contains('Microsoft.Azure.Pipelines.WebApi.PipelineExistsException')) {
+                        Write-Host -ForegroundColor Green 'Pipeline already exists!'
+                    }
+                    else {
+                        Write-Host -ForegroundColor Red $_.ErrorDetails.Message
+                    }
+                }       
             }
         }
     }

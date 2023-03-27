@@ -85,7 +85,7 @@ Function Select-ConsoleMenu {
             [System.Console]::CursorVisible = $false
             [System.Console]::Clear()
           
-            Write-Host -ForegroundColor Magenta ("**$($Description.trim())**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+            Write-Host -ForegroundColor Magenta ("**$($Description.trim() -replace '_+', ' '))**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
 
             # Filter Options !!! Wrap in Array to make sure to still have an array, when only one element remains. !!!
             $filteredOptions = @($SelectionOptions | Where-Object { $_.name.toLower() -Like "*$($searchString.ToLower())*" })

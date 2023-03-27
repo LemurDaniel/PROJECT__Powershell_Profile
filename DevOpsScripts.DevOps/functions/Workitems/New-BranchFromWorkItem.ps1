@@ -140,9 +140,9 @@ function New-BranchFromWorkitem {
     git -C $repositoryPath pull origin dev
 
 
-    $branchExists = (git -C . branch | ForEach-Object { $_ -like "*$branchName*" } | Measure-Object).Count -gt 0
+    $branchExists = (git -C $repositoryPath branch | Where-Object { $_ -like "*$branchName*" } | Measure-Object).Count -gt 0
     if ($branchExists) {
-        $menuPoll = Select-ConsoleMenu -Property display -Description "A Branch with the name '$branchName' already exists! \nPlease choose an action." -options @(
+        $menuPoll = Select-ConsoleMenu -Property display -Description "A Branch with the name '$branchName' already exists! `nPlease choose an action." -options @(
             @{ option = 0; display = 'Switch to existing Branch' },    
             @{ option = 1; display = 'Remove and Replace existing Branch' }
         )

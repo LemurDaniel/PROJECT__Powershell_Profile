@@ -100,15 +100,51 @@ function Edit-RepositoriesForRedeployment {
     ####################################
 
     if ($ImportRepositories) {
+
+        $ImportingMode = Select-ConsoleMenu `
+            -Property display `
+            -Description 'Pick an Importing Mode' `
+            -Options @(
+            @{ display = 'Pick and Choose'; mode = 'PickAndChoose' }
+            @{ display = 'Filter through all'; mode = 'All' }
+        ) | Select-Object -ExpandProperty 'mode'
+
+
         Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
         Write-Host -ForegroundColor Magenta 'Importing Repositories'
         Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
 
-        $projectSource.repositories | Sort-Object -Property name | ForEach-Object {
+        $continueImport = $true
+        $importingRepository = $null
+        $repositoryEnumerator = ($projectSource.repositories | Sort-Object -Property name).GetEnumerator()
 
-            $existentRepository = $projectTarget.repositories | Where-Object -Property name -EQ -Value $_.name 
+        while (
+            ($repositoryEnumerator.MoveNext() -AND $mode -eq 'All') -OR $continueImport
+        ) {
+
+            if ($ImportingMode -eq 'PickAndChoose') {
+                
+                $importingRepository = Select-ConsoleMenu `
+                    -Property display `
+                    -Description 'Pick a Repository to Import' `
+                    -Options @(
+                    @{ display = 'Finish Importing'; repository = $null }
+                    $projectSource.repositories | Sort-Object -Property name | ForEach-Object {
+                        @{ display = $_.Name; repository = $_ }
+                    }
+                ) | Select-Object -ExpandProperty repository
+                
+
+            }
+            elseif ($ImportingMode -eq 'All') {
+                $importingRepository = $repositoryEnumerator.current
+            }
+                    
+
+            # Actual Import
+            $existentRepository = $projectTarget.repositories | Where-Object -Property name -EQ -Value $importingRepository.name 
             if ($existentRepository) {
-                $DeletionRepositoryPoll = Select-ConsoleMenu -Property display -Description "'$($_.name)' already exists in the Project '$($projectTarget.name)'" `
+                $DeletionRepositoryPoll = Select-ConsoleMenu -Property display -Description "'$($importingRepository.name)' already exists in the Project '$($projectTarget.name)'" `
                     -Options @(
                     @{ display = 'Open in Browser fon MANUALLY Deletion'; option = 0 }
                     @{ display = 'Skip this Repository'; option = 1 }
@@ -122,18 +158,24 @@ function Edit-RepositoriesForRedeployment {
                 }
             }
 
-            $ImportRepositoryPoll = Select-ConsoleMenu -Property display `
-                -Description "Import '$($_.name)' in the Project '$($projectTarget.name)'" `
-                -Options @(
-                @{ display = 'Continue importing this Repository'; option = 0 }
-                @{ display = 'Skip this Repository'; option = 1 }
-            )
-            
-            if ($ImportRepositoryPoll.option -eq 0) {
-                Start-RepositoryImport -SourceProject $projectSource.name -TargetProject $projectTarget.name -SourceRepositoryName $_.name -openBrowser
-            }
 
-        }
+            $importCurrentRepository = $true
+            if ($ImportingMode -eq 'All') {
+                $importCurrentRepository = Select-ConsoleMenu -Property display `
+                    -Description "Import '$($importingRepository.name)' in the Project '$($projectTarget.name)'" `
+                    -Options @(
+                    @{ display = 'Continue importing this Repository'; result = $true }
+                    @{ display = 'Skip this Repository'; result = $false }
+                ) | Select-Object -Property result
+            }
+            
+            if ($importCurrentRepository) {
+                Start-RepositoryImport -openBrowser `
+                    -SourceProject $projectSource.name `
+                    -TargetProject $projectTarget.name `
+                    -SourceRepositoryName $importingRepository.name 
+            }
+        } 
 
         # Refresh cache after imported repositories
         $projectTarget = Get-ProjectInfo -refresh -Name $projectTarget.name

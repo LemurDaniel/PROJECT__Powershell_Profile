@@ -46,6 +46,10 @@ function Edit-RegexOnFiles {
         [System.String]
         $regexQuery,
 
+        # Filter for Filtering certain files.
+        [Parameter(Mandatory = $false)]
+        [System.String]
+        $Filter = '*',
 
         # The Regexquery to perform on all files.
         [Parameter(Mandatory = $false)]
@@ -59,32 +63,37 @@ function Edit-RegexOnFiles {
     $replacementPath = $null -ne $replacementPath -AND $replacementPath.Length -gt 0 ? $replacementPath : ((Get-Location).Path) 
   
     # Implements Confirmation handling.
-    if ($PSCmdlet.ShouldProcess("$replacementPath" , 'Remove Moved-Blocks on Folderpath')) {
+    if ($PSCmdlet.ShouldProcess("$replacementPath" , 'Perform Regex Operations on Folder')) {
 
         # Make Regex Replace on all Child-Items.
-        $childFiles = Get-ChildItem -Recurse -Path ($replacementPath) -Filter '*.tf' | `
-            Select-Object -Property *, @{ 
-            Name       = 'Content';
-            Expression = {
-                Get-Content -Raw -Path $_.FullName
-            }
-        } | Where-Object { $null -ne $_.Content -AND $_.Content.Length -ne 0 }
+        $childFiles = Get-ChildItem -Recurse -Path $replacementPath -Filter $Filter -File
+        $totalHits = 0
+        $progressId = Get-Random
 
+        for ($index = 0; $index -lt $childFiles.Count; $index++) {
 
-        foreach ($file in $childFiles) {
-
+            $file = $childFiles[$index]
+            $progress = [System.int32]($index / $childFiles.Count * 100)
+            Write-Progress -Id $progressId -Activity 'Replacements' -Status "$($index+1) Files of $($childFiles.Count) | Total Hits $($totalHits)" -PercentComplete $progress
+      
             # Find Regexmatches.
-            $regexMatches = [regex]::Matches($file.Content, $regexQuery, $regexOptions)
+            $Content = Get-Content -Path $file.FullName -Raw
+            if ($null -eq $Content -or $Content.Length -eq 0) {
+                continue
+            }
+            $regexMatches = [regex]::Matches($Content, $regexQuery, $regexOptions)
             if (($regexMatches | Measure-Object).Count -le 0) {
                 continue
             }
       
-            Write-Host -ForegroundColor Yellow ([System.String]::Format('{0:00} Hits |@{1}', $regexMatches.Count, $file.Name))
-            $file.Content = [regex]::replace($file.Content, $regexQuery, $replace, $regexOptions)
-            $file.Content | Out-File -LiteralPath $file.FullName
+            #Write-Host -ForegroundColor Yellow ([System.String]::Format('{0:00} Hits |@{1}', $regexMatches.Count, $file.Name))
+            $totalHits += $regexMatches.Count
+            $Content = [regex]::replace($Content, $regexQuery, $replace, $regexOptions)
+            $Content | Out-File -LiteralPath $file.FullName
         }  
-    }
 
+        Write-Progress -Id $progressId -Activity 'Replacements' -Completed
+    }
     return $totalReplacements
 }
 

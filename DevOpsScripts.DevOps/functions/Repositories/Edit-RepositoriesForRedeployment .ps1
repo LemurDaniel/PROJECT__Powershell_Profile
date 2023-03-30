@@ -134,6 +134,9 @@ function Edit-RepositoriesForRedeployment {
                     }
                 ) | Select-Object -ExpandProperty repository
                 
+                if ($null -eq $repository) {
+                    break
+                }
 
             }
             elseif ($ImportingMode -eq 'All') {
@@ -192,6 +195,7 @@ function Edit-RepositoriesForRedeployment {
 
         $projectTarget.repositories | ForEach-Object {
             Open-Repository -Project $_.Project.name -Name $_.name -onlyDownload -replace -Confirm:$false
+            git C $_.Localpath checkout ($_.defaultBranch.split('/')[-1])
         }
     }
 
@@ -256,9 +260,10 @@ function Edit-RepositoriesForRedeployment {
 
     Set-Location -Path $projectTarget.Projectpath
 
+    Write-Host -ForegroundColor Yellow "Performing replacment Operations on Path: $($projectTarget.Projectpath)"
     $replacingMappings.GetEnumerator() | ForEach-Object {
         Write-Host -ForegroundColor Yellow "Perform replace of '$($_.Name)' to '$($_.Value)'"
-        Edit-RegexOnFiles -regexQuery $_.Name -replace $_.Value -Confirm:$false
+        Edit-RegexOnFiles -replacementPath $projectTarget.Projectpath -regexQuery $_.Name -replace $_.Value -Confirm:$false
     }
 
     $projectTarget.repositories | ForEach-Object {
@@ -303,30 +308,23 @@ function Edit-RepositoriesForRedeployment {
     $appzones += Get-ChildItem -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_appzone/configurations-dev" -Filter '*.json' -Recurse -File
     $appzones += Get-ChildItem -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_appzone/configurations-prod" -Filter '*.json' -Recurse -File
  
-    $appzones | ForEach-Object {  
+    $Updates = 0
+    for ($index = 0; $index -lt $appzones.Count; $index++) {  
     
-        $content = Get-Content -Path $_.FullName | ConvertFrom-Json -Depth 99
-
-        $changed = $false
+        $file = $appzones[$index]
+        $content = Get-Content -Path $file.FullName | ConvertFrom-Json -Depth 99
 
         if ($null -ne $content.rbac.owners -AND $content.rbac.owners.Length -gt 0) {
             $content.rbac.owners = @()
-            $changed = $true
+            $Updates++
         }
         if ($null -ne $content.rbac.owners_groups -AND $content.rbac.owners_groups.Length -gt 0) {
             $content.rbac.owners_groups = @()
-            $changed = $true
-        }
-
-        if ($changed) {
-            Write-Host -ForegroundColor Yellow $_.Name
-            $content | ConvertTo-Json -Depth 99 | Out-File -FilePath $_.FullName
-        }
-        else {
-            Write-Host -ForegroundColor Green $_.Name
+            $Updates++
         }
     }
 
+    Write-Host -ForegroundColor Yellow "Removed Owners | Total Updates $Updates"
     ####################################
     # naming-module
     ####################################

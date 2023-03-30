@@ -68,36 +68,43 @@ function Register-DevOpsFeedAsPSRepository {
         $ArtifactFeed, 
 
         # An optional path where to save created credentials for operations.
-        [Parameter(Mandatory = $false)]
-        [System.String]
-        $CredentialPath
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Management.Automation.PSCredential]
+        $Credentials
+
     )
 
-    if($PSBoundParameters.ContainsKey('Feedname')){
+    if ($PSBoundParameters.ContainsKey('Feedname')) {
         $PSRepositoryName = "$Feedname-DevOpsFeed"
         $source = Get-DevOpsArtifactFeeds -Scope All | Where-Object -Property Name -EQ -Value $Feedname | Select-Object -ExpandProperty url
     }
     else {
         $PSRepositoryName = "$ArtifactFeed-DevOpsFeed"
-        if([System.String]::IsNullOrEmpty($ProjectName)){
-            $source = "https://pkgs.dev.azure.com/$Organization/_packaging/$ArtifactFeed/nuget/v2" -replace ' ','%20'
-        } else {
-            $source = "https://pkgs.dev.azure.com/$Organization/$ProjectName/_packaging/$ArtifactFeed/nuget/v2" -replace ' ','%20'
+        if ([System.String]::IsNullOrEmpty($ProjectName)) {
+            $source = "https://pkgs.dev.azure.com/$Organization/_packaging/$ArtifactFeed/nuget/v2" -replace ' ', '%20'
+        }
+        else {
+            $source = "https://pkgs.dev.azure.com/$Organization/$ProjectName/_packaging/$ArtifactFeed/nuget/v2" -replace ' ', '%20'
         }
     }
 
+    if (!$PSBoundParameters.ContainsKey('Credentials')) {
+        $Credentials = Get-PAT -Organization $Organization -patScopes 'vso.packaging' -HoursValid 24
+    }
 
-    $credentials = Get-PAT -Organization $Organization -Path $CredentialPath -patScopes 'vso.packaging' -HoursValid 24
+
+
     $PSRepository = Get-PSRepository -Name $PSRepositoryName -ErrorAction SilentlyContinue
 
-    if($PSRepository){
-        $PSRepository = Set-PSRepository -Name $PSRepositoryName -Credential $credentials
-    } else {
+    if ($null -eq $PSRepository) {
         $PSRepository = Register-PSRepository `
             -Name $PSRepositoryName `
             -SourceLocation $source -PublishLocation $source `
             -InstallationPolicy Trusted -Credential $credentials
     }
 
-    return Get-PSRepository -Name $PSRepositoryName
+    $null = Set-PSRepository -Name $PSRepositoryName -Credential $credentials
+    return $PSRepository
 }

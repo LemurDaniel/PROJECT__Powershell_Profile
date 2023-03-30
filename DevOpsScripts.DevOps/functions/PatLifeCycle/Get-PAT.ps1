@@ -71,7 +71,7 @@ function Get-PAT {
         $Base64
     )
 
-    $Path = [System.String]::IsNullOrEmpty($Path) ? "$PSScriptRoot/.local" : $Path
+    $Path = [System.String]::IsNullOrEmpty($Path) ? "$env:USERPROFILE/.cred" : $Path
 
     if (!(Test-Path -Path $Path)) {
         $null = New-Item -ItemType Directory -Path $Path

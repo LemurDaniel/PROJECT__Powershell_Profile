@@ -51,9 +51,7 @@ PowerShellVersion = '7.2'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @('DevOpsScripts.DevOps', 
-               'DevOpsScripts.Azure', 
-               'DevOpsScripts.Utils')
+# RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
 RequiredAssemblies = @()

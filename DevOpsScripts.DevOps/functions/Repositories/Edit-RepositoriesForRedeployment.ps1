@@ -275,28 +275,6 @@ function Edit-RepositoriesForRedeployment {
         git -C $_.Localpath push
     }
 
-
-    ####################################
-    # Non-Acf-Spn
-    ####################################
-
-    Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
-    Write-Host -ForegroundColor Magenta ''
-    Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
-        
-    $repositoryAcfMain = Get-RepositoryInfo -Project $projectTarget.name -Name terraform-acf-main
-
-    $foundationTfVars = @()
-    $foundationTfVars += Get-Item -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_foundations/landingzone.dev.auto.tfvars"
-    $foundationTfVars += Get-Item -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_foundations/landingzone.prod.tfvars"
-
-    $foundationTfVars | ForEach-Object {
-        $parsedTfVar = Convert-TFVarsToObject -FilePath $_.FullName
-    
-        $parsedTfVar.governance_settings.management_groups.children_level_1.spn_role_assignments_non_acf
-        $parsedTfVar.governance_settings.management_groups.children_level_2.spn_role_assignments_non_acf
-    }
-
     ####################################
     # Appzone-references-owners
     ####################################
@@ -326,9 +304,6 @@ function Edit-RepositoriesForRedeployment {
     }
 
     Write-Host -ForegroundColor Yellow "Removed Owners | Total Updates $Updates"
-    ####################################
-    # naming-module
-    ####################################
 
     ####################################
     # Rebase Master into Dev

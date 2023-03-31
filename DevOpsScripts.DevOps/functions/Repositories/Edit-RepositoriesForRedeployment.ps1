@@ -31,7 +31,7 @@ function Edit-RepositoriesForRedeployment {
             'kv-brzacflp'                             = 'kv-brzrdlp'
             'stbrzacfstate'                           = 'stbrzacfrdstate'
             'DC Azure Migration'                      = 'DC ACF Redeployment'
-            'DC%20sAzure%20sMigration'                = 'DC%20ACF%20Redeployment'
+            'DC%20Azure%20Migration'                  = 'DC%20ACF%20Redeployment'
 
             'ref=\d+'                                 = 'ref=master'
             
@@ -134,7 +134,7 @@ function Edit-RepositoriesForRedeployment {
                     }
                 ) | Select-Object -ExpandProperty repository
                 
-                if ($null -eq $repository) {
+                if ($null -eq $importingRepository) {
                     break
                 }
 
@@ -145,11 +145,12 @@ function Edit-RepositoriesForRedeployment {
                     
 
             # Actual Import
+            $projectTarget = Get-ProjectInfo -refresh -Name 'DC ACF Redeployment'
             $existentRepository = $projectTarget.repositories | Where-Object -Property name -EQ -Value $importingRepository.name 
             if ($existentRepository) {
                 $DeletionRepositoryPoll = Select-ConsoleMenu -Property display -Description "'$($importingRepository.name)' already exists in the Project '$($projectTarget.name)'" `
                     -Options @(
-                    @{ display = 'Open in Browser fon MANUALLY Deletion'; option = 0 }
+                    @{ display = 'Open in Browser for MANUAL Deletion'; option = 0 }
                     @{ display = 'Skip this Repository'; option = 1 }
                 )
 
@@ -195,7 +196,7 @@ function Edit-RepositoriesForRedeployment {
 
         $projectTarget.repositories | ForEach-Object {
             Open-Repository -Project $_.Project.name -Name $_.name -onlyDownload -replace -Confirm:$false
-            git C $_.Localpath checkout ($_.defaultBranch.split('/')[-1])
+            git -C $_.Localpath checkout ($_.defaultBranch.split('/')[-1])
         }
     }
 

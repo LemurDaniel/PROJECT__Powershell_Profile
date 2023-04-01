@@ -74,12 +74,30 @@ function Switch-Terraform {
     Begin {
         $null = $PsBoundParameters.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value -ErrorAction 'SilentlyContinue' }
 
-        $TerraformInstallations = Get-ChildItem -Path $env:TerraformPath
-        $TerraformActiveFolder = $global:DefaultEnvPaths['terraform']
+        $TerraformInstallationFolder = (![System.String]::isNullOrEmpty($env:TerraformPath) ? $env:TerraformPath : "$env:USERPROFILE/terraform")
+        $TerraformActiveFolder = "$env:APPDATA\terraform\active"
 
         if (!(Test-Path $TerraformActiveFolder)) {
-            $null = New-Item -ItemType Directory -Path $TerraformActiveFolder
+            $TerraformActiveFolder = New-Item -ItemType Directory -Path $TerraformActiveFolder
         }
+        else {
+            $TerraformActiveFolder = Get-Item -Path $TerraformActiveFolder
+        }
+
+        if (!(Test-Path $TerraformInstallationFolder)) {
+            $TerraformInstallationFolder = New-Item -ItemType Directory -Path $TerraformInstallationFolder
+        }
+        else {
+            $TerraformInstallationFolder = Get-Item -Path $TerraformInstallationFolder
+        }
+
+        $TerraformInstallations = Get-ChildItem -Path $TerraformInstallationFolder
+        $EnvironmentPaths = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User) -split ';' | `
+            Where-Object { $_ -notlike "$($TerraformActiveFolder.FullName)*" }
+
+        $EnvironmentPaths = @($TerraformActiveFolder.Fullname, ($EnvironmentPaths -join ';')) -join ';'
+        [System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::User)
+  
     }
     Process {
 

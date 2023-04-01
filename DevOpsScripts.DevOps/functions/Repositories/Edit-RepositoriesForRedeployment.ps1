@@ -267,14 +267,6 @@ function Edit-RepositoriesForRedeployment {
         Edit-RegexOnFiles -replacementPath $projectTarget.Projectpath -regexQuery $_.Name -replace $_.Value -Confirm:$false
     }
 
-    $projectTarget.repositories | ForEach-Object {
-        Write-Host
-        Write-Host -ForegroundColor Yellow "Repository '$($_.Name)'"
-        git -C $_.Localpath add -A
-        git -C $_.Localpath commit -m 'AUTO-RedploymentScriptChanges'
-        git -C $_.Localpath push
-    }
-
     ####################################
     # Appzone-references-owners
     ####################################
@@ -282,32 +274,55 @@ function Edit-RepositoriesForRedeployment {
     Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
     Write-Host -ForegroundColor Magenta 'Remove AppZone Owners'
     Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
+ 
+    $repositoryAcfMain = Get-RepositoryInfo -Project $projectTarget.Name -Name 'terraform-acf-main'
 
     $appzones = @()
     $appzones += Get-ChildItem -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_appzone/configurations-dev" -Filter '*.json' -Recurse -File
     $appzones += Get-ChildItem -Path "$($repositoryAcfMain.localPath)/landingzones/landingzone_acf_appzone/configurations-prod" -Filter '*.json' -Recurse -File
  
-    $Updates = 0
+    $totalUpdatedFiles = 0
     for ($index = 0; $index -lt $appzones.Count; $index++) {  
     
+        $changed = $false
         $file = $appzones[$index]
         $content = Get-Content -Path $file.FullName | ConvertFrom-Json -Depth 99
 
         if ($null -ne $content.rbac.owners -AND $content.rbac.owners.Length -gt 0) {
             $content.rbac.owners = @()
-            $Updates++
+            $changed = $true
         }
         if ($null -ne $content.rbac.owners_groups -AND $content.rbac.owners_groups.Length -gt 0) {
             $content.rbac.owners_groups = @()
-            $Updates++
+            $changed = $true
+        }
+        
+        for ($index1 = 0; $index1 -lt $content.virtual_network.subnets.Count; $index1++) {
+            if ($content.virtual_network.subnets[$index1].private_endpoints.Count -gt 0) {
+                $content.virtual_network.subnets[$index1].private_endpoints = @()
+                $changed = $true
+            }
+        }
+
+        if ($changed) {
+            $content | ConvertTo-Json -Depth 99 | Out-File -FilePath $file.FullName
+            $totalUpdatedFiles++
         }
     }
 
-    Write-Host -ForegroundColor Yellow "Removed Owners | Total Updates $Updates"
+    Write-Host -ForegroundColor Yellow "Removed Owners, Private Endpoints | Total Updated Files: $totalUpdatedFiles"
 
     ####################################
     # Rebase Master into Dev
     ####################################
+
+    $projectTarget.repositories | ForEach-Object {
+        Write-Host
+        Write-Host -ForegroundColor Yellow "Repository '$($_.Name)'"
+        git -C $_.Localpath add -A
+        git -C $_.Localpath commit -m 'AUTO-RedploymentScriptChanges'
+        git -C $_.Localpath push
+    }
 
     Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
     Write-Host -ForegroundColor Magenta "Final Rebase of 'terraform-acf-main' Master into Dev"

@@ -91,7 +91,7 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'Edit-RepositoriesForRedeployment',
                'Get-SprintIterations', 'Get-Workitem', 'Get-WorkItemQueries', 
                'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
                'Open-WorkItemInBrowser', 'Search-WorkItemInIteration', 
-               'Select-Workitems'
+               'Select-Workitems', 'Update-Workitem'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

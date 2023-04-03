@@ -75,7 +75,7 @@ function Invoke-ScriptInAllRepositories {
     )
 
     $projectTarget = Get-ProjectInfo -Name $Project
-    $projectTarget.repositories | ForEach-Object {
+    $projectTarget.repositories | Sort-Object -Property name | ForEach-Object {
     
         Write-Host
         Write-Host '---------------------------------------------------------------------------'

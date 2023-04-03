@@ -77,3 +77,9 @@ function Remove-MovedBlocksAllRepositories {
 
 }
 
+<#
+Invoke-ScriptInAllRepositories -Project 'DC Azure Migration' -workitemTitle 'Fix outputs naming inconsistensies' -ScriptBlock { 
+    param($Repository, $Project)  
+    Edit-RegexOnFiles -Confirm:$false -replacementPath $Repository.Localpath -regexQuery 'acf_owners_id' -replace 'acf_launchpad_owner_ids'
+}
+#>

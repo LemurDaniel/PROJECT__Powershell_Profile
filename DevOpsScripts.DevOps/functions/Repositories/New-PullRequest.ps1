@@ -233,7 +233,7 @@ function New-PullRequest {
     $workItemIds | ForEach-Object {
         try {
             Connect-Workitem -WorkItemId $_ -linkElementUrl $pullRequestArtifactUrl -RelationType 'Artifact Link'
-            Update-Workitem -Id $_.id -State Active
+            Update-Workitem -Id $_ -State Active
         }
         catch {
             if (!$_.ErrorDetails.Message.contains('Relation already exists')) {

@@ -82,7 +82,7 @@ function Update-Workitem {
                 throw "Can't find associated workitem for branch '$branch'"
             }
             else {
-                $workitemId = $workitemId.Value
+                $Id = $workitemId.Value
             }
         }
       

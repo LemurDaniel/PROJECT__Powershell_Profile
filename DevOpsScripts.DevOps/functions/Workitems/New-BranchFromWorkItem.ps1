@@ -139,6 +139,7 @@ function New-BranchFromWorkitem {
     git -C $repositoryPath checkout dev
     git -C $repositoryPath pull origin dev
 
+    Update-Workitem -Id $workItem.id -State Active
 
     $branchExists = (git -C $repositoryPath branch | Where-Object { $_ -like "*$branchName*" } | Measure-Object).Count -gt 0
     if ($branchExists) {

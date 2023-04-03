@@ -108,7 +108,7 @@ function Invoke-ScriptInAllRepositories {
             
                 if ($PSCmdlet.ShouldProcess($_.Name , 'Create Master Pull Request?')) {
                     New-PullRequest -PRtitle "AUTO--$workitemTitle" -Source 'dev' -Target 'default' `
-                        -Project ($_.project.name) -RepositoryName $_.name
+                        -Project ($_.project.name) -RepositoryName $_.name -autocompletion
                 }
             } 
             else {

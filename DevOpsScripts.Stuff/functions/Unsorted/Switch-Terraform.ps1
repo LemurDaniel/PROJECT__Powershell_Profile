@@ -97,6 +97,7 @@ function Switch-Terraform {
 
         $EnvironmentPaths = @($TerraformActiveFolder.Fullname, ($EnvironmentPaths -join ';')) -join ';'
         [System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::User)
+        [System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::Process)
   
     }
     Process {
@@ -134,7 +135,7 @@ function Switch-Terraform {
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$TerraformActiveFolder/terraform.exe", $true)
         }
 
-        Write-Host
+        Write-Host 
         terraform --version
         Write-Host
 

@@ -84,7 +84,7 @@ function Update-ModuleSourcesAllRepositories {
     
         Write-Host "`n------------------------------`n"
         Write-Host -ForegroundColor Yellow "Searching Respository '$($repository.name)' locally"
-        $null = Open-Repository -Name ($repository.name) -onlyDownload
+        $null = Open-Repository -Project $repository.project.name -Name ($repository.name) -onlyDownload
 
         Write-Host -ForegroundColor Yellow "Update default branch '$($repository.name)'"
 
@@ -99,6 +99,10 @@ function Update-ModuleSourcesAllRepositories {
 
         if ($replacements.Count -eq 0) {
             continue
+        }
+
+        if ($PSCmdlet.ShouldProcess($repository.Name , 'Open repository for addition changes')) {
+            $null = Open-Repository -Project $repository.project.name -Name ($repository.name)
         }
         
         if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Feature Branch and Pull Request')) {

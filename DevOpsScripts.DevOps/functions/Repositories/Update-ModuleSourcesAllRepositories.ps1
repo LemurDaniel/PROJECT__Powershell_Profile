@@ -100,7 +100,11 @@ function Update-ModuleSourcesAllRepositories {
         if ($replacements.Count -eq 0) {
             continue
         }
-        
+                
+        if ($PSCmdlet.ShouldProcess($repository.Name , 'Open repository for addition changes')) {
+            $null = Open-Repository -Project $repository.project.name -Name ($repository.name)
+        }
+            
         if ($PSCmdlet.ShouldProcess($repository.Name , 'Create Feature Branch and Pull Request')) {
             Write-Host -ForegroundColor Yellow 'Create Feature Branch and create Pull Request'
 
@@ -120,10 +124,6 @@ function Update-ModuleSourcesAllRepositories {
             git -C $repository.Localpath add -A
             git -C $repository.Localpath commit -m $targetBranchName
             git -C $repository.Localpath push origin $targetBranchName
-        
-            if ($PSCmdlet.ShouldProcess($repository.Name , 'Open repository for addition changes')) {
-                $null = Open-Repository -Project $repository.project.name -Name ($repository.name)
-            }
 
             if ($EnteredNonModules) {
                 New-PullRequest -PRtitle 'AUTO--Update Submodule Source Paths' -Target 'dev' `

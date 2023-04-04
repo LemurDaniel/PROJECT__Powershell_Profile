@@ -97,6 +97,11 @@ function Invoke-ScriptInAllRepositories {
         if ((git -C $path.FullName status --porcelain | Measure-Object).Count -gt 0) {
     
             Write-Host -ForegroundColor Yellow "Detected Changes in Repository '$($_.name)' in '$($projectTarget.name)'"
+                        
+            if ($PSCmdlet.ShouldProcess($_.Name , 'Open repository for addition changes')) {
+                $null = Open-Repository -Project $repository.project.name -Name ($repository.name)
+            }
+            
             if ($PSCmdlet.ShouldProcess($_.Name , 'Create Feature Pull Request?')) {
           
                 New-BranchFromWorkitem -Project $_.project.name -Name $_.name -workitemTitle $workitemTitle

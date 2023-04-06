@@ -12,6 +12,19 @@
     .OUTPUTS
     None
 
+    .EXAMPLE
+
+    Create a new Pipeline based on a YAML-Definition-File:
+
+    PS> $Definition = @{
+                    Project        = $projectTarget.Name
+                    Name           = $_.BaseName
+                    Folder         = "$($repository.Name)\$($_.Directory.BaseName)"
+                    DefinitionPath = $_.FullName.replace($repository.Localpath, '')
+                    repository     = $repository.name
+                }
+
+    PS> New-Pipeline -Project <project> -repository <repository Name with yaml Definition> -DefinitionPath <Path to YAML-Definition in Repository> -Name <Pipeline Name> -Folder <DevOps Folder for Pipeline>
 
     .LINK
         

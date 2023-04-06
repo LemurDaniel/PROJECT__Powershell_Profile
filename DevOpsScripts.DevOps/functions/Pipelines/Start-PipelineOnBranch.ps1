@@ -5,6 +5,7 @@
 
     .DESCRIPTION
     Start a Pipeline by id on a specific branch. Use Start-Pipeline instead.
+    Helper Method. Use Start-Pipeline instead.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -12,6 +13,11 @@
     .OUTPUTS
     None
 
+    .EXAMPLE
+
+    Start a Pipeline id on a branch:
+
+    PS> Start-PipelineOnBranch -Project <project> -id <pipeline_id> -ref "refs/heads/dev"
 
     .LINK
         

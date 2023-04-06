@@ -12,6 +12,18 @@
     .OUTPUTS
     None.
 
+    .EXAMPLE
+
+    Create a Pull Request from the current Feature Branch to Dev:
+
+    ps> New-Feature-PR
+
+    .EXAMPLE
+
+    Create a Pull Request from the current Feature Branch to Master with autocompletion enabled:
+
+    ps> New-Feature-PR -autocompletion -Target master
+
     .LINK
         
 #>

@@ -272,7 +272,7 @@ function Edit-RepositoriesForRedeployment {
     ####################################
 
     Write-Host -ForegroundColor Magenta "`n---------------------------------------------------------------"
-    Write-Host -ForegroundColor Magenta 'Remove AppZone Owners'
+    Write-Host -ForegroundColor Magenta 'Remove AppZone Owners and Private Endpoints'
     Write-Host -ForegroundColor Magenta "---------------------------------------------------------------`n"
  
     $repositoryAcfMain = Get-RepositoryInfo -Project $projectTarget.Name -Name 'terraform-acf-main'

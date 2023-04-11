@@ -171,7 +171,7 @@ function New-PullRequest {
         $preferencedBranch = "refs/heads/$Source"
     }
 
-    $targetBranch = $Target -eq 'default' ? $repository.defaultBranch :  "refs/heads/$target"
+    $targetBranch = $Target -eq 'default' ? $repository.defaultBranch :  "refs/heads/$Target"
     if ($targetBranch -notin $remoteBranches.Name) {
         throw "Remote branch doesn't exist - $targetBranch"
     }

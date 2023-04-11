@@ -46,7 +46,20 @@ function New-FeaturePR {
             }    
         )]
         [System.String]
-        $Target = 'dev', 
+        $target = 'dev', 
+
+        # The Merge strategy for autocompletion enabled.
+        [Parameter(
+            Position = 1
+        )]
+        [ValidateSet(
+            'noFastForward',
+            'rebase',
+            'rebaseMerge',
+            'squash'
+        )]
+        [System.String]
+        $mergeStrategy = 'squash',
 
         # Enable autcompletion of PR.
         [Parameter()]
@@ -59,8 +72,14 @@ function New-FeaturePR {
         $deleteLocalBranch
     )
 
+    # Testing something
+    ($MyInvocation.MyCommand.Parameters.Keys `
+    | ForEach-Object { Get-Variable -Name $_ -ErrorAction SilentlyContinue } ) `
+    | ForEach-Object {
+        $PSBoundParameters[$_.Name] = $PSBoundParameters.containsKey($_.Name) ? $PSBoundParameters[$_.Name] : $_.Value
+    }
 
-    New-PullRequest -Target $Target -autocompletion:$autocompletion -deleteSourceBranch
+    New-PullRequest @PSBoundParameters
     if ($deleteLocalBranch) {
         $currentBranchName = git branch --show-current
         git checkout (Get-RepositoryInfo).defaultBranch.replace('refs/heads/', '')

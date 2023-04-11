@@ -73,13 +73,13 @@ function New-FeaturePR {
     )
 
     # Testing something
-    ($MyInvocation.MyCommand.Parameters.Keys `
-    | ForEach-Object { Get-Variable -Name $_ -ErrorAction SilentlyContinue } ) `
-    | ForEach-Object {
-        $PSBoundParameters[$_.Name] = $PSBoundParameters.containsKey($_.Name) ? $PSBoundParameters[$_.Name] : $_.Value
-    }
+    #($MyInvocation.MyCommand.Parameters.Keys `
+    #| ForEach-Object { Get-Variable -Name $_ -ErrorAction SilentlyContinue } ) `
+    #| ForEach-Object {
+    #    $PSBoundParameters[$_.Name] = $PSBoundParameters.containsKey($_.Name) ? $PSBoundParameters[$_.Name] : $_.Value
+    #}
 
-    New-PullRequest @PSBoundParameters
+    New-PullRequest -Target $target -mergeStrategy $mergeStrategy -autocompletion:$autocompletion
     if ($deleteLocalBranch) {
         $currentBranchName = git branch --show-current
         git checkout (Get-RepositoryInfo).defaultBranch.replace('refs/heads/', '')

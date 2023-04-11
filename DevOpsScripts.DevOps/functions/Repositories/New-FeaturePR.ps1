@@ -59,7 +59,7 @@ function New-FeaturePR {
             'squash'
         )]
         [System.String]
-        $mergeStrategy = 'squash',
+        $mergeStrategy = 'noFastForward',
 
         # Enable autcompletion of PR.
         [Parameter()]
@@ -79,7 +79,7 @@ function New-FeaturePR {
     #    $PSBoundParameters[$_.Name] = $PSBoundParameters.containsKey($_.Name) ? $PSBoundParameters[$_.Name] : $_.Value
     #}
 
-    New-PullRequest -Target $target -mergeStrategy $mergeStrategy -autocompletion:$autocompletion
+    New-PullRequest -Target $target -mergeStrategy $mergeStrategy -deleteSourceBranch -autocompletion:$autocompletion
     if ($deleteLocalBranch) {
         $currentBranchName = git branch --show-current
         git checkout (Get-RepositoryInfo).defaultBranch.replace('refs/heads/', '')

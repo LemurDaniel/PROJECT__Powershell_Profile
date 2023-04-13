@@ -12,6 +12,11 @@
     .OUTPUTS
     None.
 
+    .EXAMPLE
+
+    Filter and Remove terraform moved blocks in all repos of a project:
+
+    PS> Remove-MovedBlocksAllRepositories -Project <project> -WorkitemTitle <autocomplete>
 
     .LINK
         

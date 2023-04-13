@@ -12,6 +12,11 @@
     .OUTPUTS
     return the number of replacements
 
+    .EXAMPLE
+
+    Import a repository from a source to a target Project and open it in the Browser:
+
+    PS> Start-RepositoryImport -SourceProject <project> -SourceRepositoryName <repository> -TargetProject <project> -openBrowser
 
     .LINK
         

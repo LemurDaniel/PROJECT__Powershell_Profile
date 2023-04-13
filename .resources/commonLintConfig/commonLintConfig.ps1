@@ -1,4 +1,6 @@
 $commonLintFolder = Get-Item -Path $PSScriptRoot
+
+# Dishing out those Pull-Requests
 Invoke-ScriptInAllRepositories `
     -Project 'DC Azure Migration' `
     -workitemTitle 'Integrate TFLint in Azure Pipelines' `

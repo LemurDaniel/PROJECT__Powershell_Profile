@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "TFLint",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/.vscode/terraform-lint.ps1",
+            "args": [
+                "-generateMarkdownFile",
+                "-location",
+                "'${workspaceFolder}'",
+                "-config",
+                "'${workspaceFolder}\\.vscode\\.tflint.config.hcl'"
+            ],
+            "cwd": "${workspaceFolder}",
+            "createTemporaryIntegratedConsole": true
+        }
+    ]
+}

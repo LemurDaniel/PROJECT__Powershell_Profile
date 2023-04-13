@@ -71,7 +71,14 @@ function Invoke-ScriptInAllRepositories {
             Mandatory = $true
         )]
         [System.Management.Automation.ScriptBlock]
-        $ScriptBlock
+        $ScriptBlock,
+
+        # Optional Script Block to Filter
+        [Parameter(
+            Mandatory = $true
+        )]
+        [System.Management.Automation.ScriptBlock]
+        $FilterBlock = { return $true }
     )
 
     $projectTarget = Get-ProjectInfo -Name $Project
@@ -81,6 +88,14 @@ function Invoke-ScriptInAllRepositories {
         Write-Host '---------------------------------------------------------------------------'
 
         $path = Open-Repository -Project $projectTarget.name -Name $_.name -onlyDownload
+
+        $processRepositoryFilter = & $FilterBlock -Repository $_ -Project $_.project
+        if (!$processRepositoryFilter) {
+            Write-Host
+            Write-Host -ForegroundColor Yellow "Skipping '$($_.Name)' in '$($_.project.name)'"
+            Write-Host
+            return
+        }
 
         Write-Host
         Write-Host -ForegroundColor Yellow "Processing '$($_.Name)' in '$($_.project.name)'"
@@ -99,7 +114,7 @@ function Invoke-ScriptInAllRepositories {
             Write-Host -ForegroundColor Yellow "Detected Changes in Repository '$($_.name)' in '$($projectTarget.name)'"
                         
             if ($PSCmdlet.ShouldProcess($_.Name , 'Open repository for addition changes')) {
-                $null = Open-Repository -Project $repository.project.name -Name ($repository.name)
+                $null = Open-Repository -Project $repository.project.name -Name ($_.name)
             }
             
             if ($PSCmdlet.ShouldProcess($_.Name , 'Create Feature Pull Request?')) {
@@ -109,7 +124,7 @@ function Invoke-ScriptInAllRepositories {
                 git -C $path.FullName commit -m "AUTO--$workitemTitle"
                 git -C $path.FullName push
                 New-PullRequest -PRtitle "AUTO--$workitemTitle" -Source 'current' -Target 'dev' `
-                    -Project ($_.project.name) -RepositoryName $_.name -autocompletion
+                    -Project ($_.project.name) -RepositoryName $_.name -autocompletion -deleteSourceBranch
             
                 if ($PSCmdlet.ShouldProcess($_.Name , 'Create Master Pull Request?')) {
                     New-PullRequest -PRtitle "AUTO--$workitemTitle" -Source 'dev' -Target 'default' `

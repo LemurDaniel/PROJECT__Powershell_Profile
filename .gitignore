@@ -15,6 +15,7 @@
 !DevOpsScripts.Azure/**
 !DevOpsScripts.DevOps/**
 !DevOpsScripts.OneDrive/**
+!DevOpsScripts.Github/**
 !DevOpsScripts.Utils/**
 !DevOpsScripts.Stuff/**
 !DevOpsScripts.Fresh/**

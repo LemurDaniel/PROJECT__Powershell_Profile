@@ -1,0 +1,15 @@
+{
+    "guid": "0a00a063-2641-43d5-9368-b3a8ab793eb0",
+    "version": "1.0.1",
+    "owner": "Team DevOps",
+    "author": "o.O",
+    "description": "Contains several function regarding the Github-Api",
+    "tags": [],
+    "powershellversion": "7.2",
+    "dependencies": {
+        "modules": [
+            "DevOpsScripts.Utils"
+        ],
+        "assemblies": []
+    }
+}

@@ -2,7 +2,7 @@ function Push-Profile {
 
     param()
 
-    $fileItem = Open-RepositoryGithub -Name 'PROJECT__Powershell_Profile' -noCode
+    $fileItem = Open-GithubRepository -Name 'PROJECT__Powershell_Profile' -onlyDownload
 
     $gitUser = Get-GitUser
 

@@ -88,14 +88,14 @@ function Invoke-GithubRest {
         [parameter()]
         [ValidateScript(
             {
-                ('owner,collaborator,Context_member'.split(',') | 
+                ('owner,collaborator,organization_member'.split(',') | 
                 Where-Object { 
-                    $_ -NotIn @('owner', 'collaborator', 'Context_member') 
+                    $_ -NotIn @('owner', 'collaborator', 'organization_member') 
                 } | Measure-Object).Count -eq 0
             }
         )]
         [System.String]
-        $affiliation = 'owner,collaborator,Context_member',
+        $affiliation = 'owner,collaborator,organization_member',
 
         # The content type for the requests. Set to github default.
         [parameter()]

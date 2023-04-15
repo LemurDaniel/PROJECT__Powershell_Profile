@@ -21,7 +21,7 @@ function Get-PimAssignments {
     $responseGroups = Invoke-AzRestMethod @Request
 
 
-    $pimGroups = $responseGroups.Content | ConvertFrom-Json -Depth 8 | Select-Object -ExpandProperty value | `
+    $responseGroups.Content | ConvertFrom-Json -Depth 8 | Select-Object -ExpandProperty value | `
         Where-Object { $_.Description -and $_.displayName.Contains('pimv3') -and $_.displayName.Contains('eligible__BASE') } | `
         Select-Object @{
         Name       = 'type';

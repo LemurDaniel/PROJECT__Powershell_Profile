@@ -12,7 +12,6 @@
     .OUTPUTS
     return the API-Response.
 
-
     .EXAMPLE
 
 
@@ -23,7 +22,7 @@
         
 #>
 
-function Invoke-GitRest {
+function Invoke-GithubRest {
 
 
     [CmdletBinding(
@@ -62,22 +61,6 @@ function Invoke-GitRest {
         [switch]
         $AsArray,
 
-        # The content type for the requests. Set to github default.
-        [parameter()]
-        [System.String]
-        $ContentType = 'application/vnd.github+json',
-
-        # The content type for the requests. Set to github default.
-        [parameter()]
-        [System.String]
-        $apiVersion = '2022-11-28',
-
-        # The visibilty of requested resources. public for example only return public repositories, etc.
-        [parameter()]
-        [validateSet('all', 'public', 'private')]
-        [System.String]
-        $visibility = 'all',
-
         # When using scope Orgs.
         [parameter(
             Mandatory = $false
@@ -86,7 +69,7 @@ function Invoke-GitRest {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = (Get-GithubOrgs).login
+                $validValues = (Get-GithubContexts).login
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -95,24 +78,40 @@ function Invoke-GitRest {
         )]
         [validateScript(
             {
-                $_ -in (Get-GithubOrgs).login
+                $_ -in (Get-GithubContexts).login
             }
         )]
         [System.String]
-        $Organization,
+        $Context,
 
         # The affiliation of requested resources. owner for example only returns repositories that you are owner of.
         [parameter()]
         [ValidateScript(
             {
-                ('owner,collaborator,organization_member'.split(',') | 
+                ('owner,collaborator,Context_member'.split(',') | 
                 Where-Object { 
-                    $_ -NotIn @('owner', 'collaborator', 'organization_member') 
+                    $_ -NotIn @('owner', 'collaborator', 'Context_member') 
                 } | Measure-Object).Count -eq 0
             }
         )]
         [System.String]
-        $affiliation = 'owner,collaborator,organization_member'
+        $affiliation = 'owner,collaborator,Context_member',
+
+        # The content type for the requests. Set to github default.
+        [parameter()]
+        [System.String]
+        $ContentType = 'application/vnd.github+json',
+
+        # The visibilty of requested resources. public for example only return public repositories, etc.
+        [parameter()]
+        [validateSet('all', 'public', 'private')]
+        [System.String]
+        $visibility = 'all',
+
+        # The content type for the requests. Set to github default.
+        [parameter()]
+        [System.String]
+        $apiVersion = '2022-11-28'
     )
 
     # Authentication
@@ -131,7 +130,7 @@ function Invoke-GitRest {
     $Query.Add('visibility', $visibility)
     $Query.Add('per_page', 100)
 
-    $APIEndpoint = ($API -split '\?')[0].replace('{org}', $Organization)
+    $APIEndpoint = ($API -split '\?')[0].replace('{org}', $Context)
     $null = ($API -split '\?')[1] -split '&' | `
         Where-Object { ![System.String]::IsNullOrEmpty($_) } | `
         ForEach-Object { $Query.Add($_.split('=')[0], $_.split('=')[1]) }
@@ -161,7 +160,7 @@ function Invoke-GitRest {
 
     
     if ($PSCmdlet.ShouldProcess($Request.Uri, $($Request.Method))) {
-        return Invoke-RestMethod @Request 
+        return Invoke-RestMethod @Request | ForEach-Object { $_ }
     }
 
 }

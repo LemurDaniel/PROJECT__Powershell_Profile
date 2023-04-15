@@ -8,8 +8,8 @@ function Get-GithubUser {
 
     $user = Get-UtilsCache -Type User -Identifier git
     if (!$user -OR $Refresh) {
-        $user = Invoke-GitRest -Method GET -API 'user'
-        $user.email = (Invoke-GitRest -Method GET -API 'user/emails')
+        $user = Invoke-GithubRest -Method GET -API 'user'
+        $user.email = (Invoke-GithubRest -Method GET -API 'user/emails')
         | Where-Object -Property primary -EQ $true 
         | Select-Object -First 1 -ExpandProperty email
 

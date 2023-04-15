@@ -1,25 +1,50 @@
-function Open-RepositoryGithub {
+<#
+    .SYNOPSIS
+    Downloads and opens a Github-Repository by current Context or specified.
 
-    [Alias('vcp')]
+    .DESCRIPTION
+    Downloads and opens a Github-Repository by current Context or specified.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The Path to the Repository
+
+    .EXAMPLE
+
+    Open a repository in the current Context:
+
+    PS> Open-GithubRepository <autocomplete_repo>
+
+    .EXAMPLE
+
+    Open a repository in another Context:
+
+    PS> Open-GithubRepository -Context <autocomplete_context> <autocomplete_repo>
+
+    .LINK
+        
+#>
+
+function Open-GithubRepository {
+
+    [Alias('gitvc')]
     [cmdletbinding(
         SupportsShouldProcess,
         ConfirmImpact = 'high'
     )]
     param (
+        # The Name of the Github Repository.
         [Parameter(
             Mandatory = $true,
             Position = 0
         )]
-        [ValidateScript(
-            { 
-                $_ -in (Get-GithubData 'repositories.name')
-            },
-            ErrorMessage = 'Please specify an correct Name.'
-        )]
         [ArgumentCompleter(
             {
-                param($cmd, $param, $wordToComplete)
-                $validValues = Get-GithubData 'repositories.name' 
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                $Context = Get-GithubContextInfo -Context $fakeBoundParameters['Context']
+                $validValues = $Context.repositories.Name
 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -29,14 +54,39 @@ function Open-RepositoryGithub {
         [System.String]
         $Name,
 
+        # The Name of the Github Context to use. Defaults to current Context.
+        [Parameter(
+            Mandatory = $false,
+            Position = 1
+        )]
+        [ValidateScript(
+            { 
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
+            },
+            ErrorMessage = 'Please specify an correct Context.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-GithubContexts).login
+
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Context,
+
         # Only open the repository in the browser.
         [Parameter()]
         [switch]
         $Browser,
 
+        # Only Download the Repository without opening it.
         [Parameter()]
         [switch]
-        $noCode,
+        $onlyDownload,
 
         # Optional to replace an existing repository at the location and redownload it.
         [Parameter()]
@@ -44,10 +94,10 @@ function Open-RepositoryGithub {
         $replace
     )
 
-    $repository = Get-GithubData 'repositories' | Where-Object -Property Name -EQ -Value $Name
-    if($Browser){
-        Start-Process $repository.html_url
-        return
+    $repository = Get-GithubRepositoryInfo -Context $Context -Name $Name
+
+    if ($Browser) {
+        return Start-Process $repository.html_url
     }
 
     if ($replace) {
@@ -71,7 +121,7 @@ function Open-RepositoryGithub {
     $null = git -C $repository.LocalPath config --local user.name $user.login 
     $null = git -C $repository.LocalPath config --local user.email $user.email
 
-    if (!$noCode) {
+    if (!$onlyDownload) {
         code $repository.LocalPath
     }
 

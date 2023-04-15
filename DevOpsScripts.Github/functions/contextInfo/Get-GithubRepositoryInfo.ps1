@@ -101,7 +101,7 @@ function Get-GithubRepositoryInfo {
     | Where-Object -Property Name -EQ -Value $Name
 
     if ($null -eq $repository) {
-        throw "Not Repository found for '$Name' in Context '$Context'"
+        throw "No Repository found for '$Name' in Context '$Context'"
     }
 
     return $repository

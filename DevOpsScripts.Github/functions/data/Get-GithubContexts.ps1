@@ -13,8 +13,26 @@ function Get-GithubContexts {
     if ($null -eq $Cache -OR $Refresh) {
 
         $gitContexts = @()
-        $gitContexts += Get-GithubUser -Refresh:$Refresh
+        $gitContexts += Get-GithubUser -Refresh:$Refresh 
+        | Select-Object *, @{
+            Name       = 'IsUserContext';
+            Expression = { $true }
+        },
+        @{
+            Name       = 'IsOrgContext';
+            Expression = { $false }
+        }
+
         $gitContexts += Invoke-GitRest -Method GET -API 'user/orgs'
+        | ForEach-Object { $_ }
+        | Select-Object *, @{
+            Name       = 'IsUserContext';
+            Expression = { $false }
+        },
+        @{
+            Name       = 'IsOrgContext';
+            Expression = { $true }
+        }
 
         $gitContexts = $gitContexts | Select-Object *, @{
             Name       = 'LocalPath';

@@ -60,20 +60,14 @@ function Get-GithubContextInfo {
     )
 
     $Context = [System.String]::IsNullOrEmpty($Context) ? (Get-GithubContext) : $Context
-    $Cache = Get-GithubCache -Type Context -Identifier $Context
-    
-    if ($null -eq $Cache -OR $Refresh) {
-        $ContextInfo = Get-GithubContexts -Refresh:$Refresh
-        | Where-Object -Property login -EQ $Context
-        | Select-Object *, @{
-            Name       = 'repositories';
-            Expression = {
-                Get-GithubRepositories -Context $Context -Refresh:$Refresh
-            }
-        }
-        $Cache = Set-GithubCache -Object $ContextInfo -Type Context -Identifier $Context
-    }
 
-    return $Cache
+    return Get-GithubContexts -Refresh:$Refresh
+    | Where-Object -Property login -EQ $Context
+    | Select-Object *, @{
+        Name       = 'repositories';
+        Expression = {
+            Get-GithubRepositories -Context $Context -Refresh:$Refresh
+        }
+    }
 
 }

@@ -78,31 +78,32 @@ function Invoke-ScriptInAllRepositories {
             Mandatory = $false
         )]
         [System.Management.Automation.ScriptBlock]
-        $FilterBlock = { return $true }
+        $FilterBlock = { 
+            param($repositories, $project)
+            return $repositories
+        }
     )
 
     $projectTarget = Get-ProjectInfo -Name $Project
-    $projectTarget.repositories | Sort-Object -Property name | ForEach-Object {
+
+    $repositories = $projectTarget.repositories | Sort-Object -Property name 
+    $repositories = & $FilterBlock -Repositories $repositories -Project $Project
+
+    $repositories | ForEach-Object {
     
         Write-Host
         Write-Host '---------------------------------------------------------------------------'
 
         $path = Open-Repository -Project $projectTarget.name -Name $_.name -onlyDownload
-
-        $processRepositoryFilter = & $FilterBlock -Repository $_ -Project $_.project
-        if (!$processRepositoryFilter) {
-            Write-Host
-            Write-Host -ForegroundColor Yellow "Skipping '$($_.Name)' in '$($_.project.name)'"
-            Write-Host
-            return
-        }
-
+        
         Write-Host
         Write-Host -ForegroundColor Yellow "Processing '$($_.Name)' in '$($_.project.name)'"
         Write-Host
 
         $randomHex = New-RandomBytes -Type Hex -Bytes 2
         $stashName = "$workItemTitle-$randomHex" -replace '\s', '_' -replace '[^\sA-Za-z0-9\\-]*', ''
+  
+        git -C $path.FullName add -A
         git -C $path.FullName stash push -m $stashName
         git -C $path.FullName checkout master
         git -C $path.FullName pull origin master
@@ -137,7 +138,7 @@ function Invoke-ScriptInAllRepositories {
 
         }
 
-        git -C $path.FullName stash apply "stash^{/$stashName}"
+        git -C $path.FullName stash apply "stash^{/$stashName}" 2>$null
     }
 }
 

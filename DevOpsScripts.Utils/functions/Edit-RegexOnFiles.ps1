@@ -56,7 +56,14 @@ function Edit-RegexOnFiles {
         [System.Text.RegularExpressions.RegexOptions[]]
         $regexOptions = @(
             [System.Text.RegularExpressions.RegexOptions]::Multiline
-        )
+        ),
+
+        # Optional Script Block
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Management.Automation.ScriptBlock]
+        $postScript = { return $null }
     )
 
     $totalReplacements = [System.Collections.ArrayList]::new()
@@ -90,6 +97,8 @@ function Edit-RegexOnFiles {
             $totalHits += $regexMatches.Count
             $Content = [regex]::replace($Content, $regexQuery, $replace, $regexOptions)
             $Content | Out-File -LiteralPath $file.FullName
+
+            & $postScript -File $file
         }  
 
         Write-Progress -Id $progressId -Activity 'Replacements' -Completed

@@ -6,8 +6,8 @@ Invoke-ScriptInAllRepositories `
     -workitemTitle 'Integrate TFLint in Azure Pipelines' `
     -FilterBlock `
 {
-    param($Repository, $Project)  
-    return $Repository.Name.Contains('terraform')
+    param($Repositories, $Project)  
+    return $Repositories | Where-Object -Property Name -Like 'terraform-*'
 } `
     -ScriptBlock `
 { 
@@ -77,7 +77,7 @@ Invoke-ScriptInAllRepositories `
     $launchTemplate.configurations += ($launchContent.configurations | Where-Object {
             $_.label -notin $launchTemplate.configurations.Label
         }) 
-@"
+    @"
 {
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.

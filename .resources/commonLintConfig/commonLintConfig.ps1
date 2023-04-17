@@ -1,14 +1,10 @@
 $commonLintFolder = Get-Item -Path $PSScriptRoot
 
 # Dishing out those Pull-Requests
-Invoke-ScriptInAllRepositories `
-    -Project 'DC Azure Migration' `
+(Get-ProjectInfo -Name 'DC Azure Migration').repositories
+| Where-Object -Property Name -Like 'terraform-*'
+| Invoke-ScriptInRepositories `
     -workitemTitle 'Integrate TFLint in Azure Pipelines' `
-    -FilterBlock `
-{
-    param($Repositories, $Project)  
-    return $Repositories | Where-Object -Property Name -Like 'terraform-*'
-} `
     -ScriptBlock `
 { 
     param($Repository, $Project)  

@@ -1,6 +1,6 @@
 
 # Dishing out those Pull-Requests
-Invoke-ScriptInAllRepositories `
+Invoke-ScriptInRepositories `
     -Project 'DC Azure Migration' `
     -workitemTitle 'Remove Devcontainer from repositories' `
     -ScriptBlock `

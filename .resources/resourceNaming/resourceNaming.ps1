@@ -1,28 +1,23 @@
 
 $values = Get-Content -Path "$PSScriptRoot/resourceNaming.json" | ConvertFrom-Json -Depth 99 -AsHashtable
 
-# Dishing out those Pull-Requests
-Invoke-ScriptInAllRepositories `
-    -Project 'DC Azure Migration' `
+$orderedLast = @(
+    'terraform-acf-main',
+    'terraform-acf-adds',
+    'terraform-acf-launchpad',
+    'terraform-acf-bigipconfig'
+)
+(Get-ProjectInfo -Name 'DC Azure Migration').repositories
+| Where-Object -Property Name -Like 'terraform-*'
+| Sort-Object { $orderedLast.IndexOf($_.Name) } 
+| Invoke-ScriptInRepositories `
     -workitemTitle 'Naming module should use Terraform Resource names instead of abbreviations' `
-    -FilterBlock `
-{
-    param($Repositories, $Project)  
-
-    $order = @(
-        'terraform-acf-main',
-        'terraform-acf-adds',
-        'terraform-acf-launchpad',
-        'terraform-acf-bigipconfig'
-    )
-    return $Repositories 
-    | Where-Object -Property Name -Like 'terraform-*'
-    | Sort-Object { $order.IndexOf($_.Name) }
-} `
     -ScriptBlock `
 { 
     param($Repository, $Project)  
        
+    Write-Host $Repository.Name
+    return
     Update-ModuleSourcesInPath -replacementPath $Repository.Localpath -Confirm:$false
     $values.GetEnumerator() | ForEach-Object {
 

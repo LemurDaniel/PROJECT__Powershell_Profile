@@ -7,8 +7,7 @@
 
             $ErrorActionPreference = 'Stop'
 
-            Add-Type -AssemblyName WindowsBase
-Add-Type -AssemblyName PresentationFramework
+            
 
             @(
                 'functions'

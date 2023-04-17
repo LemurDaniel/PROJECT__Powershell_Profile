@@ -75,7 +75,7 @@ function Invoke-ScriptInAllRepositories {
 
         # Optional Script Block to Filter
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [System.Management.Automation.ScriptBlock]
         $FilterBlock = { return $true }

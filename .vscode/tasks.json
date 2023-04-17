@@ -23,7 +23,8 @@
                 "focus": false,
                 "panel": "shared",
                 "showReuseMessage": true,
-                "clear": false
+                "clear": false,
+                "close": true
             },
             "options": {
                 "shell": {

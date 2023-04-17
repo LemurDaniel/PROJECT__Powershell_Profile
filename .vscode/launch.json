@@ -8,9 +8,10 @@
             "name": "[TEST] - Import Modules in Temporary Shell",
             "type": "PowerShell",
             "request": "launch",
+            "preLaunchTask": "Generate Meta-Files",
             "script": "Import-Module",
             "args": [
-                	"'${workspaceFolder}/DevOpsScripts'"
+                "'${workspaceFolder}/DevOpsScripts'"
             ],
             "cwd": "${workspaceFolder}",
             "createTemporaryIntegratedConsole": true

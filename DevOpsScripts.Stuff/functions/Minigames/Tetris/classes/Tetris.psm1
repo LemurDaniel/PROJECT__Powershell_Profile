@@ -15,6 +15,8 @@ class Tetris {
     Tetris() {
         $this.GameField = [System.int16[]]::new($this.Size.y)
         $this.CurrentTetromino = [Tetromino]::new(0, -1, $this.Size)
+
+        $this.GameField[4] = 0b0110
     }
 
     [System.Void] draw($Canvas) {
@@ -25,9 +27,12 @@ class Tetris {
         $Canvas.Children.Clear()
 
         if ($this.CurrentTetromino.Position.Y -lt $this.Size.Y - 2) {
-            #Write-Host $this.CurrentTetromino.Position.Y
             $this.CurrentTetromino.Position += [System.Numerics.Vector2]::UnitY
         }
+        else {
+            $this.CurrentTetromino = [Tetromino]::new(0, -1, $this.Size)
+        }
+                
         $this.CurrentTetromino.draw($Canvas, $BlockWidth)
         
     }

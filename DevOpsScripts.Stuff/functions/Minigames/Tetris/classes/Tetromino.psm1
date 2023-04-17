@@ -4,7 +4,7 @@ class Tetromino {
 
     static [System.Array[]]$Tetrominoes = @(
         @(
-            0b0000,
+            0b0000
             0b1111
         ),
         @(
@@ -45,6 +45,7 @@ class Tetromino {
     
     [System.Numerics.Vector2]$Position
     [System.Numerics.Vector2]$TetrisSize
+    [System.Numerics.Vector2]$TetrominoBound
 
     [System.Windows.Media.Color]$TetrominoColor
     [System.int16[]]$TetrominoBlock
@@ -58,6 +59,23 @@ class Tetromino {
 
         $this.TetrominoBlock = [Tetromino]::Tetrominoes[$randomBlock]
         $this.TetrominoColor = [Tetromino]::Colors[$randomColor]
+
+        $width = 0
+        $height = $this.TetrominoBlock.Length
+        $temp = $this.TetrominoBlock[0]
+        $this.TetrominoBlock | ForEach-Object {
+            $temp = $temp -bor $_
+        }
+
+        while (($temp -band 0b1) -ne 0b1) { 
+            $temp = ($temp -shr 1) 
+        }
+        while (($temp -band 0b1) -ne 0b0) { 
+            $temp = ($temp -shr 1)
+            $width++ 
+        }
+
+        $this.TetrominoBound = [System.Numerics.Vector2]::new($width, $height)
     }
 
     static [System.Windows.Shapes.Rectangle] drawTile($BlockWidth, $posX, $posY, $Color, $Opacity = 1) {
@@ -87,15 +105,14 @@ class Tetromino {
             if ($this.LastKeyEventBeforeTick.Key -eq [System.Windows.Input.Key]::Left -AND $this.Position.X -gt 0) {
                 $this.Position -= [System.Numerics.Vector2]::UnitX
             }
-            elseif ($this.LastKeyEventBeforeTick.Key -eq [System.Windows.Input.Key]::Right -AND $this.Position.X -lt $this.TetrisSize.X - 2) {
+            elseif ($this.LastKeyEventBeforeTick.Key -eq [System.Windows.Input.Key]::Right -AND $this.Position.X -lt ($this.TetrisSize.X - $this.TetrominoBound.X)) {
                 $this.Position += [System.Numerics.Vector2]::UnitX
             }
 
             $this.LastKeyEventBeforeTick = $null
         }
     
-        # Always two rows and 4 columns
-        for ($row = 0; $row -lt 2; $row++) {
+        for ($row = 0; $row -lt $this.TetrominoBlock.Count; $row++) {
 
             $bitRow = $this.TetrominoBlock[$row]
             for ($col = 0; $col -lt 4; $col++) {

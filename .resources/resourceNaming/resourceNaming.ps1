@@ -16,8 +16,6 @@ $orderedLast = @(
 { 
     param($Repository, $Project)  
        
-    Write-Host $Repository.Name
-    return
     Update-ModuleSourcesInPath -replacementPath $Repository.Localpath -Confirm:$false
     $values.GetEnumerator() | ForEach-Object {
 

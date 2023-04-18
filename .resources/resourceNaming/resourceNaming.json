@@ -1,6 +1,6 @@
 {
     "aaa": "azurerm_automation_account",
-    "afw": "azuafwrerm_application_security_group",
+    "afw": "azurerm_firewall",
     "agw": "azurerm_application_gateway",
     "appi": "azurerm_application_insights",
     "asg": "azurerm_application_security_group",

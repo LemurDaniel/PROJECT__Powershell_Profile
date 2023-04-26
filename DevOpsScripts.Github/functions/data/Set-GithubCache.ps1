@@ -48,7 +48,7 @@ function Set-GithubCache {
     $parameters = @{
         Object     = $Object
         Type       = $Type
-        identifier = "$((Get-GitUser).login).$Identifier"
+        identifier = "$((Get-GithubUser).login).$Identifier"
         Alive      = $Alive
         Forever    = $Forever
     }

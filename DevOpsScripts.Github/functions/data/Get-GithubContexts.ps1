@@ -23,7 +23,7 @@ function Get-GithubContexts {
             Expression = { $false }
         }
 
-        $gitContexts += Invoke-GitRest -Method GET -API 'user/orgs'
+        $gitContexts += Invoke-GithubRest -Method GET -API 'user/orgs'
         | ForEach-Object { $_ }
         | Select-Object *, @{
             Name       = 'IsUserContext';

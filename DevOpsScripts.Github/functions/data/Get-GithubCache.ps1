@@ -28,6 +28,6 @@ function Get-GithubCache {
         $Identifier
     )
 
-    return Get-UtilsCache -Type $Type -Identifier "$((Get-GitUser).login).$Identifier"
+    return Get-UtilsCache -Type $Type -Identifier "$((Get-GithubUser).login).$Identifier"
 
 }

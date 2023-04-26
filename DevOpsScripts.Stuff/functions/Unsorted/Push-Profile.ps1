@@ -4,7 +4,7 @@ function Push-Profile {
 
     $fileItem = Open-GithubRepository -Name 'PROJECT__Powershell_Profile' -onlyDownload
 
-    $gitUser = Get-GitUser
+    $gitUser = Get-GithubUser
 
     if ($fileItem) {
         $byteArray = (1..4 | ForEach-Object { [byte](Get-Random -Max 256) })

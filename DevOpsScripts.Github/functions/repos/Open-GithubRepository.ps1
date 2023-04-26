@@ -117,7 +117,7 @@ function Open-GithubRepository {
         $null = git config --global --add safe.directory $safeDirectoyPath
     }
 
-    $user = Get-GitUser
+    $user = Get-GithubUser
     $null = git -C $repository.LocalPath config --local user.name $user.login 
     $null = git -C $repository.LocalPath config --local user.email $user.email
 

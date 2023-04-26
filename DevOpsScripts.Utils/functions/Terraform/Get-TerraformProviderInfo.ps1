@@ -1,10 +1,10 @@
 
 <#
     .SYNOPSIS
-    Resturns information about a terraform provider. Currently only offical hashicorp providers.
+    Resturns information about a terraform provider. For all verified terraform providers.
 
     .DESCRIPTION
-    Resturns information about a terraform provider. Currently only offical hashicorp providers.
+    Resturns information about a terraform provider. For all verified terraform providers.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,9 +14,21 @@
 
     .EXAMPLE
 
-    Get Information for the 'azurerm' Provider:
+    Get Information about a Provider:
 
-    PS> Get-TerraformProviderInfo azurerm
+    PS> Get-TerraformProviderInfo <autocompleted>
+
+    .EXAMPLE
+
+    Get Information for the 'hashicorp/azurerm' Provider:
+
+    PS> Get-TerraformProviderInfo 'hashicorp/azurerm
+
+    .EXAMPLE
+
+    Get Information for the 'F5Networks/bigip' Provider:
+
+    PS> Get-TerraformProviderInfo F5Networks/bigip
 
     .LINK
         
@@ -34,7 +46,7 @@ function Get-TerraformProviderInfo {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundsParameters)
-                $validValues = (Get-TerraformProviders).name
+                $validValues = (Get-TerraformProviders).identifier
                 
                 return $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -43,7 +55,7 @@ function Get-TerraformProviderInfo {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-TerraformProviders).name
+                $_ -in (Get-TerraformProviders).identifier
             }
         )]        
         [System.String]
@@ -52,7 +64,7 @@ function Get-TerraformProviderInfo {
 
     $endpoint = "https://registry.terraform.io/v1/providers/{{namespace}}/{{provider}}"
 
-    $providerData = Get-TerraformProviders | Where-Object -Property name -EQ -Value $provider
+    $providerData = Get-TerraformProviders | Where-Object -Property identifier -EQ -Value $provider
     $providerInfo = Get-UtilsCache -Type 'terraform.provider' -Identifier $provider
 
     if ($null -eq $providerInfo) {

@@ -1,10 +1,11 @@
 
 <#
     .SYNOPSIS
-    Opens the Documentation for a specific resource in a terraform provider in the Browser. Currenlty 'azurerm', 'azuread'
+    Opens the Documentation for a specific resource in a terraform provider in the Browser. For all verified terraform providers.
 
     .DESCRIPTION
-    Opens the Documentation for a specific resource in a terraform provider in the Browser. Currenlty 'azurerm', 'azuread'
+    Opens the Documentation for a specific resource in a terraform provider in the Browser. For all verified terraform providers.
+
     The Provider will autcomplete by entering someting like 'azur' and Tabing to 'azurerm'. Name will autocomplete based in Provider.
 
 
@@ -16,21 +17,27 @@
 
     .EXAMPLE
 
-    Open the documentaion for the a resource:
+    Open the documentaion for the a resource (Tab to autocomplete):
 
-    PS> tfDocs <autocompleted_provider> <autocompleted_name>
-
-    .EXAMPLE
-
-    Open the documentaion for the 'azurerm_key_vault':
-
-    PS> Open-TerraformProviderDocs azurerm key_vault
+    PS> tfDocs <autocompleted_provider> <data/resource> <autocompleted_name>
 
     .EXAMPLE
 
-    Open the documentaion for the 'azurerm_key_vault' Data-Source:
+    Open the documentaion for the 'azurerm_key_vault' from 'hashicorp/azurerm':
 
-    PS> tfDocs -type data azurerm key_vault
+    PS> tfDocs hashicorp/azurerm resource key_vault
+
+    .EXAMPLE
+
+    Open the documentaion for the 'azurerm_key_vault' Data-Source from 'hashicorp/azurerm':
+
+    PS> tfDocs hashicorp/azurerm data key_vault
+
+    .EXAMPLE
+
+    Open the documentaion for the 'external' Data-Source from 'hashicorp/external':
+
+    PS> tfdocs hashicorp/external data external
 
     .LINK
         
@@ -48,7 +55,7 @@ function Open-TerraformProviderDocs {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundsParameters)
-                $validValues = (Get-TerraformProviders).name
+                $validValues = (Get-TerraformProviders).identifier
                 
                 return $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -57,7 +64,7 @@ function Open-TerraformProviderDocs {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-TerraformProviders).name
+                $_ -in (Get-TerraformProviders).identifier
             }
         )]        
         [System.String]
@@ -66,7 +73,7 @@ function Open-TerraformProviderDocs {
         # The resource to open the doc for.
         [Parameter(
             Mandatory = $true,
-            Position = 1
+            Position = 2
         )]
         [ArgumentCompleter(
             {
@@ -87,12 +94,12 @@ function Open-TerraformProviderDocs {
 
         # type to show data reads or resources
         [Parameter(
-            Mandatory = $false,
-            Position = 2
+            Mandatory = $true,
+            Position = 1
         )]
         [ValidateSet('resource', 'data')]
         [System.String]
-        $type = "resource"
+        $type
     )
 
 
@@ -102,7 +109,7 @@ function Open-TerraformProviderDocs {
     }
 
     $category = $type -eq 'data' ? 'data-sources' : 'resources' 
-    $docsUrl = "https://registry.terraform.io/providers/{{namespace}}/{{provider}}/{{version}}/docs/{{category}}/{{resource}}" `
+    $docsUrl = 'https://registry.terraform.io/providers/{{namespace}}/{{provider}}/{{version}}/docs/{{category}}/{{resource}}' `
         -replace '{{namespace}}', $providerInfo.namespace `
         -replace '{{provider}}', $providerInfo.name `
         -replace '{{version}}', $providerInfo.version `

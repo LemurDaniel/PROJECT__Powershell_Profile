@@ -69,13 +69,13 @@ RequiredAssemblies = 'WindowsBase', 'PresentationFramework'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'New-TetrisGame', 'New-WindowBindings', 'New-WindowWPF', 
-               'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
+FunctionsToExport = 'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
                'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
                'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
-               'Get-BlenderFiles', 'Open-BlenderFile', 'Convert-SecretObject', 
-               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
-               'Set-VersionActiveTF', 'Update-SecretStore', 'Add-EnvPaths', 
+               'New-WindowBindings', 'New-WindowWPF', 'New-TetrisGame', 
+               'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
+               'Get-SecretStore', 'Set-VersionActiveTF', 'Update-SecretStore', 
+               'Get-BlenderFiles', 'Open-BlenderFile', 'Add-EnvPaths', 
                'Get-DailyMsRewards', 'Get-MsRewards', 'Get-ScrambledText', 'Prompt', 
                'Push-Profile', 'Switch-Terraform'
 

@@ -69,28 +69,28 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-DevOpsRest', 'New-Pipeline', 'Open-BuildInBrowser', 
-               'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
-               'Get-PAT', 'New-Pat', 'Update-Pat', 'Get-DevOpsArtifactFeeds', 
-               'Register-DevOpsFeedAsPSRepository', 'New-AutomatedTag', 
-               'Remove-AutomatedTags', 'Edit-RepositoriesForRedeployment', 
+FunctionsToExport = 'Invoke-DevOpsRest', 'Add-QuickContext', 'Get-ProjectInfo', 
+               'Get-RepositoryInfo', 'Remove-QuickContext', 'Show-DevOpsContext', 
+               'Switch-Organization', 'Switch-Project', 'Switch-QuickContext', 
+               'New-AutomatedTag', 'Remove-AutomatedTags', 'Get-DevOpsArtifactFeeds', 
+               'Register-DevOpsFeedAsPSRepository', 'Add-SprintIncrement', 
+               'Connect-Workitem', 'Get-SprintIterations', 'Get-Workitem', 
+               'Get-WorkItemQueries', 'New-BranchFromWorkItem', 
+               'New-SprintIteration', 'New-Workitem', 'Open-WorkItemInBrowser', 
+               'Search-WorkItemInIteration', 'Select-Workitems', 'Update-Workitem', 
+               'New-Pipeline', 'Open-BuildInBrowser', 'Start-Pipeline', 
+               'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
+               'Get-AzureDevOpsCache', 'Get-DevOpsContext', 
+               'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 
+               'Get-DevOpsProjects', 'Get-DevOpsUser', 'Get-QuickContexts', 
+               'Get-WorkItemRelationTypes', 'Set-AzureDevOpsCache', 
+               'Set-DevOpsContext', 'Edit-RepositoriesForRedeployment', 
                'Get-RecentSubmoduleTags', 'Get-RepositoryRefs', 
                'Invoke-ScriptInRepositories', 'New-FeaturePR', 'New-MasterPR', 
                'New-PullRequest', 'Open-Repository', 'Open-RepositoryInBrowser', 
                'Remove-MovedBlocksAllRepositories', 'Start-RepositoryImport', 
                'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
-               'Add-QuickContext', 'Get-ProjectInfo', 'Get-RepositoryInfo', 
-               'Remove-QuickContext', 'Show-DevOpsContext', 'Switch-Organization', 
-               'Switch-Project', 'Switch-QuickContext', 'Add-SprintIncrement', 
-               'Connect-Workitem', 'Get-SprintIterations', 'Get-Workitem', 
-               'Get-WorkItemQueries', 'New-BranchFromWorkItem', 
-               'New-SprintIteration', 'New-Workitem', 'Open-WorkItemInBrowser', 
-               'Search-WorkItemInIteration', 'Select-Workitems', 'Update-Workitem', 
-               'Get-AzureDevOpsCache', 'Get-DevOpsContext', 
-               'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 
-               'Get-DevOpsProjects', 'Get-DevOpsUser', 'Get-QuickContexts', 
-               'Get-WorkItemRelationTypes', 'Set-AzureDevOpsCache', 
-               'Set-DevOpsContext'
+               'Get-PAT', 'New-Pat', 'Update-Pat'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -99,8 +99,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'vc', 'repoBrowser', 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 
-               'swc', 'gitW'
+AliasesToExport = 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'swc', 'gitW', 'vc', 
+               'repoBrowser'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

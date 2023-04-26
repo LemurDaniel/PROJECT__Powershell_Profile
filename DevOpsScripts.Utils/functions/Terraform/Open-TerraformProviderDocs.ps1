@@ -18,19 +18,19 @@
 
     Open the documentaion for the a resource:
 
-    PS> Open-TerraformProviderDocs <autocompleted_provider> -name <autocompleted_name>
+    PS> tfDocs <autocompleted_provider> <autocompleted_name>
 
     .EXAMPLE
 
     Open the documentaion for the 'azurerm_key_vault':
 
-    PS> Open-TerraformProviderDocs azurerm -name key_vault
+    PS> Open-TerraformProviderDocs azurerm key_vault
 
     .EXAMPLE
 
     Open the documentaion for the 'azurerm_key_vault' Data-Source:
 
-    PS> tfDocs -type data azurerm -name key_vault
+    PS> tfDocs -type data azurerm key_vault
 
     .LINK
         

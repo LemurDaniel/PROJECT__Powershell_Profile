@@ -5,12 +5,20 @@
 
     .DESCRIPTION
     Opens the Documentation for a specific resource in a terraform provider in the Browser. Currenlty 'azurerm', 'azuread'
+    The Provider will autcomplete by entering someting like 'azur' and Tabing to 'azurerm'. Name will autocomplete based in Provider.
+
 
     .INPUTS
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
     None
+
+    .EXAMPLE
+
+    Open the documentaion for the a resource:
+
+    PS> Open-TerraformProviderDocs <autocompleted_provider> -name <autocompleted_name>
 
     .EXAMPLE
 

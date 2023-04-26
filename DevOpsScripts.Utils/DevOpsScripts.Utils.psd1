@@ -75,7 +75,9 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-CleanFilename', 'Get-Property',
                'Save-SecureStringToFile', 'Search-In', 'Select-ConsoleMenu', 
                'Set-UtilsCache', 'Test-IsRepository', 'Convert-TFVarsToObject', 
                'Format-SendGridContent', 'Format-SendGridResourceReport', 
-               'Send-SendGridEmail', 'New-SendGridHtmlFormat'
+               'Send-SendGridEmail', 'New-SendGridHtmlFormat', 
+               'Get-TerraformProviderInfo', 'Get-TerraformProviders', 
+               'Open-TerraformProviderDocs'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -85,7 +87,7 @@ CmdletsToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = 'Select-Property', 'property', 'get', 'Search-PreferencedObject', 
-               'Search'
+               'Search', 'tfDocs'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

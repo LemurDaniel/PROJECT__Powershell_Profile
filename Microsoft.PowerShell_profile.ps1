@@ -4,7 +4,16 @@ $ErrorActionPreference = 'Stop'
 #net user administrator /active:no
 
 
-# NPM config globals  npm install -g azure-functions-core-tools@4 --unsafe-perm true
+<#
+
+├── @vscode/vsce@2.19.0
+├── azure-functions-core-tools@4.0.5095
+├── create-react-app@5.0.1
+├── generate-code@2.3.2
+├── mssql@9.1.1
+└── yo@4.3.1
+
+#>
 
 ###################################################################################
 

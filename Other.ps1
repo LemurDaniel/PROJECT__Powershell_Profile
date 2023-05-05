@@ -84,12 +84,9 @@ $SettingsJsonDefaults = [PSCustomObject]@{
     'blockman.n20CustomColorOfDepth0Border'                    = 'none'
 
     'powershell.developer.editorServicesLogLevel'              = 'Normal'
-    'powershell.powerShellAdditionalExePaths'                  = @( 
-        @{
-            'versionName' = 'PS Core 7'
-            'exePath'     = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
-        }
-    )
+    'powershell.powerShellAdditionalExePaths'                  = @{
+        'PS Core 7' = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
+    }
     'powershell.powerShellDefaultVersion'                      = 'PS Core 7'
 
     ############################################

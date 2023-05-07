@@ -10,7 +10,7 @@ function Get-MsRewards {
         $browser = 'Opera'
     )
 
-    $words = Get-Content -Path (Get-ChildItem -Recurse -Path '41.284_words.txt')[0]   #"$PSScriptRoot\41.284_words.txt"
+    $words = Get-Content -Path "$PSScriptRoot\41.284_words.txt"
 
     # Default Installation paths for browsers on windows.
     $applicationPaths = @{

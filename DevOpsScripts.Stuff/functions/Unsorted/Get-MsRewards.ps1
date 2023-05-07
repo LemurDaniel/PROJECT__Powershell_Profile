@@ -10,7 +10,7 @@ function Get-MsRewards {
         $browser = 'Opera'
     )
 
-    $words = Get-Content -Path "$PSScriptRoot\41.284_words.txt"
+    $words = Get-Content -Path (Get-ChildItem -Recurse -Path '41.284_words.txt')[0]   #"$PSScriptRoot\41.284_words.txt"
 
     # Default Installation paths for browsers on windows.
     $applicationPaths = @{
@@ -20,13 +20,23 @@ function Get-MsRewards {
     }
     $baseUrl = 'https://www.bing.com/search?q={0}'
 
-    for (; $calls -gt 0; $calls--) {
+    $progressBar = @{
+        Id       = [DateTime]::Now.Minute
+        Activity = 'Bing Search'
+        Status   = "0/$Calls"
+    }
 
+    for ($current = 0; $current -lt $calls; $current++) {
+
+        $percentComplete = [System.Math]::Floor($current / $calls * 100)
+        Write-Progress @progressBar -PercentComplete $percentComplete -Status "$($current+1)/$calls"
         Start-Sleep -Milliseconds (Get-Random -Minimum 800 -Maximum 2000)
         $word = $words[(Get-Random -Minimum 0 -Maximum $words.Length)]
         $url = [System.String]::Format($baseUrl, $word)
-        [system.Diagnostics.Process]::Start($applicationPaths[$browser], $url)
+        $null = [system.Diagnostics.Process]::Start($applicationPaths[$browser], $url)
         
     }
+
+    Write-Progress @progressBar -Completed
 
 }

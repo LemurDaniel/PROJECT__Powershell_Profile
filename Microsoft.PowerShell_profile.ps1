@@ -19,7 +19,6 @@ $ErrorActionPreference = 'Stop'
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-## Resolve App Path
 $env:OneDrive = $env:OneDriveConsumer ?? $env:OneDrive
 $env:AppPath = "$env:OneDrive/_Apps/"
 $env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps"
@@ -27,6 +26,7 @@ if (!(Test-Path $env:AppPath)) {
     $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
 }
 
+$env:TerraformPath = "$env:AppPath\_EnvPath_Apps\terraform\"
 $env:TF_DATA_DIR = 'C:\TFCACHE'
 ########################################################################################################################
 ########################################################################################################################

@@ -11,7 +11,6 @@ $global:DefaultEnvPaths = [ordered]@{
     AzureCLI_secondary  = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
     sqlcmd              = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
  
-    terraform           = "$env:AppPath\_EnvPath_Apps\terraform\"
     terraformDocs       = "Invoke-ScriptInRepositories\_EnvPath_Apps\terraform-docs\v.0.16.0"
     tflint              = "$env:AppPath\_EnvPath_Apps\tflint\v0.44.0"
 
@@ -32,8 +31,8 @@ $global:DefaultEnvPaths = [ordered]@{
     gpg_primary         = 'C:\Program Files (x86)\GnuPG\bin'
     gpg_secondary       = "$env:APPDATA\..\Local\Programs\GnuPG\bin"
 
-    test = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx86\x86"
-    test2 = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include"
+    test                = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx86\x86"
+    test2               = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include"
 
 }
 

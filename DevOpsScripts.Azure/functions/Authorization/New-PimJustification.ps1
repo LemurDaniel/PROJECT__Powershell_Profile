@@ -80,7 +80,6 @@ SELECT  [System.Id], [System.Title], [System.State], [System.WorkItemType]
 FROM    WorkItems 
 
 WHERE   [System.TeamProject]  = @project
-AND [System.State] = 'Active'
 AND [System.AssignedTo] = '{{USER}}'
 
 ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
@@ -114,7 +113,7 @@ ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
             } | ConvertTo-Json -Compress
             $workItemsActive = Invoke-RestMethod @Request
 
-            $workItemsActive = Set-UtilsCache -Object $workItemsActive.value -Type PimWorkItem -Identifier active -Alive 1440
+            #$workItemsActive = Set-UtilsCache -Object $workItemsActive.value -Type PimWorkItem -Identifier active -Alive 1440
         }
    
         $lastItem = Get-UtilsCache -Type PimWorkItem -Identifier last

@@ -43,7 +43,7 @@ $EnvironmentPaths = [System.Environment]::GetEnvironmentVariable('Path', [System
 $EnvironmentPaths = (@() + $global:DefaultEnvPaths.Values + $EnvironmentPaths) -join ';'
 #[System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::User)
 [System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::Process)
-
+$env:Path = $EnvironmentPaths
 
 $SettingsJsonDefaults = [PSCustomObject]@{
 

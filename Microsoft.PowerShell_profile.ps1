@@ -49,7 +49,7 @@ function Get-DumbJoke {
 Import-Module "$PSScriptRoot\DevOpsScripts"
 . "$PSScriptRoot/Environment.ps1"
  
-Switch-Terraform
+# Switch-Terraform
 
 $settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
 if ($settingsFile) {

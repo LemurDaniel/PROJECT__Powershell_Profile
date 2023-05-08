@@ -7,7 +7,7 @@
 !.gitignore
 !.editorconfig
 !Microsoft.PowerShell_profile.ps1
-!Other.ps1
+!Environment.ps1
 !/Readme.md
 
 # Whitelist subfolders

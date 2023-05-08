@@ -53,7 +53,7 @@ function Get-UtilsCache {
     )
 
     try {
-        $CacheFolderPath = $Path ?? $env:UTILS_CACHE_PATH ?? "$([System.IO.Path]::GetTempPath())/.cache/"
+        $CacheFolderPath = ![System.String]::IsNullOrEmpty($Path) ? $Path : $env:UTILS_CACHE_PATH ?? "$([System.IO.Path]::GetTempPath())/.cache/"
         $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
 
         Write-Verbose $CacheFilePath

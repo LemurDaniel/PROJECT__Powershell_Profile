@@ -28,11 +28,8 @@ $global:DefaultEnvPaths = [ordered]@{
     java                = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
     docker              = 'C:\Program Files\Docker\Docker\resources\bin'
 
-    gpg_primary         = 'C:\Program Files (x86)\GnuPG\bin'
-    gpg_secondary       = "$env:APPDATA\..\Local\Programs\GnuPG\bin"
-
-    test                = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx86\x86"
-    test2               = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include"
+    gpg                 = (Resolve-Path -Path "C:\Program Files (x86)\GnuPG\bin" -ErrorAction SilentlyContinue).Path `
+        ?? '$env:APPDATA\..\Local\Programs\GnuPG\bin'
 
 }
 

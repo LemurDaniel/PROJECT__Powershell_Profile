@@ -51,15 +51,15 @@ Import-Module "$PSScriptRoot\DevOpsScripts"
  
 # Switch-Terraform
 
+
 $settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
 if ($settingsFile) {
     $settingsContent = Get-Content -Raw -Path "$PSScriptRoot/.resources/settings.json" | ConvertFrom-Json -Depth 99
     $settingsContent.profiles.defaults.elevate = $env:USERNAME -ne 'M01947'
-    $terminalProfile = $settingsContent.profiles.list | Where-Object -Property name -EQ -Value 'PS 7'
-    $terminalProfile.commandline = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
+    #$terminalProfile = $settingsContent.profiles.list | Where-Object -Property name -EQ -Value 'PS 7'
+    #$terminalProfile.commandline = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
     $settingsContent | ConvertTo-Json -Depth 99 | Out-File -FilePath $settingsFile.FullName
 }
-
 
 $null = Add-QuickContext -ContextName Teamsbuilder -Organization baugruppe -Project 'Teamsbuilder' -Force
 $null = Add-QuickContext -ContextName 'DC Migration' -Organization baugruppe -Project 'DC Azure Migration' -Force

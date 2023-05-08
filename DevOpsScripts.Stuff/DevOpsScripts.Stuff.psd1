@@ -75,9 +75,9 @@ FunctionsToExport = 'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication',
                'New-WindowBindings', 'New-WindowWPF', 'New-TetrisGame', 
                'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
                'Get-SecretStore', 'Set-VersionActiveTF', 'Update-SecretStore', 
-               'Get-BlenderFiles', 'Open-BlenderFile', 'Add-EnvPaths', 
-               'Get-DailyMsRewards', 'Get-MsRewards', 'Get-ScrambledText', 'Prompt', 
-               'Push-Profile', 'Switch-Terraform'
+               'Get-BlenderFiles', 'Open-BlenderFile', 'Get-DailyMsRewards', 
+               'Get-MsRewards', 'Get-ScrambledText', 'Prompt', 'Push-Profile', 
+               'Switch-Terraform'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

@@ -55,20 +55,21 @@ function Set-UtilsCache {
 
         [Parameter(Mandatory = $false)]
         [System.String]
-        $Path = "$PSScriptRoot/.cache/"
+        $Path = $null
     )
 
-    $cachePath = Join-Path -Path $Path -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
+    $CacheFolderPath = $Path ?? $env:UTILS_CACHE_PATH ?? "$([System.IO.Path]::GetTempPath())/.cache/"
+    $CacheFilePath = Join-Path -Path $CachePath -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
     
-    if (-not (Test-Path -Path $Path)) {
-        $null = New-Item -Path $Path -ItemType Directory -Force
+    if (-not (Test-Path -Path $CacheFolderPath)) {
+        $null = New-Item -Path $CacheFolderPath -ItemType Directory -Force
     }
     
     $Alive = $Forever ? [System.Int32]::MaxValue : $Alive
     @{
         Date    = ([DateTime]::Now).AddMinutes($Alive)
         Content = $Object
-    } | ConvertTo-Json -Depth 16 | Out-File -Path $cachePath
+    } | ConvertTo-Json -Depth 16 | Out-File -Path $CacheFilePath
    
     return $Object
 

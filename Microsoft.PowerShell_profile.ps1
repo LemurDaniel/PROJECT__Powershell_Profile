@@ -27,18 +27,7 @@ if (!(Test-Path $env:AppPath)) {
     $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
 }
 
-## ENV Variables
-$env:SECRET_STORE = "$env:AppPath/_SECRET_STORE/"
-$env:Secondary_SECRET_STORE = "$env:APPDATA/_SECRET_TOKEN_STORE/"
-if (!(Test-Path $env:SECRET_STORE)) {
-    $env:SECRET_STORE = (Resolve-Path $env:Secondary_SECRET_STORE).Path
-}
-
-### Resolve Terraform Path
-$env:TerraformDocs = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform-docs/").Path
-$env:TerraformPath = (Resolve-Path "$env:AppPath/_EnvPath_Apps/terraform/").Path
-$env:TerraformNewestVersion = (Get-ChildItem -Path $env:TerraformPath | Sort-Object -Descending)[0].FullName
-
+$env:TF_DATA_DIR = 'C:\TFCACHE'
 ########################################################################################################################
 ########################################################################################################################
 ########################################################################################################################
@@ -58,11 +47,9 @@ function Get-DumbJoke {
 
 
 Import-Module "$PSScriptRoot\DevOpsScripts"
-. "$PSScriptRoot/Other.ps1"
+. "$PSScriptRoot/Environment.ps1"
  
-Add-EnvPaths
 Switch-Terraform
-Set-Item -Path env:TF_DATA_DIR -Value 'C:\TFCACHE'
 
 $settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
 if ($settingsFile) {

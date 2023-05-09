@@ -71,8 +71,8 @@ function New-PimJustification {
         ################# Getting active workitems #################
         ############################################################
 
-        $workItemsActive = Get-UtilsCache -Type PimWorkItem -Identifier active
-        if (!$workitemsActive -OR $PSBoundParameters.ContainsKey('Refresh')) {
+        $workItemsList = Get-UtilsCache -Type PimWorkItem -Identifier active
+        if (!$workItemsList -OR $PSBoundParameters.ContainsKey('Refresh')) {
 
             $QueryStatement = @'
 SELECT  [System.Id], [System.Title], [System.State], [System.WorkItemType] 
@@ -81,8 +81,11 @@ FROM    WorkItems
 
 WHERE   [System.TeamProject]  = @project
 AND [System.AssignedTo] = '{{USER}}'
+AND [System.State] <> 'Closed'
+AND [System.State] <> 'Resolved'
+AND [System.ChangedDate] > @StartOfDay('-30d')
 
-ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
+ORDER BY [System.WorkItemType] ASC, [System.ChangedDate] DESC
 '@ -replace '{{USER}}', (Get-AzContext).Account.Id
 
             if ((Get-AzContext).Account.Id.Contains('aadmin')) {
@@ -99,25 +102,25 @@ ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
                     Authorization  = "Bearer $token"           
                     'Content-Type' = 'application/json; charset=utf-8'      
                 }   
-                Uri     = "https://dev.azure.com/$Organization/$Project/_apis/wit/wiql?api-version=5.1" -replace ' ', '%20'
+                Uri     = "https://dev.azure.com/$Organization/$Project/_apis/wit/wiql?api-version=5.1&`$top=30" -replace ' ', '%20'
                 Method  = 'POST'
                 Body    = @{
                     query = $QueryStatement
                 } | ConvertTo-Json -Compress
             }
-            $workItemsActive = Invoke-RestMethod @Request
+            $workItemsList = Invoke-RestMethod @Request
 
             $Request.Uri = "https://dev.azure.com/$Organization/$Project/_apis/wit/workitemsbatch?`$expand=fields&api-version=7.0" -replace ' ', '%20'
             $Request.Body = @{
-                ids = $workItemsActive.workItems.id
+                ids = $workItemsList.workItems.id
             } | ConvertTo-Json -Compress
-            $workItemsActive = Invoke-RestMethod @Request
+            $workItemsList = Invoke-RestMethod @Request | Select-Object -ExpandProperty value
 
-            #$workItemsActive = Set-UtilsCache -Object $workItemsActive.value -Type PimWorkItem -Identifier active -Alive 1440
+            #$workItemsList = Set-UtilsCache -Object $workItemsList -Type PimWorkItem -Identifier active -Alive 1440
         }
    
         $lastItem = Get-UtilsCache -Type PimWorkItem -Identifier last
-        $workItemsActive = $workItemsActive | Where-Object -Property id -NE $lastItem.Id
+        $workItemsList = $workItemsList | Where-Object -Property id -NE $lastItem.Id
         $Options = @(
             @{ display = 'Enter new Workitem ID'; workItemId = $null }
         )
@@ -130,7 +133,7 @@ ORDER BY [System.WorkItemType] ASC, [System.CreatedDate] DESC
                 }
             )
         }
-        $workItemsActive | ForEach-Object {
+        $workItemsList | ForEach-Object {
             $options += @(
                 @{ 
                     display    = "[$($_.fields.'System.WorkItemType') - $($($_.id))] $($_.fields.'System.Title')"

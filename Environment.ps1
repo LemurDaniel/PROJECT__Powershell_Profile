@@ -29,7 +29,7 @@ $global:DefaultEnvPaths = [ordered]@{
     docker              = 'C:\Program Files\Docker\Docker\resources\bin'
 
     gpg                 = (Resolve-Path -Path "C:\Program Files (x86)\GnuPG\bin" -ErrorAction SilentlyContinue).Path `
-        ?? '$env:APPDATA\..\Local\Programs\GnuPG\bin'
+        ?? "$env:APPDATA\..\Local\Programs\GnuPG\bin"
 
 }
 

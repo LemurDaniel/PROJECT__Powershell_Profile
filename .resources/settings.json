@@ -60,7 +60,7 @@
             {
                 "adjustIndistinguishableColors": "indexed",
                 "colorScheme": "Campbell Powershell",
-                "commandline": "%USERPROFILE%\\OneDrive\\Dokumente\\_Apps\\_EnvPath_Apps\\PowerShell\\7.3.2\\pwsh.exe",
+                "commandline": "pwsh.exe",
                 "experimental.retroTerminalEffect": false,
                 "font": {
                     "size": 12.0,

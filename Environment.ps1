@@ -93,7 +93,7 @@ $SettingsJsonDefaults = [PSCustomObject]@{
         'PS 7'                           = @{
             'icon' = 'terminal-powershell'
             'path' = @(
-                "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
+                "pwsh.exe"
             )
             'args' = @()
         }

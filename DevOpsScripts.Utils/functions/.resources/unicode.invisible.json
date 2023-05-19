@@ -1,0 +1,974 @@
+[
+  {
+    "Character": "\t",
+    "Unicode": "U+0009",
+    "Name": null,
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Control (Cc)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Basic Latin, U+0000 - U+007F",
+    "UTF-32 Encoding": "0x00000009",
+    "UTF-16 Encoding": "0x0009",
+    "UTF-8 Encoding": "0x09",
+    "Bidirectional Class": "Segment Separator (S)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#9;&amp;#x9;&amp;Tab;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+0020",
+    "Name": "Space (SP)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Basic Latin, U+0000 - U+007F",
+    "UTF-32 Encoding": "0x00000020",
+    "UTF-16 Encoding": "0x0020",
+    "UTF-8 Encoding": "0x20",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#32;&amp;#x20;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+00A0",
+    "Name": "No-Break Space (NBSP)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Latin-1 Supplement, U+0080 - U+00FF",
+    "UTF-32 Encoding": "0x000000A0",
+    "UTF-16 Encoding": "0x00A0",
+    "UTF-8 Encoding": "0xC2 0xA0",
+    "Bidirectional Class": "Common Separator (CS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#160;&amp;#xA0;&amp;NonBreakingSpace;"
+    ]
+  },
+  {
+    "Character": "­",
+    "Unicode": "U+00AD",
+    "Name": "Soft Hyphen (SHY)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Latin-1 Supplement, U+0080 - U+00FF",
+    "UTF-32 Encoding": "0x000000AD",
+    "UTF-16 Encoding": "0x00AD",
+    "UTF-8 Encoding": "0xC2 0xAD",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#173;&amp;#xAD;&amp;shy;"
+    ]
+  },
+  {
+    "Character": "͏",
+    "Unicode": "U+034F",
+    "Name": "Combining Grapheme Joiner (CGJ)",
+    "Unicode Version": "3.2 (March 2002)",
+    "Script": "Code for inherited script (Zinh)",
+    "Category": "Nonspacing Mark (Mn)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Combining Diacritical Marks, U+0300 - U+036F",
+    "UTF-32 Encoding": "0x0000034F",
+    "UTF-16 Encoding": "0x034F",
+    "UTF-8 Encoding": "0xCD 0x8F",
+    "Bidirectional Class": "Nonspacing Mark (NSM)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#847;&amp;#x34F;"
+    ]
+  },
+  {
+    "Character": "؜",
+    "Unicode": "U+061C",
+    "Name": "Arabic Letter Mark (ALM)",
+    "Unicode Version": "6.3 (September 2013)",
+    "Script": "Arabic (Arab)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Arabic, U+0600 - U+06FF",
+    "UTF-32 Encoding": "0x0000061C",
+    "UTF-16 Encoding": "0x061C",
+    "UTF-8 Encoding": "0xD8 0x9C",
+    "Bidirectional Class": "Arabic Letter (AL)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#1564;&amp;#x61C;"
+    ]
+  },
+  {
+    "Character": "ᅟ",
+    "Unicode": "U+115F",
+    "Name": "Hangul Choseong Filler",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Hangul (Hang)",
+    "Category": "Other Letter (Lo)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Hangul Jamo, U+1100 - U+11FF",
+    "UTF-32 Encoding": "0x0000115F",
+    "UTF-16 Encoding": "0x115F",
+    "UTF-8 Encoding": "0xE1 0x85 0x9F",
+    "Bidirectional Class": "Left To Right (L)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#4447;&amp;#x115F;"
+    ]
+  },
+  {
+    "Character": "ᅠ",
+    "Unicode": "U+1160",
+    "Name": "Hangul Jungseong Filler",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Hangul (Hang)",
+    "Category": "Other Letter (Lo)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Hangul Jamo, U+1100 - U+11FF",
+    "UTF-32 Encoding": "0x00001160",
+    "UTF-16 Encoding": "0x1160",
+    "UTF-8 Encoding": "0xE1 0x85 0xA0",
+    "Bidirectional Class": "Left To Right (L)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#4448;&amp;#x1160;"
+    ]
+  },
+  {
+    "Character": "឴",
+    "Unicode": "U+17B4",
+    "Name": "Khmer Vowel Inherent Aq",
+    "Unicode Version": "3.0 (September 1999)",
+    "Script": "Khmer (Khmr)",
+    "Category": "Nonspacing Mark (Mn)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Khmer, U+1780 - U+17FF",
+    "UTF-32 Encoding": "0x000017B4",
+    "UTF-16 Encoding": "0x17B4",
+    "UTF-8 Encoding": "0xE1 0x9E 0xB4",
+    "Bidirectional Class": "Nonspacing Mark (NSM)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#6068;&amp;#x17B4;"
+    ]
+  },
+  {
+    "Character": "឵",
+    "Unicode": "U+17B5",
+    "Name": "Khmer Vowel Inherent Aa",
+    "Unicode Version": "3.0 (September 1999)",
+    "Script": "Khmer (Khmr)",
+    "Category": "Nonspacing Mark (Mn)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Khmer, U+1780 - U+17FF",
+    "UTF-32 Encoding": "0x000017B5",
+    "UTF-16 Encoding": "0x17B5",
+    "UTF-8 Encoding": "0xE1 0x9E 0xB5",
+    "Bidirectional Class": "Nonspacing Mark (NSM)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#6069;&amp;#x17B5;"
+    ]
+  },
+  {
+    "Character": "᠎",
+    "Unicode": "U+180E",
+    "Name": "Mongolian Vowel Separator (MVS)",
+    "Unicode Version": "3.0 (September 1999)",
+    "Script": "Mongolian (Mong)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Mongolian, U+1800 - U+18AF",
+    "UTF-32 Encoding": "0x0000180E",
+    "UTF-16 Encoding": "0x180E",
+    "UTF-8 Encoding": "0xE1 0xA0 0x8E",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#6158;&amp;#x180E;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2000",
+    "Name": "En Quad",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002000",
+    "UTF-16 Encoding": "0x2000",
+    "UTF-8 Encoding": "0xE2 0x80 0x80",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8192;&amp;#x2000;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2001",
+    "Name": "Em Quad",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002001",
+    "UTF-16 Encoding": "0x2001",
+    "UTF-8 Encoding": "0xE2 0x80 0x81",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8193;&amp;#x2001;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2002",
+    "Name": "En Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002002",
+    "UTF-16 Encoding": "0x2002",
+    "UTF-8 Encoding": "0xE2 0x80 0x82",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8194;&amp;#x2002;&amp;ensp;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2003",
+    "Name": "Em Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002003",
+    "UTF-16 Encoding": "0x2003",
+    "UTF-8 Encoding": "0xE2 0x80 0x83",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8195;&amp;#x2003;&amp;emsp;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2004",
+    "Name": "Three-Per-Em Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002004",
+    "UTF-16 Encoding": "0x2004",
+    "UTF-8 Encoding": "0xE2 0x80 0x84",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8196;&amp;#x2004;&amp;emsp13;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2005",
+    "Name": "Four-Per-Em Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002005",
+    "UTF-16 Encoding": "0x2005",
+    "UTF-8 Encoding": "0xE2 0x80 0x85",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8197;&amp;#x2005;&amp;emsp14;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2006",
+    "Name": "Six-Per-Em Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002006",
+    "UTF-16 Encoding": "0x2006",
+    "UTF-8 Encoding": "0xE2 0x80 0x86",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8198;&amp;#x2006;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2007",
+    "Name": "Figure Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002007",
+    "UTF-16 Encoding": "0x2007",
+    "UTF-8 Encoding": "0xE2 0x80 0x87",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8199;&amp;#x2007;&amp;numsp;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2008",
+    "Name": "Punctuation Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002008",
+    "UTF-16 Encoding": "0x2008",
+    "UTF-8 Encoding": "0xE2 0x80 0x88",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8200;&amp;#x2008;&amp;puncsp;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+2009",
+    "Name": "Thin Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002009",
+    "UTF-16 Encoding": "0x2009",
+    "UTF-8 Encoding": "0xE2 0x80 0x89",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8201;&amp;#x2009;&amp;ThinSpace;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+200A",
+    "Name": "Hair Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000200A",
+    "UTF-16 Encoding": "0x200A",
+    "UTF-8 Encoding": "0xE2 0x80 0x8A",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8202;&amp;#x200A;&amp;VeryThinSpace;"
+    ]
+  },
+  {
+    "Character": "​",
+    "Unicode": "U+200B",
+    "Name": "Zero Width Space (ZWSP)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000200B",
+    "UTF-16 Encoding": "0x200B",
+    "UTF-8 Encoding": "0xE2 0x80 0x8B",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8203;&amp;#x200B;&amp;NegativeVeryThinSpace;"
+    ]
+  },
+  {
+    "Character": "‌",
+    "Unicode": "U+200C",
+    "Name": "Zero Width Non-Joiner (ZWNJ)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for inherited script (Zinh)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000200C",
+    "UTF-16 Encoding": "0x200C",
+    "UTF-8 Encoding": "0xE2 0x80 0x8C",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8204;&amp;#x200C;&amp;zwnj;"
+    ]
+  },
+  {
+    "Character": "‍",
+    "Unicode": "U+200D",
+    "Name": "Zero Width Joiner (ZWJ)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for inherited script (Zinh)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000200D",
+    "UTF-16 Encoding": "0x200D",
+    "UTF-8 Encoding": "0xE2 0x80 0x8D",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8205;&amp;#x200D;&amp;zwj;"
+    ]
+  },
+  {
+    "Character": "‎",
+    "Unicode": "U+200E",
+    "Name": "Left-to-Right Mark (LRM)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000200E",
+    "UTF-16 Encoding": "0x200E",
+    "UTF-8 Encoding": "0xE2 0x80 0x8E",
+    "Bidirectional Class": "Left To Right (L)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8206;&amp;#x200E;&amp;lrm;"
+    ]
+  },
+  {
+    "Character": "‏",
+    "Unicode": "U+200F",
+    "Name": "Right-to-Left Mark (RLM)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000200F",
+    "UTF-16 Encoding": "0x200F",
+    "UTF-8 Encoding": "0xE2 0x80 0x8F",
+    "Bidirectional Class": "Right To Left (R)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8207;&amp;#x200F;&amp;rlm;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+202F",
+    "Name": "Narrow No-Break Space (NNBSP)",
+    "Unicode Version": "3.0 (September 1999)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000202F",
+    "UTF-16 Encoding": "0x202F",
+    "UTF-8 Encoding": "0xE2 0x80 0xAF",
+    "Bidirectional Class": "Common Separator (CS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8239;&amp;#x202F;"
+    ]
+  },
+  {
+    "Character": " ",
+    "Unicode": "U+205F",
+    "Name": "Medium Mathematical Space (MMSP)",
+    "Unicode Version": "3.2 (March 2002)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000205F",
+    "UTF-16 Encoding": "0x205F",
+    "UTF-8 Encoding": "0xE2 0x81 0x9F",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8287;&amp;#x205F;&amp;MediumSpace;"
+    ]
+  },
+  {
+    "Character": "⁠",
+    "Unicode": "U+2060",
+    "Name": "Word Joiner (WJ)",
+    "Unicode Version": "3.2 (March 2002)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002060",
+    "UTF-16 Encoding": "0x2060",
+    "UTF-8 Encoding": "0xE2 0x81 0xA0",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8288;&amp;#x2060;&amp;NoBreak;"
+    ]
+  },
+  {
+    "Character": "⁡",
+    "Unicode": "U+2061",
+    "Name": "Function Application",
+    "Unicode Version": "3.2 (March 2002)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002061",
+    "UTF-16 Encoding": "0x2061",
+    "UTF-8 Encoding": "0xE2 0x81 0xA1",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8289;&amp;#x2061;&amp;ApplyFunction;"
+    ]
+  },
+  {
+    "Character": "⁢",
+    "Unicode": "U+2062",
+    "Name": "Invisible Times",
+    "Unicode Version": "3.2 (March 2002)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002062",
+    "UTF-16 Encoding": "0x2062",
+    "UTF-8 Encoding": "0xE2 0x81 0xA2",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8290;&amp;#x2062;&amp;InvisibleTimes;"
+    ]
+  },
+  {
+    "Character": "⁣",
+    "Unicode": "U+2063",
+    "Name": "Invisible Separator",
+    "Unicode Version": "3.2 (March 2002)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002063",
+    "UTF-16 Encoding": "0x2063",
+    "UTF-8 Encoding": "0xE2 0x81 0xA3",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8291;&amp;#x2063;&amp;InvisibleComma;"
+    ]
+  },
+  {
+    "Character": "⁤",
+    "Unicode": "U+2064",
+    "Name": "Invisible Plus",
+    "Unicode Version": "5.1 (April 2008)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x00002064",
+    "UTF-16 Encoding": "0x2064",
+    "UTF-8 Encoding": "0xE2 0x81 0xA4",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8292;&amp;#x2064;"
+    ]
+  },
+  {
+    "Character": "⁪",
+    "Unicode": "U+206A",
+    "Name": "Inhibit Symmetric Swapping",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000206A",
+    "UTF-16 Encoding": "0x206A",
+    "UTF-8 Encoding": "0xE2 0x81 0xAA",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8298;&amp;#x206A;"
+    ]
+  },
+  {
+    "Character": "⁫",
+    "Unicode": "U+206B",
+    "Name": "Activate Symmetric Swapping",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000206B",
+    "UTF-16 Encoding": "0x206B",
+    "UTF-8 Encoding": "0xE2 0x81 0xAB",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8299;&amp;#x206B;"
+    ]
+  },
+  {
+    "Character": "⁬",
+    "Unicode": "U+206C",
+    "Name": "Inhibit Arabic Form Shaping",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000206C",
+    "UTF-16 Encoding": "0x206C",
+    "UTF-8 Encoding": "0xE2 0x81 0xAC",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8300;&amp;#x206C;"
+    ]
+  },
+  {
+    "Character": "⁭",
+    "Unicode": "U+206D",
+    "Name": "Activate Arabic Form Shaping",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000206D",
+    "UTF-16 Encoding": "0x206D",
+    "UTF-8 Encoding": "0xE2 0x81 0xAD",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8301;&amp;#x206D;"
+    ]
+  },
+  {
+    "Character": "⁮",
+    "Unicode": "U+206E",
+    "Name": "National Digit Shapes",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000206E",
+    "UTF-16 Encoding": "0x206E",
+    "UTF-8 Encoding": "0xE2 0x81 0xAE",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8302;&amp;#x206E;"
+    ]
+  },
+  {
+    "Character": "⁯",
+    "Unicode": "U+206F",
+    "Name": "Nominal Digit Shapes",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "General Punctuation, U+2000 - U+206F",
+    "UTF-32 Encoding": "0x0000206F",
+    "UTF-16 Encoding": "0x206F",
+    "UTF-8 Encoding": "0xE2 0x81 0xAF",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#8303;&amp;#x206F;"
+    ]
+  },
+  {
+    "Character": "　",
+    "Unicode": "U+3000",
+    "Name": "Ideographic Space",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Space Separator (Zs)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "CJK Symbols and Punctuation, U+3000 - U+303F",
+    "UTF-32 Encoding": "0x00003000",
+    "UTF-16 Encoding": "0x3000",
+    "UTF-8 Encoding": "0xE3 0x80 0x80",
+    "Bidirectional Class": "White Space (WS)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#12288;&amp;#x3000;"
+    ]
+  },
+  {
+    "Character": "⠀",
+    "Unicode": "U+2800",
+    "Name": "Braille Pattern Blank",
+    "Unicode Version": "3.0 (September 1999)",
+    "Script": "Braille (Brai)",
+    "Category": "Other Symbol (So)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Braille Patterns, U+2800 - U+28FF",
+    "UTF-32 Encoding": "0x00002800",
+    "UTF-16 Encoding": "0x2800",
+    "UTF-8 Encoding": "0xE2 0xA0 0x80",
+    "Bidirectional Class": "Left To Right (L)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#10240;&amp;#x2800;"
+    ]
+  },
+  {
+    "Character": "ㅤ",
+    "Unicode": "U+3164",
+    "Name": "Hangul Filler",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Hangul (Hang)",
+    "Category": "Other Letter (Lo)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Hangul Compatibility Jamo, U+3130 - U+318F",
+    "UTF-32 Encoding": "0x00003164",
+    "UTF-16 Encoding": "0x3164",
+    "UTF-8 Encoding": "0xE3 0x85 0xA4",
+    "Bidirectional Class": "Left To Right (L)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#12644;&amp;#x3164;"
+    ]
+  },
+  {
+    "Character": "﻿",
+    "Unicode": "U+FEFF",
+    "Name": "Zero Width No-Break Space (BOM, ZWNBSP)",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Arabic Presentation Forms-B, U+FE70 - U+FEFF",
+    "UTF-32 Encoding": "0x0000FEFF",
+    "UTF-16 Encoding": "0xFEFF",
+    "UTF-8 Encoding": "0xEF 0xBB 0xBF",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#65279;&amp;#xFEFF;"
+    ]
+  },
+  {
+    "Character": "ﾠ",
+    "Unicode": "U+FFA0",
+    "Name": "Halfwidth Hangul Filler",
+    "Unicode Version": "1.1 (June 1993)",
+    "Script": "Hangul (Hang)",
+    "Category": "Other Letter (Lo)",
+    "Plane": "Basic Multilingual Plane, U+0000 - U+FFFF",
+    "Block": "Halfwidth and Fullwidth Forms, U+FF00 - U+FFEF",
+    "UTF-32 Encoding": "0x0000FFA0",
+    "UTF-16 Encoding": "0xFFA0",
+    "UTF-8 Encoding": "0xEF 0xBE 0xA0",
+    "Bidirectional Class": "Left To Right (L)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#65440;&amp;#xFFA0;"
+    ]
+  },
+  {
+    "Character": "𝅙",
+    "Unicode": "U+1D159",
+    "Name": "Musical Symbol Null Notehead",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Other Symbol (So)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D159",
+    "UTF-16 Encoding": "0xD834 0xDD59",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0x99",
+    "Bidirectional Class": "Left To Right (L)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119129;&amp;#x1D159;"
+    ]
+  },
+  {
+    "Character": "𝅳",
+    "Unicode": "U+1D173",
+    "Name": "Musical Symbol Begin Beam",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D173",
+    "UTF-16 Encoding": "0xD834 0xDD73",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xB3",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119155;&amp;#x1D173;"
+    ]
+  },
+  {
+    "Character": "𝅴",
+    "Unicode": "U+1D174",
+    "Name": "Musical Symbol End Beam",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D174",
+    "UTF-16 Encoding": "0xD834 0xDD74",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xB4",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119156;&amp;#x1D174;"
+    ]
+  },
+  {
+    "Character": "𝅵",
+    "Unicode": "U+1D175",
+    "Name": "Musical Symbol Begin Tie",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D175",
+    "UTF-16 Encoding": "0xD834 0xDD75",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xB5",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119157;&amp;#x1D175;"
+    ]
+  },
+  {
+    "Character": "𝅶",
+    "Unicode": "U+1D176",
+    "Name": "Musical Symbol End Tie",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D176",
+    "UTF-16 Encoding": "0xD834 0xDD76",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xB6",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119158;&amp;#x1D176;"
+    ]
+  },
+  {
+    "Character": "𝅷",
+    "Unicode": "U+1D177",
+    "Name": "Musical Symbol Begin Slur",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D177",
+    "UTF-16 Encoding": "0xD834 0xDD77",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xB7",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119159;&amp;#x1D177;"
+    ]
+  },
+  {
+    "Character": "𝅸",
+    "Unicode": "U+1D178",
+    "Name": "Musical Symbol End Slur",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D178",
+    "UTF-16 Encoding": "0xD834 0xDD78",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xB8",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119160;&amp;#x1D178;"
+    ]
+  },
+  {
+    "Character": "𝅹",
+    "Unicode": "U+1D179",
+    "Name": "Musical Symbol Begin Phrase",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D179",
+    "UTF-16 Encoding": "0xD834 0xDD79",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xB9",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119161;&amp;#x1D179;"
+    ]
+  },
+  {
+    "Character": "𝅺",
+    "Unicode": "U+1D17A",
+    "Name": "Musical Symbol End Phrase",
+    "Unicode Version": "3.1 (March 2001)",
+    "Script": "Code for undetermined script (Zyyy)",
+    "Category": "Format (Cf)",
+    "Plane": "Supplementary Multilingual Plane, U+10000 - U+1FFFF",
+    "Block": "Musical Symbols, U+1D100 - U+1D1FF",
+    "UTF-32 Encoding": "0x0001D17A",
+    "UTF-16 Encoding": "0xD834 0xDD7A",
+    "UTF-8 Encoding": "0xF0 0x9D 0x85 0xBA",
+    "Bidirectional Class": "Boundary Neutral (BN)",
+    "Character is Mirrored": "No",
+    "HTML Entity": [
+      "&amp;#119162;&amp;#x1D17A;"
+    ]
+  }
+]

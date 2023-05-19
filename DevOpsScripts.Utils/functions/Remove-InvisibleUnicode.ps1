@@ -30,13 +30,17 @@ function Remove-InvisibleUnicode {
 
         [Parameter()]
         [switch]
+        $Include = @('*.ps1', '*.json', '*.txt', '*.md'),
+
+        [Parameter()]
+        [switch]
         $Recurse
     )
 
     $totalRemovedCharacters = 0
     $WhiteSpace = [System.Char]::ConvertFromUtf32('0x0020')
     $Tablutation = [System.Char]::ConvertFromUtf32('0x0009')
-    $unicodeReference = Get-Content (Get-ChildItem -Path unicode.invisible.json -Recurse) 
+    $unicodeReference = Get-Content "$PSScriptRoot/.resources/unicode.invisible.json" 
     | ConvertFrom-Json
     | Where-Object {
         $_.'Character' -NE $WhiteSpace -AND $_.'Character' -NE $Tablutation

@@ -29,7 +29,7 @@ function Remove-InvisibleUnicode {
         $Path = '.',
 
         [Parameter()]
-        [switch]
+        [System.String[]]
         $Extensions = @('.ps1', '.json', '.txt', '.md'),
 
         [Parameter()]

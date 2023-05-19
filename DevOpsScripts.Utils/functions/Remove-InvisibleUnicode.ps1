@@ -30,7 +30,11 @@ function Remove-InvisibleUnicode {
 
         [Parameter()]
         [System.String[]]
-        $Extensions = @('.ps1', '.json', '.txt', '.md'),
+        $Extensions = @('.ps1', '.json', '.txt', '.md', '.tf', '.tfvars'),
+
+        [Parameter()]
+        [System.String[]]
+        $Exclude = @(),
 
         [Parameter()]
         [switch]
@@ -56,7 +60,7 @@ function Remove-InvisibleUnicode {
     $basePath = Get-Item -Path $Path
     $items = Get-ChildItem -Path $Path -Recurse:$Recurse
     | Where-Object {
-        $_.Extension -in $Extensions
+        ($Extensions.Contains('*') -OR $_.Extension -in $Extensions) -AND $_.Extension -notin $Exclude
     }
     for($index = 0; $index -lt $items.Count; $index++) {
 

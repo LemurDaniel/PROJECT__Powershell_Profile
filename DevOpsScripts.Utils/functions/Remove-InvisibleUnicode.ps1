@@ -12,12 +12,6 @@
     .OUTPUTS
     None
 
-    .EXAMPLE
-
-    Check if current Path is a Repository:
-
-    PS> Test-IsRepository 
-
     .LINK
         
 #>
@@ -30,11 +24,11 @@ function Remove-InvisibleUnicode {
 
         [Parameter()]
         [System.String[]]
-        $Extensions = @('.ps1', '.json', '.txt', '.md', '.tf', '.tfvars'),
+        $Extensions = @('*'),
 
         [Parameter()]
         [System.String[]]
-        $Exclude = @(),
+        $Exclude = @('.png', '.jpg', 'jpeg'),
 
         [Parameter()]
         [switch]
@@ -42,6 +36,7 @@ function Remove-InvisibleUnicode {
     )
 
     $totalRemovedCharacters = 0
+    $NoSpace = ''
     $WhiteSpace = [System.Char]::ConvertFromUtf32('0x0020')
     $Tablutation = [System.Char]::ConvertFromUtf32('0x0009')
     $unicodeReference = Get-Content "$PSScriptRoot/.resources/unicode.invisible.json" 
@@ -51,9 +46,9 @@ function Remove-InvisibleUnicode {
     }
 
     $progressBar = @{
-        Id = Get-Random -Max 256
-        Activity = 'Remove invisible' 
-        Status  = "None"
+        Id              = Get-Random -Max 256
+        Activity        = 'Remove invisible' 
+        Status          = "None"
         PercentComplete = 0
     }
 
@@ -62,22 +57,28 @@ function Remove-InvisibleUnicode {
     | Where-Object {
         ($Extensions.Contains('*') -OR $_.Extension -in $Extensions) -AND $_.Extension -notin $Exclude
     }
-    for($index = 0; $index -lt $items.Count; $index++) {
+    for ($index = 0; $index -lt $items.Count; $index++) {
 
         $removed = 0
         $file = $items[$index]
         $content = Get-Content -Path $file.FullName -Raw
 
-        if($null -eq $content -OR $content.Length -eq 0) {
+        if ($null -eq $content -OR $content.Length -eq 0) {
             continue
         }
   
         $unicodeReference | ForEach-Object {
-            $regexPattern  = $_.'Unicode'.replace('U+','\u')
+            $regexPattern = $_.'Unicode'.replace('U+', '\u')
             $removed += [regex]::Matches($content, $regexPattern).Count
-            $content = $content -replace $regexPattern, $WhiteSpace
+            
+            if ($_.isZeroWidth) {
+                $content = $content -replace $regexPattern, $NoSpace
+            }
+            else {
+                $content = $content -replace $regexPattern, $WhiteSpace
+            }
 
-            if( [regex]::Matches($content, $regexPattern).Count -gt 0){
+            if ( [regex]::Matches($content, $regexPattern).Count -gt 0) {
                 Write-Host $regexPattern
             }
         }
@@ -86,14 +87,14 @@ function Remove-InvisibleUnicode {
         $progressBar.Status = "Total: $totalRemovedCharacters | Removed $removed @$location)"
         $progressBar.PercentComplete = $index / $items.Count * 100
         Write-Progress @progressBar
-        if($removed -gt 0) {
+        if ($removed -gt 0) {
             $totalRemovedCharacters += $removed
             $content | Out-File $file.FullName
         }
     }
 
     Write-Progress @ProgressBar -Completed
-    Write-Host "Removed $totalRemovedCharacters @$Path"
+    Write-Host "Removed $totalRemovedCharacters @$($basePath.FullName)"
 }
 
 

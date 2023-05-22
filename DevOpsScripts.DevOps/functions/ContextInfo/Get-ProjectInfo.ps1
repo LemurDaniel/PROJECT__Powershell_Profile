@@ -153,7 +153,7 @@ function Get-ProjectInfo {
 
     # Location where to download repositories.
     $basePath = [System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\git\repos" : $env:GIT_RepositoryPath
-    $projectPath = "$basePath\__$($Organization.toUpper())\$($project.name)"
+    $projectPath = "$basePath\$($Organization.toUpper())\$($project.name)"
     if (!(Test-Path $projectPath)) {
         $null = New-Item -ItemType Directory -Path $projectPath
     }

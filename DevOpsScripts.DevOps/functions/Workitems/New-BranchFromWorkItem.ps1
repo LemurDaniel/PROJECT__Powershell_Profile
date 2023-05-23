@@ -131,7 +131,7 @@ function New-BranchFromWorkitem {
     }
 
     $workItem = Search-WorkItemInIteration -Current -Personal -Single -SearchTags $workitemTitle
-    $transformedTitle = $workItem.fields.'System.Title'.toLower() -replace '[?!:\/\\\-\s]+', '_' -replace '[\[\]]+', '__'
+    $transformedTitle = $workItem.fields.'System.Title'.toLower() -replace '[?!:\/\\\-\s]+', '_' -replace '[^a-z0-9_-]+', '' 
     $branchName = "features/$($workItem.id)-$transformedTitle"
         
     git -C $repositoryPath checkout master

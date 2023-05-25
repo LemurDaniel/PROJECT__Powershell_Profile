@@ -118,7 +118,7 @@ Function Select-ConsoleMenu {
 
                     $startIndex = $displayedText.toLower().IndexOf($searchString.toLower())
                     $firstPart = $displayedText.Substring(0, $startIndex)
-                    $highlightedPart = $displayedText.Substring($startIndex, $searchString.Length)
+                    $highlightedPart = $displayedText.Substring($startIndex, [System.Math]::Max($searchString.Length,0))
                     $lastPart = $displayedText.Substring($startIndex + $searchString.Length)
 
                     Write-Host "$prefixNonSelected" -NoNewline

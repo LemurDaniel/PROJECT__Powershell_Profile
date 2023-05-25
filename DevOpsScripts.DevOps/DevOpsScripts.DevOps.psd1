@@ -84,7 +84,7 @@ FunctionsToExport = 'Invoke-DevOpsRest', 'New-AutomatedTag', 'Remove-AutomatedTa
                'Get-SprintIterations', 'Get-Workitem', 'Get-WorkItemQueries', 
                'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
                'Open-WorkItemInBrowser', 'Search-WorkItemInIteration', 
-               'Select-Workitems', 'Update-Workitem', 'New-Pipeline', 
+               'Select-Workitems', 'Update-Workitem', 'Get-BuildLogs', 'New-Pipeline', 
                'Open-BuildInBrowser', 'Start-Pipeline', 'Start-PipelineOnBranch', 
                'Start-PipelinesInOrder', 'Add-QuickContext', 'Get-ProjectInfo', 
                'Get-RepositoryInfo', 'Remove-QuickContext', 'Show-DevOpsContext', 

@@ -19,7 +19,7 @@
 
     PS> Get-UtilsCache -Type User -Identifier current
 
-        .EXAMPLE
+    .EXAMPLE
 
     Get all PIM Profiles as a hashtable back.
 

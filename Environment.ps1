@@ -65,9 +65,9 @@ $SettingsJsonDefaults = [PSCustomObject]@{
     'blockman.n20CustomColorOfDepth0Border'                    = 'none'
 
     'powershell.developer.editorServicesLogLevel'              = 'Normal'
-    #'powershell.powerShellAdditionalExePaths'                  = @{
-    #    'PS Core 7' = "$($global:DefaultEnvPaths['PowerShell_primary'])/pwsh.exe"
-    #}
+    'powershell.powerShellAdditionalExePaths'                  = @{
+        'PS Core 7' = "C:\Program Files\PowerShell\7\pwsh.exe"
+    }
     'powershell.powerShellDefaultVersion'                      = 'PS Core 7'
 
     ############################################
@@ -76,7 +76,7 @@ $SettingsJsonDefaults = [PSCustomObject]@{
     'editor.fontFamily'                                        = "Jetbrains Mono, Consolas, 'Courier New', monospace"
     'editor.fontLigatures'                                     = $true
 
-    'workbench.colorTheme'                                     = 'Default Dark+'
+    'workbench.colorTheme'                                     = 'Dark Modern' #'Default Dark+'
     'scm.alwaysShowRepositories'                               = $true
     'git.enabled'                                              = $true
     'git.path'                                                 = "$($global:DefaultEnvPaths['GITCMD'])/git.exe"
@@ -93,7 +93,7 @@ $SettingsJsonDefaults = [PSCustomObject]@{
         'PS 7'                           = @{
             'icon' = 'terminal-powershell'
             'path' = @(
-                "pwsh.exe"
+                "C:\Program Files\PowerShell\7\pwsh.exe"
             )
             'args' = @()
         }
@@ -106,13 +106,6 @@ $SettingsJsonDefaults = [PSCustomObject]@{
                 '/k',
                 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat'
             )
-            'icon' = 'terminal-cmd'
-        }
-        'Node'                           = @{
-            'path' = @(
-                "$($global:DefaultEnvPaths['NodeJs'])/node.exe"
-            )
-            'args' = @()
             'icon' = 'terminal-cmd'
         }
     }

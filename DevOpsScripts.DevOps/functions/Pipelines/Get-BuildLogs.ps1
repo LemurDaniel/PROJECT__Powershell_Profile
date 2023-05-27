@@ -12,6 +12,23 @@
     .OUTPUTS
     None
 
+    .EXAMPLE
+
+    Download the logs for a Pipeline in the current Project-Context:
+
+    Get-BuildLogs -Pipeline <autocompleted_name>
+
+    .EXAMPLE
+
+    Download the logs for a Pipeline in a project and open the  Folder:
+
+    Get-BuildLogs -Project <autocompleted_project> -Pipeline <autocompleted_name> -openFolder
+
+    .EXAMPLE
+
+    Download the logs for the third-last run of a Pipeline in a project to a specific Folder:
+
+    Get-BuildLogs -Project <autocompleted_project> -Pipeline <autocompleted_name> -outFolder './logs' -Skip 3
 
     .LINK
         
@@ -19,14 +36,16 @@
 function Get-BuildLogs {
     
     [cmdletbinding(
-        DefaultParameterSetName = 'currentContext'
+        DefaultParameterSetName = 'currentContext',
+        SupportsShouldProcess = $true,
+        ConfirmImpact = 'High'
     )]
     param (
         # The name of the Project to swtich to in which you want to open a repository. Will default to curren tproject context.
         [Parameter(
             ParameterSetName = 'Projectspecific',
             Mandatory = $false,
-            Position = 2
+            Position = 1
         )]   
         [ValidateScript(
             { 
@@ -79,28 +98,40 @@ function Get-BuildLogs {
         [System.String]
         $Pipeline,
 
-
-
-        # The offset to the last run. 0 gets the latest, -1 is the first behind latest, etc.
-        [Parameter(
-            Mandatory = $false
-        )]
-        $lastRun = 0,
-
-
         # The output folder, where to save the downloaded logs
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false,
+            Position = 2
         )]
-        $outFolder
+        [System.String]
+        $outFolder = '.',
+
+        # The offset to the last run. 0 gets the latest, 1 is the first behind latest, etc.
+        [Parameter(
+            Mandatory = $false,
+            Position = 3
+        )]
+        [System.Int32]
+        $Skip = 0,
+
+
+        # Open the folder with the logs in the Explorer.
+        [Parameter(
+            Mandatory = $false,
+            Position = 4
+        )]
+        [switch]
+        $OpenFolder = 0
     )
 
+    # Get Project and Pipeline
     $Project = Get-ProjectInfo -Name $Project | Select-Object -ExpandProperty name
     $PipelineId = Get-DevOpsPipelines -Project $Project 
     | Where-Object -Property name -EQ -Value $Pipeline
     | Select-Object -ExpandProperty id
 
 
+    # Get Pipeline runs
     $Request = @{
         Project = $Project
         Method  = 'GET'
@@ -109,17 +140,33 @@ function Get-BuildLogs {
     }
     $pipelineRun = Invoke-DevOpsRest @Request
     | Select-Object -ExpandProperty value 
-    | Select-Object -Skip $lastRun -First 1
+    | Select-Object -Skip $skip -First 1
 
 
+
+    # Create basefolder if necessery
     if (!(Test-Path $outFolder)) {
         $null = New-Item -ItemType Directory -Path $outFolder 
     }
 
-    $folder = New-Item -ItemType Directory -Path "$outFolder/$Pipeline/run-$($pipelineRun.id)" -Force
+    # Check if run was already downloaded and ask for confirmation
+    $folderPath = "$outFolder/_logs-$Project/$Pipeline/run-$($pipelineRun.id)"
+    if (Test-Path $folderPath) {
+        if ($PSCmdlet.ShouldProcess($folderPath, "Replace existing logs in directory")) {
+            Remove-Item -Path $folderPath -Recurse
+        }
+        else {
+            return $null
+        }
+    }
+    
+    # Create folder, open when needed
+    $folder = New-Item -ItemType Directory -Path $folderPath -Force
+    if ($OpenFolder) {
+        Start-Process -FilePath $folder.FullName
+    }
 
-
-
+    # Download logs from run
     $Progress = @{
         Id              = Get-Random -Maximum 256
         Activity        = 'Download Log'
@@ -134,16 +181,18 @@ function Get-BuildLogs {
     }
     $buildLogs = Invoke-DevOpsRest @Request | Select-Object -ExpandProperty logs
 
-    $buildLogs | ForEach-Object {
+    # Download Content of each logfile, plus progress bar.
+    for ($index = 0; $index -lt $buildLogs.Count; $index++) {
 
-        $Progress.Status = "$($_.id) / $($buildLogs.Count)"
-        $Progress.PercentComplete = $_.id / $buildLogs.Count * 100
+        $logInfo = $buildLogs[$index]
+        $Progress.PercentComplete = [System.Math]::Round($index / $buildLogs.Count * 100)
+        $Progress.Status = "$($logInfo.id) / $($buildLogs.Count) - ($($Progress.PercentComplete)%)"
         Write-Progress @Progress
         $Request = @{
             Project = $Project
             Method  = 'GET'
             SCOPE   = 'PROJ'
-            API     = "/_apis/pipelines/$PipelineId/runs/$($pipelineRun.id)/logs/$($_.id)?api-version=7.0"
+            API     = "/_apis/pipelines/$PipelineId/runs/$($pipelineRun.id)/logs/$($logInfo.id)?api-version=7.0"
             Query   = @{
                 "`$expand" = "signedContent"
             }
@@ -156,5 +205,4 @@ function Get-BuildLogs {
     }
 
     Write-Progress @Progress -Completed
-
 }

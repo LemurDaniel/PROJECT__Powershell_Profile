@@ -10,7 +10,7 @@
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
-    [System.IO.DirectoryInfo] of folder containing logs
+    [System.IO.DirectoryInfo] of folder containing logs.
 
     .EXAMPLE
 
@@ -121,7 +121,7 @@ function Get-BuildLogs {
             Position = 4
         )]
         [switch]
-        $OpenFolder = 0
+        $OpenFolder
     )
 
     # Get Project and Pipeline
@@ -156,7 +156,7 @@ function Get-BuildLogs {
             Remove-Item -Path $folderPath -Recurse
         }
         else {
-            return $null
+            return Get-Item -Path $folderPath
         }
     }
     

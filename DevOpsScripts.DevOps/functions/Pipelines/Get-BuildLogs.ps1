@@ -10,7 +10,7 @@
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
-    None
+    [System.IO.DirectoryInfo] of folder containing logs
 
     .EXAMPLE
 
@@ -205,4 +205,6 @@ function Get-BuildLogs {
     }
 
     Write-Progress @Progress -Completed
+
+    return $folder
 }

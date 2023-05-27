@@ -1,3 +1,20 @@
+<#
+    .SYNOPSIS
+    Get Github repositories for a context.
+
+    .DESCRIPTION
+    Get Github repositories for a context.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    Repositories
+
+    
+    .LINK
+        
+#>
 function Get-GithubRepositories {
 
     param(

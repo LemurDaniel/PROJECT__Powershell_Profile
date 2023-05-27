@@ -114,16 +114,6 @@ function Invoke-GithubRest {
         $apiVersion = '2022-11-28'
     )
 
-    # Authentication
-    $GIT_PATH = Read-SecureStringFromFile -Identifier GitPersonalPAT -AsPlainText
-    $GIT_PATH = [System.String]::isNullOrEmpty($env:GIT_PAT) ? $GIT_PATH : $env:GIT_PAT
-
-    if ([System.String]::isNullOrEmpty($GIT_PATH)) {
-        $GIT_PATH = Read-Host -AsSecureString -Prompt 'Please Enter your Personal Git PAT'
-        Save-SecureStringToFile -SecureString $GIT_PATH -Identifier GitPersonalPAT
-        $GIT_PATH = $GIT_PATH | ConvertFrom-SecureString -AsPlainText
-    }
-
     # Build a hashtable of providedy Query params and Query params in provied api-url.
     $Query = $null -ne $Query ? $Query : [System.Collections.Hashtable]::new()
     $Query.Add('affiliation', $affiliation)
@@ -146,7 +136,7 @@ function Invoke-GithubRest {
         header = @{
             Accept                 = $contentType
             'X-GitHub-Api-Version' = $apiVersion
-            Authorization          = "Bearer $GIT_PATH"
+            Authorization          = "Bearer $(Get-GithubPAT -AsPlainText)"
         }
         uri    = "https://$("$Domain.com/$APIEndpoint`?$QueryString" -replace '/+', '/')"
         Body   = $bodyByteArray   
@@ -160,7 +150,18 @@ function Invoke-GithubRest {
 
     
     if ($PSCmdlet.ShouldProcess($Request.Uri, $($Request.Method))) {
-        return Invoke-RestMethod @Request | ForEach-Object { $_ }
+        try {
+            return Invoke-RestMethod @Request | ForEach-Object { $_ }
+        }
+        catch {
+            $ErrorDetails = $_.ErrorDetails.Message | ConvertFrom-Json 
+            if($ErrorDetails.message -eq "Bad credentials") {
+                Write-Host -ForegroundColor Red "Request failed due to invalid Credentials!"
+                Get-GithubPAT -Clear
+
+                return Invoke-GithubRest @PSBoundParameters
+            }
+        }
     }
 
 }

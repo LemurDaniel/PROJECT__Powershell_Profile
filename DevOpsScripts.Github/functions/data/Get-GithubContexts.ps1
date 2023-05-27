@@ -1,3 +1,21 @@
+<#
+    .SYNOPSIS
+    Get the Useraccount and Organzations connected to login
+
+    .DESCRIPTION
+    Get the Useraccount and Organzations connected to login
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    github contexts
+
+    
+    .LINK
+        
+#>
+
 function Get-GithubContexts {
 
     param(

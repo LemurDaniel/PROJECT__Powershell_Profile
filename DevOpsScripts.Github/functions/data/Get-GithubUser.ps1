@@ -1,3 +1,21 @@
+<#
+    .SYNOPSIS
+    Get data about the Githubuser connected to pat.
+
+    .DESCRIPTION
+    Get data about the Githubuser connected to pat.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    gihutuser
+
+    
+    .LINK
+        
+#>
+
 function Get-GithubUser {
 
     param(

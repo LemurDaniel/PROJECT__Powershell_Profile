@@ -70,9 +70,9 @@ RequiredAssemblies = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Invoke-GithubRest', 'Get-GithubCache', 'Get-GithubContexts', 
-               'Get-GithubRepositories', 'Get-GithubUser', 'Set-GithubCache', 
-               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository', 
-               'Get-GithubContext', 'Get-GithubContextInfo', 
+               'Get-GithubPat', 'Get-GithubRepositories', 'Get-GithubUser', 
+               'Set-GithubCache', 'New-GithubRepository', 'Open-GithubBrowser', 
+               'Open-GithubRepository', 'Get-GithubContext', 'Get-GithubContextInfo', 
                'Get-GithubRepositoryInfo', 'Switch-GithubContext'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

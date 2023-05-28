@@ -154,7 +154,8 @@ function Invoke-GithubRest {
             return Invoke-RestMethod @Request | ForEach-Object { $_ }
         }
         catch {
-            $ErrorDetails = $_.ErrorDetails.Message | ConvertFrom-Json 
+            Write-Host $_.ErrorDetails
+            $ErrorDetails = $_.ErrorDetails.Message | ConvertFrom-Json -ErrorAction SilentlyContinue
             if($ErrorDetails.message -eq "Bad credentials") {
                 Write-Host -ForegroundColor Red "Request failed due to invalid Credentials!"
                 Get-GithubPAT -Clear

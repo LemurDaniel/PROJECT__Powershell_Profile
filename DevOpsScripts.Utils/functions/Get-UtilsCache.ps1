@@ -49,7 +49,12 @@ function Get-UtilsCache {
 
         [Parameter(Mandatory = $false)]
         [System.String]
-        $Path = $null
+        $Path = $null,
+
+        # returns data when cache expires
+        [Parameter()]
+        [switch]
+        $ExpirationData
     )
 
     try {
@@ -59,8 +64,18 @@ function Get-UtilsCache {
         Write-Verbose $CacheFilePath
 
         $Cache = Get-Content $CacheFilePath | ConvertFrom-Json -AsHashtable:$AsHashtable 
-        if ([DateTime]$Cache.Date -gt [datetime]::Now) {
-            return $Cache.Content
+        if ([DateTime]$Cache.Date.toUniversalTime() -gt [datetime]::Now.toUniversalTime()) {
+            
+            if ($ExpirationData) {
+                return @{
+                    ExpiresIn = $Cache.Date.toUniversalTime() - [System.DateTime]::Now.toUniversalTime()
+                    Date      = $Cache.Date
+                    Content   = $Cache.Content
+                }
+            }
+            else {
+                return $Cache.Content
+            }
         }      
     }
     catch {

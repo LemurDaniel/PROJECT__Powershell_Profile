@@ -47,7 +47,7 @@ function Set-UtilsCache {
 
         [Parameter(Mandatory = $false)]
         [System.Int32]
-        $Alive = 120,
+        $Alive = 720,
 
         [Parameter(Mandatory = $false)]
         [Switch]

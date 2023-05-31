@@ -27,14 +27,39 @@
 function Get-RecentSubmoduleTags {
 
     param(
+        # The Name of the Project. If null will default to current Project-Context.
+        [Parameter(
+            Mandatory = $false,
+            Position = 0
+        )]
+        [ValidateScript(
+            { 
+                $null -eq $_ -OR [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify a correct Projectname.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project = "DC Azure Migration",
+
         # Refresh any cached values.
         [Parameter()]
         [switch]
         $refresh
     )
 
-    $ProjectName = Get-ProjectInfo 'name'
-    $moduleSourceReferenceCached = Get-AzureDevOpsCache -Type ModuleTags -Identifier $ProjectName
+
+
+    $moduleSourceReferenceCached = Get-AzureDevOpsCache -Type ModuleTags -Identifier $Project
 
     if ($null -ne $moduleSourceReferenceCached -AND $refresh -ne $true) {
         Write-Host -ForegroundColor Yellow 'Fetching Cached Tags'
@@ -46,11 +71,9 @@ function Get-RecentSubmoduleTags {
     Write-Host -ForegroundColor Yellow 'Fetching Latest Tags'
 
     # Query All Repositories in DevOps
-    $repositories = Get-ProjectInfo 'repositories'
-    $terraformRepositories = Search-In $repositories -has 'terraform' -Multiple  
+    $repositories = (Get-ProjectInfo -Name $Project).repositories
 
-
-    foreach ($repository in $terraformRepositories) {
+    foreach ($repository in $repositories) {
 
         Write-Host "Fetching Repository $($repository.name)"
         # Call Api to get all tags on Repository and sort them by newest
@@ -92,6 +115,6 @@ function Get-RecentSubmoduleTags {
     
     }
 
-    $moduleSourceReferenceCached = $terraformRepositories | Where-Object -Property _TagsAssigned -EQ -Value $true
-    return Set-AzureDevOpsCache -Object $moduleSourceReferenceCached -Type ModuleTags -Identifier $ProjectName
+    $moduleSourceReferenceCached = $repositories | Where-Object -Property _TagsAssigned -EQ -Value $true
+    return Set-AzureDevOpsCache -Object $moduleSourceReferenceCached -Type ModuleTags -Identifier $Project
 }

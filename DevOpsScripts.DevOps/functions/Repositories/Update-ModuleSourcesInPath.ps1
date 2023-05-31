@@ -21,6 +21,55 @@ function Update-ModuleSourcesInPath {
         ConfirmImpact = 'high'
     )]
     param (
+        # The Name of the Project. If null will default to current Project-Context.
+        [Parameter(
+            Mandatory = $false,
+            Position = 0
+        )]
+        [ValidateScript(
+            { 
+                $null -eq $_ -OR [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+            },
+            ErrorMessage = 'Please specify a correct Projectname.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-DevOpsProjects).name 
+                        
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Project = "DC Azure Migration",
+        
+        # The Name of the Repository. If null will default to current repository where command is executed.
+        [Parameter(
+            Mandatory = $false,
+            Position = 1
+        )]
+        [ValidateScript(
+            { 
+                $true #[System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-ProjectInfo repositories.name)
+            },
+            ErrorMessage = 'Please specify a correct Name.'
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                        
+                $validValues = Get-ProjectInfo -Name $fakeBoundParameters['Project'] -return 'repositories.name'
+                        
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Name,
+
         # The Root path of all terraform configuration files. Defaults to the current execution location.
         [Parameter()]
         [System.String]
@@ -33,7 +82,11 @@ function Update-ModuleSourcesInPath {
     )
 
     $totalReplacements = [System.Collections.ArrayList]::new()
-    $taggedRepositories = Get-RecentSubmoduleTags -refresh:$refresh
+    $taggedRepositories = Get-RecentSubmoduleTags -Project $Project -refresh:$refresh
+    if ($PSBoundParameters.ContainsKey("Name")) {
+        $taggedRepositories = $taggedRepositories | Where-Object { $_.Name -eq $Name }
+    }
+
     $replacementPath = ![System.String]::IsNullOrEmpty($replacementPath) ? $replacementPath : ((Get-Location).Path) 
   
     # Implements Confirmation
@@ -74,7 +127,7 @@ function Update-ModuleSourcesInPath {
             }
             # Only out-file when changes happend. Overwriting files with the same content, caused issues with VSCode git extension
             if ($regexMatchesCount -gt 0) {
-                $totalReplacements.Add($tfConfigFile.FullName)
+                $null = $totalReplacements.Add($tfConfigFile.FullName)
                 $Content | Out-File -LiteralPath $tfConfigFile.FullName
             }
         }  

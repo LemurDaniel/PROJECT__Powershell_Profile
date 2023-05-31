@@ -154,7 +154,11 @@ function New-PullRequest {
         # Workitem ids to connect to the Pull Request
         [Parameter()]
         [System.Int32[]]
-        $workItemIds = @()
+        $workItemIds = @(),
+
+        # Switch to skip opening in the browser
+        [switch]
+        $noBrowser
     )
 
     $displayInformation = 'error'
@@ -284,6 +288,8 @@ function New-PullRequest {
     Write-Host -Foreground Green $displayInformation
     Write-Host -Foreground Green "    $pullRequestUrl "
     Write-Host -Foreground Green '      '
-    Start-Process $pullRequestUrl
-
+   
+    if (!$noBrowser) {
+        Start-Process $pullRequestUrl
+    }
 }

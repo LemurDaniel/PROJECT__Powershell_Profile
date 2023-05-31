@@ -27,8 +27,12 @@ function New-MasterPR {
     param(
         [Parameter(Mandatory = $true)]
         [System.String]
-        $PRtitle
+        $PRtitle,
+
+        # Switch to skip opening in the browser
+        [switch]
+        $noBrowser
     )
 
-    New-PullRequest -Source 'dev' -Target 'default' -autocompletion -PRtitle $PRTitle
+    New-PullRequest -Source 'dev' -Target 'default' -autocompletion -PRtitle $PRTitle -noBrowser:$noBrowser
 }

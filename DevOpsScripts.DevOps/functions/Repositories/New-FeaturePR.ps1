@@ -69,7 +69,12 @@ function New-FeaturePR {
         # Delete Local branch
         [Parameter()]
         [switch]
-        $deleteLocalBranch
+        $deleteLocalBranch,
+
+        # Switch to skip opening in the browser
+        [switch]
+        $noBrowser
+
     )
 
     # Testing something
@@ -79,7 +84,7 @@ function New-FeaturePR {
     #    $PSBoundParameters[$_.Name] = $PSBoundParameters.containsKey($_.Name) ? $PSBoundParameters[$_.Name] : $_.Value
     #}
 
-    New-PullRequest -Target $target -mergeStrategy $mergeStrategy -deleteSourceBranch -autocompletion:$autocompletion
+    New-PullRequest -Target $target -mergeStrategy $mergeStrategy -deleteSourceBranch -autocompletion:$autocompletion -noBrowser:$noBrowser
     if ($deleteLocalBranch) {
         $currentBranchName = git branch --show-current
         git checkout (Get-RepositoryInfo).defaultBranch.replace('refs/heads/', '')

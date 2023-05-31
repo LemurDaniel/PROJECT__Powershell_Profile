@@ -93,32 +93,41 @@ function Start-Pipeline {
         )]
         [ValidateSet('Branch', 'Dev', 'Master', 'Both')]
         [System.String]
-        $environment = 'Branch'
+        $environment = 'Branch',
+
+        # Switch to skip opening in the browser
+        [switch]
+        $noBrowser
     )
 
 
-    $Project  = Get-ProjectInfo -Name $Project | Select-Object -ExpandProperty name
+    $Project = Get-ProjectInfo -Name $Project | Select-Object -ExpandProperty name
     $Pipeline = Get-DevOpsPipelines -Project $Project | Where-Object -Property name -EQ -Value $name
     
     # Run Pipeline from Branch, dev or master
+    $builds = @()
     if ($environment -eq 'Branch') {
         $currentBranch = git branch --show-current
-        $build = Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref "refs/heads/$currentBranch"
+        $builds += Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref "refs/heads/$currentBranch"
     }
 
     if ($environment -eq 'dev' -OR $environment -eq 'both') {
-        $build = Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref 'refs/heads/dev'
+        $builds += Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref 'refs/heads/dev'
     }
 
     if ($environment -eq 'master' -OR $environment -eq 'both') {
-        $build = Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref 'refs/heads/master'
+        $builds += Start-PipelineOnBranch -Project $Project -id $Pipeline.id -ref 'refs/heads/master'
     }
 
   
     Write-Host -Foreground Green '      '
-    Write-Host -Foreground Green " 🎉 Started Pipeline '$($Pipeline.folder)/$($Pipeline.name)'  on $environment 🎉  "
+    Write-Host -Foreground Green " 🎉 Started Pipeline$($builds.length -gt 1 ? 's' : '') '$($Pipeline.folder)/$($Pipeline.name)'  on $environment 🎉  "
     Write-Host -Foreground Green '      '
 
-    Open-BuildInBrowser -Project $Project -buildId $build.id
+    if (!$noBrowser) {
+        $builds | ForEach-Object {
+            Open-BuildInBrowser -Project $Project -buildId $_.id
+        }
+    }
 
 }

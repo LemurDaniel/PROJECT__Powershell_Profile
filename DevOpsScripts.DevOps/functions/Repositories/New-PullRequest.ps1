@@ -157,6 +157,7 @@ function New-PullRequest {
         $workItemIds = @(),
 
         # Switch to skip opening in the browser
+        [Parameter()]
         [switch]
         $noBrowser
     )

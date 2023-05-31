@@ -72,6 +72,7 @@ function New-FeaturePR {
         $deleteLocalBranch,
 
         # Switch to skip opening in the browser
+        [Parameter()]
         [switch]
         $noBrowser
 

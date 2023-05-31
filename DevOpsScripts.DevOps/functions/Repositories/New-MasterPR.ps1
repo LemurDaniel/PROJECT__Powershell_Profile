@@ -30,6 +30,7 @@ function New-MasterPR {
         $PRtitle,
 
         # Switch to skip opening in the browser
+        [Parameter()]
         [switch]
         $noBrowser
     )

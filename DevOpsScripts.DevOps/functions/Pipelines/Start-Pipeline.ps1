@@ -96,6 +96,7 @@ function Start-Pipeline {
         $environment = 'Branch',
 
         # Switch to skip opening in the browser
+        [Parameter]
         [switch]
         $noBrowser
     )

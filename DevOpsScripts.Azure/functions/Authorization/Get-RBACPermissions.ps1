@@ -34,10 +34,14 @@ function Get-RBACPermissions {
     )
 
     # Conversion from Json to Powershell object tales a bit.
-    if(!$global:rbacPermissions){
+    if (!$global:rbacPermissions) {
         $global:rbacPermissions = New-Object -TypeName "System.Object"
-        $null = Get-ChildItem -Path "$PSScriptRoot/.." -Recurse -Filter 'Permissions.**.json' | Get-Content | ConvertFrom-Json | `
-        Group-Object -Property "Resource Provider" | `
+        $null = Get-ChildItem -Path "$PSScriptRoot/.resources/" -Recurse -Filter 'Permissions.**.json' 
+        | Select-Object -First 1 | Get-Content | ConvertFrom-Json | `
+            Group-Object -Property "Resource Provider"
+        | Where-Object {
+            $null -ne $_."Operation Display Name"
+        }
         ForEach-Object { 
             $global:rbacPermissions | Add-Member NoteProperty $_.Name @($_.Group | % { $_ }) 
         }

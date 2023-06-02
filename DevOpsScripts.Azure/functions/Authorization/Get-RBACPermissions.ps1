@@ -42,7 +42,7 @@ function Get-RBACPermissions {
         | Where-Object {
             $null -ne $_."Operation Display Name"
         }
-        ForEach-Object { 
+        | ForEach-Object { 
             $global:rbacPermissions | Add-Member NoteProperty $_.Name @($_.Group | % { $_ }) 
         }
     }

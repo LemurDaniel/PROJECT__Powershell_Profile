@@ -26,26 +26,29 @@
 function Get-RBACPermissions {
 
     param (
-        # The Property to return from the items. If null will return full Properties.
-        [Alias('return')]
         [Parameter()]
-        [System.String]
-        $Property
+        [switch]
+        $AsHashtable
     )
 
-    # Conversion from Json to Powershell object tales a bit.
-    if (!$global:rbacPermissions) {
+    if (!$global:rbacPermissionsHashtable -OR !$global:rbacPermissions) {
         $global:rbacPermissions = New-Object -TypeName "System.Object"
-        $null = Get-ChildItem -Path "$PSScriptRoot/.resources/" -Recurse -Filter 'Permissions.**.json' 
-        | Select-Object -First 1 | Get-Content | ConvertFrom-Json | `
-            Group-Object -Property "Resource Provider"
-        | Where-Object {
-            $null -ne $_."Operation Display Name"
-        }
+        $global:rbacPermissionsHashtable = [System.Collections.Hashtable]::new()
+        Get-ChildItem -Path "$PSScriptRoot/../.resources/" -Recurse -Filter 'Permissions.**.json' 
+        | Select-Object -First 1 | Get-Content | ConvertFrom-Json
+        | Where-Object -Property "Resource Provider" -Match -Value "^[^\s]+\.{1}[^\s]+$"
+        | Group-Object -Property "Resource Provider"
         | ForEach-Object { 
-            $global:rbacPermissions | Add-Member NoteProperty $_.Name @($_.Group | % { $_ }) 
+            $global:rbacPermissions | Add-Member NoteProperty $_.Name @($_.Group | % { $_ })  -Force
+            $null = $global:rbacPermissionsHashtable.add($_.Name, $_.Group)
         }
+
     }
 
-    return Get-Property -object $global:rbacPermissions -Property $Property
+    if ($AsHashtable) {
+        return $global:rbacPermissionsHashtable
+    }
+    else {
+        return $global:rbacPermissions
+    }
 }

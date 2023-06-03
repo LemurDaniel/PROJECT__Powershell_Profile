@@ -51,14 +51,14 @@ function Select-RBACPermissions {
         )]
         [ValidateScript(
             { 
-                $_ -in (Get-RBACPermissions).PSObject.Properties.Name
+                $_ -in (Get-RBACPermissions -AsHashtable).Keys
             },
             ErrorMessage = 'Please specify the correct Provider.'
         )]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-RBACPermissions).PSObject.Properties.Name
+                $validValues = (Get-RBACPermissions -AsHashtable).Keys
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -101,9 +101,11 @@ function Select-RBACPermissions {
         $Property
     )
 
-    $permissions = Get-RBACPermissions $ResourceProvider | `
-        Where-Object -Property 'Data Action' -EQ -Value $dataActions | `
-        Where-Object { $actionType -eq 'any' -OR $_.'Operation Name' -like "*$actionType" }
+    $permissions = Get-RBACPermissions
+    | Select-Object -ExpandProperty $ResourceProvider 
+    | Where-Object -Property 'Data Action' -EQ -Value $dataActions 
+    | Where-Object { $actionType -eq 'any' -OR $_.'Operation Name' -like "*$actionType" }
+    
     return Search-In $permissions -where 'Operation Description' -has $tags -Multiple -return $Property
 
 }

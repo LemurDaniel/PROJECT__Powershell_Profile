@@ -121,7 +121,8 @@ function Convert-TFVarsToObject {
 
         [AstNodeType]::new('VARIABLE', '^(?!false\b.*\n|true\b.*\n|null\b.*\n)[A-Za-z_]{1}[\w_\-]*\s+')
 
-        [AstNodeType]::new('STRING', "^`"[^`"]*`"|^'[^']*'"),
+        # String needs to igored escaped sequences \"
+        [AstNodeType]::new('STRING', "^`"(?:\\`"|[^`"])*`"|^'[^']*'"),
         [AstNodeType]::new('BOOLEAN', '^true|^false'),
         [AstNodeType]::new('NULL', '^null'),
         [AstNodeType]::new('FLOAT', '^[+-]?\d+\.\d+')

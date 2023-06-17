@@ -2,31 +2,17 @@
 
 $global:DefaultEnvPaths = [ordered]@{
     
-    # Code Editors
-    VSCode_primary      = "$env:AppPath\_EnvPath_Apps\Microsoft VS Code\bin"
-    VSCode_scondary     = 'C:\Program Files\Microsoft VS Code\bin'
-
     # CLI Tools
     AzureCLI_primary    = "$env:AppPath\_EnvPath_Apps\CLI\Azure\CLI2\wbin"
     AzureCLI_secondary  = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
     sqlcmd              = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
  
-    terraformDocs       = "Invoke-ScriptInRepositories\_EnvPath_Apps\terraform-docs\v.0.16.0"
+    terraformDocs       = "$env:AppPath\_EnvPath_Apps\terraform-docs\v.0.16.0"
     tflint              = "$env:AppPath\_EnvPath_Apps\tflint\v0.44.0"
 
     node_modules_global = "$env:APPDATA\npm"
     nodejs_primary      = "$env:AppPath\_EnvPath_Apps\nodejs\18.12.1"
     nodejs_secondary    = 'C:\Program Files\nodejs'
-
-    git_primary         = "$env:AppPath\_EnvPath_Apps\Git\2.38"
-    git_secondary       = 'C:\Program Files\Git'
-    gitcmd              = (Resolve-Path -Path "$env:AppPath\_EnvPath_Apps\Git\2.38\cmd" -ErrorAction SilentlyContinue).Path `
-        ?? 'C:\Program Files\Git\cmd'
-
-    dotnet              = "C:\Program Files\dotnet"
-
-    java                = "$env:AppPath\_EnvPath_Apps\javaSDK\jdk-10.0.2\bin"
-    docker              = 'C:\Program Files\Docker\Docker\resources\bin'
 
     gpg                 = (Resolve-Path -Path "C:\Program Files (x86)\GnuPG\bin" -ErrorAction SilentlyContinue).Path `
         ?? "$env:APPDATA\..\Local\Programs\GnuPG\bin"
@@ -34,7 +20,10 @@ $global:DefaultEnvPaths = [ordered]@{
 }
 
 
-$EnvironmentPaths = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User) -split ';' 
+$EnvironmentPaths = @(
+	[System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User),
+	[System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) 
+) -join ';' -split ';' 
 | Where-Object { $global:DefaultEnvPaths.Values -notcontains $_ }
 
 $EnvironmentPaths = (@() + $global:DefaultEnvPaths.Values + $EnvironmentPaths) -join ';'

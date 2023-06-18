@@ -28,6 +28,7 @@ function Install-Stuff {
             "OpenJS.NodeJS",
             "GnuPG.Gpg4win",
             "Postman.Postman",
+            "Microsoft.PowerBI",
             "Microsoft.WindowsTerminal",
             "Microsoft.VisualStudioCode"
             "Microsoft.AzureDataStudio",

@@ -24,19 +24,21 @@ function Install-Stuff {
         [System.String[]]
         $packageIds = @(
             "Git.Git",
+            "JGraph.Draw",
             "OpenJS.NodeJS",
             "GnuPG.Gpg4win",
             "Postman.Postman",
             "Microsoft.WindowsTerminal",
             "Microsoft.VisualStudioCode"
-            "OpenJS.NodeJS",
+            "Microsoft.AzureDataStudio",
+            "Microsoft.Azure.StorageExplorer",
             "Microsoft.PowerShell"
         )
     )
     
     $selected = $null
     do {
-        $installed = winget list -join ([System.Environment]::NewLine)
+        $installed = (winget list) -join ([System.Environment]::NewLine)
         $options = @()
         $options += @{
             display   = " -- End -- "
@@ -45,10 +47,10 @@ function Install-Stuff {
         }
         $options += $packageIds 
         | ForEach-Object {
-            $isInstalled = $installed -contains $_
+            $isInstalled = $installed.contains($_)
             return @{ 
-                display   = "$_ ($($isInstalled ? "Install" : "Upgrade"))"
-                operation = $isInstalled ? "install" : "upgrade"
+                display   = "$_ ($($isInstalled ? "Upgrade" : "Install"))"
+                operation = $isInstalled ? "upgrade" : "install"
                 id        = $_
             }
         }
@@ -58,7 +60,7 @@ function Install-Stuff {
         if ($null -NE $selected) {
             
             if ($selected.operation -eq "install") {
-                winget install --id $selected.id
+                winget install -e --id $selected.id
                 $null = Read-Host "...Press any key"
             } 
             elseif ($selected.operation -eq "upgrade") {

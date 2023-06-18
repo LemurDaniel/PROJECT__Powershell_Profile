@@ -93,15 +93,15 @@ Function Select-ConsoleMenu {
             # Do page and selection calculations.
             $maxSelectionsPerPage = $initialSelectionSize - $reservedLines
             $totalCountOfPages = [System.Math]::Ceiling($filteredOptions.Count / $maxSelectionsPerPage)
-            $lastPageMaxIndex = $filteredOptions.Count % $maxSelectionsPerPage - 1
+            $lastPageMaxIndex = $totalCountOfPages -GT 1 ? ($filteredOptions.Count % $maxSelectionsPerPage - 1) : ($filteredOptions.Count - 1)
 
-            # Fix if current Page if out-of-range.
+            # Fix if current Page is out-of-range.
             $currentPage = $currentPage -GE $totalCountOfPages ? $totalCountOfPages - 1 : $currentPage
 
             # Caluclation for current Page
             $isLastPage = $currentPage -EQ ($totalCountOfPages - 1)
             $selectionPageOffset = $currentPage * $maxSelectionsPerPage
-            $selectionIndexOnPage = $selectionIndexOnPage -GT $lastPageMaxIndex -AND $isLastPage ? $lastPageMaxIndex : $selectionIndexOnPage
+            $selectionIndexOnPage = ($selectionIndexOnPage -GT $lastPageMaxIndex) -AND $isLastPage ? $lastPageMaxIndex : $selectionIndexOnPage
 
             $filteredOptions | `
                 Select-Object -Skip $selectionPageOffset | `
@@ -118,7 +118,7 @@ Function Select-ConsoleMenu {
 
                     $startIndex = $displayedText.toLower().IndexOf($searchString.toLower())
                     $firstPart = $displayedText.Substring(0, $startIndex)
-                    $highlightedPart = $displayedText.Substring($startIndex, [System.Math]::Max($searchString.Length,0))
+                    $highlightedPart = $displayedText.Substring($startIndex, [System.Math]::Max($searchString.Length, 0))
                     $lastPart = $displayedText.Substring($startIndex + $searchString.Length)
 
                     Write-Host "$prefixNonSelected" -NoNewline

@@ -49,10 +49,16 @@ function Update-Workitem {
         [System.String]
         $State,
 
-        # Optional Parent of the updated created workitem.
+        # Optional Parent of the updated  workitem.
         [Parameter()]
         [System.Int32]
         $ParentId,
+
+        # Optional mail of the assignee for the updated workitem.
+        [Parameter()]
+        [AllowNull()]
+        [MailAddress]
+        $AssignedTo,
 
         # Optional Id of a related workitem
         [Parameter()]
@@ -121,6 +127,22 @@ function Update-Workitem {
             AsArray = $true
         }
 
+        if ($PSBoundParameters.ContainsKey('AssignedTo')) {
+            if([string]::IsNullOrEmpty($AssignedTo.Address)){
+                $Request.Body += @{
+                    op    = "remove"
+                    path  = '/fields/System.AssignedTo'
+                }
+            }
+            else{
+                $Request.Body += @{
+                    op    = "add"
+                    path  = '/fields/System.AssignedTo'
+                    value = $AssignedTo.Address
+                }
+            }
+        }
+
         if ($PSBoundParameters.ContainsKey('State')) {
             $Request.Body += @{
                 op    = 'add'
@@ -161,7 +183,7 @@ function Update-Workitem {
                 }
             }
         }
-        $Request.Body
+
         if ($PSCmdlet.ShouldProcess("[$($workitem.fields.'System.WorkItemType')] - '$($workitem.fields.'System.Title')' in $($workitem.fields.'System.IterationPath')", 'Update')) {
             $workitem = Invoke-DevOpsRest @Request -ContentType 'application/json-patch+json' 
 

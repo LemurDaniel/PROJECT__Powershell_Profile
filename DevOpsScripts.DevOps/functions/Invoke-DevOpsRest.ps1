@@ -71,7 +71,7 @@ function Invoke-DevOpsRest {
         [Alias('Type')]
         [Parameter()]
         [System.String]
-        [ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev', 'app.vssps.visualstudio', 'feeds.dev.azure')]
+        [ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev.azure', 'app.vssps.visualstudio', 'feeds.dev.azure')]
         $DOMAIN = 'dev.azure',
 
         # The scope to call. None, Organization, Project, Team.

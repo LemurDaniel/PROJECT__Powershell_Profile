@@ -31,7 +31,12 @@ function Add-SprintIncrement {
     param(
         [parameter()]
         [System.String]
-        $Team = 'DC Azure Migration'
+        $Team = 'DC Azure Migration Team',
+        
+
+        [parameter()]
+        [datetime[]]
+        $TeamDaysOff = @()
     )
 
     # Get Latest Sprint Iteration.
@@ -51,14 +56,43 @@ function Add-SprintIncrement {
     $WeekOfYear = $cultureInfo.Calendar.GetWeekOfYear($startOfNextWeek, $CalendarWeekRule, $firstWeekDay)
 
 
-
-    $SprintIteration = @{
+    $NewSprintIteration = @{
         Name       = [System.String]::Format('{0}-{1:00}and{2:00}', $startOfNextWeek.Year, $WeekOfYear, $WeekOfYear + 1)
         StartDate  = $startOfNextWeek
         finishDate = $startOfNextWeek.AddDays(11)
         Team       = $Team 
     }
 
-    return New-SprintIteration @SprintIteration
+    $SprintIteration = New-SprintIteration @NewSprintIteration
 
+
+    # add team member to sprint and according capacities
+    $TeamId = (Get-ProjectInfo).teams | Where-Object name -eq $Team | Select-Object -exp id
+    $Request = @{
+        METHOD = "Get"
+        DOMAIN = "vsaex.dev.azure"
+        SCOPE  = "ORG"
+        API    = "_apis/GroupEntitlements/{0}/members?api-version=6.0-preview.1" -f $teamId
+    }
+    $groupMember = Invoke-DevOpsRest @Request -Property members
+    $sprintmember = @()
+    foreach ($member in $groupMember){
+        $AddSprintMemberSplat = @{
+            IterationId = $SprintIteration.id
+            TeamMemberId = $member.id
+            Activity = "Unassigned"
+            CapacityPerDay = 0
+        }
+        
+        $sprintmember += Add-SprintMember @AddSprintMemberSplat
+    }
+
+    # add team days off
+    $teamDayOff = Add-SprintTeamDaysOff -IterationId $SprintIteration.id -DaysOff $TeamDaysOff
+    
+    return @{
+        iteration = $SprintIteration
+        sprintmember = $sprintmember
+        teamdaysoff = $teamDayOff
+    }
 }

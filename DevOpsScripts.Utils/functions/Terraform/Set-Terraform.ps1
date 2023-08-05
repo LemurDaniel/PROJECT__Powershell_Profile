@@ -106,6 +106,7 @@ function Set-Terraform {
         $targetSubfolder = New-Item -ItemType Directory -Path "$TerraformVersionFolder/v$Version"
     }
 
+    # Donwload version if not present locally.
     $targetZip = Get-ChildItem -Path $targetSubfolder.FullName -Filter "terraform.zip"
     if ($null -EQ $targetZip) {
         $remoteTarget = Get-TerraformVersions | Where-Object -Property Version -EQ $Version
@@ -134,5 +135,5 @@ function Set-Terraform {
     Write-Host 
     terraform --version
     Write-Host
-    $env:Path
+
 }

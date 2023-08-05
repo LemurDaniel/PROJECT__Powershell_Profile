@@ -3,7 +3,7 @@
     Gets a list of all current terraform versions.
 
     .DESCRIPTION
-    Gets a list of all current terraform versions.
+    Gets a list of all current terraform versions. Excludes betas, alpbas, etc.
 
     .INPUTS
     None. You cannot pipe objects into the Function.

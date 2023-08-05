@@ -1,23 +1,6 @@
 
 
-$global:DefaultEnvPaths = [ordered]@{
-    
-    # CLI Tools
-    AzureCLI_primary    = "$env:AppPath\_EnvPath_Apps\CLI\Azure\CLI2\wbin"
-    AzureCLI_secondary  = 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin'
-    sqlcmd              = "$env:AppPath\_EnvPath_Apps\CLI\Microsoft SQL Server\sqlcmd"
- 
-    terraformDocs       = "$env:AppPath\_EnvPath_Apps\terraform-docs\v.0.16.0"
-    tflint              = "$env:AppPath\_EnvPath_Apps\tflint\v0.44.0"
-
-    node_modules_global = "$env:APPDATA\npm"
-    nodejs_primary      = "$env:AppPath\_EnvPath_Apps\nodejs\18.12.1"
-    nodejs_secondary    = 'C:\Program Files\nodejs'
-
-    gpg                 = (Resolve-Path -Path "C:\Program Files (x86)\GnuPG\bin" -ErrorAction SilentlyContinue).Path `
-        ?? "$env:APPDATA\..\Local\Programs\GnuPG\bin"
-
-}
+$global:DefaultEnvPaths = [ordered]@{}
 
 
 $EnvironmentPaths = @(

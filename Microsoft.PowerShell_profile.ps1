@@ -20,13 +20,7 @@ $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $env:OneDrive = $env:OneDriveConsumer ?? $env:OneDrive
-$env:AppPath = "$env:OneDrive/_Apps/"
-$env:AppPathSecondary = "$env:OneDrive/Dokumente/_Apps"
-if (!(Test-Path $env:AppPath)) {
-    $env:AppPath = (Resolve-Path $env:AppPathSecondary).Path
-}
 
-$env:TerraformPath = "$env:AppPath\_EnvPath_Apps\terraform\"
 $env:TF_DATA_DIR = "C:\TFCACHE\$((Get-Location).path -split "\\" | Select-Object -Last 1)"
 ########################################################################################################################
 ########################################################################################################################
@@ -61,16 +55,6 @@ if ($settingsFile) {
     $settingsContent | ConvertTo-Json -Depth 99 | Out-File -FilePath $settingsFile.FullName
 }
 
-$null = Add-QuickContext -ContextName Teamsbuilder -Organization baugruppe -Project 'Teamsbuilder' -Force
-$null = Add-QuickContext -ContextName 'DC Migration' -Organization baugruppe -Project 'DC Azure Migration' -Force
-$null = Add-QuickContext -ContextName 'DC Redeploy' -Organization baugruppe -Project 'DC ACF Redeployment' -Force
-
-
-$null = Add-PimProfile -ProfileName WebContrib -Scope 'managementGroups/acfroot-prod' -Role 'Website Contributor' -duration 3 -Force
-$null = Add-PimProfile -ProfileName PolicyContrib -Scope 'managementGroups/acfroot-prod' -Role 'Resource Policy Contributor' -duration 3 -Force
-
-
-
 $gpgSigning = Read-SecureStringFromFile -Identifier gitGpgEnable -AsPlainText
 while ($null -eq $gpgSigning -OR $gpgSigning.toLower() -notin ('true', 'false')) {
     $gpgSigning = Read-Host -Prompt 'Enable Gpg-Signing [true/false]'
@@ -95,7 +79,8 @@ if ([System.Boolean]::parse($gpgSigning)) {
 
     # Overwrite settings for gpg-agent to set passphrase
     # Then Reload agent and set acutal Passphrase
-    $null = git config --global gpg.program "$($global:DefaultEnvPaths['gpg'])/gpg.exe"
+    $gpgPath = $env:Path -Split ';' | Where-Object {$_ -like '*GnuPG*' } | Select-Object -First 1
+    $null = git config --global --replace-all gpg.program "$gpgPath/gpg.exe"
     $null = git config --global --unset gpg.format
     $null = git config --global user.signingkey $gpg_id   
 
@@ -109,9 +94,22 @@ if ([System.Boolean]::parse($gpgSigning)) {
     $null = gpgconf --launch gpg-agent
     $null = $gpg_phrase | ConvertFrom-SecureString -AsPlainText | gpg-preset-passphrase --preset $gpg_grip
 
+
+    $globalGitName = git config --global user.name 
+    $globalGitMail = git config --global user.email
+
+    if($null -EQ $globalGitName) {
+        $globalGitName = Read-Host -Prompt "Please Enter Global Git-Name"
+        git config --global user.name $globalGitName
+    }
+    if($null -EQ $globalGitMail) {
+        $globalGitMail = Read-Host -Prompt "Please Enter Global Git-Email"
+        git config --global user.email $globalGitMail
+    }
+
     Write-Host 'Current Global Git Profile:'
-    Write-Host "    $(git config --global user.name )"
-    Write-Host "    $(git config --global user.email )"
+    Write-Host "     $globalGitName"
+    Write-Host "     $globalGitMail"
     Write-Host ''
 
     git -C . rev-parse >nul 2>&1; 

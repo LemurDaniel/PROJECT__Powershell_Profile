@@ -17,7 +17,6 @@
 #>
 function Switch-Terraform {
     
-    [Alias('tf')]
     [CmdletBinding()]
     param ()
 

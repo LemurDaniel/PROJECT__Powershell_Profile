@@ -78,8 +78,8 @@ function Set-Terraform {
     $UserEnvironmentPaths = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User) 
     if (!$UserEnvironmentPaths.Contains($TerraformActiveFolder)) {
         $UserEnvironmentPaths = ($UserEnvironmentPaths -split ';' | Where-Object { $_.Length -gt 0 }) -join ';'
-        $EnvironmentPaths = $TerraformActiveFolder + ';' + $EnvironmentPaths
-        [System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::User)
+        $UserEnvironmentPaths = $TerraformActiveFolder + ';' + $UserEnvironmentPaths
+        [System.Environment]::SetEnvironmentVariable('Path', $UserEnvironmentPaths, [System.EnvironmentVariableTarget]::User)
     }
 
     if (!(Test-Path $TerraformVersionFolder)) {

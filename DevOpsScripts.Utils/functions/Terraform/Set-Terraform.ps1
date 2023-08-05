@@ -70,11 +70,16 @@ function Set-Terraform {
     $TerraformVersionFolder = (![System.String]::isNullOrEmpty($env:TerraformPath) ? $env:TerraformPath : "$env:USERPROFILE\terraform")
     $TerraformActiveFolder = "$TerraformVersionFolder\active"
 
-    $EnvironmentPaths = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User)
-    if (!$EnvironmentPaths.Contains($TerraformActiveFolder)) {
-        $EnvironmentPaths = @($TerraformActiveFolder.Fullname, $EnvironmentPaths) -join ';'
+    if (!$env:Path.Contains($TerraformActiveFolder)) {
+        $env:Path = $TerraformActiveFolder + ';' + $env:Path
+    }
+
+    # Set permanently in user path
+    $UserEnvironmentPaths = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User) 
+    if (!$UserEnvironmentPaths.Contains($TerraformActiveFolder)) {
+        $UserEnvironmentPaths = ($UserEnvironmentPaths -split ';' | Where-Object { $_.Length -gt 0 }) -join ';'
+        $EnvironmentPaths = $TerraformActiveFolder + ';' + $EnvironmentPaths
         [System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::User)
-        [System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::Process)
     }
 
     if (!(Test-Path $TerraformVersionFolder)) {
@@ -117,9 +122,9 @@ function Set-Terraform {
     }
 
     
-    if($SessionOnly) {
+    if ($SessionOnly) {
         $regexExp = "$($TerraformVersionFolder.FullName.replace('\', '\\'))[\\]*v*"
-        $environmentPaths = $env:Path -split ';' | Where-Object { $_ -notMatch $regexExp }
+        $environmentPaths = $env:Path -split ';' | Where-Object { $_ -notMatch $regexExp } | Where-Object { $_.Length -gt 0 }
         $environmentPaths = $environmentPaths -join ';'
         $env:Path = $targetSubfolder.FullName + ";" + $environmentPaths
     }

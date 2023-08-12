@@ -37,9 +37,9 @@ function Get-DevOpsOrganizations {
     }
 
     $Organizations = @()
-    $filedata = Read-SecureStringFromFile -Identifier organizations.pat.all -AsJSON
+    $filedata = Read-SecureStringFromFile -Identifier organizations.pat.all -AsHashtable
     if ($filedata) {
-        $Organizations += $filedata.PSObject.Properties.Name | ForEach-Object { 
+        $Organizations += $filedata.Keys | ForEach-Object { 
             @{ 
                 isPATauthenticated = $true
                 accountName        = $_ 
@@ -47,7 +47,6 @@ function Get-DevOpsOrganizations {
         }
     }
 
-    # Get Organizations the user is member of.
     # TODO API currently doesn't return any data anymore!
     $Request = @{
         Method = 'GET'
@@ -60,9 +59,11 @@ function Get-DevOpsOrganizations {
     }
     $Organizations += Invoke-DevOpsRest @Request -return 'value' -ErrorAction SilentlyContinue
 
+    # TODO API currently doesn't return any data anymore!
     if (($Organizations | Measure-Object).Count -eq 0) {
         Throw "Couldnt find any DevOps Organizations associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
     }
+
     return Set-UtilsCache -Object $Organizations -Type Organization -Identifier $Identifier
 
 }

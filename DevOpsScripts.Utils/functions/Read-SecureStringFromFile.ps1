@@ -34,6 +34,17 @@ function Read-SecureStringFromFile {
         [switch]
         $AsPlainText,
 
+        # A switch to return the data as an unencrypted string.
+        [Parameter(Mandatory = $false)]
+        [switch]
+        $AsJSON,
+
+
+        # A switch to return the data as an unencrypted string.
+        [Parameter(Mandatory = $false)]
+        [switch]
+        $AsHashtable,
+
         # Path to specify where to save the file. If not specified defaults to userProfile
         [Parameter(Mandatory = $false)]
         [System.String]
@@ -46,7 +57,14 @@ function Read-SecureStringFromFile {
 
 
     $Content = Get-Content -Path $filePath -ErrorAction SilentlyContinue | ConvertTo-SecureString -ErrorAction SilentlyContinue 
-    if ($Content -AND $AsPlainText) {
+    
+    if ($Content -AND $AsJSON) {
+        return $Content | ConvertFrom-SecureString -AsPlainText | ConvertFrom-Json
+    }
+    if ($Content -AND $AsHashtable) {
+        return $Content | ConvertFrom-SecureString -AsPlainText | ConvertFrom-Json -AsHashtable
+    }
+    elseif ($Content -AND $AsPlainText) {
         return $Content | ConvertFrom-SecureString -AsPlainText
     }
     else {

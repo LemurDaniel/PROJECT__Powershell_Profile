@@ -71,7 +71,7 @@ function Invoke-DevOpsRest {
         [Alias('Type')]
         [Parameter()]
         [System.String]
-        [ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev.azure', 'app.vssps.visualstudio', 'feeds.dev.azure')]
+        #[ValidateSet('dev', 'dev.azure', 'vssps', 'vssps.dev.azure', 'vsaex.dev.azure', 'app.vssps.visualstudio', 'feeds.dev.azure')]
         $DOMAIN = 'dev.azure',
 
         # The scope to call. None, Organization, Project, Team.
@@ -148,9 +148,9 @@ function Invoke-DevOpsRest {
             ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
 
 
-    if (!$Query['api-version']) {
-        throw 'Please specify an api-version to use.'
-    }
+    #if (!$Query['api-version']) {
+    #    throw 'Please specify an api-version to use.'
+    #}
 
 
     if (!($PSBoundParameters.Keys -contains 'contentType')) {
@@ -162,35 +162,28 @@ function Invoke-DevOpsRest {
 
     switch ($SCOPE) {
         'NONE' {
-            $TargetURL = "https://$Domain.com/$APIEndpoint`?$QueryString"
+            $TargetURL = "https://$Domain.com/$APIEndpoint"
             break
         }
         'ORG' { 
-            $TargetURL = "https://$Domain.com/$Organization/$APIEndpoint`?$QueryString"
+            $TargetURL = "https://$Domain.com/$Organization/$APIEndpoint"
             break
         }
         'PROJ' { 
             $projectInfo = Get-ProjectInfo -Name $Project
-            $TargetURL = "https://$Domain.com/$Organization/$($projectInfo.id)/$APIEndpoint`?$QueryString"
+            $TargetURL = "https://$Domain.com/$Organization/$($projectInfo.id)/$APIEndpoint"
             break
         }
         'TEAM' { 
             $projectInfo = Get-ProjectInfo -Name $Project
             $teamInfo = Search-In $projectInfo.teams -where name -has $team
-            $TargetURL = "https://$Domain.com/$Organization/$($projectInfo.id)/$($teamInfo.id)/$APIEndpoint`?$QueryString"
+            $TargetURL = "https://$Domain.com/$Organization/$($projectInfo.id)/$($teamInfo.id)/$APIEndpoint"
             break
         }
     }
 
-    try {
-        $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
-    }
-    catch {
-        Connect-AzAccount
-        # Automatically call login, when authentication failed
-        #if ($_.Exception.Message.Contains('ClientSecretCredential authentication failed')) {
-        #    Connect-AzAccount
-        #}
+    if ($QueryString.Length -GT 0) {
+        $TargetURL = "$TargetURL`?$QueryString"
     }
 
     $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   
@@ -199,10 +192,34 @@ function Invoke-DevOpsRest {
         Body    = $bodyByteArray        
         Headers = @{            
             username       = 'O.o'          
-            Authorization  = "Bearer $token"           
+            Authorization  = ""           
             'Content-Type' = $calculatedContentType       
         }        
         Uri     = [System.String]::IsNullOrEmpty($Uri) ? $TargetURL : $Uri    
+    }
+
+    if ($SCOPE -IN @('ORG', 'PROJ', 'TEAM')) {
+        $OrganizationData = Get-DevOpsOrganization -Organization $Organization
+        if ($OrganizationData.isPATauthenticated) {
+            $pat = Get-OrganizationPAT $Organization
+            $base64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("`:$pat"))
+            $Request.Headers.Authorization = "Basic $base64"
+    
+        }
+    }
+
+    if ($Request.Headers.Authorization.Length -eq 0) {
+        try {
+            $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
+            $Request.Headers.Authorization = "Bearer $token"
+        }
+        catch {
+            Connect-AzAccount
+            # Automatically call login, when authentication failed
+            #if ($_.Exception.Message.Contains('ClientSecretCredential authentication failed')) {
+            #    Connect-AzAccount
+            #}
+        }
     }
 
     Write-Verbose "Method: $([String]$Request.Method)"
@@ -217,7 +234,7 @@ function Invoke-DevOpsRest {
         }
         catch {
             if ($_ -is [System.String]) {
-                if (($_ | ConvertFrom-Json).typeKey -eq 'UnauthorizedRequestException') {
+                if (($_ | ConvertFrom-Json).typeKey -eq 'UnauthorizedRequestException' -AND !$OrganizationData.isPATauthenticated) {
                     Connect-AzAccount
                     return Invoke-DevOpsRest @PSBoundParameters
                 }
@@ -231,7 +248,7 @@ function Invoke-DevOpsRest {
         }
 
         # TODO. If DevOps wants user to sign out and in for security reasons.
-        if ($response.GetType() -eq [System.String] -AND $response.toLower().contains('sign out')) {
+        if (!$OrganizationData.isPATauthenticated -AND $response.GetType() -eq [System.String] -AND $response.toLower().contains('sign out')) {
             Disconnect-AzAccount 
             Connect-AzAccount
             $response | ConvertTo-Json | Out-File test.json

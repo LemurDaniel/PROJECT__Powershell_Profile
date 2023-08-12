@@ -28,7 +28,11 @@ function Get-DevOpsUser {
     param(
         [Parameter()]
         [System.String]
-        $Property
+        $Property,
+
+        [Parameter()]
+        [switch]
+        $Refresh
     )
 
     $Cache = Get-UtilsCache -Type User -Identifier 'devops'
@@ -42,33 +46,38 @@ function Get-DevOpsUser {
         Method = 'GET'
         Call   = 'None'
         Domain = 'app.vssps.visualstudio'
-        API    = '_apis/profile/profiles/me?api-version=6.0'
+        API    = '_apis/profile/profiles/me?api-version=7.0'
+        Query  = @{
+            details = $true
+        }
     }
     $User = Invoke-DevOpsRest @Request
 
-    $Request = @{
-        Method = 'GET'
-        Call   = 'ORG'
-        Domain = 'vssps.dev.azure'
-        API    = '_apis/identities?api-version=6.0'
-        Query  = @{
-            filterValue     = $User.emailAddress
-            queryMembership = 'None'
-            searchFilter     = 'General'
+    <#
+        $Request = @{
+            Method = 'GET'
+            Call   = 'None'
+            Domain = 'vssps.dev.azure'
+            API    = '_apis/identities?api-version=6.0'
+            Query  = @{
+                filterValue     = $User.emailAddress
+                queryMembership = 'None'
+                searchFilter    = 'General'
+            }
         }
-    }
-    $Identity = Invoke-DevOpsRest @Request
-    $User | Add-Member NoteProperty Identity $Identity.Value -Force
+        $Identity = Invoke-DevOpsRest @Request
+        $User | Add-Member NoteProperty Identity $Identity.Value -Force
 
-    $Request = @{
-        Method = 'GET'
-        Call   = 'ORG'
-        Domain = 'vssps.dev.azure'
-        API    = "_apis/graph/users/$($Identity.Value.subjectDescriptor)?api-version=5.0-preview.1"
-    }
-    $graphUser = Invoke-DevOpsRest @Request
-    $User | Add-Member NoteProperty GraphUser $graphUser -Force
 
+        $Request = @{
+            Method = 'GET'
+            Call   = 'None'
+            Domain = 'vssps.dev.azure'
+            API    = "_apis/graph/users/$($Identity.Value.subjectDescriptor)?api-version=5.0-preview.1"
+        }
+        $graphUser = Invoke-DevOpsRest @Request
+        $User | Add-Member NoteProperty GraphUser $graphUser -Force
+    #>
 
     $null = Set-UtilsCache -Object $User -Type User -Identifier 'devops'
     return Get-Property -Object $User -Property $Property

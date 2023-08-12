@@ -24,14 +24,31 @@
 function Get-DevOpsOrganizations {
 
     [cmdletbinding()]
-    param()
+    param(
+        [Parameter()]
+        [switch]
+        $Refresh
+    )
 
-    $Cache = Get-UtilsCache -Type Organization -Identifier ((Get-AzContext).Account.id)
-    if ($Cache) {
+    $Identifier = ((Get-AzContext).Account.id ?? "default")
+    $Cache = Get-UtilsCache -Type Organization -Identifier $Identifier
+    if ($Cache -AND !$Refresh) {
         return $Cache
     }
 
+    $Organizations = @()
+    $filedata = Read-SecureStringFromFile -Identifier organizations.pat.all -AsJSON
+    if ($filedata) {
+        $Organizations += $filedata.PSObject.Properties.Name | ForEach-Object { 
+            @{ 
+                isPATauthenticated = $true
+                accountName        = $_ 
+            } 
+        }
+    }
+
     # Get Organizations the user is member of.
+    # TODO API currently doesn't return any data anymore!
     $Request = @{
         Method = 'GET'
         Call   = 'None'
@@ -41,12 +58,11 @@ function Get-DevOpsOrganizations {
             memberId = Get-DevOpsUser 'publicAlias'
         }
     }
-
-    $Organizations = Invoke-DevOpsRest @Request -return 'value'
+    $Organizations += Invoke-DevOpsRest @Request -return 'value' -ErrorAction SilentlyContinue
 
     if (($Organizations | Measure-Object).Count -eq 0) {
         Throw "Couldnt find any DevOps Organizations associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
     }
-    return Set-UtilsCache -Object $Organizations -Type Organization -Identifier ((Get-AzContext).Account.id)
+    return Set-UtilsCache -Object $Organizations -Type Organization -Identifier $Identifier
 
 }

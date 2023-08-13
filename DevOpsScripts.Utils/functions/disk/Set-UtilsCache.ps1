@@ -33,15 +33,15 @@ function Set-UtilsCache {
 
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
         [PSCustomObject]
         $Object = @{},
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [System.String]
         $Type,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [System.String]
         $Identifier,
 
@@ -59,7 +59,8 @@ function Set-UtilsCache {
     )
 
     $CacheFolderPath = ![System.String]::IsNullOrEmpty($Path) ? $Path : $env:UTILS_CACHE_PATH ?? "$([System.IO.Path]::GetTempPath())/.cache/"
-    $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
+    $filename = ($($type, $Identifier, "json") | Where-Object { $_ }) -join '.' | Get-CleanFilename
+    $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath  $filename.toLower()
     
     if (-not (Test-Path -Path $CacheFolderPath)) {
         $null = New-Item -Path $CacheFolderPath -ItemType Directory -Force

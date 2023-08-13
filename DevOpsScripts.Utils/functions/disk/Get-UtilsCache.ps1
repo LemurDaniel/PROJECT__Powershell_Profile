@@ -33,7 +33,7 @@ function Get-UtilsCache {
     [CmdletBinding()]
     param (
         # The type of the cache.
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [System.String]
         $Type,
 
@@ -59,7 +59,8 @@ function Get-UtilsCache {
 
     try {
         $CacheFolderPath = ![System.String]::IsNullOrEmpty($Path) ? $Path : $env:UTILS_CACHE_PATH ?? "$([System.IO.Path]::GetTempPath())/.cache/"
-        $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath (".$Type.$Identifier.json".toLower() -replace '[\/\\\s]+', '_') 
+        $filename = ($($type, $Identifier, "json") | Where-Object { $_ }) -join '.' | Get-CleanFilename
+        $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath  $filename.toLower()
 
         Write-Verbose $CacheFilePath
 

@@ -43,6 +43,14 @@ function Set-Terraform {
     [CmdletBinding()]
     param (
 
+        # Include alpha and beta version on the autocompletion
+        [Parameter(
+            Position = 1,
+            Mandatory = $false
+        )]
+        [switch]
+        $Alpha,
+
         [Parameter(
             Position = 0,
             Mandatory = $false
@@ -51,16 +59,16 @@ function Set-Terraform {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                return (Get-TerraformVersions).Version
+                return (Get-TerraformVersions -Alpha:$fakeBoundParameters['Alpha']).Version
             }
         )]
-        [System.Version]
+        [System.String]
         $Version,
 
 
         # Only change in current powershell session. Download if necessaray.
         [Parameter(
-            Position = 1
+            Position = 2
         )]
         [switch]
         $SessionOnly
@@ -113,8 +121,9 @@ function Set-Terraform {
 
     # Donwload version if not present locally.
     $targetZip = Get-ChildItem -Path $targetSubfolder.FullName -Filter "terraform.zip"
-    if ($null -EQ $targetZip) {
-        $remoteTarget = Get-TerraformVersions | Where-Object -Property Version -EQ $Version
+    $targetExe = Get-ChildItem -Path $targetSubfolder.FullName -Filter "terraform.exe"
+    if ($null -EQ $targetExe) {
+        $remoteTarget = Get-TerraformVersions -Alpha:$Alpha | Where-Object -Property Version -EQ $Version
         Invoke-WebRequest -Method GET -Uri $remoteTarget.windows_amd64 -OutFile "$targetSubfolder/terraform.zip"
         $terraformZip = [System.IO.Compression.ZipFile]::OpenRead("$targetSubfolder/terraform.zip")
         [System.IO.Compression.ZipFileExtensions]::ExtractToFile($terraformZip.Entries[0], "$targetSubfolder/terraform.exe", $true)

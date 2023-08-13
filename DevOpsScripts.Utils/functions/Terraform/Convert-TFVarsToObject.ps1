@@ -66,12 +66,22 @@ function Convert-TFVarsToObject {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-ChildItem -Filter '*tfvars*').name
+                $tfvarFiles = (Get-ChildItem -Filter '*.tfvars' -Recurse -Depth 3)
+                $validValues = $tfvarFiles | ForEach-Object {
+                    return @{
+                        file = $_.Name
+                        path = $_.FullName.replace((Get-Location).Path, '')
+                    }
+                }
                 
-                $validValues | `
-                    Where-Object {
-                    $_.toLower() -like ($wordToComplete.Length -lt 3 ? "$wordToComplete*" : "*$wordToComplete*").toLower() 
-                } | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+                $validValues 
+                | Where-Object {
+                    $_.file.toLower() -like ($wordToComplete.Length -lt 3 ? "$wordToComplete*" : "*$wordToComplete*").toLower() 
+                } 
+                | Select-Object -ExpandProperty path
+                | ForEach-Object { 
+                    $_.contains(' ') ? "'$_'" : $_ 
+                } 
             }
         )]
         [System.String]
@@ -132,6 +142,7 @@ function Convert-TFVarsToObject {
     )
 
     if ($PSBoundParameters.ContainsKey('FilePath')) {
+        $FilePath = Join-Path -Path (Get-Location).Path -ChildPath $FilePath
         $Content = Get-Content -Path $FilePath -Raw
     }
 

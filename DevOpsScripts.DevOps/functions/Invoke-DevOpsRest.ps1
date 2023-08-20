@@ -86,6 +86,8 @@ function Invoke-DevOpsRest {
         [System.String]
         $API,
 
+
+
         # Any Query-Parameters that are not specifed in the API-String
         [Parameter()]
         [System.Collections.Hashtable]
@@ -97,6 +99,7 @@ function Invoke-DevOpsRest {
         $Body,
 
       
+
         # The Property to return from the items. If null will return full Properties.
         [Alias('return')]
         [Parameter()]
@@ -108,10 +111,14 @@ function Invoke-DevOpsRest {
         [System.String]
         $team = 'DC Azure Migration Team',
 
+
+
         # An optional URI to override the URI genration from Domain, Call, API.
         [Parameter()]
         [System.String]
         $Uri,
+
+
 
         # A switch parameter to Force interpret the Body as an array. (Single Value arrays may cause troubles by being interpreted as an object.)
         [Parameter()]
@@ -120,18 +127,26 @@ function Invoke-DevOpsRest {
 
         # A String to override the content-type. Get automatically set for Get and Post. May not be right for specifig Endpoints.
         [parameter()]
-        [string]
+        [System.String]
         $contentType,
+
+
 
         # A String to override the Project-Context.
         [parameter()]
-        [string]
+        [System.String]
         $Organization,
 
         # A String to override the Project-Context.
         [parameter()]
-        [string]
-        $Project
+        [System.String]
+        $Project,
+
+
+        # A Tenant ID for Access Token Generation.
+        [parameter()]
+        [System.String]
+        $TenantId
     )
 
 
@@ -198,20 +213,30 @@ function Invoke-DevOpsRest {
         Uri     = [System.String]::IsNullOrEmpty($Uri) ? $TargetURL : $Uri    
     }
 
+
+    # Generate Authorization Header
+    $OrganizationData = $null
     if ($SCOPE -IN @('ORG', 'PROJ', 'TEAM')) {
-        $OrganizationData = Get-DevOpsOrganization -Organization $Organization
-        if ($OrganizationData.isPATauthenticated) {
-            $pat = Get-OrganizationPAT $Organization
-            $base64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("`:$pat"))
-            $Request.Headers.Authorization = "Basic $base64"
+        $OrganizationData = Get-DevOpsOrganizationData -Organization $Organization
+        $TenantId = $OrganizationData.tenantId
+    }
     
-        }
+    if ($OrganizationData.isPATauthenticated) {
+        $pat = Get-OrganizationPAT $Organization
+        $base64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("`:$pat"))
+        $Request.Headers.Authorization = "Basic $base64"
     }
 
     if ($Request.Headers.Authorization.Length -eq 0) {
         try {
-            $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
-            $Request.Headers.Authorization = "Bearer $token"
+            if ($TenantId) {
+                $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $TenantId).Token
+                $Request.Headers.Authorization = "Bearer $token"
+            }
+            else {
+                $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
+                $Request.Headers.Authorization = "Bearer $token"
+            }
         }
         catch {
             Connect-AzAccount
@@ -222,7 +247,7 @@ function Invoke-DevOpsRest {
         }
     }
 
-    Write-Verbose "Method: $([String]$Request.Method)"
+    Write-Verbose "Method: $([System.String]$Request.Method)"
     Write-Verbose "URI: $($Request.Uri)"
     Write-Verbose "BODY: $($body | ConvertTo-Json -Depth 8 -AsArray:$AsArray)"
 

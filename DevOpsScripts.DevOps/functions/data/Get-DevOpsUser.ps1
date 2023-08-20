@@ -41,7 +41,6 @@ function Get-DevOpsUser {
         return Get-Property -Object $Cache -Property $Property
     }
 
-
     $Request = @{
         Method = 'GET'
         Call   = 'None'
@@ -52,6 +51,25 @@ function Get-DevOpsUser {
         }
     }
     $User = Invoke-DevOpsRest @Request
+    $User | Add-Member NoteProperty publicAliases ([PSCustomObject]@{})
+
+    Get-AzTenant | ForEach-Object {
+        $Request = @{
+            TenantId = $_.Id
+            Method = 'GET'
+            Call   = 'None'
+            Domain = 'app.vssps.visualstudio'
+            API    = '_apis/profile/profiles/me?api-version=7.0'
+            Query  = @{
+                details = $false
+            }
+        }
+        $publicAlias = Invoke-DevOpsRest @Request | Select-Object -ExpandProperty publicAlias
+        $User.publicAliases | Add-Member NoteProperty $_.id $publicAlias
+    }
+
+
+
 
     <#
         $Request = @{
@@ -79,6 +97,6 @@ function Get-DevOpsUser {
         $User | Add-Member NoteProperty GraphUser $graphUser -Force
     #>
 
-    $null = Set-UtilsCache -Object $User -Type User -Identifier 'devops'
+    $null = Set-UtilsCache -Object $User -Type User -Identifier 'devops' -Alive 1200
     return Get-Property -Object $User -Property $Property
 }

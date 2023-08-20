@@ -1,5 +1,5 @@
 
-function Get-DevOpsOrganization {
+function Get-DevOpsOrganizationData {
 
     [cmdletbinding()]
     param(

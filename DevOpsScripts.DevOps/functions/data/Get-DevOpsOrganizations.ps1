@@ -36,30 +36,55 @@ function Get-DevOpsOrganizations {
         return $Cache
     }
 
+
+
+    # Organizations added via PAT.
     $Organizations = @()
     $filedata = Read-SecureStringFromFile -Identifier organizations.pat.all -AsHashtable
     if ($filedata) {
         $Organizations += $filedata.Keys | ForEach-Object { 
             @{ 
+                accountId          = $null
+                accountUri         = $null
+                tenantId           = $null
                 isPATauthenticated = $true
                 accountName        = $_ 
             } 
         }
     }
 
-    # TODO API currently doesn't return any data anymore!
-    $Request = @{
-        Method = 'GET'
-        Call   = 'None'
-        Domain = 'app.vssps.visualstudio'
-        API    = '_apis/accounts?api-version=6.0'
-        Query  = @{
-            memberId = Get-DevOpsUser 'publicAlias'
+
+    
+    Get-AzTenant | ForEach-Object {
+
+        $Request = @{
+            TenantId = $_.id
+            Method   = 'GET'
+            Call     = 'None'
+            Domain   = 'app.vssps.visualstudio'
+            API      = '_apis/accounts?api-version=6.0'
+            Query    = @{
+                # Note the same user on each tenant has a different publicAlias and needs to be called for every tenant.
+                # TODO fix same problem in VsCode Extension
+                memberId = (Get-DevOpsUser).publicAliases."$($_.id)"
+            }
+        }
+
+        $response = Invoke-DevOpsRest @Request  -ErrorAction SilentlyContinue 
+        if ($null -NE $response -OR $response.count -gt 0) {
+            $tenantId = $_.id
+            $response | Select-Object -ExpandProperty value -ErrorAction SilentlyContinue
+            | ForEach-Object {
+                $_ | Add-Member NoteProperty isPATauthenticated $false
+                $_ | Add-Member NoteProperty tenantId $tenantId -PassThru
+            }
+            | ForEach-Object {
+                $Organizations += $_
+            }
         }
     }
-    $Organizations += Invoke-DevOpsRest @Request -return 'value' -ErrorAction SilentlyContinue
 
-    # TODO API currently doesn't return any data anymore!
+
     if (($Organizations | Measure-Object).Count -eq 0) {
         Throw "Couldnt find any DevOps Organizations associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
     }

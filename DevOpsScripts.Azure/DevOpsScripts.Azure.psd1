@@ -71,23 +71,24 @@ RequiredAssemblies = @()
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Backup-AzTables', 'Get-NonCompliantRoleAssignments', 
                'Invoke-AzureRest', 'Restore-AzTables', 'Switch-AzTenant', 
-               'Test-AzLogin', 'Backup-AzState', 'Get-AzResourceGraphChangesCreate', 
-               'Get-AzResourceGraphChangesDelete', 
-               'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
-               'Search-AzFunctionAppSettings', 'Search-AzResource', 
-               'Search-AzResourceGraphResults', 'Search-AzStorageAccount', 
-               'Search-AzStorageContext', 'Search-AzVm', 'Test', 
-               'New-AzAccessPackageCatalogRoleAssignment', 
-               'Remove-AzAccessPackageCatalogRoleAssignment', 
-               'Get-GraphApiManager', 'Get-onPremisesExtensionAttributes', 
-               'Invoke-GraphApi', 'Add-PimProfile', 'Get-PimAssignments', 
+               'Test-AzLogin', 'Add-PimProfile', 'Get-PimAssignments', 
                'Get-PimProfiles', 'Get-RBACPermissions', 
                'Get-RoleEligibilitySceduleInstancesForScope', 
                'Get-RoleManagementPolicyForScope', 
                'Get-RoleManagmentPolicyAssignmentsForScope', 
                'New-PimJustification', 'New-PimSelfActivationRequest', 
                'New-PimSelfDeactivationRequest', 'Search-PimScheduleInstance', 
-               'Search-PimScheduleInstanceForUser', 'Select-RBACPermissions'
+               'Search-PimScheduleInstanceForUser', 'Select-RBACPermissions', 
+               'Get-GraphApiManager', 'Get-onPremisesExtensionAttributes', 
+               'Invoke-GraphApi', 'Backup-AzState', 
+               'Get-AzResourceGraphChangesCreate', 
+               'Get-AzResourceGraphChangesDelete', 
+               'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
+               'Search-AzFunctionAppSettings', 'Search-AzResource', 
+               'Search-AzResourceGraphResults', 'Search-AzStorageAccount', 
+               'Search-AzStorageContext', 'Search-AzVm', 'Test', 
+               'New-AzAccessPackageCatalogRoleAssignment', 
+               'Remove-AzAccessPackageCatalogRoleAssignment'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -96,7 +97,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'FAConf', 'STCtx', 'pim', 'pimDeactivate'
+AliasesToExport = 'pim', 'pimDeactivate', 'FAConf', 'STCtx'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

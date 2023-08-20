@@ -74,11 +74,11 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-Property', 'Join-PsObject', 'New-R
                'Test-IsRepository', 'Convert-TFVarsToObject', 
                'Get-TerraformProviderInfo', 'Get-TerraformProviders', 
                'Get-TerraformVersions', 'Open-TerraformProviderDocs', 
-               'Remove-MovedBlocks', 'Set-Terraform', 'Format-SendGridContent', 
+               'Remove-MovedBlocks', 'Set-Terraform', 'Get-CleanFilename', 
+               'Get-UtilsCache', 'Read-SecureStringFromFile', 
+               'Save-SecureStringToFile', 'Set-UtilsCache', 'Format-SendGridContent', 
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'New-SendGridHtmlFormat', 'Get-CleanFilename', 'Get-UtilsCache', 
-               'Read-SecureStringFromFile', 'Save-SecureStringToFile', 
-               'Set-UtilsCache'
+               'New-SendGridHtmlFormat'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

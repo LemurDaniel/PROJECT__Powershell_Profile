@@ -69,11 +69,11 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-GithubRest', 'New-GithubRepository', 'Open-GithubBrowser', 
-               'Open-GithubRepository', 'Get-GithubCache', 'Get-GithubContexts', 
+FunctionsToExport = 'Invoke-GithubRest', 'Get-GithubCache', 'Get-GithubContexts', 
                'Get-GithubPat', 'Get-GithubRepositories', 'Get-GithubUser', 
                'Set-GithubCache', 'Get-GithubContext', 'Get-GithubContextInfo', 
-               'Get-GithubRepositoryInfo', 'Switch-GithubContext'
+               'Get-GithubRepositoryInfo', 'Switch-GithubContext', 
+               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

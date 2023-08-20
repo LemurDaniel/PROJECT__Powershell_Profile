@@ -69,9 +69,9 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-FreshApi', 'Get-FreshTicket', 'New-FreshTicketNote', 
-               'New-FreshTicketReply', 'Set-FreshTicketAgent', 'Get-FreshGroup', 
-               'Get-FreshGroupMember', 'Get-FreshAgent'
+FunctionsToExport = 'Invoke-FreshApi', 'Get-FreshGroup', 'Get-FreshGroupMember', 
+               'Get-FreshTicket', 'New-FreshTicketNote', 'New-FreshTicketReply', 
+               'Set-FreshTicketAgent', 'Get-FreshAgent'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

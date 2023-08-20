@@ -57,8 +57,9 @@ function Get-DevOpsOrganizations {
     
     Get-AzTenant | ForEach-Object {
 
+        $tenantId = $_.id
         $Request = @{
-            TenantId = $_.id
+            TenantId = $tenantId
             Method   = 'GET'
             Call     = 'None'
             Domain   = 'app.vssps.visualstudio'
@@ -66,21 +67,21 @@ function Get-DevOpsOrganizations {
             Query    = @{
                 # Note the same user on each tenant has a different publicAlias and needs to be called for every tenant.
                 # TODO fix same problem in VsCode Extension
-                memberId = (Get-DevOpsUser).publicAliases."$($_.id)"
+                memberId = (Get-DevOpsUser).publicAliases."$tenantId"
             }
         }
 
         $response = Invoke-DevOpsRest @Request  -ErrorAction SilentlyContinue 
+
         if ($null -NE $response -OR $response.count -gt 0) {
-            $tenantId = $_.id
-            $response | Select-Object -ExpandProperty value -ErrorAction SilentlyContinue
+
+            $Organizations += $response | Select-Object -ExpandProperty value -ErrorAction SilentlyContinue
             | ForEach-Object {
                 $_ | Add-Member NoteProperty isPATauthenticated $false
                 $_ | Add-Member NoteProperty tenantId $tenantId -PassThru
+                $_ | Add-Member NoteProperty publicAlias (Get-DevOpsUser).publicAliases."$tenantId"
             }
-            | ForEach-Object {
-                $Organizations += $_
-            }
+
         }
     }
 

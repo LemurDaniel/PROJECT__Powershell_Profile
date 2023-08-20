@@ -37,7 +37,7 @@ function Get-DevOpsUser {
 
     $Cache = Get-UtilsCache -Type User -Identifier 'devops'
     
-    if ($Cache -AND $Cache.emailAddress.toLower() -eq (Get-AzContext).Account.Id.ToLower()) {
+    if ($Cache -AND $Cache.emailAddress.toLower() -eq (Get-AzContext).Account.Id.ToLower() -AND !$Refresh) {
         return Get-Property -Object $Cache -Property $Property
     }
 

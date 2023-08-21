@@ -150,7 +150,6 @@ function Invoke-DevOpsRest {
     )
 
 
-    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
     $APIEndpoint = ($API -split '\?')[0]
     
     # Build a hashtable of providedy Query params and Query params in provied api-url.
@@ -173,6 +172,13 @@ function Invoke-DevOpsRest {
     }
     else {
         $calculatedContentType = $contentType
+    }
+
+    $OrganizationData = $null
+    if ($SCOPE -IN @('ORG', 'PROJ', 'TEAM')) {
+        $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
+        $OrganizationData = Get-DevOpsOrganizationData -Organization $Organization
+        $TenantId = $OrganizationData.tenantId
     }
 
     switch ($SCOPE) {
@@ -215,12 +221,6 @@ function Invoke-DevOpsRest {
 
 
     # Generate Authorization Header
-    $OrganizationData = $null
-    if ($SCOPE -IN @('ORG', 'PROJ', 'TEAM')) {
-        $OrganizationData = Get-DevOpsOrganizationData -Organization $Organization
-        $TenantId = $OrganizationData.tenantId
-    }
-    
     if ($OrganizationData.isPATauthenticated) {
         $pat = Get-OrganizationPAT $Organization
         $base64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("`:$pat"))

@@ -27,8 +27,8 @@ function Set-DevOpsContext {
 
     if ($Default) {
         $Context = @{
-            Project      = 'DC Azure Migration' #TeamsBuilder
-            Organization = 'baugruppe' 
+            Project      = $null # 'DC Azure Migration' #TeamsBuilder
+            Organization = $null # 'baugruppe' 
         }     
     }
     else {

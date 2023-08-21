@@ -24,6 +24,7 @@ function Get-AKScredentials {
     param (
         # The name of the context. Instead of Set-AzContext.
         [Parameter(
+            Position = 1,
             Mandatory = $false
         )]
         [System.String]
@@ -42,6 +43,7 @@ function Get-AKScredentials {
 
         # The name of the cluster.
         [Parameter(
+            Position = 0,
             Mandatory = $true
         )]
         [System.String]

@@ -49,7 +49,6 @@ function Get-AKScredentials {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $Context = $null
                 if ($fakeBoundParameters.containsKey('Context')) {
                     $AzContext = Get-AzContextsWrapper 
                     | Where-Object -Property name -EQ $fakeBoundParameters["Context"]

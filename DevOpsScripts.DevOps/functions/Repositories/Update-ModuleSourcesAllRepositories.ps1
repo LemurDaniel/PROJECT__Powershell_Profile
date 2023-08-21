@@ -24,7 +24,7 @@ function Update-ModuleSourcesAllRepositories {
         # Refresh cached values.
         [Parameter()]
         [switch]
-        $refresh,
+        $Refresh,
 
         # Refresh cached values.
         [Parameter()]
@@ -51,7 +51,7 @@ function Update-ModuleSourcesAllRepositories {
     )
 
 
-    $null = Get-RecentSubmoduleTags -refresh:($refresh)
+    $null = Get-RecentSubmoduleTags -refresh:($Refresh)
     $allTerraformRepositories = Get-ProjectInfo -return 'repositories' | Where-Object -Property name -Like '*terraform*' 
 
     $sortedLast = $allTerraformRepositories | Where-Object -Property name -In $nonModules | Sort-Object -Property { $nonModules.IndexOf($_.name) }

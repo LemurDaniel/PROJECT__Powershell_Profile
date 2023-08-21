@@ -88,7 +88,7 @@ function Open-RepositoryInBrowser {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-DevOpsProjects).name 
+                $validValues = (Get-OrganizationInfo).projects.name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `

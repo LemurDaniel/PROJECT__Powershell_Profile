@@ -39,7 +39,7 @@ function Get-DevOpsPipelines {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-DevOpsProjects).name 
+                $validValues = (Get-OrganizationInfo).projects.name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -57,13 +57,13 @@ function Get-DevOpsPipelines {
         # Switch to refresh the cache.
         [Parameter()]
         [switch]
-        $refresh
+        $Refresh
     )
 
     $projectInfo = Get-ProjectInfo -Name $Project
     $Pipelines = Get-AzureDevOpsCache -Type Pipeline -Identifier $projectInfo.id
 
-    if (!$Pipelines -OR $refresh) {
+    if (!$Pipelines -OR $Refresh) {
         # Get Pipelines.
         $Request = @{
             Project = $projectInfo.name

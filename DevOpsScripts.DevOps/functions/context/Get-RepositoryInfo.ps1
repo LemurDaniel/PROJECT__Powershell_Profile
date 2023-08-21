@@ -58,7 +58,7 @@ function Get-RepositoryInfo {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-DevOpsProjects).name 
+                $validValues = (Get-OrganizationInfo).projects.name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -125,14 +125,14 @@ function Get-RepositoryInfo {
         # Force API-Call and overwrite Cache
         [Parameter()]
         [switch]
-        $refresh
+        $Refresh
     )  
 
     if (![System.String]::IsNullOrEmpty($Name)) {
-        $repository = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$refresh | Where-Object -Property Name -EQ -Value $Name
+        $repository = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$Refresh | Where-Object -Property Name -EQ -Value $Name
     }
     elseif (![System.String]::IsNullOrEmpty($id)) {
-        $repository = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$refresh | Where-Object -Property Name -EQ -Value $Name
+        $repository = Get-ProjectInfo -Name $Project -return 'repositories' -refresh:$Refresh | Where-Object -Property Name -EQ -Value $Name
     }
     else {
         # Get Current repository from VSCode Terminal, if nothing is specified.
@@ -140,8 +140,8 @@ function Get-RepositoryInfo {
         $repoName = $path.split('/')[-1]
         $projectName = $path.split('/')[-2]
 
-        $projectName = $projectName -in (Get-DevOpsProjects).name ? $projectName : $null
-        $repository = Get-ProjectInfo -Name $projectName -return 'repositories' -refresh:$refresh | Where-Object -Property Name -EQ -Value $repoName
+        $projectName = $projectName -in (Get-OrganizationInfo).projects.name? $projectName : $null
+        $repository = Get-ProjectInfo -Name $projectName -return 'repositories' -refresh:$Refresh | Where-Object -Property Name -EQ -Value $repoName
         
         if ($repository) {
             $repository | Add-Member NoteProperty currentPath $path

@@ -35,7 +35,7 @@ function Update-ModuleSourcesInPath {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-DevOpsProjects).name 
+                $validValues = (Get-OrganizationInfo).projects.name
                         
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -78,11 +78,11 @@ function Update-ModuleSourcesInPath {
         # Refresh the submodule tags, fetched from Azure DevOps.
         [Parameter()]
         [switch]
-        $refresh
+        $Refresh
     )
 
     $totalReplacements = [System.Collections.ArrayList]::new()
-    $taggedRepositories = Get-RecentSubmoduleTags -Project $Project -refresh:$refresh
+    $taggedRepositories = Get-RecentSubmoduleTags -Project $Project -refresh:$Refresh
     if ($PSBoundParameters.ContainsKey("Name")) {
         $taggedRepositories = $taggedRepositories | Where-Object { $_.Name -eq $Name }
     }

@@ -60,7 +60,7 @@ function Get-ProjectInfo {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-DevOpsProjects).name 
+                $validValues = (Get-OrganizationInfo).projects.name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -107,7 +107,7 @@ function Get-ProjectInfo {
         # Force API-Call and overwrite Cache
         [Parameter()]
         [switch]
-        $refresh
+        $Refresh
     )
 
 
@@ -115,7 +115,7 @@ function Get-ProjectInfo {
     $Organization = Get-DevOpsContext -Organization
 
     $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName
-    if (-not $refresh -AND $Cache) {
+    if (-not $Refresh -AND $Cache) {
         return $Cache | Get-Property -return $Property
     }
 

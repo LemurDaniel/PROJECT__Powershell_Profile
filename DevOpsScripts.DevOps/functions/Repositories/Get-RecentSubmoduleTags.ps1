@@ -41,7 +41,7 @@ function Get-RecentSubmoduleTags {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-DevOpsProjects).name 
+                $validValues = (Get-OrganizationInfo).projects.name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -54,14 +54,14 @@ function Get-RecentSubmoduleTags {
         # Refresh any cached values.
         [Parameter()]
         [switch]
-        $refresh
+        $Refresh
     )
 
 
 
     $moduleSourceReferenceCached = Get-AzureDevOpsCache -Type ModuleTags -Identifier $Project
 
-    if ($null -ne $moduleSourceReferenceCached -AND $refresh -ne $true) {
+    if ($null -ne $moduleSourceReferenceCached -AND $Refresh -ne $true) {
         Write-Host -ForegroundColor Yellow 'Fetching Cached Tags'
         return $moduleSourceReferenceCached
     }

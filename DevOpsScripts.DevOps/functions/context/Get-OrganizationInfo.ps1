@@ -22,7 +22,7 @@
     .LINK
         
 #>
-function Get-DevOpsProjects {
+function Get-OrganizationInfo {
 
     [cmdletbinding()]
     param(
@@ -47,19 +47,27 @@ function Get-DevOpsProjects {
             }
         )]
         [System.String]
-        $Organization
+        $Organization,
+
+        # Force API-Call and overwrite Cache
+        [Parameter()]
+        [switch]
+        $Refresh
     )
 
-    $Projects = Get-AzureDevOpsCache -Type Project -Organization $Organization -Identifier 'all'
-    if (!$Projects) {
+    $OrganizationData = Get-AzureDevOpsCache -Type Project -Organization $Organization -Identifier 'all'
+
+    if (!$OrganizationData -OR $Refresh) {
+
+        $OrganizationData = Get-DevOpsOrganizationData -Organization $Organization
 
         $RequestBlueprint = @{
-            METHOD          = 'GET'
-            SCOPE           = 'ORG'
-            DOMAIN          = 'dev.azure'
-            Organization    = $Organization
-            API             = '_apis/projects?api-version=6.0'
-            Property        = 'value'
+            METHOD       = 'GET'
+            SCOPE        = 'ORG'
+            DOMAIN       = 'dev.azure'
+            Organization = $Organization
+            API          = '_apis/projects?api-version=6.0'
+            Property     = 'value'
         }
         $projects = Invoke-DevOpsRest @RequestBlueprint
 
@@ -67,9 +75,11 @@ function Get-DevOpsProjects {
             Throw "Couldnt find any DevOps Projects associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
         }
 
-        $projects = Set-AzureDevOpsCache -Object $projects -Type Project -Organization $Organization -Identifier 'all'
+        $OrganizationData | Add-Member -MemberType NoteProperty -Name projects -Value $projects
+
+        $OrganizationData = Set-AzureDevOpsCache -Object $OrganizationData -Type Project -Organization $Organization -Identifier 'all'
 
     }
 
-    return $projects
+    return $OrganizationData
 }

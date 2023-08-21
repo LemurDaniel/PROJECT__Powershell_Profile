@@ -4,7 +4,7 @@ function Get-DevOpsOrganizationData {
     [cmdletbinding()]
     param(
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [ArgumentCompleter(
             {
@@ -20,6 +20,7 @@ function Get-DevOpsOrganizationData {
         $Organization
     )
 
+    $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
     return Get-DevOpsOrganizations | Where-Object { $_.accountName -EQ $Organization }
 
 }

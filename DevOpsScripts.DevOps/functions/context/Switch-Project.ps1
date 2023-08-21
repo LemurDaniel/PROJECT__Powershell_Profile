@@ -35,7 +35,7 @@ function Switch-Project {
         )]
         [ValidateScript(
             { 
-                $_ -in (Get-DevOpsProjects).name
+                $_ -in (Get-OrganizationInfo).projects.name
             },
             ErrorMessage = 'Please specify an correct Name.'
         )]

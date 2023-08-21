@@ -51,7 +51,7 @@ function Get-RepositoryInfo {
         )]
         [ValidateScript(
             { 
-                $null -eq $_ -OR [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+                $null -eq $_ -OR [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-OrganizationInfo).projects.name
             },
             ErrorMessage = 'Please specify a correct Projectname.'
         )]

@@ -31,7 +31,7 @@ function Start-RepositoryImport {
         )]
         [ValidateScript(
             { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-OrganizationInfo).projects.name
             },
             ErrorMessage = 'Please specify a correct Projectname.'
         )]
@@ -54,7 +54,7 @@ function Start-RepositoryImport {
         )]
         [ValidateScript(
             { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-DevOpsProjects).name
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-OrganizationInfo).projects.name
             },
             ErrorMessage = 'Please specify a correct Projectname.'
         )]

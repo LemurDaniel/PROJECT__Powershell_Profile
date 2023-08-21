@@ -48,7 +48,7 @@ function Set-AzureDevOpsCache {
         # The TTL of the cache in Minutes.
         [Parameter(Mandatory = $false)]
         [System.int32]
-        $Alive = 60,
+        $Alive = 720,
 
         # A Flag to never expire the cache.
         [Parameter(Mandatory = $false)]

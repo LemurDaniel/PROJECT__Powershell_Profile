@@ -43,7 +43,7 @@ function Get-DevOpsContext {
     $Context = Get-UtilsCache -Type Context -Identifier DevOps
 
     if (!$Context) {
-        Write-Warning 'No Context Set! Setting Default Context!'
+        Write-Warning 'No Context Set! Setting Default Context! This might take a minute!'
         $Context = Set-DevOpsContext -Default
     }
     

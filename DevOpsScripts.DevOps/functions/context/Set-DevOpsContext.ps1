@@ -31,6 +31,7 @@ function Set-DevOpsContext {
             Organization = Get-DevOpsOrganizations | Select-Object -First 1 -ExpandProperty accountName
         }     
 
+        # Done this way to not fail. Maybe refactor later.
         $null = Set-UtilsCache -Object $Context -Type Context -Identifier DevOps -Forever
 
         $Context = @{

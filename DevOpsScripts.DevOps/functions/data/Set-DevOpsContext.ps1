@@ -28,8 +28,17 @@ function Set-DevOpsContext {
     if ($Default) {
         $Context = @{
             Project      = $null # 'DC Azure Migration' #TeamsBuilder
-            Organization = $null # 'baugruppe' 
+            Organization = Get-DevOpsOrganizations | Select-Object -First 1 -ExpandProperty accountName
         }     
+
+        $null = Set-UtilsCache -Object $Context -Type Context -Identifier DevOps -Forever
+
+        $Context = @{
+            Project      = Get-OrganizationInfo daniellandau0574 | Select-Object -ExpandProperty projects -First 1 | Select-Object -ExpandProperty name
+            Organization = $Context.Organization
+        }     
+
+        return Set-UtilsCache -Object $Context -Type Context -Identifier DevOps -Forever
     }
     else {
 
@@ -37,8 +46,8 @@ function Set-DevOpsContext {
             Project      = [System.String]::IsNullOrEmpty($Project) ? (Get-DevOpsContext -Project) : $Project
             Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
         } 
-    }
 
-    return Set-UtilsCache -Object $Context -Type Context -Identifier DevOps -Forever
+        return Set-UtilsCache -Object $Context -Type Context -Identifier DevOps -Forever
+    }
     
 }

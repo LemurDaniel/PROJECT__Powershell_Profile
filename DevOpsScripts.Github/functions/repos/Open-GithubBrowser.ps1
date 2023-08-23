@@ -37,6 +37,28 @@ function Open-GithubBrowser {
 
     [Alias('gitbrowser')]
     param (
+        [Parameter(
+            Position = 2,
+            Mandatory = $false
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [validateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            }
+        )]
+        $Account,
+
         # The Name of the Github Repository.
         [Parameter(
             Mandatory = $false,
@@ -45,7 +67,7 @@ function Open-GithubBrowser {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Context = Get-GithubContextInfo -Context $fakeBoundParameters['Context']
+                $Context = Get-GithubContextInfo -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context']
                 $validValues = $Context.repositories.Name
 
                 $validValues | `
@@ -61,16 +83,16 @@ function Open-GithubBrowser {
             Mandatory = $false,
             Position = 1
         )]
-        [ValidateScript(
-            { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
-            },
-            ErrorMessage = 'Please specify an correct Context.'
-        )]
+        #[ValidateScript(
+        #    { 
+        #        [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
+        #    },
+        #    ErrorMessage = 'Please specify an correct Context.'
+        #)]
         [ArgumentCompleter(
             {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubContexts).login
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -81,7 +103,7 @@ function Open-GithubBrowser {
         $Context
     )
 
-    $repository = Get-GithubRepositoryInfo -Context $Context -Name $Name
+    $repository = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Name
     Start-Process $repository.html_url
 
 }

@@ -30,6 +30,28 @@
 function Get-GithubContextInfo {
 
     param(
+        [Parameter(
+            Position = 1,
+            Mandatory = $false
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [validateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            }
+        )]
+        $Account,
+
         # The specific Context to use
         [parameter(
             Position = 0,
@@ -39,18 +61,18 @@ function Get-GithubContextInfo {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = (Get-GithubContexts).login
+                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
-        [validateScript(
-            {
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
-            }
-        )]
+        #[validateScript(
+        #    {
+        #        [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
+        #    }
+        #)]
         [System.String]
         $Context,
 
@@ -59,14 +81,14 @@ function Get-GithubContextInfo {
         $Refresh
     )
 
-    $Context = [System.String]::IsNullOrEmpty($Context) ? (Get-GithubContext) : $Context
+    $Context = [System.String]::IsNullOrEmpty($Context) ? (Get-GithubContext -Account $Account) : $Context
 
-    return Get-GithubContexts -Refresh:$Refresh
+    return Get-GithubContexts -Account $Account -Refresh:$Refresh
     | Where-Object -Property login -EQ $Context
     | Select-Object *, @{
         Name       = 'repositories';
         Expression = {
-            Get-GithubRepositories -Context $Context -Refresh:$Refresh
+            Get-GithubRepositories -Account $Account -Context $Context -Refresh:$Refresh
         }
     }
 

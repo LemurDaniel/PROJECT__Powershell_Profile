@@ -76,13 +76,34 @@ function Invoke-GithubRest {
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
-        [validateScript(
-            {
-                $_ -in (Get-GithubContexts).login
-            }
-        )]
+        #[validateScript(
+        #    {
+        #        $_ -in (Get-GithubContexts).login
+        #    }
+        #)]
         [System.String]
         $Context,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        #[ArgumentCompleter(
+        #    {
+        #        param($cmd, $param, $wordToComplete)
+        #        $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+        #        
+        #        $validValues | `
+        #            Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+        #            ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+        #    }
+        #)]
+        #[validateScript(
+        #    {
+        #        $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+        #    }
+        #)]
+        $Account,
 
         # The affiliation of requested resources. owner for example only returns repositories that you are owner of.
         [parameter()]
@@ -132,7 +153,7 @@ function Invoke-GithubRest {
     
     $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   
     
-    $AccountContext = Get-GithubAccountContext
+    $AccountContext = Get-GithubAccountContext -Account $Account
     $PAT = Get-GithubPAT -Account $AccountContext.name -AsPlainText
     $Request = @{
         Method = $Method

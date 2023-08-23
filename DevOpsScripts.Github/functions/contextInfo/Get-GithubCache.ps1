@@ -29,11 +29,15 @@ function Get-GithubCache {
         # returns data when cache expires
         [Parameter()]
         [switch]
-        $ExpirationData
+        $ExpirationData,
+
+        [Parameter()]
+        [System.String]
+        $Account
     )
 
     $Cache = @{
-        Type           = [System.String]::format("{0}.{1}", (Get-GithubAccountContext).cacheRef, (Get-GithubUser).login)
+        Type           = [System.String]::format("{0}.{1}", (Get-GithubAccountContext -Account $Account).cacheRef, (Get-GithubUser -Account $Account).login)
         Identifier     = $Identifier
         AsHashtable    = $AsHashtable
         ExpirationData = $ExpirationData

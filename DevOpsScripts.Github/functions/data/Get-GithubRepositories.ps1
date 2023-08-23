@@ -18,15 +18,15 @@
 function Get-GithubRepositories {
 
     param(
-        # The specific Context to use
-        [parameter(
-            Mandatory = $true
+        [Parameter(
+            Position = 1,
+            Mandatory = $false
         )]
+        [System.String]
         [ArgumentCompleter(
             {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-                $validValues = (Get-GithubContexts).login
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -35,9 +35,32 @@ function Get-GithubRepositories {
         )]
         [validateScript(
             {
-                $_ -in (Get-GithubContexts).login
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
             }
         )]
+        $Account,
+
+        # The specific Context to use
+        [parameter(
+            Position = 0,
+            Mandatory = $true
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        #[validateScript(
+        #    {
+        #        $_ -in (Get-GithubContexts).login
+        #    }
+        #)]
         [System.String]
         $Context,
 
@@ -46,10 +69,10 @@ function Get-GithubRepositories {
         $Refresh
     )
 
-    $Cache = Get-GithubCache -Identifier "repositories.$Context"
+    $Cache = Get-GithubCache -Identifier "repositories.$Context" -Account $Account
     if ($null -eq $Cache -OR $Refresh) {
        
-        if ($Context -eq (Get-GithubUser).login) {
+        if ($Context -eq (Get-GithubUser -Account $Account).login) {
             $Request = @{
                 Method      = 'GET'
                 API         = '/user/repos'
@@ -65,7 +88,7 @@ function Get-GithubRepositories {
             }
         }
 
-        $gitRepositories = Invoke-GithubRest @Request 
+        $gitRepositories = Invoke-GithubRest @Request -Account $Account
         | Select-Object *, @{
             Name       = 'Context'; 
             Expression = { 
@@ -75,12 +98,13 @@ function Get-GithubRepositories {
         @{
             Name       = 'LocalPath';
             Expression = {
-                $Context = Get-GithubContexts | Where-Object -Property login -EQ $_.owner.login
+                $Context = Get-GithubContexts -Account $Account 
+                | Where-Object -Property login -EQ $_.owner.login
                 return Join-Path -Path $Context.LocalPath -ChildPath $_.Name
             }
         }
 
-        $Cache = Set-GithubCache -Object $gitRepositories -Identifier "repositories.$Context"
+        $Cache = Set-GithubCache -Object ($gitRepositories ?? @{}) -Identifier "repositories.$Context" -Account $Account
 
     }
 

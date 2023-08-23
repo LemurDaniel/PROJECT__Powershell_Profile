@@ -19,19 +19,40 @@
 function Get-GithubUser {
 
     param(
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [validateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            }
+        )]
+        $Account,
+
         [Parameter()]
         [switch]
         $Refresh
     )
 
-    $user = Get-UtilsCache -Identifier "git.user.$((Get-GithubAccountContext).cacheRef)"
+    $user = Get-UtilsCache -Identifier "git.user.$((Get-GithubAccountContext -Account $Account).cacheRef)"
     if (!$user -OR $Refresh) {
-        $user = Invoke-GithubRest -Method GET -API 'user'
-        $user.email = (Invoke-GithubRest -Method GET -API 'user/emails')
+        $user = Invoke-GithubRest -Method GET -API 'user' -Account $Account
+        $user.email = (Invoke-GithubRest -Method GET -API 'user/emails' -Account $Account)
         | Where-Object -Property primary -EQ $true 
         | Select-Object -First 1 -ExpandProperty email
 
-        $user = Set-UtilsCache -Object $user -Identifier "git.user.$((Get-GithubAccountContext).cacheRef)"
+        $user = Set-UtilsCache -Object $user -Identifier "git.user.$((Get-GithubAccountContext -Account $Account).cacheRef)"
     }
     return $user
 }

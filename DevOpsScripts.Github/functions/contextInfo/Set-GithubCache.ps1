@@ -31,15 +31,20 @@ function Set-GithubCache {
     
         [Parameter(Mandatory = $false)]
         [Switch]
-        $Forever
+        $Forever,
+
+        [Parameter()]
+        [System.String]
+        $Account
     )
 
     $Cache = @{
-        Type       = [System.String]::format("{0}.{1}", (Get-GithubAccountContext).cacheRef, (Get-GithubUser).login)
+        Type       = [System.String]::format("{0}.{1}", (Get-GithubAccountContext -Account $Account).cacheRef, (Get-GithubUser -Account $Account).login)
         Identifier = $Identifier
         Forever    = $Forever
         Alive      = $Alive
         Object     = $Object
     }
+    
     return Set-UtilsCache @Cache
 }

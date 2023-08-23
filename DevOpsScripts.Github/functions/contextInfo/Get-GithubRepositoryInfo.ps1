@@ -36,6 +36,28 @@
 function Get-GithubRepositoryInfo {
 
     param(
+        [Parameter(
+            Position = 2,
+            Mandatory = $false
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [validateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            }
+        )]
+        $Account,
+
         # The Name of the Github Repository.
         [Parameter(
             Mandatory = $false,
@@ -44,7 +66,7 @@ function Get-GithubRepositoryInfo {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Context = Get-GithubContextInfo -Context $fakeBoundParameters['Context']
+                $Context = Get-GithubContextInfo -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context']
                 $validValues = $Context.repositories.name
 
                 $validValues | `
@@ -60,16 +82,16 @@ function Get-GithubRepositoryInfo {
             Mandatory = $false,
             Position = 1
         )]
-        [ValidateScript(
-            { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
-            },
-            ErrorMessage = 'Please specify an correct Context.'
-        )]
+        #[ValidateScript(
+        #    { 
+        #        [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
+        #    },
+        #    ErrorMessage = 'Please specify an correct Context.'
+        #)]
         [ArgumentCompleter(
             {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubContexts).login
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -93,15 +115,15 @@ function Get-GithubRepositoryInfo {
         $repoPath = git -C $currentPath rev-parse --show-toplevel
         $Name = $repoPath.split('/')[-1]
         $Context = $repoPath.split('/')[-2]
-
+        $Account = $repoPath.split('/')[-3]
     }
 
-    $repository = Get-GithubContextInfo -Context $Context -Refresh:$Refresh 
+    $repository = Get-GithubContextInfo -Account $Account -Context $Context -Refresh:$Refresh 
     | Select-Object -ExpandProperty repositories 
     | Where-Object -Property Name -EQ -Value $Name
 
     if ($null -eq $repository) {
-        throw "No Repository found for '$Name' in Context '$Context'"
+        throw "No Repository found for '$Name' in Context '$Context' for '$Account'"
     }
 
     return $repository

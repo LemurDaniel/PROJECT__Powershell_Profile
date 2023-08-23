@@ -2,6 +2,28 @@ function Switch-GithubContext {
 
     [Alias('github-swc')]
     param(
+        [Parameter(
+            Position = 1,
+            Mandatory = $false
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [validateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            }
+        )]
+        $Account,
+
         # The specific Context to use
         [parameter(
             Position = 0,
@@ -11,22 +33,26 @@ function Switch-GithubContext {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = (Get-GithubContexts).login
+                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
-        [validateScript(
-            {
-                $_ -in (Get-GithubContexts).login
-            }
-        )]
         [System.String]
         $Context
     )
 
-    return Set-GithubCache -Object $Context -Identifier git.context -Forever
+    if ($Context -notin (Get-GithubContexts -Account $Account).login) {
+        throw "Context '$Context' not existent in '$Account'"
+    }
+
+    $Account = [System.String]::IsNullOrEmpty($Account) ? (Get-GithubAccountContext).name : $Account
+    $Account = Switch-GithubAccountContext -Account $Account
+    $Context = Set-GithubCache -Object $Context -Identifier git.context -Account $Account -Forever
+
+    Write-Host -ForegroundColor Magenta "Account: $Account"
+    Write-Host -ForegroundColor Magenta "Context: $Context"
 
 }

@@ -16,11 +16,33 @@
 #>
 function Get-GithubContext {
 
-    param()
+    param(
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [validateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            }
+        )]
+        $Account
+    )
 
-    $Context = Get-GithubCache -Identifier git.context 
+    $Context = Get-GithubCache -Identifier git.context -Account $Account
+
     if ($null -eq $Context) {
-        $Context = Switch-GithubContext -Context (Get-GithubUser).login
+        $Context = Switch-GithubContext -Account $Account -Context (Get-GithubUser -Account $Account).login
     }
 
     return $Context

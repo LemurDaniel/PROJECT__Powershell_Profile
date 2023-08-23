@@ -19,6 +19,27 @@
 function Get-GithubContexts {
 
     param(
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [validateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            }
+        )]
+        $Account,
+
         [Parameter()]
         [switch]
         $Refresh
@@ -27,13 +48,13 @@ function Get-GithubContexts {
     # Location where to download repositories.
     $basePath = [System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\git\repos" : $env:GIT_RepositoryPath
 
-    $Cache = Get-GithubCache -Identifier org.all
+    $Cache = Get-GithubCache -Identifier org.all -Account $Account
     if ($null -eq $Cache -OR $Refresh) {
 
-        $AccountContext = Get-GithubAccountContext
+        $AccountContext = Get-GithubAccountContext -Account $Account
 
         $gitContexts = @()
-        $gitContexts += Get-GithubUser -Refresh:$Refresh 
+        $gitContexts += Get-GithubUser -Refresh:$Refresh -Account $Account
         | Select-Object *, @{
             Name       = 'IsUserContext';
             Expression = { $true }
@@ -43,7 +64,7 @@ function Get-GithubContexts {
             Expression = { $false }
         }
 
-        $gitContexts += Invoke-GithubRest -Method GET -API 'user/orgs'
+        $gitContexts += Invoke-GithubRest -Method GET -API 'user/orgs' -Account $Account
         | ForEach-Object { $_ }
         | Select-Object *, @{
             Name       = 'IsUserContext';
@@ -65,7 +86,7 @@ function Get-GithubContexts {
                 $null = New-Item -ItemType Directory -Path $_.LocalPath
             }
         }
-        $Cache = Set-GithubCache -Object $gitContexts -Identifier org.all
+        $Cache = Set-GithubCache -Object $gitContexts -Identifier org.all -Account $Account
     }
 
     return $Cache

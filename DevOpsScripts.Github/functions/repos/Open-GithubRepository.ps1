@@ -132,7 +132,7 @@ function Open-GithubRepository {
     if (!(Test-Path -Path $repository.LocalPath)) {
         $repository.LocalPath = New-Item -ItemType Directory -Path $repository.LocalPath
 
-        if ((Get-GithubAccountContext).useSSH) {
+        if ((Get-GithubAccountContext -Account $Account).useSSH) {
             git -C $repository.LocalPath clone $repository.ssh_url .
         }
         else {
@@ -146,7 +146,7 @@ function Open-GithubRepository {
         $null = git config --global --add safe.directory $safeDirectoyPath
     }
 
-    $user = Get-GithubUser
+    $user = Get-GithubUser -Account $Account
     $null = git -C $repository.LocalPath config --local user.name $user.login 
     $null = git -C $repository.LocalPath config --local user.email $user.email
 

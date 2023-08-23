@@ -43,6 +43,6 @@ function Clear-GithubPAT {
     
 
     $AccountContext = Get-GithubAccountContext -Account $Account
-    Clear-SecureStringFromFile -Path "git.pat.$($AccountContext.patRef)"
+    Clear-SecureStringFromFile -Identifier "git.pat.$($AccountContext.patRef)"
     
 }

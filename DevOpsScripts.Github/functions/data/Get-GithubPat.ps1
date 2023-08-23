@@ -35,11 +35,6 @@ function Get-GithubPAT {
         )]
         $Account,
 
-        # Clear old credential Info and replace with new one.
-        [Parameter()]
-        [switch]
-        $Clear,
-
         # Retrives as Plain text rather than a secure string.
         [Parameter()]
         [switch]
@@ -52,7 +47,7 @@ function Get-GithubPAT {
     # Authentication
     $GIT_PAT = Read-SecureStringFromFile -Identifier $identifier -AsPlainText:$AsPlainText
 
-    if ($Clear -OR [System.String]::isNullOrEmpty($GIT_PAT)) {
+    if ([System.String]::isNullOrEmpty($GIT_PAT)) {
         $GIT_PAT = Read-Host -AsSecureString -Prompt "Please Enter PAT for '$($AccountContext.name)'"
         Save-SecureStringToFile -SecureString $GIT_PAT -Identifier "git.pat.$($AccountContext.patRef)"
 

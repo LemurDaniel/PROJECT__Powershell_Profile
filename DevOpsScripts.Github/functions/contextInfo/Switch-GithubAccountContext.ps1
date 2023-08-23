@@ -32,6 +32,9 @@ function Switch-GithubAccountContext {
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
+        [ValidateScript({
+            $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+        })]
         $Account
     )
 

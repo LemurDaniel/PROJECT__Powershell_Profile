@@ -56,11 +56,11 @@ function Get-GithubRepositories {
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
-        #[validateScript(
-        #    {
-        #        $_ -in (Get-GithubContexts).login
-        #    }
-        #)]
+        [validateScript(
+            {
+                $_ -in (Get-GithubContexts -Account $PSBoundParameters['Account']).login
+            }
+        )]
         [System.String]
         $Context,
 

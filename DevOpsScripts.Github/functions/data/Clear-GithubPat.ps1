@@ -35,7 +35,7 @@ function Clear-GithubPAT {
         )]
         $Account,
 
-        # Clear old credential Info and replace with new one.
+        # clear it without setting a new pat
         [Parameter()]
         [switch]
         $Clear
@@ -44,5 +44,7 @@ function Clear-GithubPAT {
 
     $AccountContext = Get-GithubAccountContext -Account $Account
     Clear-SecureStringFromFile -Identifier "git.pat.$($AccountContext.patRef)"
-    
+    if (!$Clear) {
+        Get-GithubUser -Account $Account -Refresh
+    }
 }

@@ -37,7 +37,11 @@ function Get-GithubAccountContext {
     $CurrentAccount = ![System.String]::IsNullOrEmpty($Account) ? $Account : (Get-UtilsCache -Identifier context.accounts.current)
     $Accounts = Get-UtilsCache -Identifier context.accounts.all -AsHashTable
 
-    if ([System.String]::IsNullOrEmpty($CurrentAccount)) {
+    if ($Accounts.Length -EQ 0 ) {
+        Write-Host -ForegroundColor red "Create a Account Context First"
+        return Add-GithubAccountContext
+    }
+    elseif ([System.String]::IsNullOrEmpty($CurrentAccount)) {
         Write-Host -ForegroundColor red "   Not Account Context is set."
         Write-Host -ForegroundColor red "   Switched to '$($Accounts.keys[0])'"
 

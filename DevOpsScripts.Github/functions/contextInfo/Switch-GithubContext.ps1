@@ -1,5 +1,6 @@
 function Switch-GithubContext {
 
+    [Alias('github-swc')]
     param(
         # The specific Context to use
         [parameter(

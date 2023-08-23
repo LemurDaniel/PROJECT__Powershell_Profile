@@ -16,7 +16,7 @@
     .LINK
         
 #>
-function Get-GithubPAT {
+function Clear-GithubPAT {
 
     param(
         [Parameter(

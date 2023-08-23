@@ -77,8 +77,9 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-Property', 'Join-PsObject', 'New-R
                'Remove-MovedBlocks', 'Set-Terraform', 'Format-SendGridContent', 
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
                'New-SendGridHtmlFormat', 'Get-CleanFilename', 'Get-UtilsCache', 
-               'Open-UtilsCacheFolder', 'Read-SecureStringFromFile', 
-               'Save-SecureStringToFile', 'Set-UtilsCache'
+               'Open-SecureStringFolder', 'Open-UtilsCacheFolder', 
+               'Read-SecureStringFromFile', 'Save-SecureStringToFile', 
+               'Set-UtilsCache'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

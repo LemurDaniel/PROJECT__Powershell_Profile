@@ -47,7 +47,7 @@ function Get-TerraformVersions {
             }
         }
 
-        $data = Set-UtilsCache -Object $versions -Identifier terraform.versions -Alive 10
+        $data = Set-UtilsCache -Object $data -Identifier terraform.versions -Alive 10
     }
 
     return $data | Where-Object -Property version -match $Matcher

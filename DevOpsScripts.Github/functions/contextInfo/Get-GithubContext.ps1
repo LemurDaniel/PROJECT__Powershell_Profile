@@ -14,7 +14,7 @@
     .LINK
         
 #>
-function Get-GithubAccount {
+function Get-GithubContext {
 
     param()
 

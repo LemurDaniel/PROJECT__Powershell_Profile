@@ -30,6 +30,8 @@ function Get-GithubContexts {
     $Cache = Get-GithubCache -Identifier org.all
     if ($null -eq $Cache -OR $Refresh) {
 
+        $AccountContext = Get-GithubAccountContext
+
         $gitContexts = @()
         $gitContexts += Get-GithubUser -Refresh:$Refresh 
         | Select-Object *, @{
@@ -55,7 +57,7 @@ function Get-GithubContexts {
         $gitContexts = $gitContexts | Select-Object *, @{
             Name       = 'LocalPath';
             Expression = {
-                "$basePath\GITHUB\$($_.login)"
+                "$basePath\GITHUB\$($AccountContext.name)\$($_.login)"
             }
         }
         $gitContexts | ForEach-Object {

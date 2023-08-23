@@ -106,9 +106,16 @@ function Open-GithubRepository {
         }
     }
 
+
     if (!(Test-Path -Path $repository.LocalPath)) {
         $repository.LocalPath = New-Item -ItemType Directory -Path $repository.LocalPath
-        git -C $repository.LocalPath clone $repository.clone_url .
+
+        if ((Get-GithubAccountContext).useSSH) {
+            git -C $repository.LocalPath clone $repository.ssh_url .
+        }
+        else {
+            git -C $repository.LocalPath clone $repository.clone_url .
+        }
     }
     
     $safeDirectoyPath = ($repository.LocalPath -replace '[\\]+', '/' )

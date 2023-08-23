@@ -46,7 +46,7 @@ function Get-GithubRepositories {
         $Refresh
     )
 
-    $Cache = Get-GithubCache -Type repositories -Identifier $Context
+    $Cache = Get-GithubCache -Identifier "repositories.$Context"
     if ($null -eq $Cache -OR $Refresh) {
        
         if ($Context -eq (Get-GithubUser).login) {
@@ -80,7 +80,7 @@ function Get-GithubRepositories {
             }
         }
 
-        $Cache = Set-GithubCache -Object $gitRepositories -Type repositories -Identifier $Context
+        $Cache = Set-GithubCache -Object $gitRepositories -Identifier "repositories.$Context"
 
     }
 

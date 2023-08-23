@@ -19,6 +19,22 @@
 function Get-GithubPAT {
 
     param(
+        [Parameter(
+            Mandatory = $true
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete)
+                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                    
+                $validValues | `
+                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
+                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        $Account,
+
         # Clear old credential Info and replace with new one.
         [Parameter()]
         [switch]
@@ -30,12 +46,15 @@ function Get-GithubPAT {
         $AsPlainText
     )
     
+
+    $AccountContext = Get-GithubAccountContext -Account $Account
+    $identifier = "git.pat.$($AccountContext.patRef)"
     # Authentication
-    $GIT_PAT = Read-SecureStringFromFile -Identifier GitPersonalPAT -AsPlainText:$AsPlainText
+    $GIT_PAT = Read-SecureStringFromFile -Identifier $identifier -AsPlainText:$AsPlainText
 
     if ($Clear -OR [System.String]::isNullOrEmpty($GIT_PAT)) {
-        $GIT_PAT = Read-Host -AsSecureString -Prompt 'Please Enter your Personal Git PAT'
-        Save-SecureStringToFile -SecureString $GIT_PAT -Identifier GitPersonalPAT
+        $GIT_PAT = Read-Host -AsSecureString -Prompt "Please Enter PAT for '$($AccountContext.name)'"
+        Save-SecureStringToFile -SecureString $GIT_PAT -Identifier "git.pat.$($AccountContext.patRef)"
 
         if ($AsPlainText) {
             $GIT_PAT = $GIT_PAT | ConvertFrom-SecureString -AsPlainText

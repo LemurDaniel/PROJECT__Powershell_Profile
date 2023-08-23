@@ -17,7 +17,7 @@
     .LINK
         
 #>
-function Open-UtilsCacheFoler {
+function Open-UtilsCacheFolder {
 
     [CmdletBinding()]
     param (

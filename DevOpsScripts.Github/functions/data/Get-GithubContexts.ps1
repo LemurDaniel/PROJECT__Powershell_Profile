@@ -27,7 +27,7 @@ function Get-GithubContexts {
     # Location where to download repositories.
     $basePath = [System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\git\repos" : $env:GIT_RepositoryPath
 
-    $Cache = Get-GithubCache -Type Orgs -Identifier all
+    $Cache = Get-GithubCache -Identifier org.all
     if ($null -eq $Cache -OR $Refresh) {
 
         $gitContexts = @()
@@ -63,7 +63,7 @@ function Get-GithubContexts {
                 $null = New-Item -ItemType Directory -Path $_.LocalPath
             }
         }
-        $Cache = Set-GithubCache -Object $gitContexts -Type Orgs -Identifier all
+        $Cache = Set-GithubCache -Object $gitContexts -Identifier org.all
     }
 
     return $Cache

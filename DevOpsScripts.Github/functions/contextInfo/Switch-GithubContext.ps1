@@ -26,6 +26,6 @@ function Switch-GithubContext {
         $Context
     )
 
-    return Set-UtilsCache -Object $Context -Type Context -Identifier git -Forever
+    return Set-GithubCache -Object $Context -Identifier git.context -Forever
 
 }

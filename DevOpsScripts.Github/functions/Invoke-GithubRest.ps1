@@ -38,8 +38,8 @@ function Invoke-GithubRest {
         [Alias('Type')]
         [Parameter()]
         [System.String]
-        [ValidateSet('api.github')]
-        $DOMAIN = 'api.github',
+        #[ValidateSet('api.github')]
+        $DOMAIN = 'github.loro.swiss/api/v3',
 
         # The API-Endpoint to call.
         [Parameter()]
@@ -131,14 +131,17 @@ function Invoke-GithubRest {
             ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
     
     $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   
+    
+    $AccountContext = Get-GithubAccountContext
+    $PAT = Get-GithubPAT -Account $AccountContext.name -AsPlainText
     $Request = @{
         Method = $Method
         header = @{
             Accept                 = $contentType
             'X-GitHub-Api-Version' = $apiVersion
-            Authorization          = "Bearer $(Get-GithubPAT -AsPlainText)"
+            Authorization          = "Bearer $PAT"
         }
-        uri    = "https://$("$Domain.com/$APIEndpoint`?$QueryString" -replace '/+', '/')"
+        uri    = "https://" + ([System.String]::Format("{0}/{1}?{2}", $AccountContext.domain, $APIEndpoint, $QueryString) -replace '/+', '/')
         Body   = $bodyByteArray   
     }
 
@@ -156,7 +159,7 @@ function Invoke-GithubRest {
         catch {
             Write-Host $_.ErrorDetails
             $ErrorDetails = $_.ErrorDetails.Message | ConvertFrom-Json -ErrorAction SilentlyContinue
-            if($ErrorDetails.message -eq "Bad credentials") {
+            if ($ErrorDetails.message -eq "Bad credentials") {
                 Write-Host -ForegroundColor Red "Request failed due to invalid Credentials!"
                 Get-GithubPAT -Clear
 

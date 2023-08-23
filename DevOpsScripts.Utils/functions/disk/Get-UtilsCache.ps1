@@ -49,7 +49,7 @@ function Get-UtilsCache {
 
         [Parameter(Mandatory = $false)]
         [System.String]
-        $Path = $null,
+        $Path,
 
         # returns data when cache expires
         [Parameter()]

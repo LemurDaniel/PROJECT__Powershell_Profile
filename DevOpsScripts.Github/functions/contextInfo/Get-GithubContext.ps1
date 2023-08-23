@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Get Information about a Repository in a Context.
+    Add a github account and a PAT associated with it.
 
     .DESCRIPTION
-    Get Information about a Repository in a Context.
+    Add a github account and a PAT associated with it.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,11 +14,11 @@
     .LINK
         
 #>
-function Get-GithubContext {
+function Get-GithubAccount {
 
     param()
 
-    $Context = Get-UtilsCache -Type Context -Identifier git
+    $Context = Get-GithubCache -Identifier git.context 
     if ($null -eq $Context) {
         $Context = Switch-GithubContext -Context (Get-GithubUser).login
     }

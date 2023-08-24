@@ -4,8 +4,8 @@ $global:DefaultEnvPaths = [ordered]@{}
 
 
 $EnvironmentPaths = @(
-	[System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User),
-	[System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) 
+    [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User),
+    [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) 
 ) -join ';' -split ';' 
 | Where-Object { $global:DefaultEnvPaths.Values -notcontains $_ }
 
@@ -20,10 +20,10 @@ $SettingsJsonDefaults = [PSCustomObject]@{
     'workbench.experimental.settingsProfiles.enabled'          = $true
 
     # Git
-    'git.enableCommitSigning'                                  = $env:USERNAME -ne 'M01947'
-    'git-graph.repository.commits.showSignatureStatus'         = $env:USERNAME -ne 'M01947'
-    'git-graph.repository.sign.tags'                           = $env:USERNAME -ne 'M01947'
-    'git-graph.repository.sign.commits'                        = $env:USERNAME -ne 'M01947'
+    'git.enableCommitSigning'                                  = $true #$env:USERNAME -ne 'M01947'
+    'git-graph.repository.commits.showSignatureStatus'         = $true #$env:USERNAME -ne 'M01947'
+    'git-graph.repository.sign.tags'                           = $true #$env:USERNAME -ne 'M01947'
+    'git-graph.repository.sign.commits'                        = $true #$env:USERNAME -ne 'M01947'
 
     # Blockman
     'blockman.n04ColorComboPreset'                             = 'Classic Dark 1 (Super gradients)'

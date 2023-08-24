@@ -17,10 +17,11 @@ function Switch-GithubContext {
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
-        [validateScript(
+        [ValidateScript(
             {
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
-            }
+                [System.String]::IsNullOrEmpty( $_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+            },
+            ErrorMessage = 'Not a valid account.'
         )]
         $Account,
 

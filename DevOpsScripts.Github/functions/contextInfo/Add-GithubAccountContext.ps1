@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Get Information about a Repository in a Context.
+    Add a account context with a pat and custom domain. defaults to api.github.com
 
     .DESCRIPTION
-    Get Information about a Repository in a Context.
+    Add a account context with a pat and custom domain. defaults to api.github.com
 
     .INPUTS
     None. You cannot pipe objects into the Function.

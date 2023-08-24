@@ -15,7 +15,6 @@
     None
 
 
-
     .LINK
         
 #>
@@ -56,5 +55,6 @@ function Switch-K8SNamespace {
     kubectl config set-context --current --namespace=$Namespace
 
     Write-Host -ForegroundColor Magenta "Switched to Namespace: '$Namespace'"
+    
 }
 

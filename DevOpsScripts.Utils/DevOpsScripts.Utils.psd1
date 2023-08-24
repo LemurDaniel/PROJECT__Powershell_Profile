@@ -69,9 +69,7 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Edit-RegexOnFiles', 'Get-Property', 'Join-PsObject', 'New-RandomBytes', 
-               'Remove-InvisibleUnicode', 'Search-In', 'Select-ConsoleMenu', 
-               'Test-IsRepository', 'Convert-TFVarsToObject', 
+FunctionsToExport = 'Get-Property', 'Join-PsObject', 'Search-In', 'Convert-TFVarsToObject', 
                'Get-TerraformProviderInfo', 'Get-TerraformProviders', 
                'Get-TerraformVersions', 'Open-TerraformProviderDocs', 
                'Remove-MovedBlocks', 'Set-Terraform', 'Format-SendGridContent', 
@@ -79,7 +77,9 @@ FunctionsToExport = 'Edit-RegexOnFiles', 'Get-Property', 'Join-PsObject', 'New-R
                'New-SendGridHtmlFormat', 'Clear-SecureStringFromFile', 
                'Get-CleanFilename', 'Get-UtilsCache', 'Open-SecureStringFolder', 
                'Open-UtilsCacheFolder', 'Read-SecureStringFromFile', 
-               'Save-SecureStringToFile', 'Set-UtilsCache'
+               'Save-SecureStringToFile', 'Set-UtilsCache', 'New-RandomBytes', 
+               'Select-ConsoleMenu', 'Test-IsRepository', 'Edit-RegexOnFiles', 
+               'Remove-InvisibleUnicode'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

@@ -39,6 +39,6 @@ function Switch-GithubAccountContext {
     )
 
 
-    return Set-UtilsCache -Identifier context.accounts.current -Object $Account
+    return Set-UtilsCache -Identifier context.accounts.current -Object $Account -Forever
 
 }

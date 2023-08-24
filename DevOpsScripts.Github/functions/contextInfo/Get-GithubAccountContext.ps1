@@ -51,14 +51,14 @@ function Get-GithubAccountContext {
         Write-Host -ForegroundColor red "   Not Account Context is set."
         Write-Host -ForegroundColor red "   Switched to '$($Accounts.keys[0])'"
 
-        $null = Set-UtilsCache -Identifier context.accounts.current -Object $Accounts.keys[0]
+        $null = Set-UtilsCache -Identifier context.accounts.current -Object $Accounts.keys[0] -Forever
         return $Accounts.values[0]
     }
     elseif (!$Accounts.containsKey($CurrentAccount)) {
         Write-Host -ForegroundColor red "   '$CurrentAccount' not present anymore."
         Write-Host -ForegroundColor red "   Switched to '$($Accounts.keys[0])'"
 
-        $null = Set-UtilsCache -Identifier context.accounts.current -Object $Accounts.keys[0]
+        $null = Set-UtilsCache -Identifier context.accounts.current -Object $Accounts.keys[0] -Forever
         return $Accounts.values[0]
     }
 

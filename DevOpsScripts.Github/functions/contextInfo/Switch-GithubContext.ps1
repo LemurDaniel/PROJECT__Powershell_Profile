@@ -1,3 +1,33 @@
+
+<#
+    .SYNOPSIS
+    Switch the current github context or context and account.
+
+    .DESCRIPTION
+    Switch the current github context or context and account.
+    All commands use the current context as default.
+
+    .INPUTS
+    None. You cannot pipe objects into the Function.
+
+    .OUTPUTS
+    The Current github Context in use.
+
+    .EXAMPLE
+
+    Switch the context in the current account:
+
+    PS> github-swc <autocompleted_context>
+
+    .EXAMPLE
+
+    Switch the account and context: 
+
+    PS> github-swc -Account <autocompleted_account>  <autocompleted_context>
+
+    .LINK
+        
+#>
 function Switch-GithubContext {
 
     [Alias('github-swc')]

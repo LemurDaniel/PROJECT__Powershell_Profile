@@ -1,10 +1,10 @@
 
 <#
     .SYNOPSIS
-    Save a Plaintext or Secure String encrypted by the Windows Data Protection API to a File.
+    Clear a secure string saved in a file.
 
     .DESCRIPTION
-    Save a Plaintext or Secure String encrypted by the Windows Data Protection API to a File.
+    Clear a secure string saved in a file.
 
     .INPUTS
     None. You cannot Pipe values into the Function.

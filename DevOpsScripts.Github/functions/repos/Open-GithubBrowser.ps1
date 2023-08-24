@@ -29,6 +29,12 @@
 
     PS> Open-GithubBrowser -Context <autocomplete_context> <autocomplete_repo>
 
+    .EXAMPLE
+
+    Open a repository in another Account and another Context:
+
+    PS> Open-GithubRepository -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+
     .LINK
         
 #>

@@ -61,19 +61,35 @@ function Switch-Organization {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
                 
-                $validValues = Get-DevOpsProjects -Organization $fakeBoundParameters['Name'] | Select-Object -ExpandProperty name
+                $validValues = Get-OrganizationInfo -Organization $fakeBoundParameters['Name'] 
+                | Select-Object -ExpandProperty projects
+                | Select-Object -ExpandProperty name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
                     ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
+        [ValidateScript(
+            { 
+                $_ -in (
+                    Get-OrganizationInfo -Organization $PSBoundParameters['Name'] 
+                    | Select-Object -ExpandProperty projects
+                    | Select-Object -ExpandProperty name
+                )
+            },
+            ErrorMessage = 'Please specify an correct Organization Name.'
+        )]
         [System.String]
         $Project
     )
 
-    $matches = Get-DevOpsProjects -Organization $Name | Where-Object -Property Name -eq $Project | Measure-Object
-    if($matches.Count -eq 0){
+    $matches = Get-OrganizationInfo -Organization $Name 
+    | Select-Object -ExpandProperty projects
+    | Where-Object -Property Name -eq $Project 
+    | Measure-Object
+
+    if ($matches.Count -eq 0) {
         Throw "'$Project' is not a valid Projectname in the Organization '$Name'"
     }   
 

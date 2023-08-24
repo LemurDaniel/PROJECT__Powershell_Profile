@@ -16,7 +16,7 @@
 
     Gets all Names of the DevOps Projects in the curren Organization-Context.
 
-    PS> Get-DevOpsProjects
+    PS> Get-OrganizationInfo
     
 
     .LINK

@@ -51,7 +51,7 @@ $SettingsJsonDefaults = [PSCustomObject]@{
     'workbench.colorTheme'                                     = 'Dark Modern' #'Default Dark+'
     'scm.alwaysShowRepositories'                               = $true
     'git.enabled'                                              = $true
-    'git.path'                                                 = "$($global:DefaultEnvPaths['GITCMD'])/git.exe"
+    #'git.path'                                                 = "$($global:DefaultEnvPaths['GITCMD'])/git.exe"
     'gitlens.advanced.repositorySearchDepth'                   = 5
 
     'terminal.integrated.defaultProfile.windows'               = 'PS 7'

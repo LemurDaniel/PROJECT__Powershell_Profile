@@ -1,18 +1,18 @@
 
 
-$global:DefaultEnvPaths = [ordered]@{}
-
-
-$EnvironmentPaths = @(
-    [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User),
-    [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) 
-) -join ';' -split ';' 
-| Where-Object { $global:DefaultEnvPaths.Values -notcontains $_ }
-
-$EnvironmentPaths = (@() + $global:DefaultEnvPaths.Values + $EnvironmentPaths) -join ';'
-#[System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::User)
-[System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::Process)
-$env:Path = $EnvironmentPaths
+#$global:DefaultEnvPaths = [ordered]@{}
+#
+#
+#$EnvironmentPaths = @(
+#    [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User),
+#    [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) 
+#) -join ';' -split ';' 
+#| Where-Object { $global:DefaultEnvPaths.Values -notcontains $_ }
+#
+#$EnvironmentPaths = (@() + $global:DefaultEnvPaths.Values + $EnvironmentPaths) -join ';'
+##[System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::User)
+#[System.Environment]::SetEnvironmentVariable('Path', $EnvironmentPaths, [System.EnvironmentVariableTarget]::Process)
+#$env:Path = $EnvironmentPaths
 
 $SettingsJsonDefaults = [PSCustomObject]@{
 

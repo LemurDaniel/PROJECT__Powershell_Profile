@@ -34,9 +34,9 @@ function Get-AKScredentials {
 
                 $validValues = Get-AzContextsWrapper | Select-Object -ExpandProperty name
                 
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+                $validValues 
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
         $Context,

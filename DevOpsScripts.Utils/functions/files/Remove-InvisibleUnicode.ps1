@@ -39,7 +39,7 @@ function Remove-InvisibleUnicode {
     $NoSpace = ''
     $WhiteSpace = [System.Char]::ConvertFromUtf32('0x0020')
     $Tablutation = [System.Char]::ConvertFromUtf32('0x0009')
-    $unicodeReference = Get-Content "$PSScriptRoot/.resources/unicode.invisible.json" 
+    $unicodeReference = Get-Content "$PSScriptRoot/../.resources/unicode.invisible.json" 
     | ConvertFrom-Json
     | Where-Object {
         $_.'Character' -NE $WhiteSpace -AND $_.'Character' -NE $Tablutation

@@ -40,7 +40,7 @@ function Switch-GithubContext {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                $validValues = (Get-GithubAccountContext -ListAvailable).name
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -49,7 +49,7 @@ function Switch-GithubContext {
         )]
         [ValidateScript(
             {
-                [System.String]::IsNullOrEmpty( $_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                [System.String]::IsNullOrEmpty( $_) -OR $_ -in (Get-GithubAccountContext -ListAvailable).name
             },
             ErrorMessage = 'Not a valid account.'
         )]

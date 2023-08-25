@@ -22,31 +22,54 @@
 #>
 function Read-SecureStringFromFile {
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        DefaultParameterSetName = "SecureString"
+    )]
     param (
         # An identifier for the data.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true
+        )]
         [System.String]
         $Identifier,
+    
+        # A switch to return the data as an secure string.
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = "SecureString"
+        )]
+        [switch]
+        $AsSecureString,
 
         # A switch to return the data as an unencrypted string.
-        [Parameter(Mandatory = $false)]
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = "PlainText"
+        )]
         [switch]
         $AsPlainText,
 
-        # A switch to return the data as an unencrypted string.
-        [Parameter(Mandatory = $false)]
-        [switch]
-        $AsJSON,
-
-
-        # A switch to return the data as an unencrypted string.
-        [Parameter(Mandatory = $false)]
+        # A switch to return the data as a hastable.Will fail if saved data is not a valid json.
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = "Hashtable"
+        )]
         [switch]
         $AsHashtable,
 
+        # A switch to return the data as a object. Will fail if saved data is not a valid json.
+        [Alias('AsJSON')]
+        [Parameter(
+            Mandatory = $false,
+            ParameterSetName = "Object"
+        )]
+        [switch]
+        $AsObject,
+
         # Path to specify where to save the file. If not specified defaults to userProfile
-        [Parameter(Mandatory = $false)]
+        [Parameter(
+            Mandatory = $false
+        )]
         [System.String]
         $Path
     )
@@ -58,7 +81,7 @@ function Read-SecureStringFromFile {
 
     $Content = Get-Content -Path $filePath -ErrorAction SilentlyContinue | ConvertTo-SecureString -ErrorAction SilentlyContinue 
     
-    if ($Content -AND $AsJSON) {
+    if ($Content -AND $AsObject) {
         return $Content | ConvertFrom-SecureString -AsPlainText | ConvertFrom-Json
     }
     if ($Content -AND $AsHashtable) {

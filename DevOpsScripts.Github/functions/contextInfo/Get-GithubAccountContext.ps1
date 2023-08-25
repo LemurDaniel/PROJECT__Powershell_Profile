@@ -16,15 +16,26 @@
 #>
 function Get-GithubAccountContext {
 
+    [CmdletBinding(
+        DefaultParameterSetName = "Specific"
+    )]
     param(
         [Parameter(
-            Mandatory = $false
+            ParameterSetName = "listAvailable"
+        )]
+        [switch]
+        $ListAvailable,
+
+        [Parameter(
+            Position = 0,
+            Mandatory = $false,
+            ParameterSetName = "Specific"
         )]
         [System.String]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                $validValues = (Read-SecureStringFromFile -Identifier git.accounts.all -AsHashTable).keys
                 
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
@@ -33,16 +44,26 @@ function Get-GithubAccountContext {
         )]
         [ValidateScript(
             {
-                [System.String]::IsNullOrEmpty( $_) -OR $_ -in (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                [System.String]::IsNullOrEmpty( $_) -OR $_ -in (Read-SecureStringFromFile -Identifier git.accounts.all -AsHashTable).keys
             },
             ErrorMessage = 'Not a valid account.'
         )]
         $Account
     )
 
-    $CurrentAccount = ![System.String]::IsNullOrEmpty($Account) ? $Account : (Get-UtilsCache -Identifier context.accounts.current)
-    $Accounts = Get-UtilsCache -Identifier context.accounts.all -AsHashTable
+    if ($ListAvailable) {
+        return (Read-SecureStringFromFile -Identifier git.accounts.all -AsHashTable).values
+    }
 
+    $oldData = Get-UtilsCache -Identifier context.accounts.all -AsHashtable
+    if ($oldData) {
+        Save-SecureStringToFile -Identifier git.accounts.all -Object $oldData
+        Clear-UtilsCache -Identifier context.accounts.all
+    }
+
+    $CurrentAccount = ![System.String]::IsNullOrEmpty($Account) ? $Account : (Get-UtilsCache -Identifier context.accounts.current)
+    $Accounts = Read-SecureStringFromFile -Identifier git.accounts.all -AsHashTable
+    
     if ($Accounts.Length -EQ 0 ) {
         Write-Host -ForegroundColor red "Create a Account Context First"
         return Add-GithubAccountContext

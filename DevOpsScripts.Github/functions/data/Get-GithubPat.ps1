@@ -26,7 +26,7 @@ function Get-GithubPAT {
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete)
-                $validValues = (Get-UtilsCache -Identifier context.accounts.all -AsHashTable).keys
+                $validValues = (Get-GithubAccountContext -ListAvailable).name
                     
                 $validValues | `
                     Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `

@@ -18,7 +18,7 @@ function Add-GithubAccountContext {
 
     param()
 
-    $Accounts = Get-UtilsCache -Identifier context.accounts.all -AsHashTable
+    $Accounts = Read-SecureStringFromFile -Identifier git.accounts.all -AsHashTable
 
     if ($null -eq $Accounts) {
         $Accounts = [System.Collections.Hashtable]::new()
@@ -28,16 +28,20 @@ function Add-GithubAccountContext {
     Write-Host -ForegroundColor Magenta "Configure you account context: "
     Write-Host -ForegroundColor Magenta "Leave custom domain empty for github.com!"
     $name = Read-Host -Prompt   '   Account-Context Name'
+    if ($name.Length -lt 3) {
+        throw "Name must be at least 3 characters."
+    }
+
     $domain = Read-Host -Prompt '   Custom domain'
     $useSSH = Read-Host -Prompt '   clone via SSH [yes/no]'
 
-    $Accounts[$name] = @{
+    $Accounts[$name] = [ordered]@{
+        useSSH   = $useSSH.toLower() -eq "yes" ?  $true : $false
         name     = $name
         domain   = ![System.String]::IsNullOrEmpty($domain) ? "$domain/api/v3" : "api.github.com"
         patRef   = $Accounts.ContainsKey($name) ? $Accounts[$name].patRef : (new-RandomBytes Hex 16)
         cacheRef = $Accounts.ContainsKey($name) ? $Accounts[$name].cacheRef : (new-RandomBytes Hex 16)
-        useSSH   = $useSSH.toLower() -eq "yes" ?  $true : $false
     }
 
-    return Set-UtilsCache -Identifier context.accounts.all -Object $Accounts -Forever
+    return Save-SecureStringToFile -Identifier git.accounts.all -Object $Accounts # -Forever
 }

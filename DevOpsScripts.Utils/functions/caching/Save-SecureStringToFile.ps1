@@ -25,6 +25,14 @@ function Save-SecureStringToFile {
 
     [CmdletBinding()]
     param (
+        # Will be converted and saved as json
+        [Parameter(
+            Mandatory = $true,
+            ParameterSetName = 'Object'
+        )]
+        [PSCustomObject]
+        $Object,
+
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'Plaintext'
@@ -59,11 +67,23 @@ function Save-SecureStringToFile {
     }
 
 
-    if (![System.String]::isNullOrEmpty($PlainText)) {
-        $PlainText | ConvertTo-SecureString -AsPlainText | ConvertFrom-SecureString | Out-File $filePath
+    if ($PSBoundParameters.ContainsKey('Object')) {
+        return $Object 
+        | ConvertTo-Json
+        | ConvertTo-SecureString -AsPlainText 
+        | ConvertFrom-SecureString 
+        | Out-File $filePath
+    }
+    elseif (![System.String]::isNullOrEmpty($PlainText)) {
+        $PlainText 
+        | ConvertTo-SecureString -AsPlainText 
+        | ConvertFrom-SecureString 
+        | Out-File $filePath
     }
     else {
-        $SecureString | ConvertFrom-SecureString | Out-File -FilePath $filePath
+        $SecureString 
+        | ConvertFrom-SecureString 
+        | Out-File -FilePath $filePath
     }
 
 }

@@ -31,8 +31,9 @@ function Add-CodeEditor {
         $CodeEditor
     )
 
-    $editors = Read-SecureStringFromFile -Identifier git.codeeditors.all -AsHashTable
+    $editors = Get-CodeEditor -ListAvailable
     $editors[$Name] = @{
+        name = $Name
         path = $CodeEditor
     }
     Save-SecureStringToFile -Identifier git.codeeditors.all -Object $editors

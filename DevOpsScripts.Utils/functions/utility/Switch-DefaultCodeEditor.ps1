@@ -2,10 +2,10 @@
 
 <#
     .SYNOPSIS
-    Clear a code editor for opening with gitvc, etc.
+    Sets the default code editor for Open-InCodeEditor
 
     .DESCRIPTION
-    Clear a editor for opening with gitvc, etc.
+    Sets the default code editor for Open-InCodeEditor
 
     .INPUTS
     None. You cannot Pipe values into the Function.
@@ -14,7 +14,8 @@
 
 #>
 
-function Clear-CodeEditor {
+
+function Switch-DefaultCodeEditor {
 
     param (
         [Parameter(
@@ -38,10 +39,6 @@ function Clear-CodeEditor {
         $Name
     )
 
-    $editors = Read-SecureStringFromFile -Identifier git.codeeditors.all -AsHashTable
-    $editors.Remove($Name)
-    Save-SecureStringToFile -Identifier git.codeeditors.all -Object $editors
-
-    return $editors
+    return Set-UtilsCache -Object $Name -Identifier git.codeeditor.current -Forever
     
 }

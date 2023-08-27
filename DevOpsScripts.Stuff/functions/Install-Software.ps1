@@ -66,6 +66,16 @@ function Install-Software {
             "VMware.WorkstationPlayer"
         )
     )
+
+    if (
+        $null -EQ (Get-InstalledModule -Name Microsoft.WinGet.Client -MinimumVersion 0.2.1 -ErrorAction SilentlyContinue)
+    ) {
+        Write-Host -ForeGroundColor Magenta "Installing required Module 'Microsoft.WinGet.Client'"
+        Install-Module -Name Microsoft.WinGet.Client -Repository PSGallery
+
+        $null = Read-Host "...Continue"
+    }
+
     
     $selected = $null
     enum Operation {

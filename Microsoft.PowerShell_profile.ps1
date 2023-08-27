@@ -101,8 +101,7 @@ if ([System.Boolean]::parse($gpgSigning)) {
     Write-Host "     $globalGitMail"
     Write-Host ''
 
-    git -C . rev-parse >nul 2>&1; 
-    if ($?) {
+    if ((Test-IsRepository)) {
 
         $localMail = git config --local user.email
         $localUser = git config --local user.name

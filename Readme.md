@@ -40,6 +40,9 @@ Refers only to the DevOpsScripts-Module.
    1. `Get-GithubUser`
    2. `Get-GithubRepositoryInfo -Context <context> -Name <repo_name>`
    3. `gitvc -Context <context> -Name <repo_name>`
+7. Add and siwtch Code-Editors for gitvc
+   1. `Switch-DefaultCodeEditor -Name <autocompleted_name>`
+   2. `Add-CodeEditor -Name <name> -path <path>`
 
 #### Started out as Personal-Project, now Group-Effort of Team-DevOps:
 - Tim Krehan

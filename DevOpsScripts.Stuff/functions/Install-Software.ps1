@@ -34,7 +34,8 @@ function Install-Software {
             "ionic/cli",
             "create-react-app",
             "create-react-library"
-            "react-native"
+            "react-native",
+            "azure-functions-core-tools"
         ),
 
         [Parameter()]
@@ -63,7 +64,8 @@ function Install-Software {
             "Microsoft.PowerShell",
             "OpenJS.NodeJS",
             "Microsoft.DotNet.SDK.7",
-            "VMware.WorkstationPlayer"
+            "VMware.WorkstationPlayer",
+            "Microsoft.Azure.FunctionsCoreTools"
         )
     )
 

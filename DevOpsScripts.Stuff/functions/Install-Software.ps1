@@ -32,9 +32,9 @@ function Install-Software {
             "generate-code"
             "vscode/vsce",
             "ionic/cli",
+            "react-native",
             "create-react-app",
             "create-react-library"
-            "react-native",
             "azure-functions-core-tools"
         ),
 

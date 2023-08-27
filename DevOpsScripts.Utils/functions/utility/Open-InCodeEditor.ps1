@@ -42,8 +42,6 @@ function Open-InCodeEditor {
         $Path
     )
 
-    # TODO
-    $Programm = [System.String]::IsNullOrEmpty($Programm) ? 'Visual Studio Code' : $Programm
     Start-Process -FilePath (Get-CodeEditor -Programm $Programm).path -ArgumentList $Path
     
 }

@@ -4,17 +4,6 @@ $ErrorActionPreference = 'Stop'
 #net user administrator /active:no
 
 
-<#
-
-├── @vscode/vsce@2.19.0
-├── azure-functions-core-tools@4.0.5095
-├── create-react-app@5.0.1
-├── generate-code@2.3.2
-├── mssql@9.1.1
-└── yo@4.3.1
-
-#>
-
 ###################################################################################
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

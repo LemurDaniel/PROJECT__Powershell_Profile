@@ -40,7 +40,7 @@ function Update-GithubAccountContext {
         $Account
     )
 
-    $Accounts = Get-UtilsCache -Identifier context.accounts.all -AsHashTable
+    $Accounts = Read-SecureStringFromFile -Identifier git.accounts.all -AsHashTable
 
     Write-Host -ForegroundColor Magenta "Configure you account context: "
     Write-Host -ForegroundColor Magenta "Leave custom domain empty for github.com!"
@@ -64,7 +64,7 @@ function Update-GithubAccountContext {
         $Accounts.Remove($Account)
     }
 
-    $null = Set-UtilsCache -Identifier context.accounts.all -Object $Accounts -Forever
+    $null = Save-SecureStringToFile -Identifier git.accounts.all -Object $Accounts # -Forever
 
     return Get-GithubAccountContext -Account $Account
 }

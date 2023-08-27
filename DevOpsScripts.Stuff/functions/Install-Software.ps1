@@ -26,6 +26,19 @@ function Install-Software {
 
         [Parameter()]
         [System.String[]]
+        $npmPackages = @(
+            "yo",
+            "mssql",
+            "generate-code"
+            "vscode/vsce",
+            "ionic/cli",
+            "create-react-app",
+            "create-react-library"
+            "react-native"
+        ),
+
+        [Parameter()]
+        [System.String[]]
         $packageIds = @(
             "Git.Git",
             "7zip.7zip",
@@ -58,52 +71,125 @@ function Install-Software {
     enum Operation {
         install; upgrade; deinstall; none
     }
+    enum Programm {
+        winget; npm
+    }
+
+    $ProgramSelection = Select-ConsoleMenu -Options @(
+        [Programm]::winget.ToString() 
+        [Programm]::npm.ToString() 
+    )
 
     do {
-        $installed = (winget list) -join ([System.Environment]::NewLine)
+
+        $PackageRefrences = $null
+        $InstalledPackages = [System.Collections.Hashtable]::new()
+
+        if ([Programm]::npm -EQ [Programm]$ProgramSelection) {
+
+            $PackageRefrences = $npmPackages
+            $null = npm list --global --depth 0 
+            | Select-Object -Skip 1 
+            | ForEach-Object { 
+                $_.substring([System.Math]::max($_.indexOf(' ') + 1, 0)) 
+            } 
+            | Where-Object { 
+                $_.length -gt 0 
+            } 
+            | ForEach-Object { 
+                $InstalledPackages[$_.substring(0, $_.lastIndexOf('@'))] = @{ 
+                    id      = $_.substring(0, $_.lastIndexOf('@'))
+                    version = $_.substring($_.lastIndexOf('@') + 1)
+                    display = $_
+                }
+            }
+
+        }
+        elseif ([Programm]::winget -EQ [Programm]$ProgramSelection) {
+            
+            $PackageRefrences = $packageIds
+            $null = Get-WinGetPackage 
+            | Where-Object { $_.id -match "^.*\.+.*" } 
+            | ForEach-Object { 
+                $InstalledPackages[$_.id] = @{
+                    id      = $_.Id
+                    version = $_.InstalledVersion
+                    display = "$($_.id) @$($_.InstalledVersion)"
+                } 
+            }
+        }
+
+
+
+
         $options = @()
         $options += @{
             display   = " -- End -- "
             operation = [Operation]::none
             id        = "end"
         }
-        $options += $packageIds 
+        $options += $PackageRefrences 
         | ForEach-Object {
-            $isInstalled = $installed.contains($_)
+            $isInstalled = $InstalledPackages.ContainsKey($_)
+
             if ($deinstall) {
                 return @{ 
-                    display   = "$_ ($($isInstalled ? "Deinstall" : "Not installed"))"
-                    operation = $isInstalled ? [Operation]::deinstall : [Operation]::none
-                    id        = $_
+                    isInstalled = $isInstalled
+                    display     = $isInstalled  ? "(Deinstall)     $($InstalledPackages[$_].display)" : "(Not installed) $_"
+                    operation   = $isInstalled ? [Operation]::deinstall : [Operation]::none
+                    id          = $_
                 }
             }
             else {
                 return @{ 
-                    display   = "$_ ($($isInstalled ? "Upgrade" : "Install"))"
-                    operation = $isInstalled ? [Operation]::upgrade : [Operation]::install
-                    id        = $_
+                    isInstalled = $isInstalled
+                    display     = $isInstalled ? "(Upgrade) $($InstalledPackages[$_].display)" : "(Install) $_"
+                    operation   = $isInstalled ? [Operation]::upgrade : [Operation]::install
+                    id          = $_
                 }
             }
+
         }
 
-        $selected = Select-ConsoleMenu -Description "Install via winget:" -Property display -Options $options
+
+
+        $selected = Select-ConsoleMenu -Description "Install via '$($ProgramSelection)':" -Property display -Options $options
         Write-Host ([System.Environment]::NewLine)
+
         if ($null -NE $selected) {
-            
+        
             if ($selected.operation -eq [Operation]::install) {
-                winget install -e --id $selected.id
+
+                if ($ProgramSelection -EQ [Programm]::winget) {
+                    winget install -e --id $selected.id
+                }
+                elseif ($ProgramSelection -EQ [Programm]::npm) {
+                    npm install $selected.id --global
+                }
                 $null = Read-Host "...Press any key"
             } 
             elseif ($selected.operation -eq [Operation]::upgrade) {
-                winget upgrade --id $selected.id
+                
+                if ($ProgramSelection -EQ [Programm]::winget) {
+                    winget upgrade -e --id $selected.id
+                }
+                elseif ($ProgramSelection -EQ [Programm]::npm) {
+                    npm update $selected.id --global
+                }
                 $null = Read-Host "...Press any key"
             }
             elseif ($selected.operation -eq [Operation]::deinstall) {
-                winget uninstall --id $selected.id
+                
+                if ($ProgramSelection -EQ [Programm]::winget) {
+                    winget uninstall -e --id $selected.id
+                }
+                elseif ($ProgramSelection -EQ [Programm]::npm) {
+                    npm uninstall $selected.id --global
+                }
                 $null = Read-Host "...Press any key"
             }
         }
-        
+
     } while ($null -NE $selected -AND $selected.id -NE "end")
 
 }

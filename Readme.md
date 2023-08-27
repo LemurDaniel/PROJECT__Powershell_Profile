@@ -28,12 +28,16 @@ Refers only to the DevOpsScripts-Module.
 
 ## Basic Steps Github-API:
 
-1. `Add-GithubAccountContext` (Multiple can be added each with its own PAT)
-2. `Switch-GithubAccountContext` or `github-swa`
-3. `Switch-GithubContext` or `github-swc`
-   switches between orgs and user in current account
-4. `Get-RepositoryInfo -Context <context> -Name <repo_name>`
-5. `gitvc -Context <context> -Name <repo_name>`
+3. `Add-GithubAccountContext` (Multiple can be added each with its own PAT)
+4. Set the Account-Context. Defaults to first account.
+   1. `Switch-GithubAccountContext` or `github-swa`
+   2. `github-swa -Account <autocompleted_account>`
+5. Set the context. Defaults to users context.
+   1. `Switch-GithubContext` or `github-swc`
+   2. this `github-swc -Context <autocompleted_context>`
+   3. or   `github-swc -Account <autocompleted_account> -Context <autocompleted_context>`
+6. `Get-RepositoryInfo -Context <context> -Name <repo_name>`
+7. `gitvc -Context <context> -Name <repo_name>`
 
 
 #### Started out as Personal-Project, now Group-Effort of Team-DevOps:

@@ -5,6 +5,7 @@ function Get-CodeEditor {
         DefaultParameterSetName = 'Specific'
     )]
     param (
+        # The Code Editor to return. Leaving this empty returns the current default code editor.
         [Parameter(
             Mandatory = $false,
             ParameterSetName = 'Specific'

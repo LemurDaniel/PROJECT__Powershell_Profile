@@ -24,9 +24,15 @@
 
     PS> Add-CodeEditor -Name Atom -Path "$env:APPDATA\..\Local\atom\atom.exe"
 
+    .EXAMPLE
+
+    Add code editor with full path to exe and set as Default: (Otherwise use Switch-DefaultCodeEditor)
+
+    PS> Add-CodeEditor -Default -Name Atom -Path "$env:APPDATA\..\Local\atom\atom.exe"
+
 #>
 
-C:\Users\Daniel\AppData\Local\atom
+
 function Add-CodeEditor {
 
     param (
@@ -40,7 +46,11 @@ function Add-CodeEditor {
             Mandatory = $true
         )]
         [System.String]
-        $Path
+        $Path,
+
+        [Parameter()]
+        [switch]
+        $Default
     )
 
     $editors = Get-CodeEditor -ListAvailable
@@ -49,6 +59,10 @@ function Add-CodeEditor {
         path = $Path
     }
     Save-SecureStringToFile -Identifier git.codeeditors.all -Object $editors
+
+    if ($Default) {
+        $null = Switch-DefaultCodeEditor -Name $Name
+    }
 
     return $editors
     

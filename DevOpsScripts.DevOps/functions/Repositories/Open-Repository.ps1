@@ -111,7 +111,7 @@ function Open-Repository {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-CodeEditor -ListAvailable).Keys
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-CodeEditor -ListAvailable).Keys
             }
         )]
         [System.String]

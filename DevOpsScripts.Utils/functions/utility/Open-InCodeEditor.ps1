@@ -29,11 +29,11 @@ function Open-InCodeEditor {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-CodeEditor -ListAvailable).Keys
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-CodeEditor -ListAvailable).Keys
             }
         )]
         [System.String]
-        $Programm = 'code',
+        $Programm,
 
         [Parameter(
             Mandatory = $true
@@ -42,6 +42,8 @@ function Open-InCodeEditor {
         $Path
     )
 
+    # TODO
+    $Programm = [System.String]::IsNullOrEmpty($Programm) ? 'Visual Studio Code' : $Programm
     Start-Process -FilePath (Get-CodeEditor -Programm $Programm).path -ArgumentList $Path
     
 }

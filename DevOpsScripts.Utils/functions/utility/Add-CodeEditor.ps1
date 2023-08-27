@@ -55,8 +55,9 @@ function Add-CodeEditor {
 
     $editors = Get-CodeEditor -ListAvailable
     $editors[$Name] = @{
-        name = $Name
-        path = $Path
+        name        = $Name
+        path        = $Path
+        windowStyle = "Normal"
     }
     Save-SecureStringToFile -Identifier git.codeeditors.all -Object $editors
 

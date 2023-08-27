@@ -42,6 +42,11 @@ function Open-InCodeEditor {
         $Path
     )
 
-    Start-Process -FilePath (Get-CodeEditor -Programm $Programm).path -ArgumentList $Path
+    $Process = @{
+        WindowStyle  = ( Get-CodeEditor -Programm $Programm).windowStyle
+        FilePath     = (Get-CodeEditor -Programm $Programm).path
+        ArgumentList = $Path
+    }
+    Start-Process @Process 
     
 }

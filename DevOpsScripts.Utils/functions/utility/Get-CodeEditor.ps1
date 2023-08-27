@@ -26,12 +26,14 @@ function Get-CodeEditor {
         Save-SecureStringToFile -Identifier git.codeeditors.all -Object (
             @{
                 'Visual Studio Code' = @{
-                    name = 'Visual Studio Code'
-                    path = 'code'
+                    name        = 'Visual Studio Code'
+                    path        = 'code'
+                    windowStyle = 'hidden' # hide commandline
                 }
                 'Visual Studio'      = @{
-                    name = 'Visual Studio'
-                    path = 'devenv'
+                    name        = 'Visual Studio'
+                    path        = 'devenv'
+                    windowStyle = 'normal'
                 }
             }
         )

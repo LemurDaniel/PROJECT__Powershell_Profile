@@ -36,9 +36,10 @@ Refers only to the DevOpsScripts-Module.
    1. `Switch-GithubContext` or `github-swc`
    2. this `github-swc -Context <autocompleted_context>`
    3. or   `github-swc -Account <autocompleted_account> -Context <autocompleted_context>`
-6. `Get-RepositoryInfo -Context <context> -Name <repo_name>`
-7. `gitvc -Context <context> -Name <repo_name>`
-
+6. Use Module:
+   1. `Get-GithubUser`
+   2. `Get-GithubRepositoryInfo -Context <context> -Name <repo_name>`
+   3. `gitvc -Context <context> -Name <repo_name>`
 
 #### Started out as Personal-Project, now Group-Effort of Team-DevOps:
 - Tim Krehan

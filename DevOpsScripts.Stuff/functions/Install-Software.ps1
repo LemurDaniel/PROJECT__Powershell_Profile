@@ -52,6 +52,7 @@ function Install-Software {
             "Postman.Postman",
             "Docker.DockerDesktop",
             "Kubernetes.kubectl",
+            "Notepad++.Notepad++",
             "Microsoft.Teams",
             "Microsoft.AzureCLI",
             "Microsoft.PowerBI",

@@ -23,6 +23,8 @@ function Switch-DefaultCodeEditor {
         )]
         [ArgumentCompleter(
             {
+                param($cmd, $param, $wordToComplete)
+                
                 return (Get-CodeEditor -ListAvailable).Keys
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }

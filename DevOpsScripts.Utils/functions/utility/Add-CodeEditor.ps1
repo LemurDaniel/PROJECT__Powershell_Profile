@@ -12,9 +12,21 @@
 
     .OUTPUTS
 
+    .EXAMPLE
+
+    Add code editor to a programm exposed via $env:PATH
+
+    PS> Add-CodeEditor -Name "Visual Studio Code" -Path code
+
+    .EXAMPLE
+
+    Add code editor with full path to exe:
+
+    PS> Add-CodeEditor -Name Atom -Path "$env:APPDATA\..\Local\atom\atom.exe"
+
 #>
 
-
+C:\Users\Daniel\AppData\Local\atom
 function Add-CodeEditor {
 
     param (
@@ -28,13 +40,13 @@ function Add-CodeEditor {
             Mandatory = $true
         )]
         [System.String]
-        $CodeEditor
+        $Path
     )
 
     $editors = Get-CodeEditor -ListAvailable
     $editors[$Name] = @{
         name = $Name
-        path = $CodeEditor
+        path = $Path
     }
     Save-SecureStringToFile -Identifier git.codeeditors.all -Object $editors
 

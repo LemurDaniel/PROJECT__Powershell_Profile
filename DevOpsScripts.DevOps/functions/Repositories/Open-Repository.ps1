@@ -98,6 +98,26 @@ function Open-Repository {
         [System.String]
         $Name,
 
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [ArgumentCompleter(
+            {
+                return (Get-CodeEditor -ListAvailable).Keys
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
+            }
+        )]
+        [ValidateScript(
+            {
+                $_ -in (Get-CodeEditor -ListAvailable).Keys
+            }
+        )]
+        [System.String]
+        $CodeEditor,
+
+
         # Optional download an open by id.
         [Parameter(
             Mandatory = $true,
@@ -151,7 +171,7 @@ function Open-Repository {
     $null = git -C $repository.Localpath config --local user.email "$userMail"
 
     if (-not $onlyDownload) {
-        code $repository.Localpath
+        Open-InCodeEditor -Programm $CodeEditor -Path $repository.Localpath
     } 
 
     return $item

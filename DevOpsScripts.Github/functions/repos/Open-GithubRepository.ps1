@@ -19,6 +19,12 @@
 
     .EXAMPLE
 
+    Open a repository in the current Context:
+
+    PS> Open-GithubRepository <autocomplete_repo> -CodeEditor 'Visual Studio'
+
+    .EXAMPLE
+
     Open a repository in another Context:
 
     PS> Open-GithubRepository -Context <autocomplete_context> <autocomplete_repo>
@@ -106,6 +112,26 @@ function Open-GithubRepository {
         [System.String]
         $Context,
 
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [ArgumentCompleter(
+            {
+                return (Get-CodeEditor -ListAvailable).Keys
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
+            }
+        )]
+        [ValidateScript(
+            {
+                $_ -in (Get-CodeEditor -ListAvailable).Keys
+            }
+        )]
+        [System.String]
+        $CodeEditor,
+
+
         # Only open the repository in the browser.
         [Parameter()]
         [switch]
@@ -157,7 +183,7 @@ function Open-GithubRepository {
     $null = git -C $repository.LocalPath config --local user.email $user.email
 
     if (!$onlyDownload) {
-        code $repository.LocalPath
+        Open-InCodeEditor -Programm $CodeEditor -Path $repository.Localpath
     }
 
     return Get-Item $repository.LocalPath

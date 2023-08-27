@@ -16,9 +16,9 @@ Refers only to the DevOpsScripts-Module.
 3. Run `Connect-AzAccount`.
 4. Set the correct DevOps Context
    1. `Switch-Organization` - Short `swo`
-   > PS> swo 'autocompleted_org_names' 'autocompleted_project_names'
+   > `PS> swo <autocompleted_org_names> <autocompleted_project_names>`
    2. Project-Context can be switched in Organization with
-   > PS> swp 'autocompleted_project_names'
+   > `PS> swp <autocompleted_project_names>`
 5. All DevOps related functions should now use current context.
    1. `Get-ProjectInfo` get info of current Project 
    2. `Get-RepositoryInfo` gets info about a repository in the curren Project.
@@ -31,11 +31,11 @@ Refers only to the DevOpsScripts-Module.
 3. `Add-GithubAccountContext` (Multiple can be added each with its own PAT)
 4. Set the Account-Context. Defaults to first account.
    1. `Switch-GithubAccountContext` or `github-swa`
-   2. `github-swa -Account <autocompleted_account>`
+   > `PS> github-swa -Account <autocompleted_account>`
 5. Set the context. Defaults to users context.
    1. `Switch-GithubContext` or `github-swc`
-   2. this `github-swc -Context <autocompleted_context>`
-   3. or   `github-swc -Account <autocompleted_account> -Context <autocompleted_context>`
+   > `PS> github-swc -Context <autocompleted_context>`<br>
+   > `PS> github-swc -Account <autocompleted_account> -Context <autocompleted_context>`
 6. Use Module:
    1. `Get-GithubUser`
    2. `Get-GithubRepositoryInfo -Context <context> -Name <repo_name>`

@@ -87,7 +87,7 @@ function Read-UserInput {
         do {
 
             # Reset Cursor Position to start of Line for redrawing line.
-            # That the Cursor invisible.
+            # Set the Cursor invisible to hide any movements.
             [System.Console]::CursorVisible = $false
             [System.Console]::SetCursorPosition(0, [System.Console]::GetCursorPosition().Item2)
 

@@ -35,6 +35,7 @@
         
 #>
 
+# TODO rewrite with [System.Console]::SetCursorPosition to prevent flickers from redrawing whole menue.
 Function Select-ConsoleMenu {
 
     [CmdletBinding()]

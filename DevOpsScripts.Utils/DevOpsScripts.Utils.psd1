@@ -80,8 +80,8 @@ FunctionsToExport = 'Get-Property', 'Join-PsObject', 'Search-In', 'Convert-TFVar
                'Read-SecureStringFromFile', 'Save-SecureStringToFile', 
                'Set-UtilsCache', 'Add-CodeEditor', 'Clear-CodeEditor', 
                'Get-CodeEditor', 'New-RandomBytes', 'Open-InCodeEditor', 
-               'Select-ConsoleMenu', 'Switch-DefaultCodeEditor', 'Test-IsRepository', 
-               'Edit-RegexOnFiles', 'Remove-InvisibleUnicode'
+               'Read-UserInput', 'Select-ConsoleMenu', 'Switch-DefaultCodeEditor', 
+               'Test-IsRepository', 'Edit-RegexOnFiles', 'Remove-InvisibleUnicode'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

@@ -4,6 +4,7 @@
 
     .DESCRIPTION
     Add a account context with a pat and custom domain. defaults to api.github.com
+    Path should have access to user and repo.
 
     .INPUTS
     None. You cannot pipe objects into the Function.

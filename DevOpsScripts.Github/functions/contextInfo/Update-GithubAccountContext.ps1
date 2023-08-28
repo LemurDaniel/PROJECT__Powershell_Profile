@@ -44,13 +44,10 @@ function Update-GithubAccountContext {
 
     Write-Host -ForegroundColor Magenta "Configure you account context: "
     Write-Host -ForegroundColor Magenta "Leave custom domain empty for github.com!"
-    $name = Read-Host -Prompt   '   Account-Context Name'
-    if ($name.Length -lt 3) {
-        throw "Name must be at least 3 characters."
-    }
+    $name = Read-UserInput -Prompt   '   Account-Context Name:' -Placeholder $Account -Minimum 3
 
-    $domain = Read-Host -Prompt '   Custom domain'
-    $useSSH = Read-Host -Prompt '   clone via SSH [yes/no]'
+    $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder 'github.com'
+    $useSSH = Read-UserInput -Prompt '   clone via SSH [yes/no]:'
 
     $Accounts[$name] = [ordered]@{
         useSSH   = $useSSH.toLower() -eq "yes" ?  $true : $false

@@ -30,7 +30,7 @@ function Add-GithubAccountContext {
     Write-Host -ForegroundColor Magenta "Leave custom domain empty for github.com!"
     $name = Read-UserInput -Prompt   '   Account-Context Name:' -Minimum 3
 
-    $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder 'github.com'
+    $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder 'api.github.com'
     $useSSH = Read-UserInput -Prompt '   clone via SSH [yes/no]:'
 
     $Accounts[$name] = [ordered]@{

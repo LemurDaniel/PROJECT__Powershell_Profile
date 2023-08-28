@@ -44,9 +44,9 @@ function Update-GithubAccountContext {
 
     Write-Host -ForegroundColor Magenta "Configure you account context: "
     Write-Host -ForegroundColor Magenta "Leave custom domain empty for github.com!"
-    $name = Read-UserInput -Prompt   '   Account-Context Name:' -Placeholder $Account -Minimum 3
+    $name = Read-UserInput -Prompt   '   Account-Context Name:' -Placeholder $Accounts[$Account].name -Minimum 3
 
-    $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder 'api.github.com'
+    $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder ($Accounts[$Account].domain -replace '/api/v3', '')
     $useSSH = Read-UserInput -Prompt '   clone via SSH [yes/no]:'
 
     $Accounts[$name] = [ordered]@{

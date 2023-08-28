@@ -52,7 +52,7 @@ function Update-GithubAccountContext {
     $Accounts[$name] = [ordered]@{
         useSSH   = $useSSH.toLower() -eq "yes" ?  $true : $false
         name     = $name
-        domain   = ![System.String]::IsNullOrEmpty($domain) ? "$domain/api/v3" : "api.github.com"
+        domain   = $domain -ne 'api.github.com' ? "$domain/api/v3" : "api.github.com"
         patRef   = $Accounts[$Account].patRef
         cacheRef = $Accounts[$Account].cacheRef
     }

@@ -103,7 +103,7 @@ function Read-UserInput {
                 # Write Placeholder text as greyish to inidcate placeholder text.
                 Write-Host -ForegroundColor Black -NoNewline $Placeholder
 
-                # Set the Cursor on before placeholder text, so user can overwrite placeholder.
+                # Set the Cursor on wihtespace before placeholder text, so user can overwrite placeholder.
                 [System.Console]::SetCursorPosition(
                     [System.Console]::GetCursorPosition().Item1 - $Placeholder.Length - 1,
                     [System.Console]::GetCursorPosition().Item2
@@ -142,6 +142,8 @@ function Read-UserInput {
                     $UserInput = $UserInput.Substring(0, [System.Math]::Max(0, $UserInput.Length - 1))
                     break
                 }
+
+                # TODO Left and Right arrows on input text
 
                 { $null -EQ [System.ConsoleKey]::Enter } {
                     break

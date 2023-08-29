@@ -177,10 +177,22 @@ function Read-UserInput {
 
                 # Anything thats an actual character
                 { ![System.Char]::IsControl($_.KeyChar) } {
-                    if ($UserInput.Length -LT $Maximum) {
-                        $UserInput += $_.KeyChar
-                        $CursorOffset += 1
+
+                    if ($UserInput.Length -GT $Maximum) {
+                        break # Ignore when max-length is reached
                     }
+
+                    if ($CursorOffset -EQ $UserInput.Length) {
+                        # Insert chars at the end of the string when cursor is at end of string.
+                        $UserInput += $_.KeyChar
+                    }
+                    else {
+            
+                        # Insert chars in the middle of string, according to cursor position.
+                        $UserInput = $UserInput.Substring(0, $CursorOffset) + $_.KeyChar + $UserInput.Substring($CursorOffset) 
+                    }
+
+                    $CursorOffset += 1
                     break
                 }
 

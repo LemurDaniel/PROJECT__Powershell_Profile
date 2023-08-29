@@ -78,7 +78,12 @@ function Read-UserInput {
         # A Foregroundcolor for the text prompt.
         [Parameter()]
         [System.ConsoleColor]
-        $Foregroundcolor = [System.ConsoleColor]::White
+        $Foregroundcolor = [System.ConsoleColor]::White,
+
+        # Only return user input, also if empty. Disregard placeholder.
+        [Parameter()]
+        [switch]
+        $OnlyUserinput
     )
 
     $Prompt = $Prompt.TrimEnd() + " "
@@ -210,11 +215,11 @@ function Read-UserInput {
     }
 
 
-    $returnValue = [System.String]::IsNullOrEmpty($UserInput) ? $Placeholder : $UserInput
+    $returnValue = [System.String]::IsNullOrEmpty($UserInput) -AND !$OnlyUserinput ? $Placeholder : $UserInput
 
     if ($returnValue.Length -LT $Minimum) {
         throw "Input length must be at least '$Minimum'-Characters."
     }
 
-    return $AsSecureString ? ($returnValue | ConvertTo-SecureString -AsPlainText) : $returnValue
+    return $AsSecureString -AND $returnValue.length -GT 0 ? ($returnValue | ConvertTo-SecureString -AsPlainText) : $returnValue
 }

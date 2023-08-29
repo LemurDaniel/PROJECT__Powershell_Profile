@@ -182,29 +182,33 @@ function Invoke-DevOpsRest {
     }
 
     switch ($SCOPE) {
-        'NONE' {
-            $TargetURL = "https://$Domain.com/$APIEndpoint"
-            break
-        }
-        'ORG' { 
-            $TargetURL = "https://$Domain.com/$Organization/$APIEndpoint"
-            break
-        }
-        'PROJ' { 
-            $projectInfo = Get-ProjectInfo -Name $Project
-            $TargetURL = "https://$Domain.com/$Organization/$($projectInfo.id)/$APIEndpoint"
-            break
-        }
-        'TEAM' { 
+        { $_ -EQ 'TEAM' -OR ![System.String]::IsNullOrEmpty($Team) } { 
             $projectInfo = Get-ProjectInfo -Name $Project
             $teamInfo = Search-In $projectInfo.teams -where name -has $team
-            $TargetURL = "https://$Domain.com/$Organization/$($projectInfo.id)/$($teamInfo.id)/$APIEndpoint"
+            $TargetURL = "$Domain.com/$Organization/$($projectInfo.id)/$($teamInfo.id)/$APIEndpoint" -replace '/+', '/'
+            break
+        }
+        { $_ -EQ 'PROJ' -OR ![System.String]::IsNullOrEmpty($Project) } { 
+            $projectInfo = Get-ProjectInfo -Name $Project
+            $TargetURL = "$Domain.com/$Organization/$($projectInfo.id)/$APIEndpoint" -replace '/+', '/'
+            break
+        }
+        { $_ -EQ 'ORG' -OR ![System.String]::IsNullOrEmpty($Organization) } { 
+            $TargetURL = "$Domain.com/$Organization/$APIEndpoint" -replace '/+', '/'
+            break
+        }
+
+        default {
+            $TargetURL = "$Domain.com/$APIEndpoint" -replace '/+', '/'
             break
         }
     }
 
     if ($QueryString.Length -GT 0) {
-        $TargetURL = "$TargetURL`?$QueryString"
+        $TargetURL = "https://$TargetURL`?$QueryString"
+    }
+    else {
+        $TargetURL = "https://$TargetURL"
     }
 
     $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   

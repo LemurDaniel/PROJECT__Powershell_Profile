@@ -65,7 +65,7 @@ $buildFolderModules | ForEach-Object {
                 Get-Content -Raw | ForEach-Object {
                 $match = [regex]::Match($_, 'function[^\{]*\{(?s)(?<={).+?(?=param\s*\()')?.Value
                 $match = [regex]::Match($match, "\[Alias\([0-9A-Za-z,\s\-\']*\)\]")?.Value
-                return [regex]::Matches($match, "'[A-Za-z\-]+'").Value
+                return [regex]::Matches($match, "'[0-9A-Za-z\-]+'").Value
             } | Where-Object { $_ -ne $null } | ForEach-Object { $_ -replace "'", '' }
         )
         FunctionsToExport  = (

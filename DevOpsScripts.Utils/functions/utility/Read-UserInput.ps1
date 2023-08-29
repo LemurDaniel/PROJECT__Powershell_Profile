@@ -6,7 +6,8 @@
 
     .DESCRIPTION
     Custom alternative for Read-Host with expanded capabilities.
-    Allows for removing last character via backspace.
+    Cursor can be moved via LeftArrow and RightArrow in Userinput.
+    Allows for removing character at cursor-position.
 
     .INPUTS
     None. You cannot Pipe values into the Function.
@@ -83,6 +84,7 @@ function Read-UserInput {
     $Prompt = $Prompt.TrimEnd() + " "
     $Placeholder = $Placeholder.Trim()
     $UserInput = ""
+    $CursorOffset = 0 # Offset cursor from left to right
     try {
         do {
 
@@ -122,7 +124,7 @@ function Read-UserInput {
                 # Draw Userinput and set cursorposition at the end of drawn line.
                 Write-Host -ForegroundColor White -NoNewline $drawnUserInput
                 [System.Console]::SetCursorPosition(
-                    $Prompt.Length + $drawnUserInput.Length,
+                    $Prompt.Length + $CursorOffset, # Use cursoroffset
                     [System.Console]::GetCursorPosition().Item2
                 )
             }
@@ -139,11 +141,35 @@ function Read-UserInput {
                 }
 
                 { $_.Key -EQ [System.ConsoleKey]::Backspace } {
-                    $UserInput = $UserInput.Substring(0, [System.Math]::Max(0, $UserInput.Length - 1))
+
+                    if ($CursorOffset -EQ 0) {
+                        break # Ignore backspace when Cursor position is at start of userinput.
+                    }
+
+                    if ($CursorOffset -EQ $UserInput.Length) {
+                        # Remove from the End of the string.
+                        $UserInput = $UserInput.Substring(0, [System.Math]::Max(0, $UserInput.Length - 1))
+                    }
+                    else {
+                        # Remove in the middle of string, when cursor-position is not at the end.
+                        $UserInput = $UserInput.Substring(0, $CursorOffset - 1) + $UserInput.Substring($CursorOffset)
+                    }
+
+
+                    $CursorOffset -= 1
                     break
                 }
 
-                # TODO Left and Right arrows on input text
+                { $_.Key -EQ [System.ConsoleKey]::RightArrow } {
+                    #Write-Host $CursorOffset
+                    $CursorOffset = [System.Math]::Min($UserInput.Length, $CursorOffset + 1)
+                    break
+                }
+
+                { $_.Key -EQ [System.ConsoleKey]::LeftArrow } {
+                    $CursorOffset = [System.Math]::Max(0, $CursorOffset - 1)
+                    break
+                }
 
                 { $null -EQ [System.ConsoleKey]::Enter } {
                     break
@@ -153,6 +179,7 @@ function Read-UserInput {
                 { ![System.Char]::IsControl($_.KeyChar) } {
                     if ($UserInput.Length -LT $Maximum) {
                         $UserInput += $_.KeyChar
+                        $CursorOffset += 1
                     }
                     break
                 }

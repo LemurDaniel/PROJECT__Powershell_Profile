@@ -182,18 +182,18 @@ function Invoke-DevOpsRest {
     }
 
     switch ($SCOPE) {
-        { $_ -EQ 'TEAM' -OR ![System.String]::IsNullOrEmpty($Team) } { 
+        { $_ -EQ 'TEAM' -OR ([System.String]::IsNullOrEmpty($SCOPE) -AND ![System.String]::IsNullOrEmpty($Team)) } { 
             $projectInfo = Get-ProjectInfo -Name $Project
             $teamInfo = Search-In $projectInfo.teams -where name -has $team
             $TargetURL = "$Domain.com/$Organization/$($projectInfo.id)/$($teamInfo.id)/$APIEndpoint" -replace '/+', '/'
             break
         }
-        { $_ -EQ 'PROJ' -OR ![System.String]::IsNullOrEmpty($Project) } { 
+        { $_ -EQ 'PROJ' -OR ([System.String]::IsNullOrEmpty($SCOPE) -AND ![System.String]::IsNullOrEmpty($Project)) } { 
             $projectInfo = Get-ProjectInfo -Name $Project
             $TargetURL = "$Domain.com/$Organization/$($projectInfo.id)/$APIEndpoint" -replace '/+', '/'
             break
         }
-        { $_ -EQ 'ORG' -OR ![System.String]::IsNullOrEmpty($Organization) } { 
+        { $_ -EQ 'ORG' -OR ([System.String]::IsNullOrEmpty($SCOPE) -AND ![System.String]::IsNullOrEmpty($Organization)) } { 
             $TargetURL = "$Domain.com/$Organization/$APIEndpoint" -replace '/+', '/'
             break
         }

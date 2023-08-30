@@ -1,46 +1,41 @@
 
 <#
     .SYNOPSIS
-    Change properties and extend the Lifetime of a PAT if still valid.
+    Retrieves an PAT-Token with an ID and a scope. If as same token has been created and not expired, will return it again.
 
     .DESCRIPTION
-    Change properties and extend the Lifetime of a PAT if still valid.
+    Retrieves an PAT-Token with an ID and a scope. If as same token has been created and not expired, will return it again.
+    The token ist saved securly on the disk with SercureString using the underlying Windows Data Protection API.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
-    The API-Response.
+    TODO
+
 
     .EXAMPLE
 
-    Update properties on an existing PAT, like name, expiration and scopes:
+    Get a either saved PAT-Token or generate a new one to access repositories:
 
     PS> $DevOpsPAT = @{
-            authorizationId = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            TenantId        = "3d355765-67d9-47cd-9c7a-bf31179f56eb"
-            Organization    = 'oliver-hammer'
-            Name            = "Changed Name via API"
-            Scopes          = 'vso.code_full', 'vso.code_status'
-            HoursValid      = 2
+            TenantId     = "3d355765-67d9-47cd-9c7a-bf31179f56eb"
+            Organization = 'oliver-hammer'
+            Name         = "Testing PAT"
+            HoursValid   = 0
+            Scopes       = 'vso.code_full', 'vso.code_status'
+            path         = "./pats"
         }
 
-    PS> Update-DevOpsPAT @DevOpsPAT
+    PS> Get-DevOpsPAT @DevOpsPAT -Verbose
+
 
     .LINK
         
 #>
-function Update-DevOpsPAT {
 
-    [CmdletBinding()]
+function Get-DevOpsPAT {
     param (
-        # The unique Authorization ID identifing the PAT.
-        [Parameter(
-            Mandatory = $true
-        )]
-        [System.String]
-        $authorizationId,
-
         # The AzureAd tenant id to wich the organization is connected to.
         [Parameter(
             Mandatory = $true
@@ -57,21 +52,21 @@ function Update-DevOpsPAT {
 
         # The optional Name of the retrieved or newly created PAT.
         [Parameter(
-            Mandatory = $false
+            Mandatory = $true
         )]
         [System.String]
         $Name,
 
         # A list of permission scopes for the PAT.
         [Parameter(
-            Mandatory = $false
+            Mandatory = $true
         )]
         [System.String[]]
         [ValidateScript(
             {
                 $validScopes = @(
                     'app_token', # <== Full Scope, everything enabled
-                    
+
                     # Follows UI in DevOps-Portal
                     'vso.agentpools', 'vso.agentpools_manage', # Read | Read & Manage
                     'vso.analytics'
@@ -127,38 +122,69 @@ function Update-DevOpsPAT {
 
         [Parameter()]
         [switch]
-        $AllOrgs
+        $AllOrgs,
+
+
+
+        # Path where to save the PAT. Will be saved encrypted
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $Path,
+
+        # Optional Parameter to return null if not PAT is found or expired, instead of creating a new one.
+        [Parameter()]
+        [switch]
+        $OnlyRead
     )
 
-    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $TenantId).Token
-    $Request = @{
-        Method  = 'GET'
-        URI     = "https://vssps.dev.azure.com/$Organization/_apis/tokens/pats/?authorizationId=$authorizationId&api-version=7.0-preview.1"
-        Headers = @{
-            'Authorization' = "Bearer $token"
-            'Content-Type'  = 'application/json; charset=utf-8'    
-        }
-    }
-    $ExistingPAT = Invoke-RestMethod @Request | Select-Object -ExpandProperty patToken
     
 
-
-    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $TenantId).Token
-    $Request = @{
-        METHOD  = 'PUT'
-        URI     = "https://vssps.dev.azure.com/$Organization/_apis/tokens/pats?api-version=7.0-preview.1"
-        Headers = @{
-            'Authorization' = "Bearer $token"
-            'Content-Type'  = 'application/json; charset=utf-8'    
-        }
-        Body    = @{
-            displayName     = [System.String]::IsNullOrEmpty($Name) ? $ExistingPAT.Name : $Name # Rename existing PAT
-            scope           = $null -NE $Scopes  ? ($Scopes -join ' ') : $ExistingPAT.scope # Update Scope of existing PAT
-            validTo         = ([DateTime]::now).AddHours($HoursValid) # Extend Existing PAT
-            authorizationId = $authorizationId 
-            allOrgs         = $AllOrgs -EQ $true
-        } | ConvertTo-Json
+    $Path = [System.String]::IsNullOrEmpty($Path) ? "$env:USERPROFILE/azureDevOps" : $Path
+    if (!(Test-Path -Path $Path)) {
+        $null = New-Item -ItemType Directory -Path $Path
     }
 
-    return Invoke-RestMethod @Request | Select-Object -ExpandProperty patToken
+
+    # Convert all data to an identifier. For the same parameter inputs, the same pat will be retrieved
+    $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes(@(
+        ($PatScopes | Sort-Object | ForEach-Object { $_ }), $name, $TenantId, $Organization
+        )) 
+    $identifier = "$([System.Convert]::ToHexString($bytes)).pat"
+    $fullPathToFile = Join-Path -Path $Path -ChildPath $identifier
+    
+
+    $DevOpsPATdata = Get-Content -Path $fullPathToFile  -ErrorAction SilentlyContinue 
+    | ConvertTo-SecureString -ErrorAction SilentlyContinue 
+    | ConvertFrom-SecureString -AsPlainText  -ErrorAction SilentlyContinue 
+    | ConvertFrom-Json  -ErrorAction SilentlyContinue 
+    
+
+    if ($null -EQ $DevOpsPATdata -OR $DevOpsPATdata.validTo -LT [System.DateTime]::Now.ToUniversalTime()) {
+
+        if ($OnlyRead) {
+            return $null
+        }
+
+        Write-Verbose 'Generating new PAT'
+        $PAT = @{
+            TenantId     = $TenantId
+            Organization = $Organization
+            Name         = $Name
+            HoursValid   = $HoursValid
+            Scopes       = $Scopes
+        }
+        $DevOpsPATdata = New-DevOpsPAT @PAT
+
+        $DevOpsPATdata 
+        | ConvertTo-Json
+        | ConvertTo-SecureString -AsPlainText
+        | ConvertFrom-SecureString
+        | Out-File $fullPathToFile
+
+    }
+
+
+    return $DevOpsPATdata
 }

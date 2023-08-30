@@ -22,7 +22,7 @@
             Organization = 'oliver-hammer'
             Name         = "Testing PAT"
             HoursValid   = 1
-            Scopes       = 'vso.code_status'
+            Scopes       = 'vso.code_full', 'vso.code_status'
         }
 
     PS> New-DevOpsPAT @DevOpsPAT
@@ -53,7 +53,7 @@ function New-DevOpsPAT {
 
         # The optional Name of the retrieved or newly created PAT.
         [Parameter(
-            Mandatory = $false
+            Mandatory = $true
         )]
         [System.String]
         $Name,

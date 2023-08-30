@@ -59,6 +59,7 @@ function New-PAT {
     
     $PatName =  [System.String]::IsNullOrEmpty($Name) ? "User_$CurrentUser` API-generated PAT" : $Name
 
+    # TODO generate pat token for correct tenant
     $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798').Token
     $Request = @{
         METHOD  = 'POST'

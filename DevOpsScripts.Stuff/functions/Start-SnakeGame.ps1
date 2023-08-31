@@ -3,11 +3,11 @@
 <#
     .SYNOPSIS
     (NOT FINISHED YET).
-    Draws a snake game. Use UP,DOWN,LEFT,RIGHT Arrows for movement.
+    Draws a snake game. Use UP,DOWN,LEFT,RIGHT Arrows or WASD for movement.
 
     .DESCRIPTION
     (NOT FINISHED YET).
-    Draws a snake game. Use UP,DOWN,LEFT,RIGHT Arrows for movement.
+    Draws a snake game. Use UP,DOWN,LEFT,RIGHT Arrows or WASD for movement.
 
     .INPUTS
     None. You cannot Pipe values into the Function.
@@ -24,7 +24,7 @@
     #               @               #
     #                               #
     #                               #
-    #                               #
+    #                        +      #
     #                               #
     #################################
 
@@ -37,9 +37,22 @@ function Start-SnakeGame {
         [Parameter(
             Mandatory = $false
         )]
-        [ValidateRange(500, 1000)]
+        [ValidateRange(250, 1000)]
         [System.Int32]
-        $TickIntervall = 750
+        $TickIntervall = 500,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [PSCustomObject]
+        $Characters = @{
+            Wall       = '#'
+            Empty      = ' '
+        
+            SnakeSnack = '+'
+            SnakeBody  = 'O'
+            SnakeHead  = '@'
+        }
     )
 
     function Get-LineOfChars {
@@ -60,26 +73,21 @@ function Start-SnakeGame {
     $Witdh = 30
     $Height = 10
 
-    $Wall = '#'
-    $Empty = ' '
-
-    $SnakeLength = 15
-    $SnakeBody = 'O'
-    $SnakeHead = '@'
+    $SnakeLength = 5
 
     $WindowSize = $host.UI.RawUI.WindowSize.Width
     $GameOffsetLength = $WindowSize / 2 - $Witdh
-    $OffsetLine = Get-LineOfChars $GameOffsetLength $Empty
+    $OffsetLine = Get-LineOfChars $GameOffsetLength $Characters.Empty
 
     ########################################################
     ###### Draw Box for snake
-    $upDownWall = Get-LineOfChars ($Witdh + 2) $Wall
+    $upDownWall = Get-LineOfChars ($Witdh + 2) $Characters.Wall
 
     [System.Console]::Clear()
     [System.Console]::WriteLine("$OffsetLine$upDownWall")
     0..$Height | ForEach-Object {
-        $emptyLine = Get-LineOfChars $Witdh $Empty
-        [System.Console]::WriteLine("$OffsetLine$Wall$emptyLine$Wall")
+        $emptyLine = Get-LineOfChars $Witdh $Characters.Empty
+        [System.Console]::WriteLine("$OffsetLine$($Characters.Wall)$emptyLine$($Characters.Wall)")
     }
     [System.Console]::WriteLine("$OffsetLine$upDownWall")
     [System.Console]::CursorVisible = $false
@@ -92,10 +100,11 @@ function Start-SnakeGame {
     $velocityVector = [System.Numerics.Vector2]::new(0, 1)
 
     $snakePositionsMap = [System.Collections.Hashtable]::new()
-    $snackPositionsMap = [System.Collections.Hashtable]::new()
+    # $snackPositionsMap = [System.Collections.Hashtable]::new()
 
     # The initial position is the center.
     $snakePositions = @([System.Numerics.Vector2]::new($Witdh / 2 , $Height / 2))
+    $currentSnackPosition = $null
 
     $snakePositionsMap.add($snakePositions[0], $null)
     $gameEndingMessage = $null
@@ -109,19 +118,19 @@ function Start-SnakeGame {
 
         # Draw snake head after the collision checks
         [System.Console]::SetCursorPosition($snakeOffsetX + $newHeadPosition.x, $snakeOffsetY + $newHeadPosition.y)
-        [System.Console]::Write($SnakeHead)
+        [System.Console]::Write($Characters.SnakeHead)
 
 
         # Head has a different char than body. Overwrite the last head position with a body.
         $lastHeadPosition = $snakePositions | Select-Object -Last 1
         [System.Console]::SetCursorPosition($snakeOffsetX + $lastHeadPosition.X, $snakeOffsetY + $lastHeadPosition.Y)
-        [System.Console]::Write($SnakeBody)
+        [System.Console]::Write($Characters.SnakeBody)
         
         # Delete last element if snake exceeds length
-        if ($snakePositions.Length - 1 -GT $SnakeLength) {
+        if ($snakePositions.Length -GE $SnakeLength) {
             $deletePosition = $snakePositions | Select-Object -First 1
             [System.Console]::SetCursorPosition($snakeOffsetX + $deletePosition.X, $snakeOffsetY + $deletePosition.Y )
-            [System.Console]::Write($Empty)
+            [System.Console]::Write($Characters.Empty)
 
             # Delete snake tail from map and positions array
             $snakePositions = $snakePositions | Select-Object -Skip 1
@@ -142,8 +151,32 @@ function Start-SnakeGame {
             break GameLoop
         }
 
+        # Increase snake length when eating a snack
+        if ($newHeadPosition.Equals($currentSnackPosition)) {
+            $currentSnackPosition = $null
+            $SnakeLength += 1
+        }
+
         $snakePositionsMap.add($newHeadPosition, $null)
         $snakePositions += $newHeadPosition
+
+
+        # Spawn a new snack for the snake.
+        while ($null -EQ $currentSnackPosition) {
+            $proposedPosition = [System.Numerics.Vector2]::new(
+                    (Get-Random -Minimum 0 -Maximum $Witdh),
+                    (Get-Random -Minimum 0 -Maximum $Height)
+            )
+
+            # Snacks can only spawn on fields which are not occupied by the snake
+            if (!$snakePositionsMap.ContainsKey($proposedPosition)) {
+                $currentSnackPosition = $proposedPosition
+            }
+        }
+
+        # Draw snake snack
+        [System.Console]::SetCursorPosition($snakeOffsetX + $currentSnackPosition.X, $snakeOffsetY + $currentSnackPosition.Y )
+        [System.Console]::Write($Characters.SnakeSnack)
 
         [System.Console]::SetCursorPosition(0, 0)
         [System.Console]::CursorVisible = $false
@@ -160,7 +193,7 @@ function Start-SnakeGame {
 
         $keyEvent = [System.Console]::ReadKey($true)
         switch ($keyEvent.Key) {
-            { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) }  {
+            { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) } {
 
                 # Only accept if the snake is not moving to the right
                 if ($velocityVector.x -EQ 0) {

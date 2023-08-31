@@ -93,10 +93,11 @@ function Revoke-DevOpsPAT {
             }
         }
 
-        Invoke-RestMethod @Request
+        $null = Invoke-RestMethod @Request # Returns nothing
         if (![System.String]::IsNullOrEmpty($filePath)) {
-            Remove-Item -Path $filePath -ErrorAction SilentlyContinue
+            $null =  Remove-Item -Path $filePath -ErrorAction SilentlyContinue
         }
+        return "Success"
     }
     END {}
 }

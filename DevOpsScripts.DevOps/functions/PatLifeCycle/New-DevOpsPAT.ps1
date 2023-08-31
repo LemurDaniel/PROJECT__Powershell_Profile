@@ -22,7 +22,7 @@
             Organization = 'oliver-hammer'
             Name         = "Testing PAT"
             HoursValid   = 1
-            Scopes       = 'vso.code_full', 'vso.code_status'
+            Scope       = 'vso.code_full', 'vso.code_status'
         }
 
     PS> New-DevOpsPAT @DevOpsPAT
@@ -58,14 +58,14 @@ function New-DevOpsPAT {
         [System.String]
         $Name,
 
-        # A list of permission scopes for the PAT.
+        # A list of permission Scope for the PAT.
         [Parameter(
             Mandatory = $true
         )]
         [System.String[]]
         [ValidateScript(
             {
-                $validScopes = @(
+                $validScope = @(
                     'app_token', # <== Full Scope, everything enabled
 
                     # Follows UI in DevOps-Portal
@@ -106,7 +106,7 @@ function New-DevOpsPAT {
                 )
 
                 foreach ($scope in $_) {
-                    if ($scope -notin $validScopes) {
+                    if ($scope -notin $validScope) {
                         return $false
                     }
                 }
@@ -114,7 +114,7 @@ function New-DevOpsPAT {
             },
             ErrorMessage = "Not a valid scope!"
         )]
-        $Scopes,
+        $Scope,
 
         # How many Hours the generated PAT will be valid.
         [Parameter()]
@@ -136,12 +136,32 @@ function New-DevOpsPAT {
         }
         Body    = @{
             displayName = $Name
-            scope       = $Scopes -join ' '
+            scope       = $Scope -join ' '
             validTo     = [DateTime]::now.ToUniversalTime().AddHours($HoursValid)
             allOrgs     = $AllOrgs -EQ $true
         } | ConvertTo-Json
     }
 
-    return Invoke-RestMethod @Request | Select-Object -ExpandProperty patToken
+    return Invoke-RestMethod @Request 
+    | Select-Object -ExpandProperty patToken
+    | Add-Member -MemberType NoteProperty -Name tenantId -Value $TenantId -PassThru
+    | Add-Member -MemberType NoteProperty -Name organization -Value $Organization -PassThru
+    | Select-Object -Property @{
+        Name       = "transformation";
+        Expression = { 
+            return [PSCustomObject]@{
+                displayName     = $_.displayName
+                organization    = $_.organization
+                tenantId        = $_.tenantId
+                token           = $_.token
+                authorizationId = $_.authorizationId
+                scope           = $_.scope.split(' ') 
+                validFrom       = $_.validFrom
+                validTo         = $_.validTo
+                targetAccounts  = $_.targetAccounts
+            } 
+        }
+    }
+    | Select-Object -ExpandProperty transformation
 
 }

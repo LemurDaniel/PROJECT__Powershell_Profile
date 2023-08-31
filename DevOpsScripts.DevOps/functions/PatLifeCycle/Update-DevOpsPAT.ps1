@@ -7,25 +7,44 @@
     Change properties and extend the Lifetime of a PAT if still valid.
 
     .INPUTS
-    None. You cannot pipe objects into the Function.
+    You can pipe PAT-responses into the function.
 
     .OUTPUTS
     The API-Response.
 
     .EXAMPLE
 
-    Update properties on an existing PAT, like name, expiration and scopes:
+    Update properties on an existing PAT, like name, expiration and Scope:
 
     PS> $DevOpsPAT = @{
             authorizationId = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
             TenantId        = "3d355765-67d9-47cd-9c7a-bf31179f56eb"
             Organization    = 'oliver-hammer'
             Name            = "Changed Name via API"
-            Scopes          = 'vso.code_full', 'vso.code_status'
+            Scope          = 'vso.code_full', 'vso.code_status'
             HoursValid      = 2
         }
 
     PS> Update-DevOpsPAT @DevOpsPAT
+
+
+    .EXAMPLE
+
+    Update a PAT token via pipeline:
+
+    PS> $DevOpsPAT = @{
+            TenantId        = "3d355765-67d9-47cd-9c7a-bf31179f56eb"
+            Organization    = 'oliver-hammer'
+            Name            = "Test"
+            Scope          = 'vso.code_full', 'vso.code_status'
+            HoursValid      = 2
+        }
+
+    PS> $DevOpsPAT = Get-DevOpsPAT @DevOpsPAT 
+
+    PS> $DevOpsPAT = $DevOpsPAT | Update-DevOpsPAT -hoursvalid 10 -Name "Testing Bla"
+
+
 
     .LINK
         
@@ -36,40 +55,46 @@ function Update-DevOpsPAT {
     param (
         # The unique Authorization ID identifing the PAT.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String]
         $authorizationId,
 
         # The AzureAd tenant id to wich the organization is connected to.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String]
         $TenantId,
         
         # The Organization in which the PAT shoul be created. Defaults to current Context.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String]
         $Organization,
 
         # The optional Name of the retrieved or newly created PAT.
         [Parameter(
-            Mandatory = $false
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
         )]
+        [Alias('displayName')]
         [System.String]
         $Name,
 
-        # A list of permission scopes for the PAT.
+        # A list of permission Scope for the PAT.
         [Parameter(
-            Mandatory = $false
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String[]]
         [ValidateScript(
             {
-                $validScopes = @(
+                $validScope = @(
                     'app_token', # <== Full Scope, everything enabled
                     
                     # Follows UI in DevOps-Portal
@@ -110,7 +135,7 @@ function Update-DevOpsPAT {
                 )
 
                 foreach ($scope in $_) {
-                    if ($scope -notin $validScopes) {
+                    if ($scope -notin $validScope) {
                         return $false
                     }
                 }
@@ -118,47 +143,97 @@ function Update-DevOpsPAT {
             },
             ErrorMessage = "Not a valid scope!"
         )]
-        $Scopes,
+        $Scope,
 
         # How many Hours the generated PAT will be valid.
-        [Parameter()]
+        [Parameter(
+            ValueFromPipelineByPropertyName = $true
+        )]
         [System.Int32]
         $HoursValid = 8,
 
         [Parameter()]
         [switch]
-        $AllOrgs
+        $AllOrgs,
+
+
+        # When using pipes preserving the token accross the pipeline.
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [System.String]
+        $Token,
+
+        # When using pipes preserving the token accross the pipeline.
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [Alias('filePath')]
+        [System.String]
+        $Path
     )
 
-    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $TenantId).Token
-    $Request = @{
-        Method  = 'GET'
-        URI     = "https://vssps.dev.azure.com/$Organization/_apis/tokens/pats/?authorizationId=$authorizationId&api-version=7.0-preview.1"
-        Headers = @{
-            'Authorization' = "Bearer $token"
-            'Content-Type'  = 'application/json; charset=utf-8'    
+    BEGIN {}
+    PROCESS {
+
+        $accessToken = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $TenantId).Token
+        $Request = @{
+            Method  = 'GET'
+            URI     = "https://vssps.dev.azure.com/$Organization/_apis/tokens/pats/?authorizationId=$authorizationId&api-version=7.0-preview.1"
+            Headers = @{
+                'Authorization' = "Bearer $accessToken"
+                'Content-Type'  = 'application/json; charset=utf-8'    
+            }
         }
-    }
-    $ExistingPAT = Invoke-RestMethod @Request | Select-Object -ExpandProperty patToken
+        $ExistingPAT = Invoke-RestMethod @Request | Select-Object -ExpandProperty patToken
     
 
 
-    $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $TenantId).Token
-    $Request = @{
-        METHOD  = 'PUT'
-        URI     = "https://vssps.dev.azure.com/$Organization/_apis/tokens/pats?api-version=7.0-preview.1"
-        Headers = @{
-            'Authorization' = "Bearer $token"
-            'Content-Type'  = 'application/json; charset=utf-8'    
+        $accessToken = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $TenantId).Token
+        $Request = @{
+            METHOD  = 'PUT'
+            URI     = "https://vssps.dev.azure.com/$Organization/_apis/tokens/pats?api-version=7.0-preview.1"
+            Headers = @{
+                'Authorization' = "Bearer $accessToken"
+                'Content-Type'  = 'application/json; charset=utf-8'    
+            }
+            Body    = @{
+                displayName     = [System.String]::IsNullOrEmpty($Name) ? $ExistingPAT.Name : $Name # Rename existing PAT
+                scope           = $null -NE $Scope  ? ($Scope -join ' ') : $ExistingPAT.scope # Update Scope of existing PAT
+                validTo         = ([DateTime]::now).AddHours($HoursValid) # Extend Existing PAT
+                authorizationId = $authorizationId 
+                allOrgs         = $AllOrgs -EQ $true
+            } | ConvertTo-Json
         }
-        Body    = @{
-            displayName     = [System.String]::IsNullOrEmpty($Name) ? $ExistingPAT.Name : $Name # Rename existing PAT
-            scope           = $null -NE $Scopes  ? ($Scopes -join ' ') : $ExistingPAT.scope # Update Scope of existing PAT
-            validTo         = ([DateTime]::now).AddHours($HoursValid) # Extend Existing PAT
-            authorizationId = $authorizationId 
-            allOrgs         = $AllOrgs -EQ $true
-        } | ConvertTo-Json
-    }
 
-    return Invoke-RestMethod @Request | Select-Object -ExpandProperty patToken
+        $PATdata = Invoke-RestMethod @Request 
+        | Select-Object -ExpandProperty patToken
+        | Add-Member -MemberType NoteProperty -Name tenantId -Value $TenantId -PassThru
+        | Add-Member -MemberType NoteProperty -Name organization -Value $Organization -PassThru
+        | Add-Member -MemberType NoteProperty -Name token -Value $Token -PassThru -Force
+
+        $PATdata = [PSCustomObject]@{
+            displayName     = $PATdata.displayName
+            organization    = $PATdata.organization
+            tenantId        = $PATdata.tenantId
+            token           = $PATdata.token
+            authorizationId = $PATdata.authorizationId
+            scope           = $PATdata.scope.split(' ') 
+            validFrom       = $PATdata.validFrom
+            validTo         = $PATdata.validTo
+            targetAccounts  = $PATdata.targetAccounts
+        } 
+
+        if ([System.String]::IsNullOrEmpty($Path)) {
+            return $PATdata
+        }
+        else {
+            return $PATdata | Save-DevOpsPAT -Path $Path
+        }
+
+    }
+    END {}
+
 }

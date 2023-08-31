@@ -1,14 +1,14 @@
 
 <#
     .SYNOPSIS
-    Retrieves an PAT-Token with an ID and a scope. If as same token has been created and not expired, will return it again.
+    Save a DevOps PAT securly on the disk.
 
     .DESCRIPTION
-    Retrieves an PAT-Token with an ID and a scope. If as same token has been created and not expired, will return it again.
+    Save a DevOps PAT securly on the disk.
     The token ist saved securly on the disk with SercureString using the underlying Windows Data Protection API.
 
     .INPUTS
-    None. You cannot pipe objects into the Function.
+    You can pipe PAT-responses into the function.
 
     .OUTPUTS
     TODO
@@ -16,57 +16,73 @@
 
     .EXAMPLE
 
-    Get a either saved PAT-Token or generate a new one to access repositories:
+    Create and save a PAT token via pipeline:
 
     PS> $DevOpsPAT = @{
-            TenantId     = "3d355765-67d9-47cd-9c7a-bf31179f56eb"
-            Organization = 'oliver-hammer'
-            Name         = "Testing PAT"
-            HoursValid   = 0
-            Scope       = 'vso.code_full', 'vso.code_status'
-            path         = "./pats"
+            TenantId        = "3d355765-67d9-47cd-9c7a-bf31179f56eb"
+            Organization    = 'oliver-hammer'
+            Name            = "Test"
+            Scope          = 'vso.code_full', 'vso.code_status'
+            HoursValid      = 2
         }
 
-    PS> Get-DevOpsPAT @DevOpsPAT -Verbose
+    PS> $DevOpsPAT = Get-DevOpsPAT @DevOpsPAT 
+
+    PS> $DevOpsPAT | Update-DevOpsPAT -hoursvalid 10 -Name "Testing Bla"
+
 
 
     .LINK
         
 #>
+function Save-DevOpsPAT {
 
-function Get-DevOpsPAT {
+    [CmdletBinding()]
     param (
+        # The unique Authorization ID identifing the PAT.
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [System.String]
+        $authorizationId,
+
         # The AzureAd tenant id to wich the organization is connected to.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String]
         $TenantId,
         
         # The Organization in which the PAT shoul be created. Defaults to current Context.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String]
         $Organization,
 
         # The optional Name of the retrieved or newly created PAT.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
         )]
+        [Alias('displayName')]
         [System.String]
         $Name,
 
         # A list of permission Scope for the PAT.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String[]]
         [ValidateScript(
             {
                 $validScope = @(
                     'app_token', # <== Full Scope, everything enabled
-
+                    
                     # Follows UI in DevOps-Portal
                     'vso.agentpools', 'vso.agentpools_manage', # Read | Read & Manage
                     'vso.analytics'
@@ -115,78 +131,93 @@ function Get-DevOpsPAT {
         )]
         $Scope,
 
-        # How many Hours the generated PAT will be valid.
-        [Parameter()]
-        [System.Int32]
-        $HoursValid = 8,
-
-        [Parameter()]
-        [switch]
-        $AllOrgs,
-
-
-
-        # Path where to save the PAT. Will be saved encrypted
+        # When using pipes preserving the token accross the pipeline.
         [Parameter(
-            Mandatory = $false
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
         )]
         [System.String]
-        $Path,
+        $Token,
 
-        # Optional Parameter to return null if not PAT is found or expired, instead of creating a new one.
-        [Parameter()]
-        [switch]
-        $OnlyRead
+        # When using pipes preserving the token accross the pipeline.
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [System.String]
+        $validTo,
+
+        # When using pipes preserving the token accross the pipeline.
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [System.String]
+        $validFrom,
+
+        # When using pipes preserving the token accross the pipeline.
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [System.String[]]
+        $targetAccounts,
+
+
+        # Path where to save the PAT Will be saved encrypted
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [Alias('filePath')]
+        [System.String]
+        $Path
     )
 
-    
+    BEGIN {}
+    PROCESS {
 
-    $Path = [System.String]::IsNullOrEmpty($Path) ? "$env:USERPROFILE/azureDevOps" : $Path
-    if (!(Test-Path -Path $Path)) {
-        $null = New-Item -ItemType Directory -Path $Path
-    }
-
-    $Path = Get-Item -Path $Path | Select-Object -ExpandProperty FullName
-
-    # Convert all data to an identifier. For the same parameter inputs, the same pat will be retrieved
-    $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes(@(
-        ($Scope | Sort-Object | ForEach-Object { $_ }), $name, $TenantId, $Organization
-        )) 
-    $identifier = "$([System.Convert]::ToHexString($bytes)).pat"
-    $fullPathToFile = Join-Path -Path $Path -ChildPath $identifier
-    
-
-    $DevOpsPATdata = Get-Content -Path $fullPathToFile  -ErrorAction SilentlyContinue 
-    | ConvertTo-SecureString -ErrorAction SilentlyContinue 
-    | ConvertFrom-SecureString -AsPlainText  -ErrorAction SilentlyContinue 
-    | ConvertFrom-Json  -ErrorAction SilentlyContinue 
-    
-
-    if ($null -EQ $DevOpsPATdata -OR $DevOpsPATdata.validTo -LT [System.DateTime]::Now.ToUniversalTime()) {
-
-        if ($OnlyRead) {
-            return $null
+        if ($Path.EndsWith('.pat')) {
+            $null = Remove-Item -Path $Path -ErrorAction SilentlyContinue
+            $Path = ($Path.split('\') | Select-Object -SkipLast 1) -join '/'
         }
 
-        Write-Verbose 'Generating new PAT'
-        $PAT = @{
-            TenantId     = $TenantId
-            Organization = $Organization
-            Name         = $Name
-            HoursValid   = $HoursValid
-            Scope        = $Scope
-        }
-        $DevOpsPATdata = New-DevOpsPAT @PAT
-        | Add-Member -MemberType NoteProperty -Name filePath -Value $fullPathToFile -PassThru # Add property when saving in file
 
-        $DevOpsPATdata 
+        $Path = [System.String]::IsNullOrEmpty($Path) ? "$env:USERPROFILE/azureDevOps" : $Path
+        if (!(Test-Path -Path $Path)) {
+            $null = New-Item -ItemType Directory -Path $Path
+        }
+    
+        $Path = Get-Item -Path $Path | Select-Object -ExpandProperty FullName
+    
+        # Convert all data to an identifier. For the same parameter inputs, the same pat will be retrieved
+        $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes(@(
+            ($Scope | Sort-Object | ForEach-Object { $_ }), $name, $TenantId, $Organization
+            )) 
+        $identifier = "$([System.Convert]::ToHexString($bytes)).pat"
+        $fullPathToFile = Join-Path -Path $Path -ChildPath $identifier
+
+        $PATdata = [PSCustomObject]@{
+            displayName     = $Name
+            organization    = $Organization
+            tenantId        = $TenantId
+            token           = $token
+            authorizationId = $authorizationId
+            scope           = $Scope 
+            validFrom       = $validFrom
+            validTo         = $validTo
+            targetAccounts  = $targetAccounts
+            filePath        = $fullPathToFile
+        } 
+        
+        $PATdata  
         | ConvertTo-Json
         | ConvertTo-SecureString -AsPlainText
         | ConvertFrom-SecureString
-        | Out-File $fullPathToFile
+        | Out-File -FilePath $fullPathToFile 
 
+        return $PATdata 
     }
+    END {}
 
-
-    return $DevOpsPATdata
 }

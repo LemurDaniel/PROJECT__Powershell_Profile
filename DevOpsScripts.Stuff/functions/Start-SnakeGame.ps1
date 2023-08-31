@@ -56,13 +56,13 @@ function Start-SnakeGame {
     $Wall = '#'
     $Empty = ' '
 
-    $SnakeLength = 5
+    $SnakeLength = 15
     $SnakeBody = 'O'
     $SnakeHead = '@'
 
     $WindowSize = $host.UI.RawUI.WindowSize.Width
-    $OffsetLength = $WindowSize / 2 - $Witdh
-    $OffsetLine = Get-LineOfChars $OffsetLength $Empty
+    $GameOffsetLength = $WindowSize / 2 - $Witdh
+    $OffsetLine = Get-LineOfChars $GameOffsetLength $Empty
 
     ########################################################
     ###### Draw Box for snake
@@ -80,64 +80,67 @@ function Start-SnakeGame {
     ########################################################
     ###### The loop for moving and drawing the snake
 
-    # The initial position is the center.
-    $snakePositions = @(
-        [System.Numerics.Vector2]::new($Witdh / 2 , 0) #$Height / 2)
-    )
-
-    $snakeOffsetY = +1
-    $snakeOffsetX = $OffsetLength + 2
+    $snakeOffsetY = 1
+    $snakeOffsetX = $GameOffsetLength + 2
     $velocityVector = [System.Numerics.Vector2]::new(0, 1)
 
+    $snakePositionsMap = [System.Collections.Hashtable]::new()
+    $snackPositionsMap = [System.Collections.Hashtable]::new()
+
+    # The initial position is the center.
+    $snakePositions = @([System.Numerics.Vector2]::new($Witdh / 2 , $Height / 2))
+
+    $snakePositionsMap.add($snakePositions[0], $null)
+    $gameEndingMessage = $null
+
+    :GameLoop
     do {
         # This is the head wich moves forward
         $lastPosition = $snakePositions | Select-Object -Last 1
-        $newHeadPosition = [System.Numerics.Vector2]::new(
-            $lastPosition.x + $velocityVector.x, $lastPosition.y + $velocityVector.y
-        )
+        $newHeadPosition = [System.Numerics.Vector2]::new($lastPosition.x + $velocityVector.x, $lastPosition.y + $velocityVector.y)
 
-        # Draw snake head
-        [System.Console]::SetCursorPosition(
-            $snakeOffsetX + $newHeadPosition.x, $snakeOffsetY + $newHeadPosition.y
-        )
+
+        # Draw snake head after the collision checks
+        [System.Console]::SetCursorPosition($snakeOffsetX + $newHeadPosition.x, $snakeOffsetY + $newHeadPosition.y)
         [System.Console]::Write($SnakeHead)
 
-        # add head to positions
-        $snakePositions += $newHeadPosition
-        #$snakePositions | ForEach-Object { @{ x = $_.x; y = $_.y } } | ConvertTo-Json | Out-File test.json
 
         # Head has a different char than body. Overwrite the last head position with a body.
-        if ($snakePositions.Length -GT 1) {
-            $lastHeadPosition = $snakePositions | Select-Object -Last 2 | Select-Object -SkipLast 1
-            [System.Console]::SetCursorPosition(
-                $snakeOffsetX + $lastHeadPosition.X, $snakeOffsetY + $lastHeadPosition.Y
-            )
-            [System.Console]::Write($SnakeBody)
-        }
+        $lastHeadPosition = $snakePositions | Select-Object -Last 1
+        [System.Console]::SetCursorPosition($snakeOffsetX + $lastHeadPosition.X, $snakeOffsetY + $lastHeadPosition.Y)
+        [System.Console]::Write($SnakeBody)
         
         # Delete last element if snake exceeds length
-        if ($snakePositions.Length -GT $SnakeLength) {
+        if ($snakePositions.Length - 1 -GT $SnakeLength) {
             $deletePosition = $snakePositions | Select-Object -First 1
-            $snakePositions = $snakePositions | Select-Object -Skip 1
-            [System.Console]::SetCursorPosition(
-                $snakeOffsetX + $deletePosition.X, $snakeOffsetY + $deletePosition.Y
-            )
+            [System.Console]::SetCursorPosition($snakeOffsetX + $deletePosition.X, $snakeOffsetY + $deletePosition.Y )
             [System.Console]::Write($Empty)
+
+            # Delete snake tail from map and positions array
+            $snakePositions = $snakePositions | Select-Object -Skip 1
+            $snakePositionsMap.Remove($deletePosition)
         }
+
+        # Check for collisions with self and wall
+        if ($newHeadPosition.Y -GT $Height -OR $newHeadPosition.Y -LT 0) {
+            $gameEndingMessage = 'Snake hit a Wall'
+            break GameLoop
+        }
+        if ($newHeadPosition.X -GT $Witdh -OR $newHeadPosition.X -LT 0) {
+            $gameEndingMessage = 'Snake hit a Wall'
+            break GameLoop
+        }
+        if ($snakePositionsMap.ContainsKey($newHeadPosition)) {
+            $gameEndingMessage = 'Snake hit itself'
+            break GameLoop
+        }
+
+        $snakePositionsMap.add($newHeadPosition, $null)
+        $snakePositions += $newHeadPosition
 
         [System.Console]::SetCursorPosition(0, 0)
         [System.Console]::CursorVisible = $false
         Start-Sleep -Seconds 1
-
-        [System.Console]::CursorVisible = $false
-
-        # Check out of Bounds
-        if ($newHeadPosition.Y -GE $Height -OR $newHeadPosition.Y -LT 1) {
-            throw "Out of Bounds"
-        }
-        if ($newHeadPosition.X -GE $Witdh -OR $newHeadPosition.X -LT 1) {
-            throw "Out of Bounds"
-        }
 
 
         ##################################################################
@@ -192,4 +195,9 @@ function Start-SnakeGame {
 
     } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 
+    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 4)
+    [System.Console]::Write("Ended: $gameEndingMessage")
+    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 5)
+    [System.Console]::Write("Press any key to continue...")
+    [System.Console]::ReadKey($true)
 }

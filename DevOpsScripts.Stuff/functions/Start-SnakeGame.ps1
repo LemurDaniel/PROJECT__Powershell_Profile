@@ -74,6 +74,7 @@ function Start-SnakeGame {
     $Height = 10
 
     $SnakeLength = 5
+    $snackedSnakeSnacks = 0
 
     $WindowSize = $host.UI.RawUI.WindowSize.Width
     $GameOffsetLength = $WindowSize / 2 - $Witdh
@@ -84,6 +85,8 @@ function Start-SnakeGame {
     $upDownWall = Get-LineOfChars ($Witdh + 2) $Characters.Wall
 
     [System.Console]::Clear()
+    [System.Console]::WriteLine()
+    [System.Console]::WriteLine()
     [System.Console]::WriteLine("$OffsetLine$upDownWall")
     0..$Height | ForEach-Object {
         $emptyLine = Get-LineOfChars $Witdh $Characters.Empty
@@ -95,8 +98,8 @@ function Start-SnakeGame {
     ########################################################
     ###### The loop for moving and drawing the snake
 
-    $snakeOffsetY = 1
-    $snakeOffsetX = $GameOffsetLength + 2
+    $snakeOffsetY = 3 # Empty top row + row for game stats + upper wall row
+    $snakeOffsetX = $GameOffsetLength + 2 
     $velocityVector = [System.Numerics.Vector2]::new(0, 1)
 
     $snakePositionsMap = [System.Collections.Hashtable]::new()
@@ -154,6 +157,7 @@ function Start-SnakeGame {
         # Increase snake length when eating a snack
         if ($newHeadPosition.Equals($currentSnackPosition)) {
             $currentSnackPosition = $null
+            $snackedSnakeSnacks += 1
             $SnakeLength += 1
         }
 
@@ -178,7 +182,12 @@ function Start-SnakeGame {
         [System.Console]::SetCursorPosition($snakeOffsetX + $currentSnackPosition.X, $snakeOffsetY + $currentSnackPosition.Y )
         [System.Console]::Write($Characters.SnakeSnack)
 
-        [System.Console]::SetCursorPosition(0, 0)
+        [System.Console]::SetCursorPosition($GameOffsetLength + 1, 1)
+        [System.Console]::Write("Snake: $SnakeLength")
+        $snacksEatenText = "Snacks eaten: $snackedSnakeSnacks"
+        [System.Console]::SetCursorPosition($GameOffsetLength + 4 + $Witdh - $snacksEatenText.Length, 1)
+        [System.Console]::Write($snacksEatenText)
+
         [System.Console]::CursorVisible = $false
         Start-Sleep -Milliseconds $TickIntervall
 

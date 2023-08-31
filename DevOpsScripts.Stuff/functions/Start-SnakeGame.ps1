@@ -32,13 +32,45 @@
 
 #>
 
+$difficultyMapping = [ordered]@{
+    "Beginner"  = 500
+    "Moderate"  = 350
+    "Difficult" = 200
+    "Challenge" = 150
+    "Hardcore"  = 75
+}
 
 function Start-SnakeGame {
+
+    [CmdletBinding(
+        DefaultParameterSetName = "difficultyLevels"
+    )]
     param (
         [Parameter(
-            Mandatory = $false
+            Position = 0,
+            Mandatory = $false,
+            ParameterSetName = "difficultyLevels"
         )]
-        [ValidateRange(250, 1000)]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                return  $difficultyMapping.Keys
+            }
+        )]
+        [ValidateScript(
+            {
+                $_ -in $difficultyMapping.Keys
+            },
+            ErrorMessage = "Valid diffculites: 'Beginner', 'Moderate', 'Difficult', 'Challenge', 'Hardcore'"
+        )]
+        $Difficulty = "Moderate",
+
+        [Parameter(
+            Position = 1,
+            Mandatory = $false,
+            ParameterSetName = "tickIntervall"
+        )]
+        [ValidateRange(50, 1000)]
         [System.Int32]
         $TickIntervall = 500,
 
@@ -55,6 +87,13 @@ function Start-SnakeGame {
             SnakeHead  = '@'
         }
     )
+
+    if ($PSBoundParameters.ContainsKey('Difficulty')) {
+        $TickIntervall = $difficultyMapping[$Difficulty]
+    }
+
+    ########################################################
+    ###### short internal helper function
 
     function Get-LineOfChars {
         param (

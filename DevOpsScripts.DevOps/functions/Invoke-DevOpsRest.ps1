@@ -264,7 +264,9 @@ function Invoke-DevOpsRest {
         catch {
             if ($_ -is [System.String]) {
                 if (($_ | ConvertFrom-Json).typeKey -eq 'UnauthorizedRequestException' -AND !$OrganizationData.isPATauthenticated) {
-                    Connect-AzAccount
+                    # TODO
+                    Write-Error "You might need to sign into Get-AzTennant -Id <tenantId> for Multifactor Authentication!"
+                    Connect-AzAccount -TenantId (Get-AzTenant)[0].id
                     return Invoke-DevOpsRest @PSBoundParameters
                 }
             }

@@ -33,7 +33,14 @@
 
 
 function Start-SnakeGame {
-    param ()
+    param (
+        [Parameter(
+            Mandatory = $false
+        )]
+        [ValidateRange(500, 1000)]
+        [System.Int32]
+        $TickIntervall = 750
+    )
 
     function Get-LineOfChars {
         param (
@@ -140,7 +147,7 @@ function Start-SnakeGame {
 
         [System.Console]::SetCursorPosition(0, 0)
         [System.Console]::CursorVisible = $false
-        Start-Sleep -Seconds 1
+        Start-Sleep -Milliseconds $TickIntervall
 
 
         ##################################################################
@@ -152,8 +159,8 @@ function Start-SnakeGame {
         }
 
         $keyEvent = [System.Console]::ReadKey($true)
-        switch ($keyEvent) {
-            { $_.Key -EQ [System.ConsoleKey]::LeftArrow } {
+        switch ($keyEvent.Key) {
+            { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) }  {
 
                 # Only accept if the snake is not moving to the right
                 if ($velocityVector.x -EQ 0) {
@@ -162,7 +169,7 @@ function Start-SnakeGame {
                 break;
             }
 
-            { $_.Key -EQ [System.ConsoleKey]::RightArrow } {
+            { $_ -in @([System.ConsoleKey]::D, [System.ConsoleKey]::RightArrow) } {
 
                 # Only accept if the snake is not moving to the left
                 if ($velocityVector.x -EQ 0) {
@@ -171,7 +178,7 @@ function Start-SnakeGame {
                 break;
             }
 
-            { $_.Key -EQ [System.ConsoleKey]::UpArrow } {
+            { $_ -in @([System.ConsoleKey]::W, [System.ConsoleKey]::UpArrow) } {
 
                 # Only accept if the snake is not moving down
                 if ($velocityVector.y -EQ 0) {
@@ -179,8 +186,8 @@ function Start-SnakeGame {
                 }
                 break;
             }
-
-            { $_.Key -EQ [System.ConsoleKey]::DownArrow } {
+       
+            { $_ -in @([System.ConsoleKey]::S, [System.ConsoleKey]::DownArrow) } {
 
                 # Only accept if the snake is not moving up
                 if ($velocityVector.y -EQ 0) {

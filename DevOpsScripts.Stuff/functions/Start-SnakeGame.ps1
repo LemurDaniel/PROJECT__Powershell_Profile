@@ -14,17 +14,18 @@
 
     .OUTPUTS
 
+    Snake: 10         Snacks eaten: 5
     #################################
     #                               #
+    #   O                           #
+    #   O                           #
+    #   O                           #
+    #   OOOOOO@          +          #
     #                               #
     #                               #
-    #               O               #
-    #               O               #
-    #               O               #
-    #               @               #
     #                               #
     #                               #
-    #                        +      #
+    #                               #
     #                               #
     #################################
 
@@ -244,9 +245,12 @@ function Start-SnakeGame {
 
     } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 
-    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 4)
-    [System.Console]::Write("Ended: $gameEndingMessage")
     [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 5)
+    [System.Console]::Write("Ended: $gameEndingMessage")
+    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 6)
     [System.Console]::Write("Press any key to continue...")
     [System.Console]::ReadKey($true)
 }
+
+
+

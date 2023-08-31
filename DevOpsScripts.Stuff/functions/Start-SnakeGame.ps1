@@ -96,13 +96,15 @@ function Start-SnakeGame {
             $lastPosition.x + $velocityVector.x, $lastPosition.y + $velocityVector.y
         )
 
-        $snakePositions += $newHeadPosition
-        $snakePositions | ForEach-Object { @{ x = $_.x; y = $_.y } } | ConvertTo-Json | Out-File test.json
-
+        # Draw snake head
         [System.Console]::SetCursorPosition(
             $snakeOffsetX + $newHeadPosition.x, $snakeOffsetY + $newHeadPosition.y
         )
         [System.Console]::Write($SnakeHead)
+
+        # add head to positions
+        $snakePositions += $newHeadPosition
+        #$snakePositions | ForEach-Object { @{ x = $_.x; y = $_.y } } | ConvertTo-Json | Out-File test.json
 
         # Head has a different char than body. Overwrite the last head position with a body.
         if ($snakePositions.Length -GT 1) {

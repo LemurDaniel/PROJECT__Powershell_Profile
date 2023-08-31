@@ -150,6 +150,9 @@ function Invoke-DevOpsRest {
     )
 
 
+    ####################################################################################
+    #### Get Endpoint and create query string from query params.
+
     $APIEndpoint = ($API -split '\?')[0]
     
     # Build a hashtable of providedy Query params and Query params in provied api-url.
@@ -162,18 +165,26 @@ function Invoke-DevOpsRest {
             ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
 
 
-    #if (!$Query['api-version']) {
-    #    throw 'Please specify an api-version to use.'
-    #}
 
-
-    if (!($PSBoundParameters.Keys -contains 'contentType')) {
-        $calculatedContentType = $Method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Get ? 'application/x-www-form-urlencoded' : 'application/json; charset=utf-8'
+    ####################################################################################
+    #### Get the correct content type for get and post requests
+    
+    switch ($Method ) {
+        {
+            $Method -EQ [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
+        } {
+            $contentType = 'application/x-www-form-urlencoded'
+        }
+        Default {
+            $contentType = [System.String]::IsNullOrEmpty($contentType) ?  'application/json; charset=utf-8' : $contentType
+        }
     }
-    else {
-        $calculatedContentType = $contentType
-    }
 
+
+
+    ####################################################################################
+    #### Get organization data for when PAT-Authenticated. Get Target url based on scope.
+    
     $OrganizationData = $null
     if ($SCOPE -IN @('ORG', 'PROJ', 'TEAM')) {
         $Organization = [System.String]::IsNullOrEmpty($Organization) ? (Get-DevOpsContext -Organization) : $Organization
@@ -211,6 +222,10 @@ function Invoke-DevOpsRest {
         $TargetURL = "https://$TargetURL"
     }
 
+
+    ####################################################################################
+    #### Create Request
+
     $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   
     $Request = @{        
         Method  = $Method       
@@ -218,11 +233,14 @@ function Invoke-DevOpsRest {
         Headers = @{            
             username       = 'O.o'          
             Authorization  = ""           
-            'Content-Type' = $calculatedContentType       
+            'Content-Type' = $contentType       
         }        
         Uri     = [System.String]::IsNullOrEmpty($Uri) ? $TargetURL : $Uri    
     }
 
+
+    ####################################################################################
+    #### Request authentication header for either PAT or AccessToken
 
     # Generate Authorization Header
     if ($OrganizationData.isPATauthenticated) {
@@ -231,6 +249,8 @@ function Invoke-DevOpsRest {
         $Request.Headers.Authorization = "Basic $base64"
     }
 
+
+    # Get Access Token for DevOps.
     if ($Request.Headers.Authorization.Length -eq 0) {
         try {
             if ($TenantId) {
@@ -243,7 +263,15 @@ function Invoke-DevOpsRest {
             }
         }
         catch {
-            Connect-AzAccount
+            Write-Warning "You might need to sign into Connect-AzAccount -TenantId <tenantId> for Multifactor Authentication!`n"
+            if ($TenantId) {
+                Connect-AzAccount -TenantId $TenantId
+                return Invoke-DevOpsRest @PSBoundParameters
+            }
+            else {
+                Connect-AzAccount 
+                return Invoke-DevOpsRest @PSBoundParameters
+            }
             # Automatically call login, when authentication failed
             #if ($_.Exception.Message.Contains('ClientSecretCredential authentication failed')) {
             #    Connect-AzAccount
@@ -256,19 +284,20 @@ function Invoke-DevOpsRest {
     Write-Verbose "BODY: $($body | ConvertTo-Json -Depth 8 -AsArray:$AsArray)"
 
     
+    ####################################################################################
+    #### Send the Request
+
     if ($PSCmdlet.ShouldProcess($Request.Uri, $($Request.Method))) {
 
         try {
             $response = Invoke-RestMethod @Request
         }
         catch {
-            if ($_ -is [System.String]) {
-                if (($_ | ConvertFrom-Json).typeKey -eq 'UnauthorizedRequestException' -AND !$OrganizationData.isPATauthenticated) {
-                    # TODO
-                    Write-Error "You might need to sign into Connect-AzAccount -TenantId <tenantId> for Multifactor Authentication!"
-                    Connect-AzAccount -TenantId (Get-AzTenant)[0].id
-                    return Invoke-DevOpsRest @PSBoundParameters
-                }
+            if ($_ -is [System.String] -AND ($_ | ConvertFrom-Json).typeKey -eq 'UnauthorizedRequestException' -AND !$OrganizationData.isPATauthenticated) {
+                # TODO
+                Write-Warning "You might need to sign into Connect-AzAccount -TenantId <tenantId> for Multifactor Authentication!`n"
+                Connect-AzAccount -TenantId (Get-AzTenant)[0].id
+                return Invoke-DevOpsRest @PSBoundParameters
             }
 
             throw $_

@@ -66,6 +66,28 @@ function Start-SnakeGame {
         [System.Int32]
         $TickIntervall = 500,
 
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [ValidateRange(5, 50)]
+        [System.Int32]
+        $Height = 10,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [ValidateRange(15, 150)]
+        [System.Int32]
+        $Witdh = 30,
+
+        # The initial Snake length
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Int32]
+        $SnakeLength = 3,
+
         [Parameter(
             Mandatory = $false
         )]
@@ -105,21 +127,24 @@ function Start-SnakeGame {
             $Char
         )
         
-        return (0..$Length | ForEach-Object { $Char }) -join ''
+        return (1..$Length | ForEach-Object { $Char }) -join ''
     }
 
     ########################################################
     ###### Some initial values
 
-    $Witdh = 30
-    $Height = 10
-
-    $SnakeLength = 5
     $snackedSnakeSnacks = 0
 
     $WindowSize = $host.UI.RawUI.WindowSize.Width
-    $GameOffsetLength = $WindowSize / 2 - $Witdh
+    $GameOffsetLength = $WindowSize / 2 - $Witdh / 2 - 1
     $OffsetLine = Get-LineOfChars $GameOffsetLength $Characters.Empty
+
+
+    # Height + Upper/Lower Wall + 2 lines of text below + 3 lines of text above
+    $RequiredHeight = $Height + 2 + 2 + 3
+    if ($host.UI.RawUI.WindowSize.Height -LT $RequiredHeight) {
+        throw "Terminal Height must be at least:  $RequiredHeight (Currently: $($host.UI.RawUI.WindowSize.Height ))"
+    }
 
     ########################################################
     ###### Draw Box for snake
@@ -130,7 +155,7 @@ function Start-SnakeGame {
     [System.Console]::WriteLine()
     [System.Console]::WriteLine()
     [System.Console]::WriteLine("$OffsetLine$upDownWall")
-    0..$Height | ForEach-Object {
+    1..$Height | ForEach-Object {
         $emptyLine = Get-LineOfChars $Witdh $Characters.Empty
         [System.Console]::WriteLine("$OffsetLine$($Characters.Wall)$emptyLine$($Characters.Wall)")
     }
@@ -141,7 +166,7 @@ function Start-SnakeGame {
     ###### The loop for moving and drawing the snake
 
     $snakeOffsetY = 4 # Empty top row + row for difficulty + row for game stats + upper wall row
-    $snakeOffsetX = $GameOffsetLength + 2 
+    $snakeOffsetX = $GameOffsetLength + 1 # Gameoffset + Wall
     $velocityVector = [System.Numerics.Vector2]::new(0, 1)
 
     $snakePositionsMap = [System.Collections.Hashtable]::new()
@@ -183,11 +208,11 @@ function Start-SnakeGame {
         }
 
         # Check for collisions with self and wall
-        if ($newHeadPosition.Y -GT $Height -OR $newHeadPosition.Y -LT 0) {
+        if ($newHeadPosition.Y -GE $Height -OR $newHeadPosition.Y -LT 0) {
             $gameEndingMessage = 'Snake hit a Wall'
             break GameLoop
         }
-        if ($newHeadPosition.X -GT $Witdh -OR $newHeadPosition.X -LT 0) {
+        if ($newHeadPosition.X -GE $Witdh -OR $newHeadPosition.X -LT 0) {
             $gameEndingMessage = 'Snake hit a Wall'
             break GameLoop
         }
@@ -224,13 +249,13 @@ function Start-SnakeGame {
         [System.Console]::SetCursorPosition($snakeOffsetX + $currentSnackPosition.X, $snakeOffsetY + $currentSnackPosition.Y )
         [System.Console]::Write($Characters.SnakeSnack)
 
-        [System.Console]::SetCursorPosition($GameOffsetLength + 1, 1)
+        [System.Console]::SetCursorPosition($GameOffsetLength, 1)
         $displayDifficulty = $TickIntervall -notin $difficultyMapping.Values ? "$TickIntervall milliseconds" : $Difficulty
         [System.Console]::Write("Difficulty: $displayDifficulty")
-        [System.Console]::SetCursorPosition($GameOffsetLength + 1, 2)
+        [System.Console]::SetCursorPosition($GameOffsetLength, 2)
         [System.Console]::Write("Snacks eaten: $snackedSnakeSnacks")
         $snakeText = "Snake: $SnakeLength"
-        [System.Console]::SetCursorPosition($GameOffsetLength + 4 + $Witdh - $snakeText.Length, 2)
+        [System.Console]::SetCursorPosition($GameOffsetLength + 3 + $Witdh - $snakeText.Length, 2)
         [System.Console]::Write($snakeText)
 
         [System.Console]::CursorVisible = $false
@@ -289,9 +314,9 @@ function Start-SnakeGame {
 
     } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 
-    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 6)
+    [System.Console]::SetCursorPosition($GameOffsetLength, $Height + 5)
     [System.Console]::Write("Ended: $gameEndingMessage")
-    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 7)
+    [System.Console]::SetCursorPosition($GameOffsetLength, $Height + 6)
     [System.Console]::Write("Press any key to continue...")
     $null = [System.Console]::ReadKey($true)
 }

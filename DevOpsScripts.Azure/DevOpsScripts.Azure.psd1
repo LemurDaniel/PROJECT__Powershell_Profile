@@ -69,9 +69,10 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Backup-AzTables', 'Get-NonCompliantRoleAssignments', 
-               'Invoke-AzureRest', 'Restore-AzTables', 'Switch-AzTenant', 
-               'Test-AzLogin', 'Backup-AzState', 'Get-AzResourceGraphChangesCreate', 
+FunctionsToExport = 'Backup-AzTables', 'Connect-AzTenant', 
+               'Get-NonCompliantRoleAssignments', 'Invoke-AzureRest', 
+               'Restore-AzTables', 'Test-AzLogin', 'Backup-AzState', 
+               'Get-AzResourceGraphChangesCreate', 
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
                'Search-AzFunctionAppSettings', 'Search-AzResource', 

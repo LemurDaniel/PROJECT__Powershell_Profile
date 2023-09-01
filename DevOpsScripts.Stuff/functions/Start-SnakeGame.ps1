@@ -135,15 +135,22 @@ function Start-SnakeGame {
 
     $snackedSnakeSnacks = 0
 
-    $WindowSize = $host.UI.RawUI.WindowSize.Width
-    $GameOffsetLength = $WindowSize / 2 - $Witdh / 2 - 1
+    $WindowHeight = $host.UI.RawUI.WindowSize.Height
+    $WindowWidth = $host.UI.RawUI.WindowSize.Width
+    $GameOffsetLength = [System.Math]::floor($WindowWidth / 2 - $Witdh / 2 - 2)
     $OffsetLine = Get-LineOfChars $GameOffsetLength $Characters.Empty
 
 
     # Height + Upper/Lower Wall + 2 lines of text below + 3 lines of text above
     $RequiredHeight = $Height + 2 + 2 + 3
-    if ($host.UI.RawUI.WindowSize.Height -LT $RequiredHeight) {
-        throw "Terminal Height must be at least:  $RequiredHeight (Currently: $($host.UI.RawUI.WindowSize.Height ))"
+    if ($WindowHeight -LT $RequiredHeight) {
+        throw "Terminal Height must be at least:  $RequiredHeight (Currently: $WindowHeight)"
+    }
+
+    # Width + 2 Walls + GameOffsetLength
+    $RequiredWidth = $Witdh + 2 + $GameOffsetLength
+    if ($WindowWidth -LT $RequiredWidth) {
+        throw "Terminal Width must be at least:  $RequiredWidth (Currently: $WindowWidth)"
     }
 
     ########################################################
@@ -173,7 +180,7 @@ function Start-SnakeGame {
     # $snackPositionsMap = [System.Collections.Hashtable]::new()
 
     # The initial position is the center.
-    $snakePositions = @([System.Numerics.Vector2]::new($Witdh / 2 , $Height / 2))
+    $snakePositions = @([System.Numerics.Vector2]::new($Witdh / 2, $Height / 2))
     $currentSnackPosition = $null
 
     $snakePositionsMap.add($snakePositions[0], $null)
@@ -255,12 +262,11 @@ function Start-SnakeGame {
         [System.Console]::SetCursorPosition($GameOffsetLength, 2)
         [System.Console]::Write("Snacks eaten: $snackedSnakeSnacks")
         $snakeText = "Snake: $SnakeLength"
-        [System.Console]::SetCursorPosition($GameOffsetLength + 3 + $Witdh - $snakeText.Length, 2)
+        [System.Console]::SetCursorPosition($GameOffsetLength + 2 + $Witdh - $snakeText.Length, 2)
         [System.Console]::Write($snakeText)
 
         [System.Console]::CursorVisible = $false
         Start-Sleep -Milliseconds $TickIntervall
-
 
         ##################################################################
         ### Process key events

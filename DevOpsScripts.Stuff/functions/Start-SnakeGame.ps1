@@ -32,14 +32,6 @@
 
 #>
 
-$difficultyMapping = [ordered]@{
-    "Beginner"  = 500
-    "Moderate"  = 350
-    "Difficult" = 200
-    "Challenge" = 150
-    "Hardcore"  = 75
-}
-
 function Start-SnakeGame {
 
     [CmdletBinding(
@@ -54,12 +46,12 @@ function Start-SnakeGame {
         [System.String]
         [ArgumentCompleter(
             {
-                return  $difficultyMapping.Keys
+                return @('Beginner', 'Moderate', 'Difficult', 'Challenge', 'Hardcore')
             }
         )]
         [ValidateScript(
             {
-                $_ -in $difficultyMapping.Keys
+                $_ -in @('Beginner', 'Moderate', 'Difficult', 'Challenge', 'Hardcore')
             },
             ErrorMessage = "Valid diffculites: 'Beginner', 'Moderate', 'Difficult', 'Challenge', 'Hardcore'"
         )]
@@ -88,6 +80,15 @@ function Start-SnakeGame {
         }
     )
 
+
+    $difficultyMapping = [ordered]@{
+        "Beginner"  = 500
+        "Moderate"  = 350
+        "Difficult" = 200
+        "Challenge" = 150
+        "Hardcore"  = 75
+    }
+    
     if ($PSBoundParameters.ContainsKey('Difficulty')) {
         $TickIntervall = $difficultyMapping[$Difficulty]
     }

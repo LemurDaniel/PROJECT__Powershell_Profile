@@ -89,19 +89,31 @@ function Start-InvadersGame {
 
     $EmptyTile = ' '
     $InvaderShip = [PSCustomObject]@{
-        # Gunmount postition offset from upper left start of ship.
-        # This is were all ship blasts will orginate from. 
-        gunmount     = [System.Numerics.Vector2]::new(1, 2) 
-        cooldown     = 0 # ticks
+
         position     = [System.Numerics.Vector2]::new(
             [System.Math]::Round($WindowWidth / 2 - 2), 0
         )
         lastPosition = $null
         blasts       = @()
         isDead       = $false
+
+
+        # Gunmount postition offset from upper left start of ship.
+        # This is were all ship blasts will orginate from. 
+        cooldown     = 0 # ticks
+        #gunmount     = [System.Numerics.Vector2]::new(1, 2) 
+        #canvas       = @(
+        #    '~U~',
+        #    " ' "
+        #)
+
+        # Trying more complex ship design
+        gunmount     = [System.Numerics.Vector2]::new(2, 4)
         canvas       = @(
-            "~U~"
-            " ' "
+            'U u U',
+            '[{*}]',
+            ' \|/ ',
+            "  +  "
         )
     }
 
@@ -232,4 +244,4 @@ function Start-InvadersGame {
 }
 
 
-
+    

@@ -36,7 +36,7 @@ function Start-InvadersGame {
         )]
         [ValidateRange(50, 1000)]
         [System.Int32]
-        $TickIntervall = 5,
+        $TickIntervall = 1,
 
 
         [Parameter(
@@ -92,11 +92,13 @@ function Start-InvadersGame {
         # Gunmount postition offset from upper left start of ship.
         # This is were all ship blasts will orginate from. 
         gunmount     = [System.Numerics.Vector2]::new(1, 0) 
+        cooldown     = 0 # ticks
         position     = [System.Numerics.Vector2]::new(
             [System.Math]::Round($WindowWidth / 2 - 2), 0
         )
         lastPosition = $null
         blasts       = @()
+        isDead       = $false
         canvas       = @(
             "~U~"
             " ' "
@@ -119,9 +121,9 @@ function Start-InvadersGame {
             [System.Console]::Write($emptyLine)
         }
 
-        if ([System.Math]::Round($blast.position.y) -GT $WindowHeight - 2) {
+        if ([System.Math]::Round($position.y) -GT $WindowHeight - 2) {
             # Mark as dead when an obejct leaves the window and don't redraw it.
-            $blast.isDead = $true
+            $object.isDead = $true
         }
         else {
             # Draw object on new position
@@ -153,7 +155,8 @@ function Start-InvadersGame {
 
         # Sort out expired blasts. Also ensure it stays an array by casting.
         $InvaderShip.blasts = [PSCustomObject[]]($InvaderShip.blasts | Where-Object -Property isDead -NE $true)
-
+        $InvaderShip.cooldown = [System.Math]::Max(0, $InvaderShip.cooldown - 1)
+        
         [System.Console]::CursorVisible = $false
         Start-Sleep -Milliseconds $TickIntervall
 
@@ -189,6 +192,11 @@ function Start-InvadersGame {
             
             { $_ -in @([System.ConsoleKey]::Spacebar) } {
 
+                if ($InvaderShip.cooldown -GT 0) {
+                    break;
+                }
+                $InvaderShip.cooldown = 50 # Ticks
+
                 $blastPosition = [System.Numerics.Vector2]::Add($InvaderShip.position, $InvaderShip.gunmount)
                 $InvaderShip.blasts += [PSCustomObject]@{
                     position     = $blastPosition
@@ -204,9 +212,7 @@ function Start-InvadersGame {
 
 
             # Disregard other inputs
-            Default {
-                break GameLoop
-            }
+            Default {}
         }
 
     } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)

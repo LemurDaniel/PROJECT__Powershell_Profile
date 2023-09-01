@@ -128,6 +128,7 @@ function Start-SnakeGame {
     [System.Console]::Clear()
     [System.Console]::WriteLine()
     [System.Console]::WriteLine()
+    [System.Console]::WriteLine()
     [System.Console]::WriteLine("$OffsetLine$upDownWall")
     0..$Height | ForEach-Object {
         $emptyLine = Get-LineOfChars $Witdh $Characters.Empty
@@ -139,7 +140,7 @@ function Start-SnakeGame {
     ########################################################
     ###### The loop for moving and drawing the snake
 
-    $snakeOffsetY = 3 # Empty top row + row for game stats + upper wall row
+    $snakeOffsetY = 4 # Empty top row + row for difficulty + row for game stats + upper wall row
     $snakeOffsetX = $GameOffsetLength + 2 
     $velocityVector = [System.Numerics.Vector2]::new(0, 1)
 
@@ -224,10 +225,13 @@ function Start-SnakeGame {
         [System.Console]::Write($Characters.SnakeSnack)
 
         [System.Console]::SetCursorPosition($GameOffsetLength + 1, 1)
-        [System.Console]::Write("Snake: $SnakeLength")
-        $snacksEatenText = "Snacks eaten: $snackedSnakeSnacks"
-        [System.Console]::SetCursorPosition($GameOffsetLength + 4 + $Witdh - $snacksEatenText.Length, 1)
-        [System.Console]::Write($snacksEatenText)
+        $displayDifficulty = $TickIntervall -notin $difficultyMapping.Values ? "$TickIntervall milliseconds" : $Difficulty
+        [System.Console]::Write("Difficulty: $displayDifficulty")
+        [System.Console]::SetCursorPosition($GameOffsetLength + 1, 2)
+        [System.Console]::Write("Snacks eaten: $snackedSnakeSnacks")
+        $snakeText = "Snake: $SnakeLength"
+        [System.Console]::SetCursorPosition($GameOffsetLength + 4 + $Witdh - $snakeText.Length, 2)
+        [System.Console]::Write($snakeText)
 
         [System.Console]::CursorVisible = $false
         Start-Sleep -Milliseconds $TickIntervall
@@ -285,11 +289,11 @@ function Start-SnakeGame {
 
     } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 
-    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 5)
-    [System.Console]::Write("Ended: $gameEndingMessage")
     [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 6)
+    [System.Console]::Write("Ended: $gameEndingMessage")
+    [System.Console]::SetCursorPosition($GameOffsetLength + 1, $Height + 7)
     [System.Console]::Write("Press any key to continue...")
-    [System.Console]::ReadKey($true)
+    $null = [System.Console]::ReadKey($true)
 }
 
 

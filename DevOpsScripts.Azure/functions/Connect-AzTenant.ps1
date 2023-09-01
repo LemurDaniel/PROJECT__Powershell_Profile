@@ -1,10 +1,10 @@
 
 <#
     .SYNOPSIS
-    Switches to a Tenant accessible by the connected user.
+    Run connect-AzAccount for a tenant
 
     .DESCRIPTION
-    Switches to a Tenant accessible by the connected user.
+    Run connect-AzAccount for a tenant
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -15,7 +15,7 @@
     .LINK
         
 #>
-function Switch-AzTenant {
+function Connect-AzTenant {
 
     [CmdletBinding()]
     param (
@@ -34,20 +34,20 @@ function Switch-AzTenant {
                 param($cmd, $param, $wordToComplete)
                 $validValues = (Get-AzTenant).Name
                 
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+                $validValues 
+                | Where-Object { 
+                    $_.toLower() -like "*$wordToComplete*".toLower() 
+                } 
+                | ForEach-Object { 
+                    $_.contains(' ') ? "'$_'" : $_ 
+                } 
             }
         )]
         [System.String]
         $Tenant
     )
 
-
-    $tenantId = ((Get-AzTenant).Name | Where-Object -Property Name -EQ -Value $Tenant).id
-    if (!$NoDisconnect) {
-        Disconnect-AzAccount
-    }
+    $tenantId = (Get-AzTenant | Where-Object -Property Name -EQ -Value $Tenant).id
 
     $null = Connect-AzAccount -Tenant $tenantId
     $null = az login --tenant $tenantId

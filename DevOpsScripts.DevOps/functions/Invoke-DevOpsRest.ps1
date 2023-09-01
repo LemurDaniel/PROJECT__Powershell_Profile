@@ -157,12 +157,23 @@ function Invoke-DevOpsRest {
     
     # Build a hashtable of providedy Query params and Query params in provied api-url.
     $Query = $null -ne $Query ? $Query : [System.Collections.Hashtable]::new()
-    $null = ($API -split '\?')[1] -split '&' | `
-        Where-Object { ![System.String]::IsNullOrEmpty($_) } | `
-        ForEach-Object { $Query.Add($_.split('=')[0], $_.split('=')[1]) }
-    $QueryString = ($Query.GetEnumerator() | `
-            Sort-Object -Descending { $_.Name -ne 'api-version' } | `
-            ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
+    $null = ($API -split '\?')[1] -split '&' 
+    | Where-Object { 
+        ![System.String]::IsNullOrEmpty($_) 
+    } 
+    | ForEach-Object { 
+        $Query[$_.split('=')[0]] = $_.split('=')[1] 
+    }
+
+    $QueryString = (
+        $Query.GetEnumerator() 
+        | Sort-Object -Descending { 
+            $_.Name -ne 'api-version' 
+        } 
+        | ForEach-Object { 
+            "$($_.Name)=$($_.Value)" 
+        }
+    ) -join '&'
 
 
 
@@ -264,13 +275,16 @@ function Invoke-DevOpsRest {
         }
         catch {
             Write-Warning "You might need to sign into Connect-AzAccount -TenantId <tenantId> for Multifactor Authentication!`n"
+            Write-Host $_
             if ($TenantId) {
                 Connect-AzAccount -TenantId $TenantId
                 return Invoke-DevOpsRest @PSBoundParameters
             }
             else {
-                Connect-AzAccount 
-                return Invoke-DevOpsRest @PSBoundParameters
+                Write-Error "Run Connect-AzAccount"
+                # Write-Host '499b84ac-1321-427f-aa17-267ca6975798'
+                # Connect-AzAccount -AuthScope '499b84ac-1321-427f-aa17-267ca6975798'
+                # return Invoke-DevOpsRest @PSBoundParameters
             }
             # Automatically call login, when authentication failed
             #if ($_.Exception.Message.Contains('ClientSecretCredential authentication failed')) {
@@ -296,7 +310,7 @@ function Invoke-DevOpsRest {
             if ($_ -is [System.String] -AND ($_ | ConvertFrom-Json).typeKey -eq 'UnauthorizedRequestException' -AND !$OrganizationData.isPATauthenticated) {
                 # TODO
                 Write-Warning "You might need to sign into Connect-AzAccount -TenantId <tenantId> for Multifactor Authentication!`n"
-                Connect-AzAccount -TenantId (Get-AzTenant)[0].id
+                Connect-AzAccount -AuthScope '499b84ac-1321-427f-aa17-267ca6975798' -TenantId (Get-AzTenant)[0].id
                 return Invoke-DevOpsRest @PSBoundParameters
             }
 

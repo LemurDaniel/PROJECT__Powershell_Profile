@@ -118,9 +118,9 @@ function Start-InvadersGame {
 
         gunmount     = [System.Numerics.Vector2]::new(3, 4)
         canvas       = @(
-            'U  u  U',
-            '[~{*}~]',
-            "'``\|/´'", # The first backtick is used for escaping second and won't be displayed
+            ' U u U ',
+            '[~{T}~]',
+            ' `\|/´ '
             "   '   "
         )
     }

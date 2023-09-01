@@ -2,11 +2,9 @@
 
 <#
     .SYNOPSIS
-    (NOT FINISHED YET).
     Draws a snake game. Use UP,DOWN,LEFT,RIGHT Arrows or WASD for movement.
 
     .DESCRIPTION
-    (NOT FINISHED YET).
     Draws a snake game. Use UP,DOWN,LEFT,RIGHT Arrows or WASD for movement.
 
     .INPUTS

@@ -2,9 +2,11 @@
 
 <#
     .SYNOPSIS
+    (NOT FINISHED YET)
     This is a test how much is achievable with the powershell terminal.
 
     .DESCRIPTION
+    (NOT FINISHED YET)
     This is a test how much is achievable with the powershell terminal.
 
     .INPUTS
@@ -12,14 +14,20 @@
 
     .OUTPUTS
 
-      ~U~
-       ' 
-       v 
-        
+                 U u U
+                [~{T}~]
+                 `\|/´
+                   Y
 
+                   O
+                   V
 
-          v
+ 
 
+ 
+
+                          O
+                          V
 
 #>
 
@@ -58,7 +66,36 @@ function Start-InvadersGame {
             Mandatory = $false
         )]
         [PSCustomObject]
-        $Characters = @{}
+        $DesignData = @{
+
+            #gunmount     = [System.Numerics.Vector2]::new(1, 2) 
+            #canvas       = @(
+            #    '~U~',
+            #    " ' "
+            #)
+
+            # Trying more complex ship design
+            #gunmount     = [System.Numerics.Vector2]::new(2, 4)
+            #canvas       = @(
+            #    'U u U',
+            #    '[{*}]',
+            #    ' \|/ ',
+            #    "  +  "
+            #)
+
+            gunmount = [System.Numerics.Vector2]::new(3, 4)
+            ship     = @(
+                ' U u U ',
+                '[~{T}~]',
+                ' `\|/´ '
+                "   Y   "
+            )
+
+            blast = @(
+                'O'
+                'V'
+            )
+        }
     )
 
     ########################################################
@@ -101,28 +138,8 @@ function Start-InvadersGame {
         # Gunmount postition offset from upper left start of ship.
         # This is were all ship blasts will orginate from. 
         cooldown     = 0 # ticks
-        #gunmount     = [System.Numerics.Vector2]::new(1, 2) 
-        #canvas       = @(
-        #    '~U~',
-        #    " ' "
-        #)
-
-        # Trying more complex ship design
-        #gunmount     = [System.Numerics.Vector2]::new(2, 4)
-        #canvas       = @(
-        #    'U u U',
-        #    '[{*}]',
-        #    ' \|/ ',
-        #    "  +  "
-        #)
-
-        gunmount     = [System.Numerics.Vector2]::new(3, 4)
-        canvas       = @(
-            ' U u U ',
-            '[~{T}~]',
-            ' `\|/´ '
-            "   '   "
-        )
+        gunmount     = $DesignData.gunmount
+        canvas       = $DesignData.ship
     }
 
     # Referencable script block to draw elements
@@ -232,9 +249,7 @@ function Start-InvadersGame {
                     lastPosition = $null
                     velocity     = [System.Numerics.Vector2]::new(0, 0.1)
                     isDead       = $false
-                    canvas       = @(
-                        'v'
-                    )
+                    canvas       = $DesignData.blast
                 }
                 break;
             }
@@ -250,6 +265,3 @@ function Start-InvadersGame {
     [System.Console]::Write("Press any key to continue...")
     $null = [System.Console]::ReadKey($true)
 }
-
-
-    

@@ -108,12 +108,20 @@ function Start-InvadersGame {
         #)
 
         # Trying more complex ship design
-        gunmount     = [System.Numerics.Vector2]::new(2, 4)
+        #gunmount     = [System.Numerics.Vector2]::new(2, 4)
+        #canvas       = @(
+        #    'U u U',
+        #    '[{*}]',
+        #    ' \|/ ',
+        #    "  +  "
+        #)
+
+        gunmount     = [System.Numerics.Vector2]::new(3, 4)
         canvas       = @(
-            'U u U',
-            '[{*}]',
-            ' \|/ ',
-            "  +  "
+            'U  u  U',
+            '[~{*}~]',
+            "'``\|/´'", # The first backtick is used for escaping second and won't be displayed
+            "   '   "
         )
     }
 

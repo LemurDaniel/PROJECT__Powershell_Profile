@@ -28,6 +28,7 @@
     #################################
 
 
+    NOTE: Requires Powershell 7 or higher
 #>
 
 function Start-SnakeGame {

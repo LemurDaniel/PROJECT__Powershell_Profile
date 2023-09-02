@@ -208,11 +208,25 @@ function Start-GenericGameLoop {
     ###### Script block for updating elements gets called on each object every tick.
 
     $update = {
-        param($object)
+        param($object, $queue)
 
         # Skip any dead objects.
         if ($object.isDead) {
             return
+        }
+
+        if ($null -EQ $object.canvas) {
+            throw "Object '$($object.name)' doesn't have a canvas array defining its shape."
+        }
+
+        if ($null -EQ $object.collisionMark) {
+            $null = $object
+            | Add-Member -MemberType NoteProperty -Force -Name collisionMark -Value $false
+        }
+
+        if ($null -EQ $object.initialDraw) {
+            $null = $object
+            | Add-Member -MemberType NoteProperty -Force -Name initialDraw -Value $false
         }
 
         if ($null -EQ $object.position) {
@@ -258,9 +272,23 @@ function Start-GenericGameLoop {
             $null = Invoke-Command -ScriptBlock $onExitScreen -ArgumentList $object, $didExitLeft, $didExitRight, $didExitUp, $didExitDown
         }
 
-        #if ($name -like "InvaderShip_Blasts*") {
-        #    Write-Host ([System.Math]::round($object.position.y)), ($WindowHeight - 2), $object.isDead
-        #}
+        $roundedX = [System.Math]::Round($object.position.X)
+        $roundedY = [System.Math]::Round($object.position.y)
+
+        $roundedLastX = [System.Math]::Round($object.lastPosition.X)
+        $roundedLastY = [System.Math]::Round($object.lastPosition.y)
+
+        # Objects wich previously collided with other objects get redrawn for correct appearance.
+        if (!$object.alwaysDraw -AND !$object.collisionMark) {
+            if (!$object.initialDraw) {
+                $object.initialDraw = $true
+            }
+            elseif ($roundedX -EQ $roundedLastX -AND $roundedY -EQ $roundedLastY) {
+                return # skip redrawing elements whose position hasn't change.
+            }
+        }
+
+        $null = $queue.add($object)
 
     }
 
@@ -269,77 +297,59 @@ function Start-GenericGameLoop {
     ###### Script block for drawing elements gets called on each object every tick.
 
     $draw = {
-        param($object)
+        param($object, $action)
 
-        if ($null -EQ $object.canvas) {
-            throw "Object '$($object.name)' doesn't have a canvas array defining its shape."
-        }
+        $WindowWidth = $host.UI.RawUI.WindowSize.Width
 
-        if ($null -EQ $object.collisionMark) {
-            $null = $object
-            | Add-Member -MemberType NoteProperty -Force -Name collisionMark -Value $false
-        }
+        $roundedX = [System.Math]::Round($object.position.X)
+        $roundedY = [System.Math]::Round($object.position.y)
 
-        if ($null -EQ $object.initialDraw) {
-            $null = $object
-            | Add-Member -MemberType NoteProperty -Force -Name initialDraw -Value $false
-        }
+        $roundedLastX = [System.Math]::Round($object.lastPosition.X)
+        $roundedLastY = [System.Math]::Round($object.lastPosition.y)
 
-        $canvas = $object.canvas
-        $position = $object.position
-        $lastPosition = $object.lastPosition
-        $initalDraw = $object.initialDraw
-
-        $roundedX = [System.Math]::Round($position.X)
-        $roundedY = [System.Math]::Round($position.y)
-
-        $roundedLastX = [System.Math]::Round($lastPosition.X)
-        $roundedLastY = [System.Math]::Round($lastPosition.y)
-
-
-        # Objects wich previously collided with other objects get redrawn for correct appearance.
-        if (!$object.alwaysDraw -AND !$object.collisionMark) {
-            if (!$initalDraw) {
-                $object.initialDraw = $true
-            }
-            elseif ($roundedX -EQ $roundedLastX -AND $roundedY -EQ $roundedLastY) {
-                return # skip redrawing elements whose position hasn't change.
-            }
-        }
+        $object.lastPosition = [System.Numerics.Vector2]::new($object.position.x, $object.position.y)
 
         # Redraw Empty-Tiles on the old position.
-        for ($index = 0; $index -LT $canvas.Count; $index++) {
+        for ($index = 0; $index -LT $object.canvas.Count; $index++) {
 
-            # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
-            $emptyOffset = $canvas[$index].Length - $canvas[$index].TrimStart().Length
+            if ($action -EQ "undraw") {
 
-            $trimedLine = $canvas[$index].Trim()
+                # Allow for moving partially outside of screen with object on the left
+                $offScreenOffset = 0
+                if ($roundedLastX -LT 0) {
+                    $offScreenOffset = [System.Math]::Abs($roundedLastX)
+                } 
+                #elseif($roundedLastX -GT $WindowWidth-$object.canvas[$index].Length){
+                #    $offScreenOffset = 
+                #}
 
-            [System.Console]::SetCursorPosition($roundedLastX + $emptyOffset, $roundedLastY + $index)
-            $emptyLine = Get-LineOfChars -Length $trimedLine.length -Char $EMPTY_TILE
-            [System.Console]::Write($emptyLine)
+                $substringLine = $object.canvas[$index].substring($offScreenOffset)
+
+                # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
+                $emptyOffset = $substringLine.Length - $substringLine.TrimStart().Length
+
+                [System.Console]::SetCursorPosition($roundedLastX + $emptyOffset + $offScreenOffset, $roundedLastY + $index)
+                $emptyLine = Get-LineOfChars -Length $substringLine.Trim().length -Char $EMPTY_TILE
+                [System.Console]::Write($emptyLine)
+            }
+            elseif ($action -EQ "draw") {
+
+                # Allow for moving partially outside of screen with object
+                $offScreenOffset = 0
+                if ($roundedX -LT 0) {
+                    $offScreenOffset = [System.Math]::Abs($roundedX)
+                }
+
+                $substringLine = $object.canvas[$index].substring($offScreenOffset)
+
+                # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
+                $emptyOffset = $substringLine.Length - $substringLine.TrimStart().Length
+
+                [System.Console]::SetCursorPosition($roundedX + $emptyOffset + $offScreenOffset, $roundedY + $index)
+                [System.Console]::Write($substringLine.Trim())
+                $object.collisionMark = $false
+            }
         }
-
-        # Last position get update after redraw. It is only necessary for the overdrawing with empty tiles.
-        $object.lastPosition = [System.Numerics.Vector2]::new($position.x, $position.y)
-        
-        # Draw object on new position only if it's not dead.
-        if ($object.isDead) {
-            return 
-        }
-        
-        for ($index = 0; $index -LT $canvas.Count; $index++) {
-
-            # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
-            $emptyOffset = $canvas[$index].Length - $canvas[$index].TrimStart().Length
-
-            $trimedLine = $canvas[$index].Trim()
-
-            [System.Console]::SetCursorPosition($roundedX + $emptyOffset, $roundedY + $index)
-            [System.Console]::Write($trimedLine)
-        }
-        
-        $object.collisionMark = $false
     }
 
 
@@ -396,6 +406,8 @@ function Start-GenericGameLoop {
     # Gameobjects and their colliding participants
     $collisionsGrouped = [System.Collections.Hashtable]::new()
 
+    $drawingQueue = [System.Collections.ArrayList]::new()
+
     try {
         $gameEndingMessage = $null
 
@@ -416,7 +428,7 @@ function Start-GenericGameLoop {
 
             $collisionsGrouped.clear()
             $CollisionHashTable.clear()
-
+            $drawingQueue.Clear()
 
             # Call the script block for updating custom parameters on each tick.
             $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObjects, $GameWidth, $GameHeight
@@ -428,29 +440,30 @@ function Start-GenericGameLoop {
             }
  
             # Key events are processed before each update and draw.
-            foreach ($objectName in $GameObjects.Keys) {
+            foreach ($objectName in ([System.String[]]$GameObjects.Keys) ) {
 
                 $objectData = $GameObjects[$objectName]
 
                 # If it's a list, draw each individual obecjt.
                 if ($objectData -is [PSCustomObject[]] -OR $objectData -is [System.Object[]]) {
 
+                    $processedList = [PSCustomObject]@()
                     for ($index = 0; $index -LT $objectData.Count; $index++) {
                         $null = $objectData[$index] | Add-Member -MemberType NoteProperty -Force -Name ParentName -Value $objectName
                         $null = $objectData[$index] | Add-Member -MemberType NoteProperty -Force -Name Name -Value "$objectName[$index]"
-                        Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index]
-                        Invoke-Command -ScriptBlock $draw -ArgumentList $objectData[$index]
+                        Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index], $drawingQueue
                         Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData[$index], $CollisionHashTable
+                        if (!$objectData[$index].isDead) {
+                            $processedList += $objectData[$index]
+                        }
                     }
-                
-                    #$GameObjects[$objectName] = [PSCustomObject[]]($objectData | Where-Object -Property isDead -NE $true)
+                    $GameObjects[$objectName] = $processedList
                 }
 
                 # If it's an object, only draw this single object.
                 elseif ($objectData -is [PSCustomObject] -OR $objectData -is [System.Object]) {
                     $null = $objectData | Add-Member -MemberType NoteProperty -Force -Name Name -Value $objectName
-                    Invoke-Command -ScriptBlock $update -ArgumentList $objectData
-                    Invoke-Command -ScriptBlock $draw -ArgumentList $objectData
+                    Invoke-Command -ScriptBlock $update -ArgumentList $objectData, $drawingQueue
                     Invoke-Command -ScriptBlock $processOccupiedSpace -ArgumentList $objectData, $CollisionHashTable
                 }
 
@@ -462,6 +475,15 @@ function Start-GenericGameLoop {
             }
 
 
+            # Make sure to undraw all objects, before starting to draw objects. To fix a bug.
+            foreach ($object in $drawingQueue) {
+                Invoke-Command -ScriptBlock $draw -ArgumentList $object, "undraw"
+            }
+            foreach ($object in $drawingQueue) {
+                if (!$object.isDead) {
+                    Invoke-Command -ScriptBlock $draw -ArgumentList $object, "draw"
+                }
+            }
 
 
             # Still prototyping and testing

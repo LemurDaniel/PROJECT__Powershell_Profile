@@ -148,6 +148,7 @@ function Start-InvadersGame {
 
             # Placeholder list for tracking all blasts.
             InvaderShip_Blasts = [PSCustomObject[]]@()
+            BlastExplosions    = [PSCustomObject[]]@()
         }
 
 
@@ -213,6 +214,17 @@ function Start-InvadersGame {
 
             if ($object.ParentName -EQ 'InvaderShip_Blasts') {
                 $object.isDead = $true
+                $GameObjects['BlastExplosions'] += [PSCustomObject]@{
+                    position = [System.Numerics.Vector2]::new($object.position.x, $object.position.y - 3)
+                    # TODO just testing
+                    canvas   = @(
+                        ' OOO ',
+                        'OOOOO',
+                        'O O O',
+                        '  O  ',
+                        ' OOO '
+                    )
+                }
             }
         }
 

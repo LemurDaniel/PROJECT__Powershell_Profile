@@ -102,9 +102,10 @@ function Start-GenericGameLoop {
                         " ' "
                     ) 
 
-                    # TODO optional value for collision handeling.
-                    # - collidable_with = '*'
-                    # - collidable_with = @($objectNames...)
+                    (optional) collidable = $true # Passivley collidable, but generates no collision-events for itself
+
+                    (optional) collidableWith = '*' # Activley collidable, generating collision-events.
+                    (optional) collidableWith = [System.String[]]@($objectNames...) # Activley collidable, generating collision-events.)
 
                     # Custom parameters
                 }
@@ -154,14 +155,29 @@ function Start-GenericGameLoop {
 
 
 
-        # TODO a handler function called when a collision is dedected.
+        # Script block for handeling collision events.
+        <#
+            {
+                param($collider, $participants)
+            }
+        #>
         [Parameter(
-            Mandatory = $false
+            Mandatory = $true
         )]
         [System.Management.Automation.ScriptBlock]
-        $onCollision = {
-            param($collisionParticipants)
+        $onCollision,
+    
+    
+        <#
+        {
+            param($object, $didExitLeft, $didExitRigth, $didExitUp, $didExitDown)
         }
+        #>
+        [Parameter(
+            Mandatory = $true
+        )]
+        [System.Management.Automation.ScriptBlock]
+        $onExitScreen
     )
 
     ########################################################
@@ -232,9 +248,14 @@ function Start-GenericGameLoop {
         # In case th
         $WindowHeight = $host.UI.RawUI.WindowSize.Height
 
-        # Mark as dead when an obejct leaves the window.
-        if (([System.Math]::round($object.position.y)) -GT ($WindowHeight - 2)) {
-            $object.isDead = $true
+        $didExitDown = [System.Math]::round($object.position.y) -GT ($WindowHeight - $object.canvas.Count - 1)
+        $didExitUp = [System.Math]::round($object.position.y) -LT 0
+        $didExitRight = $false #[System.Math]::round($object.position.x) -GT ($WindowWidth - $object.Width)
+        $didExitLeft = [System.Math]::round($object.position.x) -LT 0
+
+
+        if ($didExitDown -OR $didExitUp -OR $didExitRight -OR $didExitLeft) {
+            $null = Invoke-Command -ScriptBlock $onExitScreen -ArgumentList $object, $didExitLeft, $didExitRight, $didExitUp, $didExitDown
         }
 
         #if ($name -like "InvaderShip_Blasts*") {
@@ -318,7 +339,7 @@ function Start-GenericGameLoop {
             [System.Console]::Write($trimedLine)
         }
         
-        
+        $object.collisionMark = $false
     }
 
 
@@ -328,11 +349,16 @@ function Start-GenericGameLoop {
     $processOccupiedSpace = {
         param($object, $hashTable)
 
-        # Skip any dead objects.
+        # Skip any dead objects and non-collidable objects.
         if ($object.isDead) {
             return
         }
         
+        if ($null -NE $object.collidableWith) {
+            if ($object.collidableWith -NE '*' -AND $object.collidableWith -isnot [System.String[]]) {
+                throw "'$($object.name)' - collidableWith only allows for '*' or 'String[]'"
+            }
+        }
                 
         for ($row = 0; $row -LT $object.canvas.Count; $row++) {
             for ($col = 0; $col -LT $object.canvas[$row].Length; $col++) {
@@ -379,8 +405,17 @@ function Start-GenericGameLoop {
             $GameHeight = $host.UI.RawUI.WindowSize.Height
             $GameWidth = $host.UI.RawUI.WindowSize.Width
 
-            $CollisionHashTable.clear()
+            # Process collisions of last tick
+            foreach ($collisionData in $collisionsGrouped.Values) {
+                if ($collisionData.participants.Count -EQ 0) {
+                    continue
+                }
 
+                Invoke-Command -ScriptBlock $onCollision -ArgumentList ($collisionData.collider), ($collisionData.participants)
+            }
+
+            $collisionsGrouped.clear()
+            $CollisionHashTable.clear()
 
 
             # Call the script block for updating custom parameters on each tick.
@@ -401,11 +436,14 @@ function Start-GenericGameLoop {
                 if ($objectData -is [PSCustomObject[]] -OR $objectData -is [System.Object[]]) {
 
                     for ($index = 0; $index -LT $objectData.Count; $index++) {
-                        $null = $objectData[$index] | Add-Member -MemberType NoteProperty -Force -Name Name -Value "$objectName-$index"
+                        $null = $objectData[$index] | Add-Member -MemberType NoteProperty -Force -Name ParentName -Value $objectName
+                        $null = $objectData[$index] | Add-Member -MemberType NoteProperty -Force -Name Name -Value "$objectName[$index]"
                         Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index]
                         Invoke-Command -ScriptBlock $draw -ArgumentList $objectData[$index]
                         Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData[$index], $CollisionHashTable
                     }
+                
+                    #$GameObjects[$objectName] = [PSCustomObject[]]($objectData | Where-Object -Property isDead -NE $true)
                 }
 
                 # If it's an object, only draw this single object.
@@ -413,7 +451,7 @@ function Start-GenericGameLoop {
                     $null = $objectData | Add-Member -MemberType NoteProperty -Force -Name Name -Value $objectName
                     Invoke-Command -ScriptBlock $update -ArgumentList $objectData
                     Invoke-Command -ScriptBlock $draw -ArgumentList $objectData
-                    Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData, $CollisionHashTable
+                    Invoke-Command -ScriptBlock $processOccupiedSpace -ArgumentList $objectData, $CollisionHashTable
                 }
 
                 # Throw error if object type is not allowed.
@@ -428,9 +466,6 @@ function Start-GenericGameLoop {
 
             # Still prototyping and testing
 
-            # Gameobjects as keys and their collisions as objects.
-            $collisionsGrouped.clear()
-
             $CollisionHashTable.Keys
             | Where-Object {
                 $CollisionHashTable[$_].objects.Count -GT 1
@@ -441,10 +476,16 @@ function Start-GenericGameLoop {
                 $currentPosition = $CollisionHashTable[$_].position
 
                 # Loops through every colliding object at the current tile position
+                :colliderLoop
                 foreach ($collider in $collidingObjects) {
 
                     # Mark for redrawing after collision occured.
                     $collider.collisionMark = $true
+
+                    # if only passively collidable, generate no collision events.
+                    if ($null -EQ $collider.collidableWith) {
+                        continue colliderLoop
+                    }
 
                     # Creates a collision group for the current collider if not existent.
                     if (!$collisionsGrouped.ContainsKey($collider.name)) {
@@ -465,6 +506,11 @@ function Start-GenericGameLoop {
                     foreach ($participant in $collidingObjects) {
                         # Skip if the participant is the collider itself
                         if ($participant.name -EQ $collider.name) {
+                            continue CollisionParticipentLoop
+                        }
+
+                        $nonIndexName = $participant.name -replace '\[\d+\]$', ''
+                        if ($collider.collidableWith -NE '*' -AND $nonIndexName -notin $collider.collidableWith) {
                             continue CollisionParticipentLoop
                         }
 
@@ -494,7 +540,9 @@ function Start-GenericGameLoop {
         } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 
     }
-    catch {}
+    catch {
+        Write-Error $_
+    }
     finally {
         # Always leave function with a visible cursor in case of errors.
         [System.Console]::CursorVisible = $true

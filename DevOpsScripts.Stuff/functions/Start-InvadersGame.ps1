@@ -106,36 +106,42 @@ function Start-InvadersGame {
         GameObjects   = [ordered]@{
 
             CollidingTest2     = [PSCustomObject]@{
-                position = [System.Numerics.Vector2]::new(13, 2)
-                # alwaysDraw = $true
-                canvas   = @(
-                    '##'
+                position   = [System.Numerics.Vector2]::new(13, 2)
+                collidable = $true # passivley collidable
+                canvas     = @(
+                    '##',
+                    '# '
                 )
             }
 
             InvaderShip        = [PSCustomObject]@{
-                position    = [System.Numerics.Vector2]::new(10, 0)
-                canvas      = $Customization.ship
+                position       = [System.Numerics.Vector2]::new(20, 0)
+                canvas         = $Customization.ship
+
+                collidableWith = [System.String[]]@( # activley collidable with objects
+                    "CollidingTest",
+                    "CollidingTest2"
+                )
 
                 # custom parameters
-                cooldown    = 0
-                gunmount    = $Customization.gunmount
-                blastDesign = $Customization.blast
+                cooldown       = 0
+                gunmount       = $Customization.gunmount
+                blastDesign    = $Customization.blast
             }
 
             CollidingTest      = [PSCustomObject]@{
-                position = [System.Numerics.Vector2]::new(10, 0)
-                # alwaysDraw = $true
-                canvas   = @(
+                position   = [System.Numerics.Vector2]::new(10, 0)
+                collidable = $true
+                canvas     = @(
                     'X'
                     'X'
                 )
             }
 
             CollidingTest3     = [PSCustomObject]@{
-                position = [System.Numerics.Vector2]::new(22, 2)
-                # alwaysDraw = $true
-                canvas   = @(
+                position   = [System.Numerics.Vector2]::new(22, 2)
+                collidable = $true
+                canvas     = @(
                     '---'
                 )
             }
@@ -202,11 +208,17 @@ function Start-InvadersGame {
         
         }
 
+        onExitScreen  = {
+            param($object, $didExitLeft, $didExitRigth, $didExitUp, $didExitDown)
 
+            if ($object.ParentName -EQ 'InvaderShip_Blasts') {
+                $object.isDead = $true
+            }
+        }
 
         # TODO
         onCollision   = {
-            param()
+            param($collider, $participants)
         }
     }
 

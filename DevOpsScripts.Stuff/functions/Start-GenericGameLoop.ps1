@@ -401,6 +401,8 @@ function Start-GenericGameLoop {
             }
 
 
+
+
             # Still prototyping and testing
 
             # Gameobjects as keys and their collisions as objects.
@@ -423,7 +425,8 @@ function Start-GenericGameLoop {
                         $collisionsGrouped[$collider.name] = [PSCustomObject]@{
                             collider     = $collider
                             name         = $collider.name
-                            participants = [System.Collections.Hashtable]::new()
+                            participants = [PSCustomObject[]]@()
+                            references   = [System.Collections.Hashtable]::new()
                         }
                     }
 
@@ -440,20 +443,24 @@ function Start-GenericGameLoop {
                         }
 
                         # If there is no collision data for the current particpant, create it.
-                        if (!$collisionData.participants.ContainsKey($participant.name)) {
-                            $collisionData.participants[$participant.name] = @{
+                        if (!$collisionData.references.ContainsKey($participant.name)) {
+                            $collisionData.references[$participant.name] = @{
                                 objectRef = $participant
                                 name      = $participant.name
                                 positions = [System.Numerics.Vector2[]]@($currentPosition)
                             }
+                            $collisionData.participants += $collisionData.references[$participant.name]
                         }
                         # Else add the current tile position as information about where the collisions occured.
                         elseif ($currentPosition -notin $collisionData.participants[$participant.name].positions) {
-                            $collisionData.participants[$participant.name].positions += $currentPosition
+                            $collisionData.references[$participant.name].positions += $currentPosition
                         }
                     }
                 }
             }
+
+
+
 
             [System.Console]::CursorVisible = $false
             Start-Sleep -Milliseconds $TickIntervall
@@ -472,7 +479,7 @@ function Start-GenericGameLoop {
 
         # Testing
         Write-Host "`n'$($collider.name)' has collisions with: "
-        foreach ($participant in $collider.participants.values) {
+        foreach ($participant in $collider.participants) {
             Write-Host "  - '$($participant.name)' on positions: '$($participant.positions | Sort-Object)'"
         }
     }

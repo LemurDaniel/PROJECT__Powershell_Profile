@@ -190,17 +190,15 @@ function Start-GenericGameLoop {
     ###### Script block for updating elements gets called on each object every tick.
 
     $update = {
-        param($object, $name)
+        param($object)
 
         # Skip any dead objects.
         if ($object.isDead) {
             return
         }
 
-        $null = $object | Add-Member -MemberType NoteProperty -Force -Name Name -Value $name
-
         if ($null -EQ $object.position) {
-            throw "Object '$name' doesn't have a position."
+            throw "Object '$($object.name)' doesn't have a position."
         }
 
         # Dead objects won't be drawn. 
@@ -248,10 +246,10 @@ function Start-GenericGameLoop {
     ###### Script block for drawing elements gets called on each object every tick.
 
     $draw = {
-        param($object, $name)
+        param($object)
 
         if ($null -EQ $object.canvas) {
-            throw "Object '$name' doesn't have a canvas array defining its shape."
+            throw "Object '$($object.name)' doesn't have a canvas array defining its shape."
         }
 
         if ($null -EQ $object.initialDraw) {
@@ -305,7 +303,7 @@ function Start-GenericGameLoop {
     ###### Script block for processing all tiles that an object occupies.
 
     $processOccupiedSpace = {
-        param($object, $name, $hashTable)
+        param($object, $hashTable)
 
         # Skip any dead objects.
         if ($object.isDead) {
@@ -380,17 +378,19 @@ function Start-GenericGameLoop {
                 if ($objectData -is [PSCustomObject[]] -OR $objectData -is [System.Object[]]) {
 
                     for ($index = 0; $index -LT $objectData.Count; $index++) {
-                        Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index], "$objectName-$index"
-                        Invoke-Command -ScriptBlock $draw -ArgumentList $objectData[$index], "$objectName-$index"
-                        Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData[$index], "$objectName-$index", $CollisionHashTable
+                        $null = $objectData[$index] | Add-Member -MemberType NoteProperty -Force -Name Name -Value "$objectName-$index"
+                        Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index]
+                        Invoke-Command -ScriptBlock $draw -ArgumentList $objectData[$index]
+                        Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData[$index], $CollisionHashTable
                     }
                 }
 
                 # If it's an object, only draw this single object.
                 elseif ($objectData -is [PSCustomObject] -OR $objectData -is [System.Object]) {
-                    Invoke-Command -ScriptBlock $update -ArgumentList $objectData, $objectName
-                    Invoke-Command -ScriptBlock $draw -ArgumentList $objectData, $objectName
-                    Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData, $objectName, $CollisionHashTable
+                    $null = $objectData | Add-Member -MemberType NoteProperty -Force -Name Name -Value $objectName
+                    Invoke-Command -ScriptBlock $update -ArgumentList $objectData
+                    Invoke-Command -ScriptBlock $draw -ArgumentList $objectData
+                    Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData, $CollisionHashTable
                 }
 
                 # Throw error if object type is not allowed.
@@ -410,24 +410,46 @@ function Start-GenericGameLoop {
             | Where-Object {
                 $CollisionHashTable[$_].objects.Count -GT 1
             }
-            | ForEach-Object {
+            | ForEach-Object { # Loops through every tile position with a collision
 
-                $collisionsAtPosition = $CollisionHashTable[$_].objects 
-                foreach ($collider in $collisionsAtPosition) {
+                $collidingObjects = $CollisionHashTable[$_].objects
+                $currentPosition = $CollisionHashTable[$_].position
 
+                # Loops through every colliding object at the current tile position
+                foreach ($collider in $collidingObjects) {
+
+                    # Creates a collision group for the current collider if not existent.
                     if (!$collisionsGrouped.ContainsKey($collider.name)) {
                         $collisionsGrouped[$collider.name] = [PSCustomObject]@{
                             collider     = $collider
-                            participants = [PSCustomObject[]]@()
+                            name         = $collider.name
+                            participants = [System.Collections.Hashtable]::new()
                         }
                     }
 
-                    foreach ($participant in $collisionsAtPosition) {
-                        if (
-                            $participant.name -NE $collider.name -AND
-                            $participant.name -notin ([System.String[]]$collisionsGrouped[$collider.name].participants.name)
-                        ) {
-                            $collisionsGrouped[$collider.name].participants += $participant
+                    # The data for the currents collider collisions.
+                    $collisionData = $collisionsGrouped[$collider.name]
+
+
+                    # Loops through every collider at the current position, adding collision data.
+                    :CollisionParticipentLoop
+                    foreach ($participant in $collidingObjects) {
+                        # Skip if the participant is the collider itself
+                        if ($participant.name -EQ $collider.name) {
+                            continue CollisionParticipentLoop
+                        }
+
+                        # If there is no collision data for the current particpant, create it.
+                        if (!$collisionData.participants.ContainsKey($participant.name)) {
+                            $collisionData.participants[$participant.name] = @{
+                                objectRef = $participant
+                                name      = $participant.name
+                                positions = [System.Numerics.Vector2[]]@($currentPosition)
+                            }
+                        }
+                        # Else add the current tile position as information about where the collisions occured.
+                        elseif ($currentPosition -notin $collisionData.participants[$participant.name].positions) {
+                            $collisionData.participants[$participant.name].positions += $currentPosition
                         }
                     }
                 }
@@ -446,10 +468,13 @@ function Start-GenericGameLoop {
     }
 
     Write-Host "`nTest ------------------------------ "
-    foreach ($key in $collisionsGrouped.Keys) {
+    foreach ($collider in $collisionsGrouped.Values) {
 
         # Testing
-        Write-Host "`n$Key collides with '$($collisionsGrouped[$key].participants.name -join ', ')'"
+        Write-Host "`n'$($collider.name)' has collisions with: "
+        foreach ($participant in $collider.participants.values) {
+            Write-Host "  - '$($participant.name)' on positions: '$($participant.positions | Sort-Object)'"
+        }
     }
     Write-Host "`nTest ------------------------------ "
     return

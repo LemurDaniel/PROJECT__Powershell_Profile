@@ -225,6 +225,11 @@ function Start-GenericGameLoop {
             | Add-Member -MemberType NoteProperty -Force -Name collisionMark -Value $false
         }
 
+        if ($null -EQ $object.redrawMark) {
+            $null = $object
+            | Add-Member -MemberType NoteProperty -Force -Name redrawMark -Value $false
+        }
+
         if ($null -EQ $object.initialDraw) {
             $null = $object
             | Add-Member -MemberType NoteProperty -Force -Name initialDraw -Value $false
@@ -280,7 +285,7 @@ function Start-GenericGameLoop {
         $roundedLastY = [System.Math]::Round($object.lastPosition.y)
 
         # Objects wich previously collided with other objects get redrawn for correct appearance.
-        if (!$object.alwaysDraw -AND !$object.collisionMark) {
+        if (!$object.alwaysDraw -AND !$object.collisionMark -AND !$object.redrawMark) {
             if (!$object.initialDraw) {
                 $object.initialDraw = $true
             }
@@ -455,6 +460,9 @@ function Start-GenericGameLoop {
                         Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData[$index], $CollisionHashTable
                         if (!$objectData[$index].isDead) {
                             $processedList += $objectData[$index]
+                        }
+                        else {
+                            $null = $drawingQueue.add($objectData[$index])
                         }
                     }
                     $GameObjects[$objectName] = $processedList

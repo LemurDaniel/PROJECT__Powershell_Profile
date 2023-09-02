@@ -105,45 +105,14 @@ function Start-InvadersGame {
         # Objects get drawn in that order. Following objects will potentially hide previous objects.
         GameObjects   = [ordered]@{
 
-            CollidingTest2     = [PSCustomObject]@{
-                position   = [System.Numerics.Vector2]::new(13, 2)
-                collidable = $true # passivley collidable
-                canvas     = @(
-                    '##',
-                    '# '
-                )
-            }
-
             InvaderShip        = [PSCustomObject]@{
-                position       = [System.Numerics.Vector2]::new(20, 0)
-                canvas         = $Customization.ship
-
-                collidableWith = [System.String[]]@( # activley collidable with objects
-                    "CollidingTest",
-                    "CollidingTest2"
-                )
+                position    = [System.Numerics.Vector2]::new(20, 0)
+                canvas      = $Customization.ship
 
                 # custom parameters
-                cooldown       = 0
-                gunmount       = $Customization.gunmount
-                blastDesign    = $Customization.blast
-            }
-
-            CollidingTest      = [PSCustomObject]@{
-                position   = [System.Numerics.Vector2]::new(10, 0)
-                collidable = $true
-                canvas     = @(
-                    'X'
-                    'X'
-                )
-            }
-
-            CollidingTest3     = [PSCustomObject]@{
-                position   = [System.Numerics.Vector2]::new(22, 2)
-                collidable = $true
-                canvas     = @(
-                    '---'
-                )
+                cooldown    = 0
+                gunmount    = $Customization.gunmount
+                blastDesign = $Customization.blast
             }
 
             # Placeholder list for tracking all blasts.
@@ -158,6 +127,40 @@ function Start-InvadersGame {
 
             # Update the gun cooldown of the spaceship.
             $GameObects['InvaderShip'].cooldown = [System.Math]::Max(0, $GameObects['InvaderShip'].cooldown - 1)
+
+            foreach ($explosion in $GameObects['BlastExplosions']) {
+
+                $explosion.lifetime += 1
+                
+                if ($explosion.lifetime -GT 10 -AND $explosion.currentStage -EQ 5) {
+                    $explosion.canvas = $explosion.stages[4]
+                    $explosion.redrawMark = $true
+                    $explosion.currentStage = 4
+                }
+                elseif ($explosion.lifetime -GT 20 -AND $explosion.currentStage -EQ 4) {
+                    $explosion.canvas = $explosion.stages[3]
+                    $explosion.redrawMark = $true
+                    $explosion.currentStage = 3
+                }
+                elseif ($explosion.lifetime -GT 30 -AND $explosion.currentStage -EQ 3) {
+                    $explosion.canvas = $explosion.stages[2]
+                    $explosion.redrawMark = $true
+                    $explosion.currentStage = 2
+                }
+                elseif ($explosion.lifetime -GT 50 -AND $explosion.currentStage -EQ 2) {
+                    $explosion.canvas = $explosion.stages[1]
+                    $explosion.redrawMark = $true
+                    $explosion.currentStage = 1
+                }
+                elseif ($explosion.lifetime -GT 70 -AND $explosion.currentStage -EQ 1) {
+                    $explosion.canvas = $explosion.stages[0]
+                    $explosion.redrawMark = $true
+                    $explosion.currentStage = 0
+                }
+                elseif ($explosion.lifetime -GT 120 -AND $explosion.currentStage -EQ 0) {
+                    $explosion.isDead = $true
+                }
+            }
         }
 
 
@@ -217,14 +220,57 @@ function Start-InvadersGame {
                 $GameObjects['BlastExplosions'] += [PSCustomObject]@{
                     position         = [System.Numerics.Vector2]::new($object.position.x - 2, $object.position.y - 3)
                     ignoreCollisions = $true
-                    # TODO just testing
-                    canvas           = @(
-                        ' OOO ',
-                        'OOOOO',
-                        'O O O',
-                        '  O  ',
-                        ' OOO '
+
+                    lifetime         = 0
+                    currentStage     = 5
+                    stages           = @(
+                        @(
+                            ' #### ',
+                            '######',
+                            '# ## #',
+                            '  ##  ',
+                            '######'
+                        ),
+  
+                        @(
+                            ' #### ',
+                            '######',
+                            '  ##  ',
+                            '  ##  ',
+                            '######'
+                        ),
+
+                        @(
+                            '  ##  ',
+                            ' #### ',
+                            '  ##  ',
+                            '  ##  ', 
+                            '######'
+                        ),
+
+                        @(
+                            '      ',
+                            '      ',
+                            '  ##  ',
+                            '  ##  ',
+                            '######'),
+
+                        @(
+                            '      ', 
+                            '      ',
+                            '      ',
+                            '  ##  ',
+                            '######'
+                        )    
                     )
+           
+                    canvas           = @(
+                        '      ', 
+                        '      ',
+                        '      ',
+                        '      ',
+                        ' #### '
+                    )  
                 }
             }
         }

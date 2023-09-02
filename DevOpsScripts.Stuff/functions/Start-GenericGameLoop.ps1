@@ -336,51 +336,59 @@ function Start-GenericGameLoop {
     ################################################################################################################
     ###### The Gameloop processing and drawing all objects on each tick.
 
-    $gameEndingMessage = $null
+    try {
+        $gameEndingMessage = $null
 
-    :GameLoop
-    do {
+        :GameLoop
+        do {
 
-        # Call the script block for updating custom parameters on each tick.
-        $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObects
+            # Call the script block for updating custom parameters on each tick.
+            $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObects
 
-        # Only process key events when a key was pressed
-        if ([System.Console]::KeyAvailable) {
-            $keyEvent = [System.Console]::ReadKey($true)
-            $null = Invoke-Command -ScriptBlock $keyEventsHandler -ArgumentList $keyEvent, $GameObects
-        }
+            # Only process key events when a key was pressed
+            if ([System.Console]::KeyAvailable) {
+                $keyEvent = [System.Console]::ReadKey($true)
+                $null = Invoke-Command -ScriptBlock $keyEventsHandler -ArgumentList $keyEvent, $GameObects
+            }
  
-        # Key events are processed before each update and draw.
-        foreach ($objectName in $GameObects.Keys) {
+            # Key events are processed before each update and draw.
+            foreach ($objectName in $GameObects.Keys) {
 
-            $objectData = $GameObects[$objectName]
+                $objectData = $GameObects[$objectName]
 
-            # If it's a list, draw each individual obecjt.
-            if ($objectData -is [PSCustomObject[]] -OR $objectData -is [System.Object[]]) {
+                # If it's a list, draw each individual obecjt.
+                if ($objectData -is [PSCustomObject[]] -OR $objectData -is [System.Object[]]) {
 
-                for ($index = 0; $index -LT $objectData.Count; $index++) {
-                    Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index], "$objectName-$index"
-                    Invoke-Command -ScriptBlock $draw -ArgumentList $objectData[$index], "$objectName-$index"
+                    for ($index = 0; $index -LT $objectData.Count; $index++) {
+                        Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index], "$objectName-$index"
+                        Invoke-Command -ScriptBlock $draw -ArgumentList $objectData[$index], "$objectName-$index"
+                    }
                 }
+
+                # If it's an object, only draw this single object.
+                elseif ($objectData -is [PSCustomObject] -OR $objectData -is [System.Object]) {
+                    Invoke-Command -ScriptBlock $update -ArgumentList $objectData, $objectName
+                    Invoke-Command -ScriptBlock $draw -ArgumentList $objectData, $objectName
+                }
+
+                # Throw error if object type is not allowed.
+                else {
+                    throw "$($objectData.GetType().ToString()) of '$objectName' is not allowed."
+                }
+
             }
 
-            # If it's an object, only draw this single object.
-            elseif ($objectData -is [PSCustomObject] -OR $objectData -is [System.Object]) {
-                Invoke-Command -ScriptBlock $update -ArgumentList $objectData, $objectName
-                Invoke-Command -ScriptBlock $draw -ArgumentList $objectData, $objectName
-            }
+            [System.Console]::CursorVisible = $false
+            Start-Sleep -Milliseconds $TickIntervall
 
-            # Throw error if object type is not allowed.
-            else {
-                throw "$($objectData.GetType().ToString()) of '$objectName' is not allowed."
-            }
+        } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 
-        }
-
-        [System.Console]::CursorVisible = $false
-        Start-Sleep -Milliseconds $TickIntervall
-
-    } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
+    }
+    catch {}
+    finally {
+        # Always leave function with a visible cursor in case of errors.
+        [System.Console]::CursorVisible = $true
+    }
 
     [System.Console]::SetCursorPosition($InvaderShip.position.x, $InvaderShip.position.y + 2)
     [System.Console]::Write("Press any key to continue...")

@@ -88,7 +88,9 @@ function Start-GenericGameLoop {
 
         # This is a hastable of all obects managed by the gameloop.
         <#
-            @{
+            # Objects get drawn in that order. Following objects will potentially hide previous objects.
+
+            [ordered]@{
 
                 # Template for an object to be managed
                 object_name = [PSCustomObject]@{
@@ -286,21 +288,36 @@ function Start-GenericGameLoop {
 
         # Redraw Empty-Tiles on the old position.
         for ($index = 0; $index -LT $canvas.Count; $index++) {
-            [System.Console]::SetCursorPosition($roundedLastX, $roundedLastY + $index)
-            $emptyLine = Get-LineOfChars -Length $canvas[$index].length -Char $EMPTY_TILE
+
+            # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
+            $emptyOffset = $canvas[$index].Length - $canvas[$index].TrimStart().Length
+
+            $trimedLine = $canvas[$index].Trim()
+
+            [System.Console]::SetCursorPosition($roundedLastX + $emptyOffset, $roundedLastY + $index)
+            $emptyLine = Get-LineOfChars -Length $trimedLine.length -Char $EMPTY_TILE
             [System.Console]::Write($emptyLine)
         }
 
         # Last position get update after redraw. It is only necessary for the overdrawing with empty tiles.
         $object.lastPosition = [System.Numerics.Vector2]::new($position.x, $position.y)
         
-        if (!$object.isDead) {
-            # Draw object on new position only if it's not dead.
-            for ($index = 0; $index -LT $canvas.Count; $index++) {
-                [System.Console]::SetCursorPosition($roundedX, $roundedY + $index)
-                [System.Console]::Write($canvas[$index])
-            }
+        # Draw object on new position only if it's not dead.
+        if ($object.isDead) {
+            return 
         }
+        
+        for ($index = 0; $index -LT $canvas.Count; $index++) {
+
+            # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
+            $emptyOffset = $canvas[$index].Length - $canvas[$index].TrimStart().Length
+
+            $trimedLine = $canvas[$index].Trim()
+
+            [System.Console]::SetCursorPosition($roundedX + $emptyOffset, $roundedY + $index)
+            [System.Console]::Write($trimedLine)
+        }
+        
         
     }
 

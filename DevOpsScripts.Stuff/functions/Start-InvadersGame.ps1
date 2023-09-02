@@ -102,7 +102,16 @@ function Start-InvadersGame {
     # The configurations for this game
     $Configuration = @{
 
+        # Objects get drawn in that order. Following objects will potentially hide previous objects.
         GameObjects   = [ordered]@{
+
+            CollidingTest2     = [PSCustomObject]@{
+                position = [System.Numerics.Vector2]::new(13, 2)
+                # alwaysDraw = $true
+                canvas   = @(
+                    '##'
+                )
+            }
 
             InvaderShip        = [PSCustomObject]@{
                 position    = [System.Numerics.Vector2]::new(10, 0)
@@ -115,26 +124,18 @@ function Start-InvadersGame {
             }
 
             CollidingTest      = [PSCustomObject]@{
-                position   = [System.Numerics.Vector2]::new(10, 0)
+                position = [System.Numerics.Vector2]::new(10, 0)
                 # alwaysDraw = $true
-                canvas     = @(
+                canvas   = @(
                     'X'
                     'X'
-                )
-            }
-
-            CollidingTest2     = [PSCustomObject]@{
-                position   = [System.Numerics.Vector2]::new(13, 2)
-                # alwaysDraw = $true
-                canvas     = @(
-                    '##'
                 )
             }
 
             CollidingTest3     = [PSCustomObject]@{
-                position   = [System.Numerics.Vector2]::new(22, 2)
+                position = [System.Numerics.Vector2]::new(22, 2)
                 # alwaysDraw = $true
-                canvas     = @(
+                canvas   = @(
                     '---'
                 )
             }

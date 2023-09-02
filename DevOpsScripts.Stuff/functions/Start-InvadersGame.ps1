@@ -102,7 +102,7 @@ function Start-InvadersGame {
     # The configurations for this game
     $Configuration = @{
 
-        GameObjects   = @{
+        GameObjects   = [ordered]@{
 
             InvaderShip        = [PSCustomObject]@{
                 position    = [System.Numerics.Vector2]::new(10, 0)
@@ -112,6 +112,31 @@ function Start-InvadersGame {
                 cooldown    = 0
                 gunmount    = $Customization.gunmount
                 blastDesign = $Customization.blast
+            }
+
+            CollidingTest      = [PSCustomObject]@{
+                position   = [System.Numerics.Vector2]::new(10, 0)
+                alwaysDraw = $true
+                canvas     = @(
+                    'X'
+                    'X'
+                )
+            }
+
+            CollidingTest2     = [PSCustomObject]@{
+                position   = [System.Numerics.Vector2]::new(13, 2)
+                alwaysDraw = $true
+                canvas     = @(
+                    '##'
+                )
+            }
+
+            CollidingTest3     = [PSCustomObject]@{
+                position   = [System.Numerics.Vector2]::new(22, 2)
+                alwaysDraw = $true
+                canvas     = @(
+                    '---'
+                )
             }
 
             # Placeholder list for tracking all blasts.

@@ -116,7 +116,7 @@ function Start-GenericGameLoop {
         [Parameter(
             Mandatory = $true
         )]
-        [System.Collections.Hashtable]
+        [System.Collections.Specialized.OrderedDictionary]
         $GameObjects,
 
 
@@ -184,7 +184,7 @@ function Start-GenericGameLoop {
     [System.Console]::WriteLine()
     [System.Console]::CursorVisible = $false
 
-    $EmptyTile = ' '
+    $EMPTY_TILE = ' '
 
     ################################################################################################################
     ###### Script block for updating elements gets called on each object every tick.
@@ -196,6 +196,8 @@ function Start-GenericGameLoop {
         if ($object.isDead) {
             return
         }
+
+        $null = $object | Add-Member -MemberType NoteProperty -Force -Name Name -Value $name
 
         if ($null -EQ $object.position) {
             throw "Object '$name' doesn't have a position."
@@ -222,7 +224,7 @@ function Start-GenericGameLoop {
         # At this point velocity is definitly a property of $object. If it's $null won't be processed.
         if ($null -NE $object.velocity) {
             # Also update the last position if the position changes here.
-            # $object.lastPosition = [System.Numerics.Vector2]::new($object.postition.x, $object.postition.y)
+            # $object.lastPosition = [System.Numerics.Vector2]::new($object.position.x, $object.position.y)
             $object.position = [System.Numerics.Vector2]::add($object.position, $object.velocity)
         }
 
@@ -269,7 +271,7 @@ function Start-GenericGameLoop {
         $roundedLastY = [System.Math]::Round($lastPosition.y)
 
         if ($roundedX -EQ $roundedLastX -AND $roundedY -EQ $roundedLastY) {
-            if ($initalDraw) {
+            if ($initalDraw -AND !$object.alwaysDraw) {
                 return # Only redraw when the acutal drawn position changes and their was an initial draw.
             }
             else {
@@ -281,7 +283,7 @@ function Start-GenericGameLoop {
         # Redraw Empty-Tiles on the old position.
         for ($index = 0; $index -LT $canvas.Count; $index++) {
             [System.Console]::SetCursorPosition($roundedLastX, $roundedLastY + $index)
-            $emptyLine = Get-LineOfChars -Length $canvas[$index].length -Char $EmptyTile
+            $emptyLine = Get-LineOfChars -Length $canvas[$index].length -Char $EMPTY_TILE
             [System.Console]::Write($emptyLine)
         }
 
@@ -305,17 +307,30 @@ function Start-GenericGameLoop {
     $processOccupiedSpace = {
         param($object, $name, $hashTable)
 
+        # Skip any dead objects.
+        if ($object.isDead) {
+            return
+        }
+        
+                
         for ($row = 0; $row -LT $object.canvas.Count; $row++) {
             for ($col = 0; $col -LT $object.canvas[$row].Length; $col++) {
 
+                if ($object.canvas[$row][$col] -EQ $EMPTY_TILE) {
+                    continue; # Skip any empty tile for the collision check.
+                }
+
                 $tilePosition = [System.Numerics.Vector2]::new(
-                    ($object.postition.x + $col), ($object.position.y + $row) 
+                    ($object.position.x + $col), ($object.position.y + $row) 
                 )
                 if ($hashTable.ContainsKey($tilePosition)) {
-                    $hashTable[$tilePosition] += $object
+                    $hashTable[$tilePosition].objects += $object
                 }
                 else {
-                    $hashTable[$tilePosition] = [PSCustomObject[]]@($object)
+                    $hashTable[$tilePosition] = [PSCustomObject]@{
+                        position = $tilePosition
+                        objects  = [PSCustomObject[]]@($object)
+                    }
                 }
 
             }
@@ -326,19 +341,25 @@ function Start-GenericGameLoop {
     ################################################################################################################
     ###### The Gameloop processing and drawing all objects on each tick.
 
+    # NOTE
+    # This will be a hastable containing all positions with an array of GameObjects occupying that space.
+    # All positions with more than one occupants are colliding with each other 
+    $CollisionHashTable = [System.Collections.Hashtable]::new()
+
+    # Gameobjects and their colliding participants
+    $collisionsGrouped = [System.Collections.Hashtable]::new()
+
     try {
         $gameEndingMessage = $null
 
         :GameLoop
         do {
 
-            # NOTE
-            # This will be a hastable containing all positions with an array of GameObjects occupying that space.
-            # All positions with more than one occupants are colliding with each other 
-            $CollisionHashTable = [System.Collections.Hashtable]::new()
-
             $GameHeight = $host.UI.RawUI.WindowSize.Height
             $GameWidth = $host.UI.RawUI.WindowSize.Width
+
+            $CollisionHashTable.clear()
+
 
 
             # Call the script block for updating custom parameters on each tick.
@@ -379,6 +400,39 @@ function Start-GenericGameLoop {
 
             }
 
+
+            # Still prototyping and testing
+
+            # Gameobjects as keys and their collisions as objects.
+            $collisionsGrouped.clear()
+
+            $CollisionHashTable.Keys
+            | Where-Object {
+                $CollisionHashTable[$_].objects.Count -GT 1
+            }
+            | ForEach-Object {
+
+                $collisionsAtPosition = $CollisionHashTable[$_].objects 
+                foreach ($collider in $collisionsAtPosition) {
+
+                    if (!$collisionsGrouped.ContainsKey($collider.name)) {
+                        $collisionsGrouped[$collider.name] = [PSCustomObject]@{
+                            collider     = $collider
+                            participants = [PSCustomObject[]]@()
+                        }
+                    }
+
+                    foreach ($participant in $collisionsAtPosition) {
+                        if (
+                            $participant.name -NE $collider.name -AND
+                            $participant.name -notin ([System.String[]]$collisionsGrouped[$collider.name].participants.name)
+                        ) {
+                            $collisionsGrouped[$collider.name].participants += $participant
+                        }
+                    }
+                }
+            }
+
             [System.Console]::CursorVisible = $false
             Start-Sleep -Milliseconds $TickIntervall
 
@@ -391,6 +445,14 @@ function Start-GenericGameLoop {
         [System.Console]::CursorVisible = $true
     }
 
+    Write-Host "`nTest ------------------------------ "
+    foreach ($key in $collisionsGrouped.Keys) {
+
+        # Testing
+        Write-Host "`n$Key collides with '$($collisionsGrouped[$key].participants.name -join ', ')'"
+    }
+    Write-Host "`nTest ------------------------------ "
+    return
     [System.Console]::SetCursorPosition($InvaderShip.position.x, $InvaderShip.position.y + 2)
     [System.Console]::Write("Press any key to continue...")
     $null = [System.Console]::ReadKey($true)

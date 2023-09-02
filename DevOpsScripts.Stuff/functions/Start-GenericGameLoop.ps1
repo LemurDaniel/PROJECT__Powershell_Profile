@@ -96,6 +96,10 @@ function Start-GenericGameLoop {
                     " ' "
                 ) 
 
+                TODO optional value for collision handeling.
+                - collidable_with = '*'
+                - collidable_with = @($objectNames...)
+
                 # Custom parameters
             }
 
@@ -179,6 +183,15 @@ function Start-GenericGameLoop {
                 Default {}
             }
     
+        },
+
+        # TODO a handler function called when a collision is dedected.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Management.Automation.ScriptBlock]
+        $collisionHandler = {
+            param($collisionParticipants)
         }
     )
 

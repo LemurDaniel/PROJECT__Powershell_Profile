@@ -116,7 +116,7 @@ function Start-InvadersGame {
 
             CollidingTest      = [PSCustomObject]@{
                 position   = [System.Numerics.Vector2]::new(10, 0)
-                alwaysDraw = $true
+                # alwaysDraw = $true
                 canvas     = @(
                     'X'
                     'X'
@@ -125,7 +125,7 @@ function Start-InvadersGame {
 
             CollidingTest2     = [PSCustomObject]@{
                 position   = [System.Numerics.Vector2]::new(13, 2)
-                alwaysDraw = $true
+                # alwaysDraw = $true
                 canvas     = @(
                     '##'
                 )
@@ -133,7 +133,7 @@ function Start-InvadersGame {
 
             CollidingTest3     = [PSCustomObject]@{
                 position   = [System.Numerics.Vector2]::new(22, 2)
-                alwaysDraw = $true
+                # alwaysDraw = $true
                 canvas     = @(
                     '---'
                 )

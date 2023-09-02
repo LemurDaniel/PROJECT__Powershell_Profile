@@ -252,6 +252,11 @@ function Start-GenericGameLoop {
             throw "Object '$($object.name)' doesn't have a canvas array defining its shape."
         }
 
+        if ($null -EQ $object.collisionMark) {
+            $null = $object
+            | Add-Member -MemberType NoteProperty -Force -Name collisionMark -Value $false
+        }
+
         if ($null -EQ $object.initialDraw) {
             $null = $object
             | Add-Member -MemberType NoteProperty -Force -Name initialDraw -Value $false
@@ -268,15 +273,16 @@ function Start-GenericGameLoop {
         $roundedLastX = [System.Math]::Round($lastPosition.X)
         $roundedLastY = [System.Math]::Round($lastPosition.y)
 
-        if ($roundedX -EQ $roundedLastX -AND $roundedY -EQ $roundedLastY) {
-            if ($initalDraw -AND !$object.alwaysDraw) {
-                return # Only redraw when the acutal drawn position changes and their was an initial draw.
-            }
-            else {
+
+        # Objects wich previously collided with other objects get redrawn for correct appearance.
+        if (!$object.alwaysDraw -AND !$object.collisionMark) {
+            if (!$initalDraw) {
                 $object.initialDraw = $true
             }
+            elseif ($roundedX -EQ $roundedLastX -AND $roundedY -EQ $roundedLastY) {
+                return # skip redrawing elements whose position hasn't change.
+            }
         }
-
 
         # Redraw Empty-Tiles on the old position.
         for ($index = 0; $index -LT $canvas.Count; $index++) {
@@ -419,6 +425,9 @@ function Start-GenericGameLoop {
 
                 # Loops through every colliding object at the current tile position
                 foreach ($collider in $collidingObjects) {
+
+                    # Mark for redrawing after collision occured.
+                    $collider.collisionMark = $true
 
                     # Creates a collision group for the current collider if not existent.
                     if (!$collisionsGrouped.ContainsKey($collider.name)) {

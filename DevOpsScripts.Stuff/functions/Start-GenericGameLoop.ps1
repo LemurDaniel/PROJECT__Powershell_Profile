@@ -48,7 +48,7 @@ function Start-GenericGameLoop {
             Position = 1,
             Mandatory = $false
         )]
-        [ValidateRange(50, 1000)]
+        [ValidateRange(1, 1000)]
         [System.Int32]
         $TickIntervall = 1,
 
@@ -203,6 +203,7 @@ function Start-GenericGameLoop {
     [System.Console]::CursorVisible = $false
 
     $EMPTY_TILE = ' '
+    $TICK_COUNT = 0
 
     ################################################################################################################
     ###### Script block for updating elements gets called on each object every tick.
@@ -360,7 +361,7 @@ function Start-GenericGameLoop {
         param($object, $hashTable)
 
         # Skip any dead objects and non-collidable objects.
-        if ($object.isDead) {
+        if ($object.isDead -OR $object.ignoreCollisions) {
             return
         }
         
@@ -422,7 +423,6 @@ function Start-GenericGameLoop {
                 if ($collisionData.participants.Count -EQ 0) {
                     continue
                 }
-
                 Invoke-Command -ScriptBlock $onCollision -ArgumentList ($collisionData.collider), ($collisionData.participants)
             }
 
@@ -558,6 +558,7 @@ function Start-GenericGameLoop {
 
             [System.Console]::CursorVisible = $false
             Start-Sleep -Milliseconds $TickIntervall
+            $TICK_COUNT = $TICK_COUNT + 1
 
         } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 

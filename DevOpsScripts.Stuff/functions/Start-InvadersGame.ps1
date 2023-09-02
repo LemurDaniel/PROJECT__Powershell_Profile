@@ -215,9 +215,10 @@ function Start-InvadersGame {
             if ($object.ParentName -EQ 'InvaderShip_Blasts') {
                 $object.isDead = $true
                 $GameObjects['BlastExplosions'] += [PSCustomObject]@{
-                    position = [System.Numerics.Vector2]::new($object.position.x, $object.position.y - 3)
+                    position         = [System.Numerics.Vector2]::new($object.position.x - 2, $object.position.y - 3)
+                    ignoreCollisions = $true
                     # TODO just testing
-                    canvas   = @(
+                    canvas           = @(
                         ' OOO ',
                         'OOOOO',
                         'O O O',
@@ -236,6 +237,6 @@ function Start-InvadersGame {
 
 
     # Start a generic gameloop with the configurations for this game.
-    Start-GenericGameLoop @Configuration
+    Start-GenericGameLoop @Configuration -TickIntervall 5
 
 }

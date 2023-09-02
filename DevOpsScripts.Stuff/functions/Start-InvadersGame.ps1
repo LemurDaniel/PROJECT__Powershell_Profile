@@ -66,7 +66,7 @@ function Start-InvadersGame {
             Mandatory = $false
         )]
         [PSCustomObject]
-        $DesignData = @{
+        $Customization = @{
 
             #gunmount     = [System.Numerics.Vector2]::new(1, 2) 
             #canvas       = @(
@@ -102,16 +102,16 @@ function Start-InvadersGame {
     # The configurations for this game
     $Configuration = @{
 
-        GameObjects      = @{
+        GameObjects   = @{
 
             InvaderShip        = [PSCustomObject]@{
                 position    = [System.Numerics.Vector2]::new(10, 0)
-                canvas      = $DesignData.ship
+                canvas      = $Customization.ship
 
                 # custom parameters
                 cooldown    = 0
-                gunmount    = [System.Numerics.Vector2]::new(3, 4)
-                blastDesign = $DesignData.blast
+                gunmount    = $Customization.gunmount
+                blastDesign = $Customization.blast
             }
 
             # Placeholder list for tracking all blasts.
@@ -120,7 +120,7 @@ function Start-InvadersGame {
 
 
 
-        onEveryTickDo    = {
+        onEveryTickDo = {
             param($GameObects)
 
             # Update the gun cooldown of the spaceship.
@@ -129,7 +129,7 @@ function Start-InvadersGame {
 
 
         
-        onKeyEvent = {
+        onKeyEvent    = {
             param($KeyEvent, $GameObects)
     
             $InvaderShip = $GameObects['InvaderShip']
@@ -179,7 +179,7 @@ function Start-InvadersGame {
 
 
         # TODO
-        onCollision = {
+        onCollision   = {
             param()
         }
     }

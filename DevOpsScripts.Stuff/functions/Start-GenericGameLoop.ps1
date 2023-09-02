@@ -73,7 +73,7 @@ function Start-GenericGameLoop {
         # A script that gets run every tick to update any custom parameters.
         <#
             {
-                param($GameObjects)
+                param($GameObjects, $GameWidth, $GameHeight)
 
                 # Something...
             },
@@ -126,7 +126,7 @@ function Start-GenericGameLoop {
         # Invidual Game Objects can be access by their defined name corresponding to the key in the hashtable.
         <#
         {
-            param($KeyEvent, $GameObjects)
+            param($KeyEvent, $GameObjects, $GameWidth, $GameHeight)
 
             $InvaderShip = $GameObjects['InvaderShip']
                 
@@ -184,7 +184,6 @@ function Start-GenericGameLoop {
     [System.Console]::WriteLine()
     [System.Console]::CursorVisible = $false
 
-
     $EmptyTile = ' '
 
     ################################################################################################################
@@ -230,7 +229,6 @@ function Start-GenericGameLoop {
 
         # In case th
         $WindowHeight = $host.UI.RawUI.WindowSize.Height
-        $WindowWidth = $host.UI.RawUI.WindowSize.Width
 
         # Mark as dead when an obejct leaves the window.
         if (([System.Math]::round($object.position.y)) -GT ($WindowHeight - 2)) {
@@ -300,6 +298,31 @@ function Start-GenericGameLoop {
         
     }
 
+
+    ################################################################################################################
+    ###### Script block for processing all tiles that an object occupies.
+
+    $processOccupiedSpace = {
+        param($object, $name, $hashTable)
+
+        for ($row = 0; $row -LT $object.canvas.Count; $row++) {
+            for ($col = 0; $col -LT $object.canvas[$row].Length; $col++) {
+
+                $tilePosition = [System.Numerics.Vector2]::new(
+                    ($object.postition.x + $col), ($object.position.y + $row) 
+                )
+                if ($hashTable.ContainsKey($tilePosition)) {
+                    $hashTable[$tilePosition] += $object
+                }
+                else {
+                    $hashTable[$tilePosition] = [PSCustomObject[]]@($object)
+                }
+
+            }
+        }
+
+    }
+
     ################################################################################################################
     ###### The Gameloop processing and drawing all objects on each tick.
 
@@ -309,13 +332,22 @@ function Start-GenericGameLoop {
         :GameLoop
         do {
 
+            # NOTE
+            # This will be a hastable containing all positions with an array of GameObjects occupying that space.
+            # All positions with more than one occupants are colliding with each other 
+            $CollisionHashTable = [System.Collections.Hashtable]::new()
+
+            $GameHeight = $host.UI.RawUI.WindowSize.Height
+            $GameWidth = $host.UI.RawUI.WindowSize.Width
+
+
             # Call the script block for updating custom parameters on each tick.
-            $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObjects
+            $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObjects, $GameWidth, $GameHeight
 
             # Only process key events when a key was pressed
             if ([System.Console]::KeyAvailable) {
                 $keyEvent = [System.Console]::ReadKey($true)
-                $null = Invoke-Command -ScriptBlock $onKeyEvent -ArgumentList $keyEvent, $GameObjects
+                $null = Invoke-Command -ScriptBlock $onKeyEvent -ArgumentList $keyEvent, $GameObjects, $GameWidth, $GameHeight
             }
  
             # Key events are processed before each update and draw.
@@ -329,6 +361,7 @@ function Start-GenericGameLoop {
                     for ($index = 0; $index -LT $objectData.Count; $index++) {
                         Invoke-Command -ScriptBlock $update -ArgumentList $objectData[$index], "$objectName-$index"
                         Invoke-Command -ScriptBlock $draw -ArgumentList $objectData[$index], "$objectName-$index"
+                        Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData[$index], "$objectName-$index", $CollisionHashTable
                     }
                 }
 
@@ -336,6 +369,7 @@ function Start-GenericGameLoop {
                 elseif ($objectData -is [PSCustomObject] -OR $objectData -is [System.Object]) {
                     Invoke-Command -ScriptBlock $update -ArgumentList $objectData, $objectName
                     Invoke-Command -ScriptBlock $draw -ArgumentList $objectData, $objectName
+                    Invoke-Command -ScriptBlock  $processOccupiedSpace -ArgumentList $objectData, $objectName, $CollisionHashTable
                 }
 
                 # Throw error if object type is not allowed.

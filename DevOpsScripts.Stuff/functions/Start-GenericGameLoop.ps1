@@ -332,10 +332,10 @@ function Start-GenericGameLoop {
                 $substringLine = $object.canvas[$index].substring($offScreenOffset)
 
                 # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
-                $emptyOffset = $substringLine.Length - $substringLine.TrimStart().Length
+                $emptyOffset = 0 #$substringLine.Length - $substringLine.TrimStart().Length
 
                 [System.Console]::SetCursorPosition($roundedLastX + $emptyOffset + $offScreenOffset, $roundedLastY + $index)
-                $emptyLine = Get-LineOfChars -Length $substringLine.Trim().length -Char $EMPTY_TILE
+                $emptyLine = Get-LineOfChars -Length $substringLine.length -Char $EMPTY_TILE
                 [System.Console]::Write($emptyLine)
             }
             elseif ($action -EQ "draw") {

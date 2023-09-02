@@ -91,177 +91,101 @@ function Start-InvadersGame {
                 "   Y   "
             )
 
-            blast = @(
+            blast    = @(
                 'O'
                 'V'
             )
         }
     )
 
-    ########################################################
-    ###### short internal helper function
 
-    function Get-LineOfChars {
-        param (
-            [Parameter()]
-            $Length,
+    # The configurations for this game
+    $Configuration = @{
 
-            [Parameter()]
-            $Char
-        )
+        GameObjects      = @{
+
+            InvaderShip        = [PSCustomObject]@{
+                position    = [System.Numerics.Vector2]::new(10, 0)
+                canvas      = $DesignData.ship
+
+                # custom parameters
+                cooldown    = 0
+                gunmount    = [System.Numerics.Vector2]::new(3, 4)
+                blastDesign = $DesignData.blast
+            }
+
+            # Placeholder list for tracking all blasts.
+            InvaderShip_Blasts = [PSCustomObject[]]@()
+        }
+
+
+
+        onEveryTickDo    = {
+            param($GameObects)
+
+            # Update the gun cooldown of the spaceship.
+            $GameObects['InvaderShip'].cooldown = [System.Math]::Max(0, $GameObects['InvaderShip'].cooldown - 1)
+        }
+
+
         
-        return (1..$Length | ForEach-Object { $Char }) -join ''
-    }
-
-    ########################################################
-    ###### Some initial values
-
-    $WindowHeight = $host.UI.RawUI.WindowSize.Height
-    $WindowWidth = $host.UI.RawUI.WindowSize.Width
-
-    [System.Console]::Clear()
-    [System.Console]::WriteLine()
-    [System.Console]::CursorVisible = $false
-
-
-    $EmptyTile = ' '
-    $InvaderShip = [PSCustomObject]@{
-
-        position     = [System.Numerics.Vector2]::new(
-            [System.Math]::Round($WindowWidth / 2 - 2), 0
-        )
-        lastPosition = $null
-        blasts       = @()
-        isDead       = $false
-
-
-        # Gunmount postition offset from upper left start of ship.
-        # This is were all ship blasts will orginate from. 
-        cooldown     = 0 # ticks
-        gunmount     = $DesignData.gunmount
-        canvas       = $DesignData.ship
-    }
-
-    # Referencable script block to draw elements
-    $draw = {
-        param($object)
-        $canvas = $object.canvas
-        $position = $object.position
-        $lastPosition = $object.lastPosition
-
-        $roundedX = [System.Math]::Round($position.X)
-        $roundedY = [System.Math]::Round($position.y)
-
-        # Check if a list position exists.
-        if ($null -NE $lastPosition) {
-            $roundedLastX = [System.Math]::Round($lastPosition.X)
-            $roundedLastY = [System.Math]::Round($lastPosition.y)
-
-            if ($roundedX -EQ $roundedLastX -AND $roundedY -EQ $roundedLastY) {
-                return # only redraw when the acutal drawn position changes
-            }
-
-            # Overwrite old position
-            for ($index = 0; $index -LT $canvas.Count; $index++) {
-                [System.Console]::SetCursorPosition($roundedLastX, $roundedLastY + $index)
-                $emptyLine = Get-LineOfChars -Length $canvas[$index].length -Char $EmptyTile
-                [System.Console]::Write($emptyLine)
-            }
-        }
-
-        $object.lastPosition = [System.Numerics.Vector2]::new($roundedX, $roundedY)
-
-        if ($roundedY -GT $WindowHeight - 2) {
-            # Mark as dead when an obejct leaves the window and don't redraw it.
-            $object.isDead = $true
-        }
-        else {
-            # Draw object on new position
-            for ($index = 0; $index -LT $canvas.Count; $index++) {
-                [System.Console]::SetCursorPosition($roundedX, $roundedY + $index)
-                [System.Console]::Write($canvas[$index])
-            }
-        }
-    }
-
-    ########################################################
-    ###### The loop for moving and drawing the snake
-
-    $gameEndingMessage = $null
-
-    :GameLoop
-    do {
+        onKeyEvent = {
+            param($KeyEvent, $GameObects)
+    
+            $InvaderShip = $GameObects['InvaderShip']
+                
+            switch ($KeyEvent.Key) {
         
-        Invoke-Command $draw -ArgumentList $InvaderShip
-
-        # Update and draw blasts.
-        foreach ($blast in $InvaderShip.blasts) {
-
-            $blast.position = [System.Numerics.Vector2]::Add($blast.position, $blast.velocity)
-
-            Invoke-Command $draw -ArgumentList $blast
-        }
-
-        # Sort out expired blasts. Also ensure it stays an array by casting.
-        $InvaderShip.blasts = [PSCustomObject[]]($InvaderShip.blasts | Where-Object -Property isDead -NE $true)
-        $InvaderShip.cooldown = [System.Math]::Max(0, $InvaderShip.cooldown - 1)
+                { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) } {
         
-        [System.Console]::CursorVisible = $false
-        Start-Sleep -Milliseconds $TickIntervall
-
-        ##################################################################
-        ### Process key events
-
-        # Only procss key events when a key was pressed
-        if (![System.Console]::KeyAvailable) {
-            continue
-        }
-
-        $keyEvent = [System.Console]::ReadKey($true)
-        switch ($keyEvent.Key) {
-
-            { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) } {
-
-                $InvaderShip.position = [System.Numerics.Vector2]::new(
-                    $InvaderShip.position.x - 1, $InvaderShip.position.y
-                )
-                break;
-            }
-
-            { $_ -in @([System.ConsoleKey]::D, [System.ConsoleKey]::RightArrow) } {
-
-                $InvaderShip.position = [System.Numerics.Vector2]::new(
-                    $InvaderShip.position.x + 1, $InvaderShip.position.y
-                )
-                break;
-            }
-
-            
-            { $_ -in @([System.ConsoleKey]::Spacebar) } {
-
-                if ($InvaderShip.cooldown -GT 0) {
+                    $InvaderShip.position = [System.Numerics.Vector2]::new(
+                        $InvaderShip.position.x - 1, $InvaderShip.position.y
+                    )
                     break;
                 }
-
-                $InvaderShip.cooldown = 50 # Ticks
-                $InvaderShip.blasts += [PSCustomObject]@{
-                    position     = [System.Numerics.Vector2]::Add($InvaderShip.position, $InvaderShip.gunmount)
-                    lastPosition = $null
-                    velocity     = [System.Numerics.Vector2]::new(0, 0.1)
-                    isDead       = $false
-                    canvas       = $DesignData.blast
+        
+                { $_ -in @([System.ConsoleKey]::D, [System.ConsoleKey]::RightArrow) } {
+        
+                    $InvaderShip.position = [System.Numerics.Vector2]::new(
+                        $InvaderShip.position.x + 1, $InvaderShip.position.y
+                    )
+                    break;
                 }
-                break;
+        
+                    
+                { $_ -in @([System.ConsoleKey]::Spacebar) } {
+        
+                    if ( $InvaderShip.cooldown -GT 0) {
+                        break;
+                    }
+        
+                    $InvaderShip.cooldown = 50 # Ticks
+                    $GameObects['InvaderShip_Blasts'] += [PSCustomObject]@{
+                        position = [System.Numerics.Vector2]::Add( $InvaderShip.position, $InvaderShip.gunmount)
+                        velocity = [System.Numerics.Vector2]::new(0, 0.1)
+                        canvas   = $InvaderShip.blastDesign
+                    }
+    
+                    break;
+                }
+        
+        
+                # Disregard other inputs
+                Default {}
             }
-
-
-            # Disregard other inputs
-            Default {}
+        
         }
 
-    } while ($null -EQ $keyEvent -OR $keyEvent.Key -NE [System.ConsoleKey]::Escape)
 
-    [System.Console]::SetCursorPosition($InvaderShip.position.x, $InvaderShip.position.y + 2)
-    [System.Console]::Write("Press any key to continue...")
-    $null = [System.Console]::ReadKey($true)
+
+        # TODO
+        onCollision = {
+            param()
+        }
+    }
+
+
+    # Start a generic gameloop with the configurations for this game.
+    Start-GenericGameLoop @Configuration
+
 }

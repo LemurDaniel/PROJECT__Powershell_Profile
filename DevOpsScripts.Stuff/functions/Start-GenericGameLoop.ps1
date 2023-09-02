@@ -18,6 +18,8 @@
 
     .EXAMPLE
 
+    PS> Start-InvadersGame:
+
                  U u U
                 [~{T}~]
                  `\|/´
@@ -33,18 +35,18 @@
                           O
                           V
 
+
+
+    .EXAMPLE
 #>
 
 function Start-GenericGameLoop {
 
-    [CmdletBinding(
-        #DefaultParameterSetName = "difficultyLevels"
-    )]
+    [CmdletBinding()]
     param (
         [Parameter(
             Position = 1,
-            Mandatory = $false,
-            ParameterSetName = "tickIntervall"
+            Mandatory = $false
         )]
         [ValidateRange(50, 1000)]
         [System.Int32]
@@ -66,131 +68,96 @@ function Start-GenericGameLoop {
         [System.Int32]
         $Witdh = 30,
 
+
+
         # A script that gets run every tick to update any custom parameters.
+        <#
+            {
+                param($GameObjects)
+
+                # Something...
+            },
+        #>
         [Parameter(
-            Mandatory = $false
+            Mandatory = $true
         )]
         [System.Management.Automation.ScriptBlock]
-        $onEveryTickDo = {
-            param($GameObects)
+        $onEveryTickDo,
 
-            # Update the gun cooldown of the spaceship.
-            $GameObects['InvaderShip'].cooldown = [System.Math]::Max(0, $GameObects['InvaderShip'].cooldown - 1)
-        },
+
 
         # This is a hastable of all obects managed by the gameloop.
+        <#
+            @{
+
+                # Template for an object to be managed
+                object_name = [PSCustomObject]@{
+                    # Parameters required by gameloop
+                    position = [System.Numerics.Vector2]::new(0, 0) # Coordinates from upper left corner of object canvas.
+                    velocity = [System.Numerics.Vector2]::new(0, 0) # optional
+                    canvas   = @( # How the object is dran in the terminal. Each line of the array is a terminal line.
+                        '~U~',
+                        " ' "
+                    ) 
+
+                    # TODO optional value for collision handeling.
+                    # - collidable_with = '*'
+                    # - collidable_with = @($objectNames...)
+
+                    # Custom parameters
+                }
+
+                # Allowed types are:
+                # - [PSCustomObject]   <== A single custom object
+                # - [PSCustomObject[]] <== A list of objects
+                
+            }
+        #>
         [Parameter(
-            Mandatory = $false
+            Mandatory = $true
         )]
         [System.Collections.Hashtable]
-        $GameObects = @{
+        $GameObjects,
 
-            <#
-            # Template for an object to be managed
-            object_name = [PSCustomObject]@{
-                # Parameters required by gameloop
-                position = [System.Numerics.Vector2]::new(0, 0) # Coordinates from upper left corner of object canvas.
-                velocity = [System.Numerics.Vector2]::new(0, 0) # optional
-                canvas   = @( # How the object is dran in the terminal. Each line of the array is a terminal line.
-                    '~U~',
-                    " ' "
-                ) 
-
-                TODO optional value for collision handeling.
-                - collidable_with = '*'
-                - collidable_with = @($objectNames...)
-
-                # Custom parameters
-            }
-
-            Allowed types are:
-            - [PSCustomObject]   <== A single custom object
-            - [PSCustomObject[]] <== A list of objects
-            #>
-
-            InvaderShip        = [PSCustomObject]@{
-                position    = [System.Numerics.Vector2]::new(10, 0)
-                canvas      = @(
-                    ' U u U ',
-                    '[~{T}~]',
-                    ' `\|/´ '
-                    "   Y   "
-                )
-
-                # custom parameters
-                cooldown    = 0
-                gunmount    = [System.Numerics.Vector2]::new(3, 4)
-                blastDesign = @(
-                    'O'
-                    'V'
-                )
-            }
-
-            # Placeholder list for tracking all blasts.
-            InvaderShip_Blasts = [PSCustomObject[]]@()
-        },
 
 
         # A customizable script-block for handeling key event. 
         # Gets called on every input, provding the key event, as well as the hashtable of gameobjects.
         # Invidual Game Objects can be access by their defined name corresponding to the key in the hashtable.
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Management.Automation.ScriptBlock]
-        $keyEventsHandler = {
-            param($KeyEvent, $GameObects)
+        <#
+        {
+            param($KeyEvent, $GameObjects)
 
-            $InvaderShip = $GameObects['InvaderShip']
-            
-            switch ($KeyEvent.Key) {
-    
-                { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) } {
-    
-                    $InvaderShip.position = [System.Numerics.Vector2]::new(
-                        $InvaderShip.position.x - 1, $InvaderShip.position.y
-                    )
-                    break;
-                }
-    
-                { $_ -in @([System.ConsoleKey]::D, [System.ConsoleKey]::RightArrow) } {
-    
-                    $InvaderShip.position = [System.Numerics.Vector2]::new(
-                        $InvaderShip.position.x + 1, $InvaderShip.position.y
-                    )
-                    break;
-                }
-    
+            $InvaderShip = $GameObjects['InvaderShip']
                 
-                { $_ -in @([System.ConsoleKey]::Spacebar) } {
-    
-                    if ( $InvaderShip.cooldown -GT 0) {
-                        break;
-                    }
-    
-                    $InvaderShip.cooldown = 50 # Ticks
-                    $GameObects['InvaderShip_Blasts'] += [PSCustomObject]@{
-                        position = [System.Numerics.Vector2]::Add( $InvaderShip.position, $InvaderShip.gunmount)
-                        velocity = [System.Numerics.Vector2]::new(0, 0.1)
-                        canvas   = $InvaderShip.blastDesign
-                    }
+            switch ($KeyEvent.Key) {
 
+                { $_ -in @([System.ConsoleKey]::A, [System.ConsoleKey]::LeftArrow) } {
+                
+                    # Something...
                     break;
                 }
-    
-    
-                # Disregard other inputs
+
                 Default {}
             }
-    
-        },
+
+        }
+        #>
+        [Parameter(
+            Mandatory = $true
+        )]
+        [System.Management.Automation.ScriptBlock]
+        $onKeyEvent,
+
+
+
 
         # TODO a handler function called when a collision is dedected.
         [Parameter(
             Mandatory = $false
         )]
         [System.Management.Automation.ScriptBlock]
-        $collisionHandler = {
+        $onCollision = {
             param($collisionParticipants)
         }
     )
@@ -343,18 +310,18 @@ function Start-GenericGameLoop {
         do {
 
             # Call the script block for updating custom parameters on each tick.
-            $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObects
+            $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObjects
 
             # Only process key events when a key was pressed
             if ([System.Console]::KeyAvailable) {
                 $keyEvent = [System.Console]::ReadKey($true)
-                $null = Invoke-Command -ScriptBlock $keyEventsHandler -ArgumentList $keyEvent, $GameObects
+                $null = Invoke-Command -ScriptBlock $onKeyEvent -ArgumentList $keyEvent, $GameObjects
             }
  
             # Key events are processed before each update and draw.
-            foreach ($objectName in $GameObects.Keys) {
+            foreach ($objectName in $GameObjects.Keys) {
 
-                $objectData = $GameObects[$objectName]
+                $objectData = $GameObjects[$objectName]
 
                 # If it's a list, draw each individual obecjt.
                 if ($objectData -is [PSCustomObject[]] -OR $objectData -is [System.Object[]]) {

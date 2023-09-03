@@ -53,22 +53,30 @@ function Start-GenericGameLoop {
         $TickIntervall = 1,
 
 
-        # Todo Game size
         [Parameter(
             Mandatory = $false
         )]
-        [ValidateRange(5, 50)]
         [System.Int32]
-        $Height = 10,
+        $GameHeight,
 
         [Parameter(
             Mandatory = $false
         )]
-        [ValidateRange(15, 150)]
         [System.Int32]
-        $Witdh = 30,
+        $GameWidth,
 
 
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Int32]
+        $RequiredGameHeight,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Int32]
+        $RequiredGameWidth,
 
         # A script that gets run every tick to update any custom parameters.
         <#
@@ -195,6 +203,26 @@ function Start-GenericGameLoop {
         return (1..$Length | ForEach-Object { $Char }) -join ''
     }
 
+
+    # TODO dynamic resize of window?
+    $WindowHeight = $host.UI.RawUI.WindowSize.Height
+    $WindowWidth = $host.UI.RawUI.WindowSize.Width
+
+    $GameHeight = $PSBoundParameters.ContainsKey('GameHeight') ? $GameHeight : $WindowHeight
+    $GameWidth = $PSBoundParameters.ContainsKey('GameWidth') ? $GameWidth : $WindowWidth
+    # $GameOffsetLength = [System.Math]::floor($WindowWidth / 2 - $GameWidth   / 2 - 2) TODO
+
+    $RequiredGameHeight = $PSBoundParameters.ContainsKey('RequiredGameHeight') ? $RequiredGameHeight : $GameHeight
+    $RequiredGameWidth = $PSBoundParameters.ContainsKey('RequiredGameWidth') ? $RequiredGameWidth : $GameWidth
+
+    if ($WindowHeight -LT $RequiredGameHeight) {
+        throw "Terminal Height must be at least:  $RequiredGameHeight (Currently: $WindowHeight)"
+    }
+
+    if ($WindowWidth -LT $RequiredGameWidth) {
+        throw "Terminal Width must be at least:  $RequiredGameWidth   (Currently: $WindowWidth)"
+    }
+
     ########################################################
     ###### Some initial values
 
@@ -264,13 +292,9 @@ function Start-GenericGameLoop {
             $object.position = [System.Numerics.Vector2]::add($object.position, $object.velocity)
         }
 
-
-        # In case th
-        $WindowHeight = $host.UI.RawUI.WindowSize.Height
-
-        $didExitDown = [System.Math]::round($object.position.y) -GT ($WindowHeight - $object.canvas.Count - 1)
+        $didExitDown = [System.Math]::round($object.position.y) -GT ($GameHeight - $object.canvas.Count - 1)
         $didExitUp = [System.Math]::round($object.position.y) -LT 1
-        $didExitRight = $false #[System.Math]::round($object.position.x) -GT ($WindowWidth - $object.Width)
+        $didExitRight = [System.Math]::round($object.position.x) -GT ($WindowWidth - $object.canvas[0].Length - 1)
         $didExitLeft = [System.Math]::round($object.position.x) -LT 0
 
 
@@ -304,8 +328,6 @@ function Start-GenericGameLoop {
 
     $draw = {
         param($object, $action)
-
-        $WindowWidth = $host.UI.RawUI.WindowSize.Width
 
         $roundedX = [System.Math]::Round($object.position.X)
         $roundedY = [System.Math]::Round($object.position.y)
@@ -421,30 +443,29 @@ function Start-GenericGameLoop {
         :GameLoop
         do {
 
-            $GameHeight = $host.UI.RawUI.WindowSize.Height
-            $GameWidth = $host.UI.RawUI.WindowSize.Width
-
-            # Process collisions of last tick
-            foreach ($collisionData in $collisionsGrouped.Values) {
-                if ($collisionData.participants.Count -EQ 0) {
-                    continue
+            if ($TICK_COUNT -GT 0) {
+                # Process collisions of last tick
+                foreach ($collisionData in $collisionsGrouped.Values) {
+                    if ($collisionData.participants.Count -EQ 0) {
+                        continue
+                    }
+                    Invoke-Command -ScriptBlock $onCollision -ArgumentList ($collisionData.collider), ($collisionData.participants)
                 }
-                Invoke-Command -ScriptBlock $onCollision -ArgumentList ($collisionData.collider), ($collisionData.participants)
+
+                $collisionsGrouped.clear()
+                $CollisionHashTable.clear()
+                $drawingQueue.Clear()
+
+                # Call the script block for updating custom parameters on each tick.
+                $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObjects, $GameWidth, $GameHeight
+
+                # Only process key events when a key was pressed
+                if ([System.Console]::KeyAvailable) {
+                    $keyEvent = [System.Console]::ReadKey($true)
+                    $null = Invoke-Command -ScriptBlock $onKeyEvent -ArgumentList $keyEvent, $GameObjects, $GameWidth, $GameHeight
+                }
             }
 
-            $collisionsGrouped.clear()
-            $CollisionHashTable.clear()
-            $drawingQueue.Clear()
-
-            # Call the script block for updating custom parameters on each tick.
-            $null = Invoke-Command -ScriptBlock $onEveryTickDo -ArgumentList $GameObjects, $GameWidth, $GameHeight
-
-            # Only process key events when a key was pressed
-            if ([System.Console]::KeyAvailable) {
-                $keyEvent = [System.Console]::ReadKey($true)
-                $null = Invoke-Command -ScriptBlock $onKeyEvent -ArgumentList $keyEvent, $GameObjects, $GameWidth, $GameHeight
-            }
- 
             # Key events are processed before each update and draw.
             foreach ($objectName in ([System.String[]]$GameObjects.Keys) ) {
 
@@ -580,17 +601,6 @@ function Start-GenericGameLoop {
         [System.Console]::CursorVisible = $true
     }
 
-    Write-Host "`nTest ------------------------------ "
-    foreach ($collider in $collisionsGrouped.Values) {
-
-        # Testing
-        Write-Host "`n'$($collider.name)' has collisions with: "
-        foreach ($participant in $collider.participants) {
-            Write-Host "  - '$($participant.name)' on positions: '$($participant.positions | Sort-Object)'"
-        }
-    }
-    Write-Host "`nTest ------------------------------ "
-    return
     [System.Console]::SetCursorPosition($InvaderShip.position.x, $InvaderShip.position.y + 2)
     [System.Console]::Write("Press any key to continue...")
     $null = [System.Console]::ReadKey($true)

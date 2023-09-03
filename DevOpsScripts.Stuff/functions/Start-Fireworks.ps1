@@ -112,13 +112,62 @@ function Start-Fireworks {
                 '        ' 
             )
         )
+
+        typ3  = @(
+            @( 
+                "   .   "
+                ".'.:.'."
+                "-=:o:=-"
+                "'.':'.'"
+                "   '   "
+            ),
+            @(
+                "       "
+                " '.:.' "
+                "-=:o:=-"
+                " .':'. "
+                "       "
+            ),
+            @(
+                "       "
+                "  .:.  "
+                "-=:o:=-"
+                "  ':'  "
+                "       "
+            ),
+            @(
+                "       "
+                "  . .  "
+                "-=:o:=-"
+                "  ' '  "
+                "       "
+            ),
+            @(
+                "       "
+                "       "
+                " =:o:= "
+                "       "
+                "       "
+            ),
+            @(
+                "       "
+                "       "
+                "  :o:  "
+                "       "
+                "       "
+            )
+        )
     }
 
     # The configurations for this game
     $Configuration = @{
 
+        RequiredGameHeight = 15
+        RequiredGameWidth  = 40
+
         # Objects get drawn in that order. Following objects will potentially hide previous objects.
-        GameObjects   = [ordered]@{
+        GameObjects        = [ordered]@{
+
             Fireworks            = [PSCustomObject[]]@(
                 @{
                     position        = [System.Numerics.Vector2]::new(
@@ -134,18 +183,28 @@ function Start-Fireworks {
                 }
             )
             Fireworks_Explosions = [PSCustomObject[]]@()
+
+            Fireworks_Text       = [PSCustomObject]@{
+                position = [System.Numerics.Vector2]::new(1, 0)
+                canvas   = @(
+                    "Explosions: 0"
+                )
+
+                current  = 0
+            }
+            
         }
 
 
 
-        onEveryTickDo = {
+        onEveryTickDo      = {
             param($GameObects, $GameWidth, $GameHeight)
 
-            if ((Get-Random -Minimum 0 -Maximum 100) -EQ 0) {
+            if ((Get-Random -Minimum 0 -Maximum 50) -EQ 0) {
                 
                 $GameObects['Fireworks'] += [PSCustomObject]@{
                     position        = [System.Numerics.Vector2]::new(
-                        (Get-Random -Minimum 20 -Maximum ($GameWidth - 20)), $GameHeight - 2
+                        (Get-Random -Minimum 10 -Maximum ($GameWidth - 10)), $GameHeight - 2
                     )
                     velocity        = [System.Numerics.Vector2]::new(0, -0.2)
                     canvas          = @(
@@ -155,6 +214,12 @@ function Start-Fireworks {
 
                     explosionHeight = Get-Random -Minimum 4 -Maximum ($GameHeight - 7)
                 }
+            }
+
+            if ($GameObects['Fireworks_Text'].current -NE $GameObects['Fireworks_Explosions'].Count) {
+                $GameObects['Fireworks_Text'].redrawMark = $true
+                $GameObects['Fireworks_Text'].current = $GameObects['Fireworks_Explosions'].Count
+                $GameObects['Fireworks_Text'].canvas[0] = "Explosions: $($GameObects['Fireworks_Explosions'].Count)"
             }
 
             foreach ($firework in $GameObects['Fireworks']) {
@@ -198,7 +263,7 @@ function Start-Fireworks {
             }
         }
 
-        onExitScreen  = {
+        onExitScreen       = {
             param($object, $GameObjects, $didExitLeft, $didExitRigth, $didExitUp, $didExitDown)
 
             if ($didExitUp -AND $object.ParentName -EQ 'Fireworks') {
@@ -206,11 +271,11 @@ function Start-Fireworks {
             }
         }
         
-        onKeyEvent    = {
+        onKeyEvent         = {
             param($KeyEvent, $GameObects)
         }
 
-        onCollision   = {
+        onCollision        = {
             param($collider, $participants)
         }
     }

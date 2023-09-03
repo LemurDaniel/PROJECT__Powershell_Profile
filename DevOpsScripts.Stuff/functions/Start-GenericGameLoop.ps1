@@ -269,13 +269,13 @@ function Start-GenericGameLoop {
         $WindowHeight = $host.UI.RawUI.WindowSize.Height
 
         $didExitDown = [System.Math]::round($object.position.y) -GT ($WindowHeight - $object.canvas.Count - 1)
-        $didExitUp = [System.Math]::round($object.position.y) -LT 0
+        $didExitUp = [System.Math]::round($object.position.y) -LT 1
         $didExitRight = $false #[System.Math]::round($object.position.x) -GT ($WindowWidth - $object.Width)
         $didExitLeft = [System.Math]::round($object.position.x) -LT 0
 
 
         if ($didExitDown -OR $didExitUp -OR $didExitRight -OR $didExitLeft) {
-            $null = Invoke-Command -ScriptBlock $onExitScreen -ArgumentList $object, $didExitLeft, $didExitRight, $didExitUp, $didExitDown
+            $null = Invoke-Command -ScriptBlock $onExitScreen -ArgumentList $object, $GameObjects, $didExitLeft, $didExitRight, $didExitUp, $didExitDown
         }
 
         $roundedX = [System.Math]::Round($object.position.X)
@@ -354,6 +354,7 @@ function Start-GenericGameLoop {
                 [System.Console]::SetCursorPosition($roundedX + $emptyOffset + $offScreenOffset, $roundedY + $index)
                 [System.Console]::Write($substringLine.Trim())
                 $object.collisionMark = $false
+                $object.redrawMark = $false
             }
         }
     }

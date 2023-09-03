@@ -123,7 +123,7 @@ function Start-InvadersGame {
 
 
         onEveryTickDo = {
-            param($GameObects)
+            param($GameObects, $GameWidth, $GameHeight)
 
             # Update the gun cooldown of the spaceship.
             $GameObects['InvaderShip'].cooldown = [System.Math]::Max(0, $GameObects['InvaderShip'].cooldown - 1)
@@ -213,7 +213,7 @@ function Start-InvadersGame {
         }
 
         onExitScreen  = {
-            param($object, $didExitLeft, $didExitRigth, $didExitUp, $didExitDown)
+            param($object, $GameObjects, $didExitLeft, $didExitRigth, $didExitUp, $didExitDown)
 
             if ($object.ParentName -EQ 'InvaderShip_Blasts') {
                 $object.isDead = $true

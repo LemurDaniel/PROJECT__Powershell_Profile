@@ -340,10 +340,10 @@ function Start-GenericGameLoop {
         $roundedLastX = [System.Math]::Round($object.lastPosition.X)
         $roundedLastY = [System.Math]::Round($object.lastPosition.y)
 
-        # Redraw Empty-Tiles on the old position.
-        for ($index = 0; $index -LT $object.lastCanvas.Count; $index++) {
+        if ($action -EQ "undraw") {
 
-            if ($action -EQ "undraw") {
+            # Redraw Empty-Tiles on the old position.
+            for ($index = 0; $index -LT $object.lastCanvas.Count; $index++) {
 
                 # Allow for moving partially outside of screen with object on the left
                 $offScreenOffset = 0
@@ -354,7 +354,8 @@ function Start-GenericGameLoop {
                 #    $offScreenOffset = 
                 #}
 
-                $substringLine = ([System.String]$object.lastCanvas[$index]).substring($offScreenOffset)
+                # Prevent string with single-length getting interpreted as System.Char
+                $substringLine = "$($object.lastCanvas[$index])".substring($offScreenOffset)
 
                 # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
                 $emptyOffset = 0 #$substringLine.Length - $substringLine.TrimStart().Length
@@ -362,30 +363,37 @@ function Start-GenericGameLoop {
                 [System.Console]::SetCursorPosition($roundedLastX + $emptyOffset + $offScreenOffset, $roundedLastY + $index)
                 $emptyLine = Get-LineOfChars -Length $substringLine.length -Char $EMPTY_TILE
                 [System.Console]::Write($emptyLine)
+
             }
-            elseif ($action -EQ "draw") {
+        }
+        elseif ($action -EQ "draw") {
+
+            $object.lastCanvas = @()
+            $object.lastPosition = [System.Numerics.Vector2]::new($object.position.x, $object.position.y)
+
+            for ($index = 0; $index -LT $object.canvas.Count; $index++) {
 
                 # Allow for moving partially outside of screen with object
                 $offScreenOffset = 0
                 if ($roundedX -LT 0) {
                     $offScreenOffset = [System.Math]::Abs($roundedX)
                 }
-
-                $substringLine = ([System.String]$object.canvas[$index]).substring($offScreenOffset)
+                
+                # Prevent string with single-length getting interpreted as System.Char
+                $substringLine = "$($object.canvas[$index])".substring($offScreenOffset)
 
                 # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
                 $emptyOffset = $substringLine.Length - $substringLine.TrimStart().Length
 
                 [System.Console]::SetCursorPosition($roundedX + $emptyOffset + $offScreenOffset, $roundedY + $index)
                 [System.Console]::Write($substringLine.Trim())
+                
+                $object.lastCanvas += $object.canvas[$index]
                 $object.collisionMark = $false
                 $object.redrawMark = $false
+
             }
         }
-
-
-        $object.lastPosition = [System.Numerics.Vector2]::new($object.position.x, $object.position.y)
-        $object.lastCanvas = $object.canvas | ForEach-Object { $_ }
     }
 
 

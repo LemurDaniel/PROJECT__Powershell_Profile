@@ -248,6 +248,11 @@ function Start-GenericGameLoop {
             throw "Object '$($object.name)' doesn't have a canvas array defining its shape."
         }
 
+        if ($null -EQ $object.lastCanvas) {
+            $null = $object
+            | Add-Member -MemberType NoteProperty -Force -Name lastCanvas -Value object.canvas
+        }
+
         if ($null -EQ $object.collisionMark) {
             $null = $object
             | Add-Member -MemberType NoteProperty -Force -Name collisionMark -Value $false
@@ -335,10 +340,8 @@ function Start-GenericGameLoop {
         $roundedLastX = [System.Math]::Round($object.lastPosition.X)
         $roundedLastY = [System.Math]::Round($object.lastPosition.y)
 
-        $object.lastPosition = [System.Numerics.Vector2]::new($object.position.x, $object.position.y)
-
         # Redraw Empty-Tiles on the old position.
-        for ($index = 0; $index -LT $object.canvas.Count; $index++) {
+        for ($index = 0; $index -LT $object.lastCanvas.Count; $index++) {
 
             if ($action -EQ "undraw") {
 
@@ -351,7 +354,7 @@ function Start-GenericGameLoop {
                 #    $offScreenOffset = 
                 #}
 
-                $substringLine = $object.canvas[$index].substring($offScreenOffset)
+                $substringLine = ([System.String]$object.lastCanvas[$index]).substring($offScreenOffset)
 
                 # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
                 $emptyOffset = 0 #$substringLine.Length - $substringLine.TrimStart().Length
@@ -368,7 +371,7 @@ function Start-GenericGameLoop {
                     $offScreenOffset = [System.Math]::Abs($roundedX)
                 }
 
-                $substringLine = $object.canvas[$index].substring($offScreenOffset)
+                $substringLine = ([System.String]$object.canvas[$index]).substring($offScreenOffset)
 
                 # This ignores and offsets any empty tile at the start of the currents canva's line of the object.
                 $emptyOffset = $substringLine.Length - $substringLine.TrimStart().Length
@@ -379,6 +382,10 @@ function Start-GenericGameLoop {
                 $object.redrawMark = $false
             }
         }
+
+
+        $object.lastPosition = [System.Numerics.Vector2]::new($object.position.x, $object.position.y)
+        $object.lastCanvas = $object.canvas | ForEach-Object { $_ }
     }
 
 

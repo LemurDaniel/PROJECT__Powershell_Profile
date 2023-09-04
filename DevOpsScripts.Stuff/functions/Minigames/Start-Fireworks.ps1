@@ -184,10 +184,16 @@ function Start-Fireworks {
             )
             Fireworks_Explosions = [PSCustomObject[]]@()
 
-            Fireworks_Text       = [PSCustomObject]@{
+            Fireworks_staticText = [PSCustomObject]@{
                 position = [System.Numerics.Vector2]::new(1, 0)
                 canvas   = @(
-                    "Explosions: 0"
+                    "Explosions:"
+                )
+            }
+            Fireworks_count      = [PSCustomObject]@{
+                position = [System.Numerics.Vector2]::new(13, 0)
+                canvas   = @(
+                    "0"
                 )
 
                 current  = 0
@@ -216,10 +222,10 @@ function Start-Fireworks {
                 }
             }
 
-            if ($GameObects['Fireworks_Text'].current -NE $GameObects['Fireworks_Explosions'].Count) {
-                $GameObects['Fireworks_Text'].redrawMark = $true
-                $GameObects['Fireworks_Text'].current = $GameObects['Fireworks_Explosions'].Count
-                $GameObects['Fireworks_Text'].canvas[0] = "Explosions: $($GameObects['Fireworks_Explosions'].Count)"
+            if ($GameObects['Fireworks_count'].current -NE $GameObects['Fireworks_Explosions'].Count) {
+                $GameObects['Fireworks_count'].redrawMark = $true
+                $GameObects['Fireworks_count'].current = $GameObects['Fireworks_Explosions'].Count
+                $GameObects['Fireworks_count'].canvas[0] = "$($GameObects['Fireworks_Explosions'].Count)"
             }
 
             foreach ($firework in $GameObects['Fireworks']) {

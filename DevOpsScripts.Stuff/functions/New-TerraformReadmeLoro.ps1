@@ -51,11 +51,18 @@ function New-TerraformReadmeLoro {
 
         # Apply for all on the current path with a limted depth.
         [Parameter(
-            Position = 1,
+            Mandatory = $false,
             ParameterSetName = "allOnPath"
         )]
         [switch]
         $AllOnPath,
+
+        # Override existing reamde
+        [Parameter(
+            Mandatory = $false
+        )]
+        [switch]
+        $Override,
 
         [Parameter(
             Position = 1,
@@ -81,7 +88,7 @@ function New-TerraformReadmeLoro {
 
         foreach ($path in $validValues) {
             Write-Host "Processing Module: $path"
-            $null = New-TerraformReadmeLoro -ModulePath $path -BasicVariables $BasicVariables
+            $null = New-TerraformReadmeLoro -ModulePath $path -BasicVariables $BasicVariables -Override:$Override
         }
 
         return # End of function for all on path
@@ -138,8 +145,6 @@ function New-TerraformReadmeLoro {
 
         foreach ($terraformMatch in [regex]::Matches($fileContent, 'resource\s*"[^"]+"\s*"[^"]+"\s*{')) {
 
-            ######
-
             $terraformConfig['resources'] += @{
                 type     = [regex]::Matches($terraformMatch.Value, '"[^"]+"')[0] -replace '"', ''
                 name     = [regex]::Matches($terraformMatch.Value, '"[^"]+"')[1] -replace '"', ''
@@ -149,8 +154,6 @@ function New-TerraformReadmeLoro {
         }
 
         foreach ($terraformMatch in [regex]::Matches($fileContent, 'data\s*"[^"]+"\s*"[^"]+"\s*{')) {
-
-            ######
 
             $terraformConfig['resources'] += @{
                 type     = [regex]::Matches($terraformMatch.Value, '"[^"]+"')[0] -replace '"', ''
@@ -166,28 +169,8 @@ function New-TerraformReadmeLoro {
 
         foreach ($terraformMatch in [regex]::Matches($fileContent, 'output\s*"[^"]+"\s*{')) {
 
-            $bracketDepth = 0
-            $endIndex = $terraformMatch.Index + $terraformMatch.Value.IndexOf('{')
-        
-            :innerLoop
-            for (; $endIndex -LT $fileContent.Length; $endIndex++) {
-                if ($fileContent[$endIndex] -EQ '{') {
-                    $bracketDepth++
-                }
-                elseif ($fileContent[$endIndex] -EQ '}') {
-                    $bracketDepth--
-                }
-        
-                if ($bracketDepth -EQ 0) {
-                    break innerLoop
-                }
-            }
-        
-            $blockContent = $fileContent.Substring($terraformMatch.Index, ($endIndex - $terraformMatch.Index + 1))
+            $blockContent = Get-MatchingBrackets $terraformMatch.Index $fileContent '{' '}'
 
-
-
-            ######
             $outputName = $terraformMatch.Value -replace 'output|["\s\{]+', ''
             $outputDescription = [regex]::Match($blockContent, 'description\s*=\s*"[^"]+"')
             $outputDescription = [System.String]::IsNullOrEmpty($outputDescription) ? "(undefined)" : $outputDescription.Value
@@ -205,28 +188,7 @@ function New-TerraformReadmeLoro {
 
         foreach ($terraformMatch in [regex]::Matches($fileContent, 'variable\s*"[^"]+"\s*{')) {
 
-            $bracketDepth = 0
-            $endIndex = $terraformMatch.Index + $terraformMatch.Value.IndexOf('{')
-        
-            :innerLoop
-            for (; $endIndex -LT $fileContent.Length; $endIndex++) {
-                if ($fileContent[$endIndex] -EQ '{') {
-                    $bracketDepth++
-                }
-                elseif ($fileContent[$endIndex] -EQ '}') {
-                    $bracketDepth--
-                }
-        
-                if ($bracketDepth -EQ 0) {
-                    break innerLoop
-                }
-            }
-        
-            $blockContent = $fileContent.Substring($terraformMatch.Index, ($endIndex - $terraformMatch.Index + 1))
-
-
-
-            ######
+            $blockContent = Get-MatchingBrackets $terraformMatch.Index $fileContent '{' '}'
 
             $variableName = $terraformMatch.Value -replace 'variable|["\s\{]+', ''
             $variableDescription = [regex]::Match($blockContent, 'description\s*=\s*"[^"]+"')
@@ -402,7 +364,7 @@ $(
 
 <table>
     <tr>
-        <th>Resource Type</th>
+        <th>Name</th>
         <th>Type</th>
         <th>Required</th>
         <th>Description</th>
@@ -415,7 +377,7 @@ $(
 
 <table>
     <tr>
-        <th>Resource Type</th>
+        <th>Name</th>
         <th>Type</th>
         <th>Required</th>
         <th>Description</th>
@@ -431,13 +393,22 @@ $(
 
 <table>
     <tr>
-        <th>Output name</th>
+        <th>Name</th>
         <th>Description</th>
     </tr>
     $($moduleOutputsMarkdown -Join [System.Environment]::NewLine)
 </table>
 "@
 
-    $ReadmeMarkdown | Out-File -FilePath "$fullpath/README.generated.md"
+    if ($Override) {
+        if ($existingReadme) {
+            Remove-Item -Path $existingReadme.FullName
+        }
+        $ReadmeMarkdown | Out-File -FilePath "$fullpath/README.md"
+    }
+    else {
+        $ReadmeMarkdown | Out-File -FilePath "$fullpath/README.generated.md"
+    }
+
     return $terraformConfig
 }

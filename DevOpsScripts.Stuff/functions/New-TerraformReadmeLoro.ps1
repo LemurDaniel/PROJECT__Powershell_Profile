@@ -34,7 +34,7 @@ function New-TerraformReadmeLoro {
                 param($CommandName, $ParameterName, $WordToComplete)
 
                 $location = (Get-Location).Path
-                $validValues = Get-ChildItem -Path '*' -File -Recurse -Depth 5 -Filter '*.tf'
+                return Get-ChildItem -Path '*' -File -Recurse -Depth 5 -Filter '*.tf'
                 | Select-Object -ExpandProperty Directory
                 | Where-Object -Property FullName -NE $location
                 | Select-Object -ExpandProperty FullName 
@@ -42,8 +42,8 @@ function New-TerraformReadmeLoro {
                 | ForEach-Object {
                     $_.replace($location, '')
                 }
-
-                return $validValues
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
         [System.String]
@@ -79,14 +79,40 @@ function New-TerraformReadmeLoro {
             $_.replace($location, '')
         }
 
-        foreach($path in $validValues) {
+        foreach ($path in $validValues) {
             Write-Host "Processing Module: $path"
             $null = New-TerraformReadmeLoro -ModulePath $path -BasicVariables $BasicVariables
         }
 
         return # End of function for all on path
     }
-    
+
+    function Get-MatchingBrackets {
+        param(
+            [System.Int32]$startIndex, 
+            [System.String]$content, 
+            [System.Char]$openingBracket, 
+            [System.Char]$closingBracket
+        )
+
+        $bracketCount = 0
+        $searchString = $content.Substring($startIndex)
+        $searchString = $searchString.Substring($searchString.IndexOf($openingBracket))
+     
+        for ($index = 0; $index -LT $searchString.Length; $index++) {
+            if ($searchString[$index] -EQ $openingBracket) {
+                $bracketCount++
+            }
+            elseif ($searchString[$index] -EQ $closingBracket) {
+                $bracketCount--;
+            }
+
+            if ($bracketCount -EQ 0) {
+                return $searchString.Substring(0, $index + 1)
+            }
+        }
+    }
+
     ###########
 
     $fullpath = Join-Path -Path (Get-Location).Path -ChildPath $ModulePath
@@ -204,21 +230,32 @@ function New-TerraformReadmeLoro {
 
             $variableName = $terraformMatch.Value -replace 'variable|["\s\{]+', ''
             $variableDescription = [regex]::Match($blockContent, 'description\s*=\s*"[^"]+"')
-            $variableType = [regex]::Match($blockContent, 'type\s*=\s*.*')
-            $required = 'undefined'
+            $variableRequired = 'undefined'
         
             $variableDescription = [System.String]::IsNullOrEmpty($variableDescription) ? "(undefined)" : $variableDescription.Value
             $variableDescription = $variableDescription -replace 'description\s*=\s*"', '' -replace '"', ''
             if ($variableDescription.toLower().contains('required')) {
-                $required = "Required"
+                $variableRequired = "Required"
             }
             elseif ($variableDescription.toLower().contains('optional')) {
-                $required = "Optional"
+                $variableRequired = "Optional"
             }
             $variableDescription = $variableDescription -replace '\(required\)|\(optional\)', ''
+
+
+            $variableType = [regex]::Match($blockContent, 'type\s*=\s*[^\n]+')
+            if ([System.String]::IsNullOrEmpty($variableType)) {
+                $variableType = '(undefined)'
+            }
+            elseif ($variableType.Value.Contains('(')) {
+                $temporary = [regex]::match($variableType.Value, "=.*\(") -replace '[=\s\(]', ''
+                $variableTypeBracketContent = Get-MatchingBrackets -startIndex ($variableType.Index) $blockContent '(' ')'
+                $variableType = ($temporary + $variableTypeBracketContent) -replace '\s', ''
+            }
         
-            $variableType = [System.String]::IsNullOrEmpty($variableType) ? "(undefined)" : $variableType
-            $variableType = $variableType -replace 'type\s*=\s*|`n', ''
+
+
+            $variableType = $variableType -replace 'type\s*=\s*|`n|#+.*', ''
             if ($variableType.toLower().contains('object')) {
                 $variableType = 'Complex Object'
             }
@@ -227,7 +264,7 @@ function New-TerraformReadmeLoro {
                 name        = $variableName.Trim()
                 type        = $variableType.Trim()
                 description = $variableDescription.Trim()
-                required    = $required.Trim()
+                required    = $variableRequired.Trim()
             }
             
         }
@@ -247,7 +284,7 @@ function New-TerraformReadmeLoro {
         $descriptionMatch = [regex]::Match($readmeContent, '<h\d>[Dd]escription<\/h\d>')
 
         if ($descriptionMatch) {
-            $descriptionContent = $readmeContent.Substring($descriptionMatch.Value.Index + $descriptionMatch.Value.Length)
+            $descriptionContent = $readmeContent.Substring($descriptionMatch.Index + $descriptionMatch.Value.Length)
             $descriptionContent = [regex]::Match($descriptionContent, '[\s\S]*?<h\d>').Value -replace '<h\d>', ''
             $moduleDescription = $descriptionContent.Trim()
         }

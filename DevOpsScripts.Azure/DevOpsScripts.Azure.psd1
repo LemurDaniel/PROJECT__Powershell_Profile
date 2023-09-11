@@ -78,7 +78,8 @@ FunctionsToExport = 'Backup-AzTables', 'Connect-AzTenant',
                'Search-AzFunctionAppSettings', 'Search-AzResource', 
                'Search-AzResourceGraphResults', 'Search-AzStorageAccount', 
                'Search-AzStorageContext', 'Search-AzVm', 'Test', 'Get-AKScredentials', 
-               'Get-AzContextsWrapper', 'Switch-K8SNamespace', 
+               'Get-AzContextsWrapper', 'Get-K8SContexts', 'Get-K8SResource', 
+               'Get-K8SResourceKinds', 'Switch-K8SCluster', 'Switch-K8SNamespace', 
                'New-AzAccessPackageCatalogRoleAssignment', 
                'Remove-AzAccessPackageCatalogRoleAssignment', 
                'Get-GraphApiManager', 'Get-onPremisesExtensionAttributes', 
@@ -98,7 +99,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'FAConf', 'STCtx', 'k8s-ns', 'pim', 'pimDeactivate'
+AliasesToExport = 'FAConf', 'STCtx', 'k8s-cluster', 'k8s-ns', 'pim', 'pimDeactivate'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

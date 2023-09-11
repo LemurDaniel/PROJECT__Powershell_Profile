@@ -35,7 +35,7 @@
 
 function Read-K8SLogs {
 
-    [CmdletBinding()]
+    [Alias('k8s-logs')]
     param (
         [Parameter(
             Mandatory = $true,
@@ -136,7 +136,7 @@ function Read-K8SLogs {
             Write-Host
 
             $sleepSeconds = 5
-            Write-Host "... Searching for another pod in deployment '$Namspace/$Deployment' after $sleepSeconds seconds"
+            Write-Host "... Searching for another pod in deployment '$Namespace/$Deployment' after $sleepSeconds seconds"
             Start-Sleep -Seconds $sleepSeconds
 
             Write-Host ""

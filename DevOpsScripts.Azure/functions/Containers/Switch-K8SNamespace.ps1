@@ -14,6 +14,12 @@
     .OUTPUTS
     None
 
+    .EXAMPLE
+
+    Switch to a different namespace in the current cluster:
+
+    PS> k8s-ns <autocompleted_namespace>
+
 
     .LINK
         
@@ -33,22 +39,18 @@ function Switch-K8SNamespace {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = kubectl get namespace
-                | Select-Object -Skip 1 
-                | ForEach-Object { [regex]::Match($_, "^[^\s]*").Value }
+                $validValues = Get-K8SResources -Type Namespace -Attribute metadata.name
                 
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
-        [ValidateScript({
-                $_ -in (
-                    kubectl get namespace
-                    | Select-Object -Skip 1 
-                    | ForEach-Object { [regex]::Match($_, "^[^\s]*").Value }
-                )
-            })]
+        [ValidateScript(
+            {
+                $_ -in (Get-K8SResources -Type Namespace).metadata.name
+            }
+        )]
         $Namespace
     )
 

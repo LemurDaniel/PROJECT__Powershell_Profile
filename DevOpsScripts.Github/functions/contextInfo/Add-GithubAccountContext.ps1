@@ -32,13 +32,15 @@ function Add-GithubAccountContext {
 
     $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder 'api.github.com'
     $useSSH = Read-UserInput -Prompt '   clone via SSH [yes/no]:'
+    $signCommit = Read-UserInput -Prompt '   sign commits [yes/no]:'
 
     $Accounts[$name] = [ordered]@{
-        useSSH   = $useSSH.toLower() -eq "yes" ?  $true : $false
-        name     = $name
-        domain   = $domain -ne 'api.github.com' ? "$domain/api/v3" : "api.github.com"
-        patRef   = $Accounts.ContainsKey($name) ? $Accounts[$name].patRef : (new-RandomBytes Hex 16)
-        cacheRef = $Accounts.ContainsKey($name) ? $Accounts[$name].cacheRef : (new-RandomBytes Hex 16)
+        useSSH        = $useSSH.toLower() -eq "yes" ?  $true : $false
+        name          = $name
+        domain        = $domain -ne 'api.github.com' ? "$domain/api/v3" : "api.github.com"
+        commitSigning = $signCommit.toLower() -eq "yes" ?  $true : $false
+        patRef        = $Accounts.ContainsKey($name) ? $Accounts[$name].patRef : (new-RandomBytes Hex 16)
+        cacheRef      = $Accounts.ContainsKey($name) ? $Accounts[$name].cacheRef : (new-RandomBytes Hex 16)
     }
 
     return Save-SecureStringToFile -Identifier git.accounts.all -Object $Accounts # -Forever

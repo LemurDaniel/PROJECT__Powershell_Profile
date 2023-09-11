@@ -48,13 +48,15 @@ function Update-GithubAccountContext {
 
     $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder ($Accounts[$Account].domain -replace '/api/v3', '')
     $useSSH = Read-UserInput -Prompt '   clone via SSH [yes/no]:'
+    $signCommit = Read-UserInput -Prompt '   sign commits [yes/no]:'
 
     $Accounts[$name] = [ordered]@{
-        useSSH   = $useSSH.toLower() -eq "yes" ?  $true : $false
-        name     = $name
-        domain   = $domain -ne 'api.github.com' ? "$domain/api/v3" : "api.github.com"
-        patRef   = $Accounts[$Account].patRef
-        cacheRef = $Accounts[$Account].cacheRef
+        useSSH        = $useSSH.toLower() -eq "yes" ?  $true : $false
+        name          = $name
+        domain        = $domain -ne 'api.github.com' ? "$domain/api/v3" : "api.github.com"
+        commitSigning = $signCommit.toLower() -eq "yes" ?  $true : $false
+        patRef        = $Accounts[$Account].patRef
+        cacheRef      = $Accounts[$Account].cacheRef
     }
 
     if ($Account -NE $name) {

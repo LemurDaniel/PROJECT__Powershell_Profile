@@ -47,6 +47,7 @@ if ($settingsFile) {
 $gpgSigning = Read-SecureStringFromFile -Identifier gitGpgEnable -AsPlainText
 while ($null -eq $gpgSigning -OR $gpgSigning.toLower() -notin ('true', 'false')) {
     $gpgSigning = Read-Host -Prompt 'Enable Gpg-Signing [true/false]'
+    $null = git config --global commit.gpgsign $gpgSigning
     Save-SecureStringToFile -PlainText $gpgSigning -Identifier gitGpgEnable
 }
 
@@ -68,7 +69,7 @@ if ([System.Boolean]::parse($gpgSigning)) {
 
     # Overwrite settings for gpg-agent to set passphrase
     # Then Reload agent and set acutal Passphrase
-    $gpgPath = $env:Path -Split ';' | Where-Object {$_ -like '*GnuPG*' } | Select-Object -First 1
+    $gpgPath = $env:Path -Split ';' | Where-Object { $_ -like '*GnuPG*' } | Select-Object -First 1
     $null = git config --global --replace-all gpg.program "$gpgPath/gpg.exe"
     $null = git config --global --unset gpg.format
     $null = git config --global user.signingkey $gpg_id   
@@ -87,11 +88,11 @@ if ([System.Boolean]::parse($gpgSigning)) {
     $globalGitName = git config --global user.name 
     $globalGitMail = git config --global user.email
 
-    if($null -EQ $globalGitName) {
+    if ($null -EQ $globalGitName) {
         $globalGitName = Read-Host -Prompt "Please Enter Global Git-Name"
         git config --global user.name $globalGitName
     }
-    if($null -EQ $globalGitMail) {
+    if ($null -EQ $globalGitMail) {
         $globalGitMail = Read-Host -Prompt "Please Enter Global Git-Email"
         git config --global user.email $globalGitMail
     }

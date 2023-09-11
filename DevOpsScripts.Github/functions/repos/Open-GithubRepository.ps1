@@ -148,12 +148,16 @@ function Open-GithubRepository {
         $replace
     )
 
+    $user = Get-GithubUser -Account $Account
+    $accountContext = Get-GithubAccountContext -Account $Account
     $repository = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Name
 
     if ($Browser) {
         return Start-Process $repository.html_url
     }
 
+
+    # Replace existing repository
     if ($replace) {
         if ($PSCmdlet.ShouldProcess($repository.LocalPath, 'Do you want to replace the existing repository and any data in it.')) {
             Remove-Item -Path $repository.LocalPath -Recurse -Force -Confirm:$false
@@ -161,10 +165,11 @@ function Open-GithubRepository {
     }
 
 
+    # Clone via http or ssh
     if (!(Test-Path -Path $repository.LocalPath)) {
         $repository.LocalPath = New-Item -ItemType Directory -Path $repository.LocalPath
 
-        if ((Get-GithubAccountContext -Account $Account).useSSH) {
+        if ($accountContext.useSSH) {
             git -C $repository.LocalPath clone $repository.ssh_url .
         }
         else {
@@ -178,9 +183,9 @@ function Open-GithubRepository {
         $null = git config --global --add safe.directory $safeDirectoyPath
     }
 
-    $user = Get-GithubUser -Account $Account
     $null = git -C $repository.LocalPath config --local user.name $user.login 
     $null = git -C $repository.LocalPath config --local user.email $user.email
+    $null = git -C $repository.LocalPath config --local commit.gpgsign $accountContext.commitSigning
 
     if (!$onlyDownload) {
         Open-InCodeEditor -Programm $CodeEditor -Path $repository.Localpath

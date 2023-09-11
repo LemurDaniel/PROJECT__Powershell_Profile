@@ -100,7 +100,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'FAConf', 'STCtx', 'k8s-cluster', 'k8s-ns', 'pim', 'pimDeactivate'
+AliasesToExport = 'FAConf', 'STCtx', 'k8s-logs', 'k8s-cluster', 'k8s-ns', 'pim', 
+               'pimDeactivate'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

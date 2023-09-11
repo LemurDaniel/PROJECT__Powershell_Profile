@@ -33,7 +33,8 @@
 function Get-K8SResourceKinds {
     param (
         [Parameter(
-            Mandatory = $false
+            Mandatory = $false,
+            Position = 0
         )]
         [System.String]
         [ArgumentCompleter(
@@ -49,31 +50,39 @@ function Get-K8SResourceKinds {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-K8SContexts).name
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-K8SContexts).name
             },
             ErrorMessage = "Not a valid context in the kubeconfig file."
         )]
-        $Context
+        [Alias('c')]
+        $Cluster
     )
     
-    if(!$PSBoundParameters.ContainsKey('Context')) {
-        $Context = (Get-K8SContexts -Current).name
+    if ([System.String]::IsNullOrEmpty($Cluster)) {
+        $Cluster = (Get-K8SContexts -Current).name
     }
 
-    return kubectl api-resources --context $Context
-    | Select-Object -Skip 1 
-    | ForEach-Object { 
-        $lineElements = $_ -Split '\s+'
-        if ($lineElements.Count -LT 5) {
-            $lineElements = $($lineElements[0], $null) + $lineElements[1..($lineElements.Count - 1)]
-        }
-        return [PSCustomObject]@{
-            name       = $lineElements[0]
-            shortname  = $lineElements[1]
-            apiVersion = $lineElements[2]
-            namespaced = [System.Boolean]$lineElements[3]
-            kind       = $lineElements[4]
+    $resourceKinds = Get-UtilsCache -Identifier "k8s.$Cluster.resourceKinds.list"
+
+    if ($null -EQ $resourceKinds) {
+
+        $resourceKinds = kubectl api-resources --context $Cluster
+        | Select-Object -Skip 1 
+        | ForEach-Object { 
+            $lineElements = $_ -Split '\s+'
+            if ($lineElements.Count -LT 5) {
+                $lineElements = $($lineElements[0], $null) + $lineElements[1..($lineElements.Count - 1)]
+            }
+            return [PSCustomObject]@{
+                name       = $lineElements[0]
+                shortname  = $lineElements[1]
+                apiVersion = $lineElements[2]
+                namespaced = [System.Boolean]::Parse($lineElements[3])
+                kind       = $lineElements[4]
+            } 
         } 
-    } 
-    
+        | Set-UtilsCache -Identifier "k8s.$Cluster.resourceKinds.list" -Alive 5
+    }
+
+    return $resourceKinds
 }

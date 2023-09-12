@@ -1,11 +1,11 @@
 
 <#
     .SYNOPSIS
-    Executes kubectl logs for a deployment in the cluster.
+    Invokes kubectl exec for an interactive shell in a pod
 
     .DESCRIPTION
-    Executes kubectl logs for a deployment in the cluster.
-    With follow switches to another restarting pod on termination.
+    Invokes kubectl exec for an interactive shell in a pod
+
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -92,6 +92,7 @@ function Invoke-K8S-Exec {
             ErrorMessage = "Not a valid pod in the cluster."
         )]
         $Pod,
+        
 
         [Parameter(
             Mandatory = $false,

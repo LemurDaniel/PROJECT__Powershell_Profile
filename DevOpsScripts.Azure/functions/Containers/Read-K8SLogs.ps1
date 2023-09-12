@@ -104,7 +104,7 @@ function Read-K8SLogs {
         $Namespace = (Get-K8SContexts -Current).namespace
     }
 
-    $deploymentData = Get-K8SResources -Type Deployment
+    $deploymentData = Get-K8SResources -Type Deployment -Namespace $Namespace
     | Where-Object { $_.metadata.name -EQ $Deployment }
 
     # TODO selector failing with some deployments

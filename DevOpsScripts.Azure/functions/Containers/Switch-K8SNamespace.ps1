@@ -29,18 +29,18 @@ function Switch-K8SNamespace {
 
     [Alias('k8s-ns')]
     param (
-        # The name of the context. Instead of Set-AzContext.
+        # Switch the namespace for the selected context
         [Parameter(
-            Position = 0,
-            Mandatory = $true
+            Position = 1,
+            Mandatory = $false
         )]
         [System.String]
         [ArgumentCompleter(
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-                $validValues = Get-K8SResources -Type Namespace -Attribute metadata.name
-                
+        
+                $validValues = (Get-K8SClusterResources -Type Namespace -Cluster $fakeBoundParameters['Cluster']).metadata.name
+                        
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
@@ -48,13 +48,13 @@ function Switch-K8SNamespace {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-K8SResources -Type Namespace).metadata.name
+                $_ -in (Get-K8SClusterResources -Type Namespace -Cluster $PSBoundParameters['Cluster']).metadata.name
             }
         )]
         $Namespace
     )
 
-    kubectl config set-context --current --namespace=$Namespace
+    $null = kubectl config set-context --current --namespace=$Namespace
 
     Write-Host -ForegroundColor Magenta "Switched to Namespace: '$Namespace'"
     

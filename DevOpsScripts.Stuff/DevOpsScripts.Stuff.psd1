@@ -70,16 +70,16 @@ RequiredAssemblies = 'WindowsBase', 'PresentationFramework'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Install-Software', 'New-TerraformReadmeLoro', 'Prompt', 'Push-Profile', 
-               'Get-DailyMsRewards', 'Get-MsRewards', 'Get-ScrambledText', 
-               'Switch-Terraform', 'Convert-SecretObject', 'Get-SecretFromStore', 
-               'Get-SecretsFromStore', 'Get-SecretStore', 'Set-VersionActiveTF', 
-               'Update-SecretStore', 'Start-Fireworks', 'Start-GenericGameLoop', 
-               'Start-InvadersGame', 'Start-SnakeGame', 'New-TetrisGame', 
-               'New-WindowBindings', 'New-WindowWPF', 'Get-BlenderFiles', 
-               'Open-BlenderFile', 'Get-DallEFromJoke', 
-               'Get-OpenAIAPIAuthentication', 'Invoke-DalleRequest', 
-               'Invoke-OpenAICompletion', 'Invoke-OpenAIImageGeneration', 
-               'Invoke-OpenAIMoodToColor'
+               'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
+               'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
+               'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
+               'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
+               'Get-SecretStore', 'Set-VersionActiveTF', 'Update-SecretStore', 
+               'Start-Fireworks', 'Start-GenericGameLoop', 'Start-InvadersGame', 
+               'Start-SnakeGame', 'New-TetrisGame', 'Get-BlenderFiles', 
+               'Open-BlenderFile', 'Get-DailyMsRewards', 'Get-MsRewards', 
+               'Get-ScrambledText', 'Switch-Terraform', 'New-WindowBindings', 
+               'New-WindowWPF'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

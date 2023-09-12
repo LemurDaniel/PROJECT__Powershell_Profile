@@ -40,7 +40,7 @@
 
 
 
-function Invoke-K8S-Exec {
+function Invoke-K8SExec {
 
     [Alias('k8s-exec')]
     param (
@@ -92,7 +92,7 @@ function Invoke-K8S-Exec {
             ErrorMessage = "Not a valid pod in the cluster."
         )]
         $Pod,
-        
+
 
         [Parameter(
             Mandatory = $false,

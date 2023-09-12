@@ -127,20 +127,27 @@ function Read-K8SLogs {
         $inputKeyEvent = $null
         do {
         
-            kubectl logs $options --namespace $Namespace --selector ($matchLabels -join ',')
-        
-            Write-Host "--------------------------------"
-            Write-Host ""
-            Write-Host "... Connection to Pod lost."
-            Write-Host "... Press Esc to Exit"
+            $deploymentPod = Get-K8SResources -Namespace $Namespace -Kind Pod
+            | Select-K8SResource metadata.name LIKE "$Deployment*"
+            | Select-Object -ExpandProperty metadata
+            | Select-Object -ExpandProperty name
+            | Select-Object -First 1
+
+            # kubectl logs $options --namespace $Namespace --selector ($matchLabels -join ',')
+            kubectl logs $options --namespace $Namespace $deploymentPod
+
+            Write-Host -ForegroundColor Magenta "--------------------------------"
+            Write-Host -ForegroundColor Magenta ""
+            Write-Host -ForegroundColor Magenta "... Lost connection to '$($deploymentPod)'."
+            Write-Host -ForegroundColor Magenta "... Press Esc to Exit"
             Write-Host
 
             $sleepSeconds = 5
-            Write-Host "... Searching for another pod in deployment '$Namespace/$Deployment' after $sleepSeconds seconds"
+            Write-Host -ForegroundColor Magenta "... Searching for another pod in deployment '$Namespace/$Deployment' after $sleepSeconds seconds"
             Start-Sleep -Seconds $sleepSeconds
 
-            Write-Host ""
-            Write-Host "--------------------------------"
+            Write-Host -ForegroundColor Magenta ""
+            Write-Host -ForegroundColor Magenta "--------------------------------"
 
             if ([System.Console]::KeyAvailable) {
                 $inputKeyEvent = [System.Console]::ReadKey()

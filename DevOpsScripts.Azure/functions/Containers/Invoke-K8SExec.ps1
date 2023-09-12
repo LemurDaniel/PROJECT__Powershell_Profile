@@ -42,6 +42,9 @@
 
 function Invoke-K8SExec {
 
+    [CmdletBinding(
+        DefaultParameterSetName = "Pod"
+    )]
     [Alias('k8s-exec')]
     param (
         [Parameter(
@@ -70,6 +73,7 @@ function Invoke-K8SExec {
 
 
         [Parameter(
+            ParameterSetName = "Pod",
             Mandatory = $true,
             Position = 0
         )]
@@ -93,6 +97,31 @@ function Invoke-K8SExec {
         )]
         $Pod,
 
+        [Parameter(
+            ParameterSetName = "Deployment",
+            Mandatory = $true,
+            Position = 0
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = (Get-K8SResources -Namespace $fakeBoundParameters['Namespace'] -Kind Deployment).metadata.name
+                
+                $validValues 
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [ValidateScript(
+            {
+                $_ -in (Get-K8SResources -Namespace $PSBoundParameters['Namespace'] -Kind Deployment).metadata.name
+            },
+            ErrorMessage = "Not a valid pod in the cluster."
+        )]
+        [Alias('deploy', 'd')]
+        $Deployment,
 
         [Parameter(
             Mandatory = $false,
@@ -103,18 +132,25 @@ function Invoke-K8SExec {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = Get-K8SResources -Namespace $fakeBoundParameters['Namespace'] -Type Pod 
-                | Where-Object { $_.metadata.name -EQ $fakeBoundParameters['Pod'] }
-                | Select-Object -ExpandProperty spec
-                | Select-Object -ExpandProperty containers
-                | Select-Object -ExpandProperty name
+                $validValues = $null
+                if ($fakeBoundParameters.containsKey('Pod')) {
+                    $validValues = (
+                        Get-K8SResources -Namespace $fakeBoundParameters['Namespace'] -Kind Pod 
+                        | Where-Object { $_.metadata.name -EQ $fakeBoundParameters['Pod'] }
+                    ).spec.containers.name
+                }
+                elseif ($fakeBoundParameters.containsKey('Deployment')) {
+                    $validValues = (
+                        Get-K8SResources -Namespace $fakeBoundParameters['Namespace'] -Kind Deployment 
+                        | Where-Object { $_.metadata.name -EQ $fakeBoundParameters['Deployment'] }
+                    ).spec.template.spec.containers.name
+                }
                 
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
-        # TODO
         # [ValidateScript(
         #     {
         #         $_ -in (
@@ -139,19 +175,68 @@ function Invoke-K8SExec {
         $Command
     )
 
+
     if ([System.String]::IsNullOrEmpty($Namespace)) {
         $Namespace = (Get-K8SContexts -Current).namespace
     }
 
-    $podData = Get-K8SResources -Type Pod -Namespace $Namespace
-    | Where-Object { $_.metadata.name -EQ $Pod }
+    [System.String[]]$options = $('-i', '-t')
 
 
-    if ([System.String]::IsNullOrEmpty($Container)) {
-        $Container = $podData.spec.containers.name | Select-Object -First 1
+
+    if ($PSBoundParameters.ContainsKey('Pod')) {
+
+        $podData = Get-K8SResources -Namespace $Namespace -Kind Pod
+        | Select-K8SResource metadata.name EQ $Pod
+
+        if ([System.String]::IsNullOrEmpty($Container)) {
+            $Container = $podData.spec.containers.name | Select-Object -First 1
+        }
+
+        kubectl exec $options --namespace $Namespace $Pod -c $Container $Command
+
     }
 
-    [System.String[]]$options = $('-i', '-t')
-    kubectl exec $options --namespace $Namespace $Pod -c $Container $Command
+    elseif ($PSBoundParameters.ContainsKey('Deployment')) {
+
+        $deployData = Get-K8SResources -Namespace $Namespace -Kind Deployment
+        | Select-K8SResource metadata.name EQ $Deployment
+
+        if ([System.String]::IsNullOrEmpty($Container)) {
+            $Container = $deployData.spec.template.spec.containers.name | Select-Object -First 1
+        }
+
+        $inputKeyEvent = $null
+        do {
+        
+            $deploymentPod = Get-K8SResources -Namespace $Namespace -Kind Pod
+            | Select-K8SResource metadata.name LIKE "$Deployment*"
+            | Select-Object -ExpandProperty metadata
+            | Select-Object -ExpandProperty name
+            | Select-Object -First 1
+
+            kubectl exec $options --namespace $Namespace $deploymentPod -c $Container $Command
+        
+            Write-Host -ForegroundColor Magenta "--------------------------------"
+            Write-Host -ForegroundColor Magenta ""
+            Write-Host -ForegroundColor Magenta "... Lost connection to '$($deploymentPod)'."
+            Write-Host -ForegroundColor Magenta "... Press Esc to Exit"
+            Write-Host
+
+            $sleepSeconds = 5
+            Write-Host -ForegroundColor Magenta "... Searching for another pod in deployment '$Namespace/$Deployment' after $sleepSeconds seconds"
+            Start-Sleep -Seconds $sleepSeconds
+
+            Write-Host -ForegroundColor Magenta ""
+            Write-Host -ForegroundColor Magenta "--------------------------------"
+
+            if ([System.Console]::KeyAvailable) {
+                $inputKeyEvent = [System.Console]::ReadKey()
+            }
+
+        } while ($null -EQ $inputKeyEvent -AND $inputKeyEvent.Key -NE [System.ConsoleKey]::Escape)
+
+        return $deploymentPods
+    }
 
 }

@@ -1,0 +1,15 @@
+{
+    "Issues": "/issues",
+    "Actions": "/actions",
+    "Pull Requests": "/pulls",
+    "Settings": "/settings",
+    "Hooks": "/settings/hooks",
+    "Custom Tabs": "/settings/tabs",
+    "Manage Access": "/settings/access",
+    "Environments": "/settings/environments",
+    "Branch Protection": "/settings/branches",
+    "Tag Protection": "/settings/tag_protection",
+    "Actions Settings": "/settings/actions",
+    "Actions Secrets": "/settings/secrets/actions",
+    "Notifications": "/settings/notifications/edit"
+}

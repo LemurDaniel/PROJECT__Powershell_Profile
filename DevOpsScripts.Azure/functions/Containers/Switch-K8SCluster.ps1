@@ -68,7 +68,7 @@ function Switch-K8SCluster {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
         
-                $validValues = (Get-K8SResources -Type Namespace -Context $fakeBoundParameters['Cluster']).metadata.name
+                $validValues = (Get-K8SClusterResources -Type Namespace -Cluster $fakeBoundParameters['Cluster']).metadata.name
                         
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
@@ -77,7 +77,7 @@ function Switch-K8SCluster {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-K8SResources -Type Namespace -Context $PSBoundParameters['Cluster']).metadata.name
+                $_ -in (Get-K8SClusterResources -Type Namespace -Cluster $PSBoundParameters['Cluster']).metadata.name
             }
         )]
         $Namespace

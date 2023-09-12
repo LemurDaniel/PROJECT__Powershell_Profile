@@ -22,6 +22,13 @@
 
     .EXAMPLE
 
+    Get interactive bash shell for a pod in a deployment:
+
+    PS> k8s-exec -deploy <autcompleted_deployments> <command>
+
+
+    .EXAMPLE
+
     Get interactive bash shell for a specific container in a pod in the cluster:
 
     PS> k8s-exec <autcompleted_pod> -c <autocompleted_container> bash

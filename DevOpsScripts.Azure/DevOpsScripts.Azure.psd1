@@ -71,18 +71,17 @@ RequiredAssemblies = @()
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Backup-AzTables', 'Connect-AzTenant', 
                'Get-NonCompliantRoleAssignments', 'Invoke-AzureRest', 
-               'Restore-AzTables', 'Test-AzLogin', 'Get-AKScredentials', 
-               'Get-AzContextsWrapper', 'Get-K8SClusterResources', 'Get-K8SContexts', 
-               'Get-K8SResourceKinds', 'Get-K8SResources', 'Invoke-K8SExec', 
-               'Read-K8SLogs', 'Select-K8SResource', 'Switch-K8SCluster', 
-               'Switch-K8SNamespace', 'Backup-AzState', 
+               'Restore-AzTables', 'Test-AzLogin', 'Backup-AzState', 
                'Get-AzResourceGraphChangesCreate', 
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
                'Search-AzFunctionAppSettings', 'Search-AzResource', 
                'Search-AzResourceGraphResults', 'Search-AzStorageAccount', 
-               'Search-AzStorageContext', 'Search-AzVm', 'Test', 
-               'New-AzAccessPackageCatalogRoleAssignment', 
+               'Search-AzStorageContext', 'Search-AzVm', 'Test', 'Get-AKScredentials', 
+               'Get-AzContextsWrapper', 'Get-K8SClusterResources', 'Get-K8SContexts', 
+               'Get-K8SResourceKinds', 'Get-K8SResources', 'Invoke-K8SExec', 
+               'Read-K8SLogs', 'Select-K8SResource', 'Switch-K8SCluster', 
+               'Switch-K8SNamespace', 'New-AzAccessPackageCatalogRoleAssignment', 
                'Remove-AzAccessPackageCatalogRoleAssignment', 
                'Get-GraphApiManager', 'Get-onPremisesExtensionAttributes', 
                'Invoke-GraphApi', 'Add-PimProfile', 'Get-PimAssignments', 
@@ -101,7 +100,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'k8s-exec', 'k8s-logs', 'k8s-cluster', 'k8s-ns', 'FAConf', 'STCtx', 'pim', 
+AliasesToExport = 'FAConf', 'STCtx', 'k8s-exec', 'k8s-logs', 'k8s-cluster', 'k8s-ns', 'pim', 
                'pimDeactivate'
 
 # DSC resources to export from this module

@@ -63,6 +63,7 @@ function Get-TerraformModuleCalls {
                 fsPath     = $fsPath
             }
             
+            # NOTE FOR FUTURE: Read terraform init modulecache for remote-modules?
             $totalModuleCallPaths += Get-TerraformModuleCalls -Path $fsPath -ParentModule $baseModulePath 
         }
     

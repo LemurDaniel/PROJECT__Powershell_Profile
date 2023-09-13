@@ -36,7 +36,7 @@ function Get-TerraformAzuremMapping {
         $providerResource
     )
 
-    return Get-Content -Path "$PSScriptRoot" | ConvertFrom-Json -Depth 99
+    return Get-Content -Path "$PSScriptRoot/azurerm.resources.json" | ConvertFrom-Json -Depth 99
     | Where-Object {
         $_.slug -EQ $providerResource.replace('azurerm_', '') -OR $_.slug -EQ $providerResource
     }

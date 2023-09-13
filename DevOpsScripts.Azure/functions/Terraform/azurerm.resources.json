@@ -1,0 +1,7149 @@
+[
+  {
+    "id": "2857861",
+    "title": "aadb2c_directory",
+    "slug": "aadb2c_directory",
+    "subcategory": "AAD B2C",
+    "azureType": null
+  },
+  {
+    "id": "2857862",
+    "title": "active_directory_domain_service",
+    "slug": "active_directory_domain_service",
+    "subcategory": "Active Directory Domain Services",
+    "azureType": null
+  },
+  {
+    "id": "2857863",
+    "title": "active_directory_domain_service_replica_set",
+    "slug": "active_directory_domain_service_replica_set",
+    "subcategory": "Active Directory Domain Services",
+    "azureType": null
+  },
+  {
+    "id": "2857864",
+    "title": "active_directory_domain_service_trust",
+    "slug": "active_directory_domain_service_trust",
+    "subcategory": "Active Directory Domain Services",
+    "azureType": null
+  },
+  {
+    "id": "2857865",
+    "title": "advanced_threat_protection",
+    "slug": "advanced_threat_protection",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2857866",
+    "title": "analysis_services_server",
+    "slug": "analysis_services_server",
+    "subcategory": "Analysis Services",
+    "azureType": null
+  },
+  {
+    "id": "2857867",
+    "title": "api_connection",
+    "slug": "api_connection",
+    "subcategory": "Connections",
+    "azureType": null
+  },
+  {
+    "id": "2857868",
+    "title": "api_management",
+    "slug": "api_management",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857869",
+    "title": "api_management_api",
+    "slug": "api_management_api",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857870",
+    "title": "api_management_api_diagnostic",
+    "slug": "api_management_api_diagnostic",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857871",
+    "title": "api_management_api_operation",
+    "slug": "api_management_api_operation",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857872",
+    "title": "api_management_api_operation_policy",
+    "slug": "api_management_api_operation_policy",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857873",
+    "title": "api_management_api_operation_tag",
+    "slug": "api_management_api_operation_tag",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857874",
+    "title": "api_management_api_policy",
+    "slug": "api_management_api_policy",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857875",
+    "title": "api_management_api_release",
+    "slug": "api_management_api_release",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857876",
+    "title": "api_management_api_schema",
+    "slug": "api_management_api_schema",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857877",
+    "title": "api_management_api_tag",
+    "slug": "api_management_api_tag",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857878",
+    "title": "api_management_api_tag_description",
+    "slug": "api_management_api_tag_description",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857879",
+    "title": "api_management_api_version_set",
+    "slug": "api_management_api_version_set",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857880",
+    "title": "api_management_authorization_server",
+    "slug": "api_management_authorization_server",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857881",
+    "title": "api_management_backend",
+    "slug": "api_management_backend",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857882",
+    "title": "api_management_certificate",
+    "slug": "api_management_certificate",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857883",
+    "title": "api_management_custom_domain",
+    "slug": "api_management_custom_domain",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857884",
+    "title": "api_management_diagnostic",
+    "slug": "api_management_diagnostic",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857885",
+    "title": "api_management_email_template",
+    "slug": "api_management_email_template",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857886",
+    "title": "api_management_gateway",
+    "slug": "api_management_gateway",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857887",
+    "title": "api_management_gateway_api",
+    "slug": "api_management_gateway_api",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857888",
+    "title": "api_management_gateway_certificate_authority",
+    "slug": "api_management_gateway_certificate_authority",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857889",
+    "title": "api_management_gateway_host_name_configuration",
+    "slug": "api_management_gateway_host_name_configuration",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857890",
+    "title": "api_management_group",
+    "slug": "api_management_group",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857891",
+    "title": "api_management_group_user",
+    "slug": "api_management_group_user",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857892",
+    "title": "api_management_identity_provider_aad",
+    "slug": "api_management_identity_provider_aad",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857893",
+    "title": "api_management_identity_provider_aadb2c",
+    "slug": "api_management_identity_provider_aadb2c",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857894",
+    "title": "api_management_identity_provider_facebook",
+    "slug": "api_management_identity_provider_facebook",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857895",
+    "title": "api_management_identity_provider_google",
+    "slug": "api_management_identity_provider_google",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857896",
+    "title": "api_management_identity_provider_microsoft",
+    "slug": "api_management_identity_provider_microsoft",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857897",
+    "title": "api_management_identity_provider_twitter",
+    "slug": "api_management_identity_provider_twitter",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857898",
+    "title": "api_management_logger",
+    "slug": "api_management_logger",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857899",
+    "title": "api_management_named_value",
+    "slug": "api_management_named_value",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857900",
+    "title": "api_management_notification_recipient_email",
+    "slug": "api_management_notification_recipient_email",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857901",
+    "title": "api_management_notification_recipient_user",
+    "slug": "api_management_notification_recipient_user",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857902",
+    "title": "api_management_openid_connect_provider",
+    "slug": "api_management_openid_connect_provider",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857903",
+    "title": "api_management_policy",
+    "slug": "api_management_policy",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857904",
+    "title": "api_management_product",
+    "slug": "api_management_product",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857905",
+    "title": "api_management_product_api",
+    "slug": "api_management_product_api",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857906",
+    "title": "api_management_product_group",
+    "slug": "api_management_product_group",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857907",
+    "title": "api_management_product_policy",
+    "slug": "api_management_product_policy",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857908",
+    "title": "api_management_product_tag",
+    "slug": "api_management_product_tag",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857909",
+    "title": "api_management_redis_cache",
+    "slug": "api_management_redis_cache",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857910",
+    "title": "api_management_schema",
+    "slug": "api_management_schema",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857911",
+    "title": "api_management_subscription",
+    "slug": "api_management_subscription",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857912",
+    "title": "api_management_tag",
+    "slug": "api_management_tag",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857913",
+    "title": "api_management_user",
+    "slug": "api_management_user",
+    "subcategory": "API Management",
+    "azureType": null
+  },
+  {
+    "id": "2857914",
+    "title": "app_configuration",
+    "slug": "app_configuration",
+    "subcategory": "App Configuration",
+    "azureType": null
+  },
+  {
+    "id": "2857915",
+    "title": "app_configuration_feature",
+    "slug": "app_configuration_feature",
+    "subcategory": "App Configuration",
+    "azureType": null
+  },
+  {
+    "id": "2857916",
+    "title": "app_configuration_key",
+    "slug": "app_configuration_key",
+    "subcategory": "App Configuration",
+    "azureType": null
+  },
+  {
+    "id": "2857937",
+    "title": "application_gateway",
+    "slug": "application_gateway",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2857938",
+    "title": "application_insights",
+    "slug": "application_insights",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857939",
+    "title": "application_insights_analytics_item",
+    "slug": "application_insights_analytics_item",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857940",
+    "title": "application_insights_api_key",
+    "slug": "application_insights_api_key",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857941",
+    "title": "application_insights_smart_detection_rule",
+    "slug": "application_insights_smart_detection_rule",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857942",
+    "title": "application_insights_standard_web_test",
+    "slug": "application_insights_standard_web_test",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857943",
+    "title": "application_insights_web_test",
+    "slug": "application_insights_web_test",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857944",
+    "title": "application_insights_workbook",
+    "slug": "application_insights_workbook",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857945",
+    "title": "application_insights_workbook_template",
+    "slug": "application_insights_workbook_template",
+    "subcategory": "Application Insights",
+    "azureType": null
+  },
+  {
+    "id": "2857946",
+    "title": "application_security_group",
+    "slug": "application_security_group",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2857917",
+    "title": "app_service",
+    "slug": "app_service",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857918",
+    "title": "app_service_active_slot",
+    "slug": "app_service_active_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857919",
+    "title": "app_service_certificate",
+    "slug": "app_service_certificate",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857920",
+    "title": "app_service_certificate_binding",
+    "slug": "app_service_certificate_binding",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857921",
+    "title": "app_service_certificate_order",
+    "slug": "app_service_certificate_order",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857922",
+    "title": "app_service_connection",
+    "slug": "app_service_connection",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857923",
+    "title": "app_service_custom_hostname_binding",
+    "slug": "app_service_custom_hostname_binding",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857924",
+    "title": "app_service_environment",
+    "slug": "app_service_environment",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857925",
+    "title": "app_service_environment_v3",
+    "slug": "app_service_environment_v3",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857926",
+    "title": "app_service_hybrid_connection",
+    "slug": "app_service_hybrid_connection",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857927",
+    "title": "app_service_managed_certificate",
+    "slug": "app_service_managed_certificate",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857928",
+    "title": "app_service_plan",
+    "slug": "app_service_plan",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857929",
+    "title": "app_service_public_certificate",
+    "slug": "app_service_public_certificate",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857930",
+    "title": "app_service_slot",
+    "slug": "app_service_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857931",
+    "title": "app_service_slot_custom_hostname_binding",
+    "slug": "app_service_slot_custom_hostname_binding",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857932",
+    "title": "app_service_slot_virtual_network_swift_connection",
+    "slug": "app_service_slot_virtual_network_swift_connection",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857933",
+    "title": "app_service_source_control",
+    "slug": "app_service_source_control",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857934",
+    "title": "app_service_source_control_slot",
+    "slug": "app_service_source_control_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857935",
+    "title": "app_service_source_control_token",
+    "slug": "app_service_source_control_token",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857936",
+    "title": "app_service_virtual_network_swift_connection",
+    "slug": "app_service_virtual_network_swift_connection",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2857947",
+    "title": "arc_kubernetes_cluster",
+    "slug": "arc_kubernetes_cluster",
+    "subcategory": "ArcKubernetes",
+    "azureType": null
+  },
+  {
+    "id": "2857948",
+    "title": "arc_kubernetes_cluster_extension",
+    "slug": "arc_kubernetes_cluster_extension",
+    "subcategory": "ArcKubernetes",
+    "azureType": null
+  },
+  {
+    "id": "2857949",
+    "title": "arc_kubernetes_flux_configuration",
+    "slug": "arc_kubernetes_flux_configuration",
+    "subcategory": "ArcKubernetes",
+    "azureType": null
+  },
+  {
+    "id": "2857950",
+    "title": "arc_machine_extension",
+    "slug": "arc_machine_extension",
+    "subcategory": "Hybrid Compute",
+    "azureType": null
+  },
+  {
+    "id": "2857951",
+    "title": "arc_private_link_scope",
+    "slug": "arc_private_link_scope",
+    "subcategory": "Hybrid Compute",
+    "azureType": null
+  },
+  {
+    "id": "2857952",
+    "title": "attestation_provider",
+    "slug": "attestation_provider",
+    "subcategory": "Attestation",
+    "azureType": null
+  },
+  {
+    "id": "2857953",
+    "title": "automanage_configuration",
+    "slug": "automanage_configuration",
+    "subcategory": "Automanage",
+    "azureType": null
+  },
+  {
+    "id": "2857954",
+    "title": "automation_account",
+    "slug": "automation_account",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857955",
+    "title": "automation_certificate",
+    "slug": "automation_certificate",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857956",
+    "title": "automation_connection",
+    "slug": "automation_connection",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857957",
+    "title": "automation_connection_certificate",
+    "slug": "automation_connection_certificate",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857958",
+    "title": "automation_connection_classic_certificate",
+    "slug": "automation_connection_classic_certificate",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857959",
+    "title": "automation_connection_service_principal",
+    "slug": "automation_connection_service_principal",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857960",
+    "title": "automation_connection_type",
+    "slug": "automation_connection_type",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857961",
+    "title": "automation_credential",
+    "slug": "automation_credential",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857962",
+    "title": "automation_dsc_configuration",
+    "slug": "automation_dsc_configuration",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857963",
+    "title": "automation_dsc_nodeconfiguration",
+    "slug": "automation_dsc_nodeconfiguration",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857964",
+    "title": "automation_hybrid_runbook_worker",
+    "slug": "automation_hybrid_runbook_worker",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857965",
+    "title": "automation_hybrid_runbook_worker_group",
+    "slug": "automation_hybrid_runbook_worker_group",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857966",
+    "title": "automation_job_schedule",
+    "slug": "automation_job_schedule",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857967",
+    "title": "automation_module",
+    "slug": "automation_module",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857968",
+    "title": "automation_python3_package",
+    "slug": "automation_python3_package",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857969",
+    "title": "automation_runbook",
+    "slug": "automation_runbook",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857970",
+    "title": "automation_schedule",
+    "slug": "automation_schedule",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857971",
+    "title": "automation_software_update_configuration",
+    "slug": "automation_software_update_configuration",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857972",
+    "title": "automation_source_control",
+    "slug": "automation_source_control",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857973",
+    "title": "automation_variable_bool",
+    "slug": "automation_variable_bool",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857974",
+    "title": "automation_variable_datetime",
+    "slug": "automation_variable_datetime",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857975",
+    "title": "automation_variable_int",
+    "slug": "automation_variable_int",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857976",
+    "title": "automation_variable_object",
+    "slug": "automation_variable_object",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857977",
+    "title": "automation_variable_string",
+    "slug": "automation_variable_string",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857978",
+    "title": "automation_watcher",
+    "slug": "automation_watcher",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857979",
+    "title": "automation_webhook",
+    "slug": "automation_webhook",
+    "subcategory": "Automation",
+    "azureType": null
+  },
+  {
+    "id": "2857980",
+    "title": "availability_set",
+    "slug": "availability_set",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2857981",
+    "title": "azurerm_security_center_server_vulnerability_assessment",
+    "slug": "azurerm_security_center_server_vulnerability_assessment",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2857982",
+    "title": "azurerm_sentinel_alert_rule_machine_learning_behavior_analytics",
+    "slug": "azurerm_sentinel_alert_rule_machine_learning_behavior_analytics",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2857983",
+    "title": "backup_container_storage_account",
+    "slug": "backup_container_storage_account",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2857984",
+    "title": "backup_policy_file_share",
+    "slug": "backup_policy_file_share",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2857985",
+    "title": "backup_policy_vm",
+    "slug": "backup_policy_vm",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2857986",
+    "title": "backup_policy_vm_workload",
+    "slug": "backup_policy_vm_workload",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2857987",
+    "title": "backup_protected_file_share",
+    "slug": "backup_protected_file_share",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2857988",
+    "title": "backup_protected_vm",
+    "slug": "backup_protected_vm",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2857989",
+    "title": "bastion_host",
+    "slug": "bastion_host",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2857990",
+    "title": "batch_account",
+    "slug": "batch_account",
+    "subcategory": "Batch",
+    "azureType": null
+  },
+  {
+    "id": "2857991",
+    "title": "batch_application",
+    "slug": "batch_application",
+    "subcategory": "Batch",
+    "azureType": null
+  },
+  {
+    "id": "2857992",
+    "title": "batch_certificate",
+    "slug": "batch_certificate",
+    "subcategory": "Batch",
+    "azureType": null
+  },
+  {
+    "id": "2857993",
+    "title": "batch_job",
+    "slug": "batch_job",
+    "subcategory": "Batch",
+    "azureType": null
+  },
+  {
+    "id": "2857994",
+    "title": "batch_pool",
+    "slug": "batch_pool",
+    "subcategory": "Batch",
+    "azureType": null
+  },
+  {
+    "id": "2857995",
+    "title": "billing_account_cost_management_export",
+    "slug": "billing_account_cost_management_export",
+    "subcategory": "Cost Management",
+    "azureType": null
+  },
+  {
+    "id": "2857996",
+    "title": "blueprint_assignment",
+    "slug": "blueprint_assignment",
+    "subcategory": "Blueprints",
+    "azureType": null
+  },
+  {
+    "id": "2857997",
+    "title": "bot_channel_alexa",
+    "slug": "bot_channel_alexa",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2857999",
+    "title": "bot_channel_directline",
+    "slug": "bot_channel_directline",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2857998",
+    "title": "bot_channel_direct_line_speech",
+    "slug": "bot_channel_direct_line_speech",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858000",
+    "title": "bot_channel_email",
+    "slug": "bot_channel_email",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858001",
+    "title": "bot_channel_facebook",
+    "slug": "bot_channel_facebook",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858002",
+    "title": "bot_channel_line",
+    "slug": "bot_channel_line",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858003",
+    "title": "bot_channel_ms_teams",
+    "slug": "bot_channel_ms_teams",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858004",
+    "title": "bot_channel_slack",
+    "slug": "bot_channel_slack",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858005",
+    "title": "bot_channel_sms",
+    "slug": "bot_channel_sms",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858007",
+    "title": "bot_channels_registration",
+    "slug": "bot_channels_registration",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858006",
+    "title": "bot_channel_web_chat",
+    "slug": "bot_channel_web_chat",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858008",
+    "title": "bot_connection",
+    "slug": "bot_connection",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858009",
+    "title": "bot_healthbot",
+    "slug": "bot_healthbot",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858010",
+    "title": "bot_service_azure_bot",
+    "slug": "bot_service_azure_bot",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858011",
+    "title": "bot_web_app",
+    "slug": "bot_web_app",
+    "subcategory": "Bot",
+    "azureType": null
+  },
+  {
+    "id": "2858012",
+    "title": "capacity_reservation",
+    "slug": "capacity_reservation",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858013",
+    "title": "capacity_reservation_group",
+    "slug": "capacity_reservation_group",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858014",
+    "title": "cdn_endpoint",
+    "slug": "cdn_endpoint",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858015",
+    "title": "cdn_endpoint_custom_domain",
+    "slug": "cdn_endpoint_custom_domain",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858016",
+    "title": "cdn_frontdoor_custom_domain",
+    "slug": "cdn_frontdoor_custom_domain",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858017",
+    "title": "cdn_frontdoor_custom_domain_association",
+    "slug": "cdn_frontdoor_custom_domain_association",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858018",
+    "title": "cdn_frontdoor_endpoint",
+    "slug": "cdn_frontdoor_endpoint",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858019",
+    "title": "cdn_frontdoor_firewall_policy",
+    "slug": "cdn_frontdoor_firewall_policy",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858020",
+    "title": "cdn_frontdoor_origin",
+    "slug": "cdn_frontdoor_origin",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858021",
+    "title": "cdn_frontdoor_origin_group",
+    "slug": "cdn_frontdoor_origin_group",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858022",
+    "title": "cdn_frontdoor_profile",
+    "slug": "cdn_frontdoor_profile",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858023",
+    "title": "cdn_frontdoor_route",
+    "slug": "cdn_frontdoor_route",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858024",
+    "title": "cdn_frontdoor_route_disable_link_to_default_domain",
+    "slug": "cdn_frontdoor_route_disable_link_to_default_domain",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858025",
+    "title": "cdn_frontdoor_rule",
+    "slug": "cdn_frontdoor_rule",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858026",
+    "title": "cdn_frontdoor_rule_set",
+    "slug": "cdn_frontdoor_rule_set",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858027",
+    "title": "cdn_frontdoor_secret",
+    "slug": "cdn_frontdoor_secret",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858028",
+    "title": "cdn_frontdoor_security_policy",
+    "slug": "cdn_frontdoor_security_policy",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858029",
+    "title": "cdn_profile",
+    "slug": "cdn_profile",
+    "subcategory": "CDN",
+    "azureType": null
+  },
+  {
+    "id": "2858030",
+    "title": "cognitive_account",
+    "slug": "cognitive_account",
+    "subcategory": "Cognitive Services",
+    "azureType": null
+  },
+  {
+    "id": "2858031",
+    "title": "cognitive_account_customer_managed_key",
+    "slug": "cognitive_account_customer_managed_key",
+    "subcategory": "Cognitive Services",
+    "azureType": null
+  },
+  {
+    "id": "2858032",
+    "title": "cognitive_deployment",
+    "slug": "cognitive_deployment",
+    "subcategory": "Cognitive Services",
+    "azureType": null
+  },
+  {
+    "id": "2858033",
+    "title": "communication_service",
+    "slug": "communication_service",
+    "subcategory": "Communication",
+    "azureType": null
+  },
+  {
+    "id": "2858034",
+    "title": "confidential_ledger",
+    "slug": "confidential_ledger",
+    "subcategory": "Confidential Ledger",
+    "azureType": null
+  },
+  {
+    "id": "2858035",
+    "title": "consumption_budget_management_group",
+    "slug": "consumption_budget_management_group",
+    "subcategory": "Consumption",
+    "azureType": null
+  },
+  {
+    "id": "2858036",
+    "title": "consumption_budget_resource_group",
+    "slug": "consumption_budget_resource_group",
+    "subcategory": "Consumption",
+    "azureType": null
+  },
+  {
+    "id": "2858037",
+    "title": "consumption_budget_subscription",
+    "slug": "consumption_budget_subscription",
+    "subcategory": "Consumption",
+    "azureType": null
+  },
+  {
+    "id": "2858038",
+    "title": "container_app",
+    "slug": "container_app",
+    "subcategory": "Container Apps",
+    "azureType": null
+  },
+  {
+    "id": "2858039",
+    "title": "container_app_environment",
+    "slug": "container_app_environment",
+    "subcategory": "Container Apps",
+    "azureType": null
+  },
+  {
+    "id": "2858040",
+    "title": "container_app_environment_certificate",
+    "slug": "container_app_environment_certificate",
+    "subcategory": "Container Apps",
+    "azureType": null
+  },
+  {
+    "id": "2858041",
+    "title": "container_app_environment_dapr_component",
+    "slug": "container_app_environment_dapr_component",
+    "subcategory": "Container Apps",
+    "azureType": null
+  },
+  {
+    "id": "2858042",
+    "title": "container_app_environment_storage",
+    "slug": "container_app_environment_storage",
+    "subcategory": "Container Apps",
+    "azureType": null
+  },
+  {
+    "id": "2858043",
+    "title": "container_connected_registry",
+    "slug": "container_connected_registry",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858044",
+    "title": "container_group",
+    "slug": "container_group",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858045",
+    "title": "container_registry",
+    "slug": "container_registry",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858046",
+    "title": "container_registry_agent_pool",
+    "slug": "container_registry_agent_pool",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858047",
+    "title": "container_registry_scope_map",
+    "slug": "container_registry_scope_map",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858048",
+    "title": "container_registry_task",
+    "slug": "container_registry_task",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858049",
+    "title": "container_registry_task_schedule_run_now",
+    "slug": "container_registry_task_schedule_run_now",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858050",
+    "title": "container_registry_token",
+    "slug": "container_registry_token",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858051",
+    "title": "container_registry_token_password",
+    "slug": "container_registry_token_password",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858052",
+    "title": "container_registry_webhook",
+    "slug": "container_registry_webhook",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858053",
+    "title": "cosmosdb_account",
+    "slug": "cosmosdb_account",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858054",
+    "title": "cosmosdb_cassandra_cluster",
+    "slug": "cosmosdb_cassandra_cluster",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858055",
+    "title": "cosmosdb_cassandra_datacenter",
+    "slug": "cosmosdb_cassandra_datacenter",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858056",
+    "title": "cosmosdb_cassandra_keyspace",
+    "slug": "cosmosdb_cassandra_keyspace",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858057",
+    "title": "cosmosdb_cassandra_table",
+    "slug": "cosmosdb_cassandra_table",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858058",
+    "title": "cosmosdb_gremlin_database",
+    "slug": "cosmosdb_gremlin_database",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858059",
+    "title": "cosmosdb_gremlin_graph",
+    "slug": "cosmosdb_gremlin_graph",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858060",
+    "title": "cosmosdb_mongo_collection",
+    "slug": "cosmosdb_mongo_collection",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858061",
+    "title": "cosmosdb_mongo_database",
+    "slug": "cosmosdb_mongo_database",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858062",
+    "title": "cosmosdb_mongo_role_definition",
+    "slug": "cosmosdb_mongo_role_definition",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858063",
+    "title": "cosmosdb_mongo_user_definition",
+    "slug": "cosmosdb_mongo_user_definition",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858064",
+    "title": "cosmosdb_notebook_workspace",
+    "slug": "cosmosdb_notebook_workspace",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858065",
+    "title": "cosmosdb_postgresql_cluster",
+    "slug": "cosmosdb_postgresql_cluster",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858066",
+    "title": "cosmosdb_postgresql_coordinator_configuration",
+    "slug": "cosmosdb_postgresql_coordinator_configuration",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858067",
+    "title": "cosmosdb_postgresql_firewall_rule",
+    "slug": "cosmosdb_postgresql_firewall_rule",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858068",
+    "title": "cosmosdb_postgresql_node_configuration",
+    "slug": "cosmosdb_postgresql_node_configuration",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858069",
+    "title": "cosmosdb_postgresql_role",
+    "slug": "cosmosdb_postgresql_role",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858070",
+    "title": "cosmosdb_sql_container",
+    "slug": "cosmosdb_sql_container",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858071",
+    "title": "cosmosdb_sql_database",
+    "slug": "cosmosdb_sql_database",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858072",
+    "title": "cosmosdb_sql_dedicated_gateway",
+    "slug": "cosmosdb_sql_dedicated_gateway",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858073",
+    "title": "cosmosdb_sql_function",
+    "slug": "cosmosdb_sql_function",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858074",
+    "title": "cosmosdb_sql_role_assignment",
+    "slug": "cosmosdb_sql_role_assignment",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858075",
+    "title": "cosmosdb_sql_role_definition",
+    "slug": "cosmosdb_sql_role_definition",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858076",
+    "title": "cosmosdb_sql_stored_procedure",
+    "slug": "cosmosdb_sql_stored_procedure",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858077",
+    "title": "cosmosdb_sql_trigger",
+    "slug": "cosmosdb_sql_trigger",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858078",
+    "title": "cosmosdb_table",
+    "slug": "cosmosdb_table",
+    "subcategory": "CosmosDB (DocumentDB)",
+    "azureType": null
+  },
+  {
+    "id": "2858079",
+    "title": "cost_anomaly_alert",
+    "slug": "cost_anomaly_alert",
+    "subcategory": "Cost Management",
+    "azureType": null
+  },
+  {
+    "id": "2858080",
+    "title": "cost_management_scheduled_action",
+    "slug": "cost_management_scheduled_action",
+    "subcategory": "Cost Management",
+    "azureType": null
+  },
+  {
+    "id": "2858081",
+    "title": "custom_ip_prefix",
+    "slug": "custom_ip_prefix",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858082",
+    "title": "custom_provider",
+    "slug": "custom_provider",
+    "subcategory": "Custom Providers",
+    "azureType": null
+  },
+  {
+    "id": "2858083",
+    "title": "dashboard",
+    "slug": "dashboard",
+    "subcategory": "Portal",
+    "azureType": null
+  },
+  {
+    "id": "2858084",
+    "title": "dashboard_grafana",
+    "slug": "dashboard_grafana",
+    "subcategory": "Dashboard",
+    "azureType": null
+  },
+  {
+    "id": "2858146",
+    "title": "database_migration_project",
+    "slug": "database_migration_project",
+    "subcategory": "Database Migration",
+    "azureType": null
+  },
+  {
+    "id": "2858147",
+    "title": "database_migration_service",
+    "slug": "database_migration_service",
+    "subcategory": "Database Migration",
+    "azureType": null
+  },
+  {
+    "id": "2858148",
+    "title": "databox_edge_device",
+    "slug": "databox_edge_device",
+    "subcategory": "Databox Edge",
+    "azureType": null
+  },
+  {
+    "id": "2858149",
+    "title": "databox_edge_order",
+    "slug": "databox_edge_order",
+    "subcategory": "Databox Edge",
+    "azureType": null
+  },
+  {
+    "id": "2858150",
+    "title": "databricks_access_connector",
+    "slug": "databricks_access_connector",
+    "subcategory": "Databricks",
+    "azureType": null
+  },
+  {
+    "id": "2858151",
+    "title": "databricks_virtual_network_peering",
+    "slug": "databricks_virtual_network_peering",
+    "subcategory": "Databricks",
+    "azureType": null
+  },
+  {
+    "id": "2858152",
+    "title": "databricks_workspace",
+    "slug": "databricks_workspace",
+    "subcategory": "Databricks",
+    "azureType": null
+  },
+  {
+    "id": "2858153",
+    "title": "databricks_workspace_customer_managed_key",
+    "slug": "databricks_workspace_customer_managed_key",
+    "subcategory": "Databricks",
+    "azureType": null
+  },
+  {
+    "id": "2858154",
+    "title": "databricks_workspace_root_dbfs_customer_managed_key",
+    "slug": "databricks_workspace_root_dbfs_customer_managed_key",
+    "subcategory": "Databricks",
+    "azureType": null
+  },
+  {
+    "id": "2858157",
+    "title": "datadog_monitors",
+    "slug": "datadog_monitors",
+    "subcategory": "Datadog",
+    "azureType": null
+  },
+  {
+    "id": "2858155",
+    "title": "datadog_monitor_sso_configuration",
+    "slug": "datadog_monitor_sso_configuration",
+    "subcategory": "Datadog",
+    "azureType": null
+  },
+  {
+    "id": "2858156",
+    "title": "datadog_monitor_tag_rule",
+    "slug": "datadog_monitor_tag_rule",
+    "subcategory": "Datadog",
+    "azureType": null
+  },
+  {
+    "id": "2858085",
+    "title": "data_factory",
+    "slug": "data_factory",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858086",
+    "title": "data_factory_custom_dataset",
+    "slug": "data_factory_custom_dataset",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858087",
+    "title": "data_factory_data_flow",
+    "slug": "data_factory_data_flow",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858088",
+    "title": "data_factory_dataset_azure_blob",
+    "slug": "data_factory_dataset_azure_blob",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858089",
+    "title": "data_factory_dataset_binary",
+    "slug": "data_factory_dataset_binary",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858090",
+    "title": "data_factory_dataset_cosmosdb_sqlapi",
+    "slug": "data_factory_dataset_cosmosdb_sqlapi",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858091",
+    "title": "data_factory_dataset_delimited_text",
+    "slug": "data_factory_dataset_delimited_text",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858092",
+    "title": "data_factory_dataset_http",
+    "slug": "data_factory_dataset_http",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858093",
+    "title": "data_factory_dataset_json",
+    "slug": "data_factory_dataset_json",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858094",
+    "title": "data_factory_dataset_mysql",
+    "slug": "data_factory_dataset_mysql",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858095",
+    "title": "data_factory_dataset_parquet",
+    "slug": "data_factory_dataset_parquet",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858096",
+    "title": "data_factory_dataset_postgresql",
+    "slug": "data_factory_dataset_postgresql",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858097",
+    "title": "data_factory_dataset_snowflake",
+    "slug": "data_factory_dataset_snowflake",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858098",
+    "title": "data_factory_dataset_sql_server_table",
+    "slug": "data_factory_dataset_sql_server_table",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858099",
+    "title": "data_factory_flowlet_data_flow",
+    "slug": "data_factory_flowlet_data_flow",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858100",
+    "title": "data_factory_integration_runtime_azure",
+    "slug": "data_factory_integration_runtime_azure",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858101",
+    "title": "data_factory_integration_runtime_azure_ssis",
+    "slug": "data_factory_integration_runtime_azure_ssis",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858102",
+    "title": "data_factory_integration_runtime_managed",
+    "slug": "data_factory_integration_runtime_managed",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858103",
+    "title": "data_factory_integration_runtime_self_hosted",
+    "slug": "data_factory_integration_runtime_self_hosted",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858104",
+    "title": "data_factory_linked_custom_service",
+    "slug": "data_factory_linked_custom_service",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858105",
+    "title": "data_factory_linked_service_azure_blob_storage",
+    "slug": "data_factory_linked_service_azure_blob_storage",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858106",
+    "title": "data_factory_linked_service_azure_databricks",
+    "slug": "data_factory_linked_service_azure_databricks",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858107",
+    "title": "data_factory_linked_service_azure_file_storage",
+    "slug": "data_factory_linked_service_azure_file_storage",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858108",
+    "title": "data_factory_linked_service_azure_function",
+    "slug": "data_factory_linked_service_azure_function",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858109",
+    "title": "data_factory_linked_service_azure_search",
+    "slug": "data_factory_linked_service_azure_search",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858110",
+    "title": "data_factory_linked_service_azure_sql_database",
+    "slug": "data_factory_linked_service_azure_sql_database",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858111",
+    "title": "data_factory_linked_service_azure_table_storage",
+    "slug": "data_factory_linked_service_azure_table_storage",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858112",
+    "title": "data_factory_linked_service_cosmosdb",
+    "slug": "data_factory_linked_service_cosmosdb",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858113",
+    "title": "data_factory_linked_service_cosmosdb_mongoapi",
+    "slug": "data_factory_linked_service_cosmosdb_mongoapi",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858114",
+    "title": "data_factory_linked_service_data_lake_storage_gen2",
+    "slug": "data_factory_linked_service_data_lake_storage_gen2",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858115",
+    "title": "data_factory_linked_service_key_vault",
+    "slug": "data_factory_linked_service_key_vault",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858116",
+    "title": "data_factory_linked_service_kusto",
+    "slug": "data_factory_linked_service_kusto",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858117",
+    "title": "data_factory_linked_service_mysql",
+    "slug": "data_factory_linked_service_mysql",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858118",
+    "title": "data_factory_linked_service_odata",
+    "slug": "data_factory_linked_service_odata",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858119",
+    "title": "data_factory_linked_service_odbc",
+    "slug": "data_factory_linked_service_odbc",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858120",
+    "title": "data_factory_linked_service_postgresql",
+    "slug": "data_factory_linked_service_postgresql",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858121",
+    "title": "data_factory_linked_service_sftp",
+    "slug": "data_factory_linked_service_sftp",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858122",
+    "title": "data_factory_linked_service_snowflake",
+    "slug": "data_factory_linked_service_snowflake",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858123",
+    "title": "data_factory_linked_service_sql_server",
+    "slug": "data_factory_linked_service_sql_server",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858124",
+    "title": "data_factory_linked_service_synapse",
+    "slug": "data_factory_linked_service_synapse",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858125",
+    "title": "data_factory_linked_service_web",
+    "slug": "data_factory_linked_service_web",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858126",
+    "title": "data_factory_managed_private_endpoint",
+    "slug": "data_factory_managed_private_endpoint",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858127",
+    "title": "data_factory_pipeline",
+    "slug": "data_factory_pipeline",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858128",
+    "title": "data_factory_trigger_blob_event",
+    "slug": "data_factory_trigger_blob_event",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858129",
+    "title": "data_factory_trigger_custom_event",
+    "slug": "data_factory_trigger_custom_event",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858130",
+    "title": "data_factory_trigger_schedule",
+    "slug": "data_factory_trigger_schedule",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858131",
+    "title": "data_factory_tumbling_window",
+    "slug": "data_factory_tumbling_window",
+    "subcategory": "Data Factory",
+    "azureType": null
+  },
+  {
+    "id": "2858132",
+    "title": "data_protection_backup_instance_blob_storage",
+    "slug": "data_protection_backup_instance_blob_storage",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858133",
+    "title": "data_protection_backup_instance_disk",
+    "slug": "data_protection_backup_instance_disk",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858134",
+    "title": "data_protection_backup_instance_postgresql",
+    "slug": "data_protection_backup_instance_postgresql",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858135",
+    "title": "data_protection_backup_policy_blob_storage",
+    "slug": "data_protection_backup_policy_blob_storage",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858136",
+    "title": "data_protection_backup_policy_disk",
+    "slug": "data_protection_backup_policy_disk",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858137",
+    "title": "data_protection_backup_policy_postgresql",
+    "slug": "data_protection_backup_policy_postgresql",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858138",
+    "title": "data_protection_backup_vault",
+    "slug": "data_protection_backup_vault",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858139",
+    "title": "data_protection_resource_guard",
+    "slug": "data_protection_resource_guard",
+    "subcategory": "DataProtection",
+    "azureType": null
+  },
+  {
+    "id": "2858140",
+    "title": "data_share",
+    "slug": "data_share",
+    "subcategory": "Data Share",
+    "azureType": null
+  },
+  {
+    "id": "2858141",
+    "title": "data_share_account",
+    "slug": "data_share_account",
+    "subcategory": "Data Share",
+    "azureType": null
+  },
+  {
+    "id": "2858142",
+    "title": "data_share_dataset_blob_storage",
+    "slug": "data_share_dataset_blob_storage",
+    "subcategory": "Data Share",
+    "azureType": null
+  },
+  {
+    "id": "2858143",
+    "title": "data_share_dataset_data_lake_gen2",
+    "slug": "data_share_dataset_data_lake_gen2",
+    "subcategory": "Data Share",
+    "azureType": null
+  },
+  {
+    "id": "2858144",
+    "title": "data_share_dataset_kusto_cluster",
+    "slug": "data_share_dataset_kusto_cluster",
+    "subcategory": "Data Share",
+    "azureType": null
+  },
+  {
+    "id": "2858145",
+    "title": "data_share_dataset_kusto_database",
+    "slug": "data_share_dataset_kusto_database",
+    "subcategory": "Data Share",
+    "azureType": null
+  },
+  {
+    "id": "2858158",
+    "title": "dedicated_hardware_security_module",
+    "slug": "dedicated_hardware_security_module",
+    "subcategory": "Hardware Security Module",
+    "azureType": null
+  },
+  {
+    "id": "2858159",
+    "title": "dedicated_host",
+    "slug": "dedicated_host",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858160",
+    "title": "dedicated_host_group",
+    "slug": "dedicated_host_group",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858161",
+    "title": "dev_test_global_vm_shutdown_schedule",
+    "slug": "dev_test_global_vm_shutdown_schedule",
+    "subcategory": "Dev Test",
+    "azureType": null
+  },
+  {
+    "id": "2858162",
+    "title": "dev_test_lab",
+    "slug": "dev_test_lab",
+    "subcategory": "Dev Test",
+    "azureType": null
+  },
+  {
+    "id": "2858163",
+    "title": "dev_test_linux_virtual_machine",
+    "slug": "dev_test_linux_virtual_machine",
+    "subcategory": "Dev Test",
+    "azureType": null
+  },
+  {
+    "id": "2858164",
+    "title": "dev_test_policy",
+    "slug": "dev_test_policy",
+    "subcategory": "Dev Test",
+    "azureType": null
+  },
+  {
+    "id": "2858165",
+    "title": "dev_test_schedule",
+    "slug": "dev_test_schedule",
+    "subcategory": "Dev Test",
+    "azureType": null
+  },
+  {
+    "id": "2858166",
+    "title": "dev_test_virtual_network",
+    "slug": "dev_test_virtual_network",
+    "subcategory": "Dev Test",
+    "azureType": null
+  },
+  {
+    "id": "2858167",
+    "title": "dev_test_windows_virtual_machine",
+    "slug": "dev_test_windows_virtual_machine",
+    "subcategory": "Dev Test",
+    "azureType": null
+  },
+  {
+    "id": "2858168",
+    "title": "digital_twins_endpoint_eventgrid",
+    "slug": "digital_twins_endpoint_eventgrid",
+    "subcategory": "Digital Twins",
+    "azureType": null
+  },
+  {
+    "id": "2858169",
+    "title": "digital_twins_endpoint_eventhub",
+    "slug": "digital_twins_endpoint_eventhub",
+    "subcategory": "Digital Twins",
+    "azureType": null
+  },
+  {
+    "id": "2858170",
+    "title": "digital_twins_endpoint_servicebus",
+    "slug": "digital_twins_endpoint_servicebus",
+    "subcategory": "Digital Twins",
+    "azureType": null
+  },
+  {
+    "id": "2858171",
+    "title": "digital_twins_instance",
+    "slug": "digital_twins_instance",
+    "subcategory": "Digital Twins",
+    "azureType": null
+  },
+  {
+    "id": "2858172",
+    "title": "digital_twins_time_series_database_connection",
+    "slug": "digital_twins_time_series_database_connection",
+    "subcategory": "Digital Twins",
+    "azureType": null
+  },
+  {
+    "id": "2858173",
+    "title": "disk_access",
+    "slug": "disk_access",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858174",
+    "title": "disk_encryption_set",
+    "slug": "disk_encryption_set",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858175",
+    "title": "disk_pool",
+    "slug": "disk_pool",
+    "subcategory": "Disks",
+    "azureType": null
+  },
+  {
+    "id": "2858176",
+    "title": "disk_pool_iscsi_target",
+    "slug": "disk_pool_iscsi_target",
+    "subcategory": "Disks",
+    "azureType": null
+  },
+  {
+    "id": "2858177",
+    "title": "disk_pool_iscsi_target_lun",
+    "slug": "disk_pool_iscsi_target_lun",
+    "subcategory": "Disks",
+    "azureType": null
+  },
+  {
+    "id": "2858178",
+    "title": "disk_pool_managed_disk_attachment",
+    "slug": "disk_pool_managed_disk_attachment",
+    "subcategory": "Disks",
+    "azureType": null
+  },
+  {
+    "id": "2858179",
+    "title": "disk_sas_token",
+    "slug": "disk_sas_token",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858181",
+    "title": "dns_aaaa_record",
+    "slug": "dns_aaaa_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858180",
+    "title": "dns_a_record",
+    "slug": "dns_a_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858182",
+    "title": "dns_caa_record",
+    "slug": "dns_caa_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858183",
+    "title": "dns_cname_record",
+    "slug": "dns_cname_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858184",
+    "title": "dns_mx_record",
+    "slug": "dns_mx_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858185",
+    "title": "dns_ns_record",
+    "slug": "dns_ns_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858186",
+    "title": "dns_ptr_record",
+    "slug": "dns_ptr_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858187",
+    "title": "dns_srv_record",
+    "slug": "dns_srv_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858188",
+    "title": "dns_txt_record",
+    "slug": "dns_txt_record",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858189",
+    "title": "dns_zone",
+    "slug": "dns_zone",
+    "subcategory": "DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858190",
+    "title": "elastic_cloud_elasticsearch",
+    "slug": "elastic_cloud_elasticsearch",
+    "subcategory": "Elastic",
+    "azureType": null
+  },
+  {
+    "id": "2858191",
+    "title": "email_communication_service",
+    "slug": "email_communication_service",
+    "subcategory": "Communication",
+    "azureType": null
+  },
+  {
+    "id": "2858192",
+    "title": "eventgrid_domain",
+    "slug": "eventgrid_domain",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858193",
+    "title": "eventgrid_domain_topic",
+    "slug": "eventgrid_domain_topic",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858194",
+    "title": "eventgrid_event_subscription",
+    "slug": "eventgrid_event_subscription",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858195",
+    "title": "eventgrid_system_topic",
+    "slug": "eventgrid_system_topic",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858196",
+    "title": "eventgrid_system_topic_event_subscription",
+    "slug": "eventgrid_system_topic_event_subscription",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858197",
+    "title": "eventgrid_topic",
+    "slug": "eventgrid_topic",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858198",
+    "title": "eventhub",
+    "slug": "eventhub",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858199",
+    "title": "eventhub_authorization_rule",
+    "slug": "eventhub_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858200",
+    "title": "eventhub_cluster",
+    "slug": "eventhub_cluster",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858201",
+    "title": "eventhub_consumer_group",
+    "slug": "eventhub_consumer_group",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858202",
+    "title": "eventhub_namespace",
+    "slug": "eventhub_namespace",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858203",
+    "title": "eventhub_namespace_authorization_rule",
+    "slug": "eventhub_namespace_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858204",
+    "title": "eventhub_namespace_customer_managed_key",
+    "slug": "eventhub_namespace_customer_managed_key",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858205",
+    "title": "eventhub_namespace_disaster_recovery_config",
+    "slug": "eventhub_namespace_disaster_recovery_config",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858206",
+    "title": "eventhub_namespace_schema_group",
+    "slug": "eventhub_namespace_schema_group",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858207",
+    "title": "express_route_circuit",
+    "slug": "express_route_circuit",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858208",
+    "title": "express_route_circuit_authorization",
+    "slug": "express_route_circuit_authorization",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858209",
+    "title": "express_route_circuit_connection",
+    "slug": "express_route_circuit_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858210",
+    "title": "express_route_circuit_peering",
+    "slug": "express_route_circuit_peering",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858211",
+    "title": "express_route_connection",
+    "slug": "express_route_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858212",
+    "title": "express_route_gateway",
+    "slug": "express_route_gateway",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858213",
+    "title": "express_route_port",
+    "slug": "express_route_port",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858214",
+    "title": "express_route_port_authorization",
+    "slug": "express_route_port_authorization",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858215",
+    "title": "federated_identity_credential",
+    "slug": "federated_identity_credential",
+    "subcategory": "Authorization",
+    "azureType": null
+  },
+  {
+    "id": "2858216",
+    "title": "firewall",
+    "slug": "firewall",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858217",
+    "title": "firewall_application_rule_collection",
+    "slug": "firewall_application_rule_collection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858218",
+    "title": "firewall_nat_rule_collection",
+    "slug": "firewall_nat_rule_collection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858219",
+    "title": "firewall_network_rule_collection",
+    "slug": "firewall_network_rule_collection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858220",
+    "title": "firewall_policy",
+    "slug": "firewall_policy",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858221",
+    "title": "firewall_policy_rule_collection_group",
+    "slug": "firewall_policy_rule_collection_group",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858222",
+    "title": "fluid_relay_servers",
+    "slug": "fluid_relay_servers",
+    "subcategory": "Fluid Relay",
+    "azureType": null
+  },
+  {
+    "id": "2858223",
+    "title": "frontdoor",
+    "slug": "frontdoor",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858224",
+    "title": "frontdoor_custom_https_configuration",
+    "slug": "frontdoor_custom_https_configuration",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858225",
+    "title": "frontdoor_firewall_policy",
+    "slug": "frontdoor_firewall_policy",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858226",
+    "title": "frontdoor_rules_engine",
+    "slug": "frontdoor_rules_engine",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858227",
+    "title": "function_app",
+    "slug": "function_app",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858228",
+    "title": "function_app_active_slot",
+    "slug": "function_app_active_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858229",
+    "title": "function_app_function",
+    "slug": "function_app_function",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858230",
+    "title": "function_app_hybrid_connection",
+    "slug": "function_app_hybrid_connection",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858231",
+    "title": "function_app_slot",
+    "slug": "function_app_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858232",
+    "title": "gallery_application",
+    "slug": "gallery_application",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858233",
+    "title": "gallery_application_version",
+    "slug": "gallery_application_version",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858234",
+    "title": "graph_account",
+    "slug": "graph_account",
+    "subcategory": "Graph Services",
+    "azureType": null
+  },
+  {
+    "id": "2858235",
+    "title": "graph_services_account",
+    "slug": "graph_services_account",
+    "subcategory": "Graph Services",
+    "azureType": null
+  },
+  {
+    "id": "2858236",
+    "title": "hdinsight_hadoop_cluster",
+    "slug": "hdinsight_hadoop_cluster",
+    "subcategory": "HDInsight",
+    "azureType": null
+  },
+  {
+    "id": "2858237",
+    "title": "hdinsight_hbase_cluster",
+    "slug": "hdinsight_hbase_cluster",
+    "subcategory": "HDInsight",
+    "azureType": null
+  },
+  {
+    "id": "2858238",
+    "title": "hdinsight_interactive_query_cluster",
+    "slug": "hdinsight_interactive_query_cluster",
+    "subcategory": "HDInsight",
+    "azureType": null
+  },
+  {
+    "id": "2858239",
+    "title": "hdinsight_kafka_cluster",
+    "slug": "hdinsight_kafka_cluster",
+    "subcategory": "HDInsight",
+    "azureType": null
+  },
+  {
+    "id": "2858240",
+    "title": "hdinsight_spark_cluster",
+    "slug": "hdinsight_spark_cluster",
+    "subcategory": "HDInsight",
+    "azureType": null
+  },
+  {
+    "id": "2858241",
+    "title": "healthcare_dicom",
+    "slug": "healthcare_dicom",
+    "subcategory": "Healthcare",
+    "azureType": null
+  },
+  {
+    "id": "2858242",
+    "title": "healthcare_fhir_service",
+    "slug": "healthcare_fhir_service",
+    "subcategory": "Healthcare",
+    "azureType": null
+  },
+  {
+    "id": "2858243",
+    "title": "healthcare_medtech_service",
+    "slug": "healthcare_medtech_service",
+    "subcategory": "Healthcare",
+    "azureType": null
+  },
+  {
+    "id": "2858244",
+    "title": "healthcare_medtech_service_fhir_destination",
+    "slug": "healthcare_medtech_service_fhir_destination",
+    "subcategory": "Healthcare",
+    "azureType": null
+  },
+  {
+    "id": "2858245",
+    "title": "healthcare_service",
+    "slug": "healthcare_service",
+    "subcategory": "Healthcare",
+    "azureType": null
+  },
+  {
+    "id": "2858246",
+    "title": "healthcare_workspace",
+    "slug": "healthcare_workspace",
+    "subcategory": "Healthcare",
+    "azureType": null
+  },
+  {
+    "id": "2858247",
+    "title": "hpc_cache",
+    "slug": "hpc_cache",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858248",
+    "title": "hpc_cache_access_policy",
+    "slug": "hpc_cache_access_policy",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858249",
+    "title": "hpc_cache_blob_nfs_target",
+    "slug": "hpc_cache_blob_nfs_target",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858250",
+    "title": "hpc_cache_blob_target",
+    "slug": "hpc_cache_blob_target",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858251",
+    "title": "hpc_cache_nfs_target",
+    "slug": "hpc_cache_nfs_target",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858252",
+    "title": "image",
+    "slug": "image",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858253",
+    "title": "integration_service_environment",
+    "slug": "integration_service_environment",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858262",
+    "title": "iotcentral_application",
+    "slug": "iotcentral_application",
+    "subcategory": "IoT Central",
+    "azureType": null
+  },
+  {
+    "id": "2858263",
+    "title": "iotcentral_application_network_rule_set",
+    "slug": "iotcentral_application_network_rule_set",
+    "subcategory": "IoT Central",
+    "azureType": null
+  },
+  {
+    "id": "2858264",
+    "title": "iothub",
+    "slug": "iothub",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858265",
+    "title": "iothub_certificate",
+    "slug": "iothub_certificate",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858266",
+    "title": "iothub_consumer_group",
+    "slug": "iothub_consumer_group",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858267",
+    "title": "iothub_device_update_account",
+    "slug": "iothub_device_update_account",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858268",
+    "title": "iothub_device_update_instance",
+    "slug": "iothub_device_update_instance",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858269",
+    "title": "iothub_dps",
+    "slug": "iothub_dps",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858270",
+    "title": "iothub_dps_certificate",
+    "slug": "iothub_dps_certificate",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858271",
+    "title": "iothub_dps_shared_access_policy",
+    "slug": "iothub_dps_shared_access_policy",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858272",
+    "title": "iothub_endpoint_eventhub",
+    "slug": "iothub_endpoint_eventhub",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858273",
+    "title": "iothub_endpoint_servicebus_queue",
+    "slug": "iothub_endpoint_servicebus_queue",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858274",
+    "title": "iothub_endpoint_servicebus_topic",
+    "slug": "iothub_endpoint_servicebus_topic",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858275",
+    "title": "iothub_endpoint_storage_container",
+    "slug": "iothub_endpoint_storage_container",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858276",
+    "title": "iothub_enrichment",
+    "slug": "iothub_enrichment",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858277",
+    "title": "iothub_fallback_route",
+    "slug": "iothub_fallback_route",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858278",
+    "title": "iothub_file_upload",
+    "slug": "iothub_file_upload",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858279",
+    "title": "iothub_route",
+    "slug": "iothub_route",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858280",
+    "title": "iothub_shared_access_policy",
+    "slug": "iothub_shared_access_policy",
+    "subcategory": "IoT Hub",
+    "azureType": null
+  },
+  {
+    "id": "2858254",
+    "title": "iot_security_device_group",
+    "slug": "iot_security_device_group",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858255",
+    "title": "iot_security_solution",
+    "slug": "iot_security_solution",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858256",
+    "title": "iot_time_series_insights_access_policy",
+    "slug": "iot_time_series_insights_access_policy",
+    "subcategory": "Time Series Insights",
+    "azureType": null
+  },
+  {
+    "id": "2858257",
+    "title": "iot_time_series_insights_event_source_eventhub",
+    "slug": "iot_time_series_insights_event_source_eventhub",
+    "subcategory": "Time Series Insights",
+    "azureType": null
+  },
+  {
+    "id": "2858258",
+    "title": "iot_time_series_insights_event_source_iothub",
+    "slug": "iot_time_series_insights_event_source_iothub",
+    "subcategory": "Time Series Insights",
+    "azureType": null
+  },
+  {
+    "id": "2858259",
+    "title": "iot_time_series_insights_gen2_environment",
+    "slug": "iot_time_series_insights_gen2_environment",
+    "subcategory": "Time Series Insights",
+    "azureType": null
+  },
+  {
+    "id": "2858260",
+    "title": "iot_time_series_insights_reference_data_set",
+    "slug": "iot_time_series_insights_reference_data_set",
+    "subcategory": "Time Series Insights",
+    "azureType": null
+  },
+  {
+    "id": "2858261",
+    "title": "iot_time_series_insights_standard_environment",
+    "slug": "iot_time_series_insights_standard_environment",
+    "subcategory": "Time Series Insights",
+    "azureType": null
+  },
+  {
+    "id": "2858281",
+    "title": "ip_group",
+    "slug": "ip_group",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858282",
+    "title": "ip_group_cidr",
+    "slug": "ip_group_cidr",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858283",
+    "title": "key_vault",
+    "slug": "key_vault",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858284",
+    "title": "key_vault_access_policy",
+    "slug": "key_vault_access_policy",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858285",
+    "title": "key_vault_certificate",
+    "slug": "key_vault_certificate",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858286",
+    "title": "key_vault_certificate_contacts",
+    "slug": "key_vault_certificate_contacts",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858287",
+    "title": "key_vault_certificate_issuer",
+    "slug": "key_vault_certificate_issuer",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858288",
+    "title": "key_vault_key",
+    "slug": "key_vault_key",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858289",
+    "title": "key_vault_managed_hardware_security_module",
+    "slug": "key_vault_managed_hardware_security_module",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858290",
+    "title": "key_vault_managed_storage_account",
+    "slug": "key_vault_managed_storage_account",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858291",
+    "title": "key_vault_managed_storage_account_sas_token_definition",
+    "slug": "key_vault_managed_storage_account_sas_token_definition",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858292",
+    "title": "key_vault_secret",
+    "slug": "key_vault_secret",
+    "subcategory": "Key Vault",
+    "azureType": null
+  },
+  {
+    "id": "2858293",
+    "title": "kubernetes_cluster",
+    "slug": "kubernetes_cluster",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858294",
+    "title": "kubernetes_cluster_extension",
+    "slug": "kubernetes_cluster_extension",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858295",
+    "title": "kubernetes_cluster_node_pool",
+    "slug": "kubernetes_cluster_node_pool",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858296",
+    "title": "kubernetes_cluster_trusted_access_role_binding",
+    "slug": "kubernetes_cluster_trusted_access_role_binding",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858297",
+    "title": "kubernetes_fleet_manager",
+    "slug": "kubernetes_fleet_manager",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858298",
+    "title": "kubernetes_flux_configuration",
+    "slug": "kubernetes_flux_configuration",
+    "subcategory": "Container",
+    "azureType": null
+  },
+  {
+    "id": "2858299",
+    "title": "kusto_attached_database_configuration",
+    "slug": "kusto_attached_database_configuration",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858300",
+    "title": "kusto_cluster",
+    "slug": "kusto_cluster",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858301",
+    "title": "kusto_cluster_customer_managed_key",
+    "slug": "kusto_cluster_customer_managed_key",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858302",
+    "title": "kusto_cluster_managed_private_endpoint",
+    "slug": "kusto_cluster_managed_private_endpoint",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858303",
+    "title": "kusto_cluster_principal_assignment",
+    "slug": "kusto_cluster_principal_assignment",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858304",
+    "title": "kusto_cosmosdb_data_connection",
+    "slug": "kusto_cosmosdb_data_connection",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858305",
+    "title": "kusto_database",
+    "slug": "kusto_database",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858306",
+    "title": "kusto_database_principal_assignment",
+    "slug": "kusto_database_principal_assignment",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858307",
+    "title": "kusto_eventgrid_data_connection",
+    "slug": "kusto_eventgrid_data_connection",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858308",
+    "title": "kusto_eventhub_data_connection",
+    "slug": "kusto_eventhub_data_connection",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858309",
+    "title": "kusto_iothub_data_connection",
+    "slug": "kusto_iothub_data_connection",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858310",
+    "title": "kusto_script",
+    "slug": "kusto_script",
+    "subcategory": "Data Explorer",
+    "azureType": null
+  },
+  {
+    "id": "2858311",
+    "title": "lab_service_lab",
+    "slug": "lab_service_lab",
+    "subcategory": "Lab Service",
+    "azureType": null
+  },
+  {
+    "id": "2858312",
+    "title": "lab_service_plan",
+    "slug": "lab_service_plan",
+    "subcategory": "Lab Service",
+    "azureType": null
+  },
+  {
+    "id": "2858313",
+    "title": "lab_service_schedule",
+    "slug": "lab_service_schedule",
+    "subcategory": "Lab Service",
+    "azureType": null
+  },
+  {
+    "id": "2858314",
+    "title": "lab_service_user",
+    "slug": "lab_service_user",
+    "subcategory": "Lab Service",
+    "azureType": null
+  },
+  {
+    "id": "2858315",
+    "title": "lb",
+    "slug": "lb",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858316",
+    "title": "lb_backend_address_pool",
+    "slug": "lb_backend_address_pool",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858317",
+    "title": "lb_backend_address_pool_address",
+    "slug": "lb_backend_address_pool_address",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858318",
+    "title": "lb_nat_pool",
+    "slug": "lb_nat_pool",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858319",
+    "title": "lb_nat_rule",
+    "slug": "lb_nat_rule",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858320",
+    "title": "lb_outbound_rule",
+    "slug": "lb_outbound_rule",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858321",
+    "title": "lb_probe",
+    "slug": "lb_probe",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858322",
+    "title": "lb_rule",
+    "slug": "lb_rule",
+    "subcategory": "Load Balancer",
+    "azureType": null
+  },
+  {
+    "id": "2858323",
+    "title": "lighthouse_assignment",
+    "slug": "lighthouse_assignment",
+    "subcategory": "Lighthouse",
+    "azureType": null
+  },
+  {
+    "id": "2858324",
+    "title": "lighthouse_definition",
+    "slug": "lighthouse_definition",
+    "subcategory": "Lighthouse",
+    "azureType": null
+  },
+  {
+    "id": "2858325",
+    "title": "linux_function_app",
+    "slug": "linux_function_app",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858326",
+    "title": "linux_function_app_slot",
+    "slug": "linux_function_app_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858327",
+    "title": "linux_virtual_machine",
+    "slug": "linux_virtual_machine",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858328",
+    "title": "linux_virtual_machine_scale_set",
+    "slug": "linux_virtual_machine_scale_set",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858329",
+    "title": "linux_web_app",
+    "slug": "linux_web_app",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858330",
+    "title": "linux_web_app_slot",
+    "slug": "linux_web_app_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858331",
+    "title": "load_test",
+    "slug": "load_test",
+    "subcategory": "Load Test",
+    "azureType": null
+  },
+  {
+    "id": "2858332",
+    "title": "local_network_gateway",
+    "slug": "local_network_gateway",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858333",
+    "title": "log_analytics_cluster",
+    "slug": "log_analytics_cluster",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858334",
+    "title": "log_analytics_cluster_customer_managed_key",
+    "slug": "log_analytics_cluster_customer_managed_key",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858335",
+    "title": "log_analytics_data_export_rule",
+    "slug": "log_analytics_data_export_rule",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858336",
+    "title": "log_analytics_datasource_windows_event",
+    "slug": "log_analytics_datasource_windows_event",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858337",
+    "title": "log_analytics_datasource_windows_performance_counter",
+    "slug": "log_analytics_datasource_windows_performance_counter",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858338",
+    "title": "log_analytics_linked_service",
+    "slug": "log_analytics_linked_service",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858339",
+    "title": "log_analytics_linked_storage_account",
+    "slug": "log_analytics_linked_storage_account",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858340",
+    "title": "log_analytics_query_pack",
+    "slug": "log_analytics_query_pack",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858341",
+    "title": "log_analytics_query_pack_query",
+    "slug": "log_analytics_query_pack_query",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858342",
+    "title": "log_analytics_saved_search",
+    "slug": "log_analytics_saved_search",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858343",
+    "title": "log_analytics_solution",
+    "slug": "log_analytics_solution",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858344",
+    "title": "log_analytics_storage_insights",
+    "slug": "log_analytics_storage_insights",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858345",
+    "title": "log_analytics_workspace",
+    "slug": "log_analytics_workspace",
+    "subcategory": "Log Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858346",
+    "title": "logic_app_action_custom",
+    "slug": "logic_app_action_custom",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858347",
+    "title": "logic_app_action_http",
+    "slug": "logic_app_action_http",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858348",
+    "title": "logic_app_integration_account",
+    "slug": "logic_app_integration_account",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858349",
+    "title": "logic_app_integration_account_agreement",
+    "slug": "logic_app_integration_account_agreement",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858350",
+    "title": "logic_app_integration_account_assembly",
+    "slug": "logic_app_integration_account_assembly",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858351",
+    "title": "logic_app_integration_account_batch_configuration",
+    "slug": "logic_app_integration_account_batch_configuration",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858352",
+    "title": "logic_app_integration_account_certificate",
+    "slug": "logic_app_integration_account_certificate",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858353",
+    "title": "logic_app_integration_account_map",
+    "slug": "logic_app_integration_account_map",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858354",
+    "title": "logic_app_integration_account_partner",
+    "slug": "logic_app_integration_account_partner",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858355",
+    "title": "logic_app_integration_account_schema",
+    "slug": "logic_app_integration_account_schema",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858356",
+    "title": "logic_app_integration_account_session",
+    "slug": "logic_app_integration_account_session",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858357",
+    "title": "logic_app_standard",
+    "slug": "logic_app_standard",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858358",
+    "title": "logic_app_trigger_custom",
+    "slug": "logic_app_trigger_custom",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858359",
+    "title": "logic_app_trigger_http_request",
+    "slug": "logic_app_trigger_http_request",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858360",
+    "title": "logic_app_trigger_recurrence",
+    "slug": "logic_app_trigger_recurrence",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858361",
+    "title": "logic_app_workflow",
+    "slug": "logic_app_workflow",
+    "subcategory": "Logic App",
+    "azureType": null
+  },
+  {
+    "id": "2858362",
+    "title": "logz_monitor",
+    "slug": "logz_monitor",
+    "subcategory": "Logz",
+    "azureType": null
+  },
+  {
+    "id": "2858363",
+    "title": "logz_sub_account",
+    "slug": "logz_sub_account",
+    "subcategory": "Logz",
+    "azureType": null
+  },
+  {
+    "id": "2858364",
+    "title": "logz_sub_account_tag_rule",
+    "slug": "logz_sub_account_tag_rule",
+    "subcategory": "Logz",
+    "azureType": null
+  },
+  {
+    "id": "2858365",
+    "title": "logz_tag_rule",
+    "slug": "logz_tag_rule",
+    "subcategory": "Logz",
+    "azureType": null
+  },
+  {
+    "id": "2858366",
+    "title": "machine_learning_compute_cluster",
+    "slug": "machine_learning_compute_cluster",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858367",
+    "title": "machine_learning_compute_instance",
+    "slug": "machine_learning_compute_instance",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858368",
+    "title": "machine_learning_datastore_blobstorage",
+    "slug": "machine_learning_datastore_blobstorage",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858369",
+    "title": "machine_learning_datastore_datalake_gen2",
+    "slug": "machine_learning_datastore_datalake_gen2",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858370",
+    "title": "machine_learning_datastore_fileshare",
+    "slug": "machine_learning_datastore_fileshare",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858371",
+    "title": "machine_learning_inference_cluster",
+    "slug": "machine_learning_inference_cluster",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858372",
+    "title": "machine_learning_synapse_spark",
+    "slug": "machine_learning_synapse_spark",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858373",
+    "title": "machine_learning_workspace",
+    "slug": "machine_learning_workspace",
+    "subcategory": "Machine Learning",
+    "azureType": null
+  },
+  {
+    "id": "2858374",
+    "title": "maintenance_assignment_dedicated_host",
+    "slug": "maintenance_assignment_dedicated_host",
+    "subcategory": "Maintenance",
+    "azureType": null
+  },
+  {
+    "id": "2858375",
+    "title": "maintenance_assignment_virtual_machine",
+    "slug": "maintenance_assignment_virtual_machine",
+    "subcategory": "Maintenance",
+    "azureType": null
+  },
+  {
+    "id": "2858376",
+    "title": "maintenance_assignment_virtual_machine_scale_set",
+    "slug": "maintenance_assignment_virtual_machine_scale_set",
+    "subcategory": "Maintenance",
+    "azureType": null
+  },
+  {
+    "id": "2858377",
+    "title": "maintenance_configuration",
+    "slug": "maintenance_configuration",
+    "subcategory": "Maintenance",
+    "azureType": null
+  },
+  {
+    "id": "2858378",
+    "title": "managed_application",
+    "slug": "managed_application",
+    "subcategory": "Managed Applications",
+    "azureType": null
+  },
+  {
+    "id": "2858379",
+    "title": "managed_application_definition",
+    "slug": "managed_application_definition",
+    "subcategory": "Managed Applications",
+    "azureType": null
+  },
+  {
+    "id": "2858380",
+    "title": "managed_disk",
+    "slug": "managed_disk",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858381",
+    "title": "managed_lustre_file_system",
+    "slug": "managed_lustre_file_system",
+    "subcategory": "Azure Managed Lustre File System",
+    "azureType": null
+  },
+  {
+    "id": "2858382",
+    "title": "management_group",
+    "slug": "management_group",
+    "subcategory": "Management",
+    "azureType": null
+  },
+  {
+    "id": "2858383",
+    "title": "management_group_policy_assignment",
+    "slug": "management_group_policy_assignment",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858384",
+    "title": "management_group_policy_exemption",
+    "slug": "management_group_policy_exemption",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858385",
+    "title": "management_group_policy_remediation",
+    "slug": "management_group_policy_remediation",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858386",
+    "title": "management_group_subscription_association",
+    "slug": "management_group_subscription_association",
+    "subcategory": "Management",
+    "azureType": null
+  },
+  {
+    "id": "2858387",
+    "title": "management_group_template_deployment",
+    "slug": "management_group_template_deployment",
+    "subcategory": "Template",
+    "azureType": null
+  },
+  {
+    "id": "2858388",
+    "title": "management_lock",
+    "slug": "management_lock",
+    "subcategory": "Management",
+    "azureType": null
+  },
+  {
+    "id": "2858389",
+    "title": "maps_account",
+    "slug": "maps_account",
+    "subcategory": "Maps",
+    "azureType": null
+  },
+  {
+    "id": "2858390",
+    "title": "maps_creator",
+    "slug": "maps_creator",
+    "subcategory": "Maps",
+    "azureType": null
+  },
+  {
+    "id": "2858391",
+    "title": "mariadb_configuration",
+    "slug": "mariadb_configuration",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858392",
+    "title": "mariadb_database",
+    "slug": "mariadb_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858393",
+    "title": "mariadb_firewall_rule",
+    "slug": "mariadb_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858394",
+    "title": "mariadb_server",
+    "slug": "mariadb_server",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858395",
+    "title": "mariadb_virtual_network_rule",
+    "slug": "mariadb_virtual_network_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858396",
+    "title": "marketplace_agreement",
+    "slug": "marketplace_agreement",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858397",
+    "title": "media_asset",
+    "slug": "media_asset",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858398",
+    "title": "media_asset_filter",
+    "slug": "media_asset_filter",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858399",
+    "title": "media_content_key_policy",
+    "slug": "media_content_key_policy",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858400",
+    "title": "media_job",
+    "slug": "media_job",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858401",
+    "title": "media_live_event",
+    "slug": "media_live_event",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858402",
+    "title": "media_live_output",
+    "slug": "media_live_output",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858403",
+    "title": "media_services_account",
+    "slug": "media_services_account",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858404",
+    "title": "media_services_account_filter",
+    "slug": "media_services_account_filter",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858405",
+    "title": "media_streaming_endpoint",
+    "slug": "media_streaming_endpoint",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858406",
+    "title": "media_streaming_locator",
+    "slug": "media_streaming_locator",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858407",
+    "title": "media_streaming_policy",
+    "slug": "media_streaming_policy",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858408",
+    "title": "media_transform",
+    "slug": "media_transform",
+    "subcategory": "Media",
+    "azureType": null
+  },
+  {
+    "id": "2858409",
+    "title": "mobile_network",
+    "slug": "mobile_network",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858410",
+    "title": "mobile_network_attached_data_network",
+    "slug": "mobile_network_attached_data_network",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858411",
+    "title": "mobile_network_data_network",
+    "slug": "mobile_network_data_network",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858412",
+    "title": "mobile_network_packet_core_control_plane",
+    "slug": "mobile_network_packet_core_control_plane",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858413",
+    "title": "mobile_network_packet_core_data_plane",
+    "slug": "mobile_network_packet_core_data_plane",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858414",
+    "title": "mobile_network_service",
+    "slug": "mobile_network_service",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858415",
+    "title": "mobile_network_sim",
+    "slug": "mobile_network_sim",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858416",
+    "title": "mobile_network_sim_group",
+    "slug": "mobile_network_sim_group",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858417",
+    "title": "mobile_network_sim_policy",
+    "slug": "mobile_network_sim_policy",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858418",
+    "title": "mobile_network_site",
+    "slug": "mobile_network_site",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858419",
+    "title": "mobile_network_slice",
+    "slug": "mobile_network_slice",
+    "subcategory": "Mobile Network",
+    "azureType": null
+  },
+  {
+    "id": "2858420",
+    "title": "monitor_aad_diagnostic_setting",
+    "slug": "monitor_aad_diagnostic_setting",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858421",
+    "title": "monitor_action_group",
+    "slug": "monitor_action_group",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858422",
+    "title": "monitor_action_rule_action_group",
+    "slug": "monitor_action_rule_action_group",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858423",
+    "title": "monitor_action_rule_suppression",
+    "slug": "monitor_action_rule_suppression",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858424",
+    "title": "monitor_activity_log_alert",
+    "slug": "monitor_activity_log_alert",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858425",
+    "title": "monitor_alert_processing_rule_action_group",
+    "slug": "monitor_alert_processing_rule_action_group",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858426",
+    "title": "monitor_alert_processing_rule_suppression",
+    "slug": "monitor_alert_processing_rule_suppression",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858427",
+    "title": "monitor_alert_prometheus_rule_group",
+    "slug": "monitor_alert_prometheus_rule_group",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858428",
+    "title": "monitor_autoscale_setting",
+    "slug": "monitor_autoscale_setting",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858429",
+    "title": "monitor_data_collection_endpoint",
+    "slug": "monitor_data_collection_endpoint",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858430",
+    "title": "monitor_data_collection_rule",
+    "slug": "monitor_data_collection_rule",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858431",
+    "title": "monitor_data_collection_rule_association",
+    "slug": "monitor_data_collection_rule_association",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858432",
+    "title": "monitor_diagnostic_setting",
+    "slug": "monitor_diagnostic_setting",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858433",
+    "title": "monitor_log_profile",
+    "slug": "monitor_log_profile",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858434",
+    "title": "monitor_metric_alert",
+    "slug": "monitor_metric_alert",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858435",
+    "title": "monitor_private_link_scope",
+    "slug": "monitor_private_link_scope",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858436",
+    "title": "monitor_private_link_scoped_service",
+    "slug": "monitor_private_link_scoped_service",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858437",
+    "title": "monitor_scheduled_query_rules_alert",
+    "slug": "monitor_scheduled_query_rules_alert",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858438",
+    "title": "monitor_scheduled_query_rules_alert_v2",
+    "slug": "monitor_scheduled_query_rules_alert_v2",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858439",
+    "title": "monitor_scheduled_query_rules_log",
+    "slug": "monitor_scheduled_query_rules_log",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858440",
+    "title": "monitor_smart_detector_alert_rule",
+    "slug": "monitor_smart_detector_alert_rule",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858441",
+    "title": "monitor_workspace",
+    "slug": "monitor_workspace",
+    "subcategory": "Monitor",
+    "azureType": null
+  },
+  {
+    "id": "2858442",
+    "title": "mssql_database",
+    "slug": "mssql_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858443",
+    "title": "mssql_database_extended_auditing_policy",
+    "slug": "mssql_database_extended_auditing_policy",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858444",
+    "title": "mssql_database_vulnerability_assessment_rule_baseline",
+    "slug": "mssql_database_vulnerability_assessment_rule_baseline",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858445",
+    "title": "mssql_elasticpool",
+    "slug": "mssql_elasticpool",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858446",
+    "title": "mssql_failover_group",
+    "slug": "mssql_failover_group",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858447",
+    "title": "mssql_firewall_rule",
+    "slug": "mssql_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858448",
+    "title": "mssql_job_agent",
+    "slug": "mssql_job_agent",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858449",
+    "title": "mssql_job_credential",
+    "slug": "mssql_job_credential",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858450",
+    "title": "mssql_managed_database",
+    "slug": "mssql_managed_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858451",
+    "title": "mssql_managed_instance",
+    "slug": "mssql_managed_instance",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858452",
+    "title": "mssql_managed_instance_active_directory_administrator",
+    "slug": "mssql_managed_instance_active_directory_administrator",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858453",
+    "title": "mssql_managed_instance_failover_group",
+    "slug": "mssql_managed_instance_failover_group",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858454",
+    "title": "mssql_managed_instance_security_alert_policy",
+    "slug": "mssql_managed_instance_security_alert_policy",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858455",
+    "title": "mssql_managed_instance_transparent_data_encryption",
+    "slug": "mssql_managed_instance_transparent_data_encryption",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858456",
+    "title": "mssql_managed_instance_vulnerability_assessment",
+    "slug": "mssql_managed_instance_vulnerability_assessment",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858457",
+    "title": "mssql_outbound_firewall_rule",
+    "slug": "mssql_outbound_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858458",
+    "title": "mssql_server",
+    "slug": "mssql_server",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858459",
+    "title": "mssql_server_dns_alias",
+    "slug": "mssql_server_dns_alias",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858460",
+    "title": "mssql_server_extended_auditing_policy",
+    "slug": "mssql_server_extended_auditing_policy",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858461",
+    "title": "mssql_server_microsoft_support_auditing_policy",
+    "slug": "mssql_server_microsoft_support_auditing_policy",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858462",
+    "title": "mssql_server_security_alert_policy",
+    "slug": "mssql_server_security_alert_policy",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858463",
+    "title": "mssql_server_transparent_data_encryption",
+    "slug": "mssql_server_transparent_data_encryption",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858464",
+    "title": "mssql_server_vulnerability_assessment",
+    "slug": "mssql_server_vulnerability_assessment",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858465",
+    "title": "mssql_virtual_machine",
+    "slug": "mssql_virtual_machine",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858466",
+    "title": "mssql_virtual_machine_availability_group_listener",
+    "slug": "mssql_virtual_machine_availability_group_listener",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858467",
+    "title": "mssql_virtual_machine_group",
+    "slug": "mssql_virtual_machine_group",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858468",
+    "title": "mssql_virtual_network_rule",
+    "slug": "mssql_virtual_network_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858469",
+    "title": "mysql_active_directory_administrator",
+    "slug": "mysql_active_directory_administrator",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858470",
+    "title": "mysql_configuration",
+    "slug": "mysql_configuration",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858471",
+    "title": "mysql_database",
+    "slug": "mysql_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858472",
+    "title": "mysql_firewall_rule",
+    "slug": "mysql_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858473",
+    "title": "mysql_flexible_database",
+    "slug": "mysql_flexible_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858474",
+    "title": "mysql_flexible_server",
+    "slug": "mysql_flexible_server",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858475",
+    "title": "mysql_flexible_server_aad_administrator",
+    "slug": "mysql_flexible_server_aad_administrator",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858476",
+    "title": "mysql_flexible_server_configuration",
+    "slug": "mysql_flexible_server_configuration",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858477",
+    "title": "mysql_flexible_server_firewall_rule",
+    "slug": "mysql_flexible_server_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858478",
+    "title": "mysql_server",
+    "slug": "mysql_server",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858479",
+    "title": "mysql_server_key",
+    "slug": "mysql_server_key",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858480",
+    "title": "mysql_virtual_network_rule",
+    "slug": "mysql_virtual_network_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858481",
+    "title": "nat_gateway",
+    "slug": "nat_gateway",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858482",
+    "title": "nat_gateway_public_ip_association",
+    "slug": "nat_gateway_public_ip_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858483",
+    "title": "nat_gateway_public_ip_prefix_association",
+    "slug": "nat_gateway_public_ip_prefix_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858484",
+    "title": "netapp_account",
+    "slug": "netapp_account",
+    "subcategory": "NetApp",
+    "azureType": null
+  },
+  {
+    "id": "2858485",
+    "title": "netapp_pool",
+    "slug": "netapp_pool",
+    "subcategory": "NetApp",
+    "azureType": null
+  },
+  {
+    "id": "2858486",
+    "title": "netapp_snapshot",
+    "slug": "netapp_snapshot",
+    "subcategory": "NetApp",
+    "azureType": null
+  },
+  {
+    "id": "2858487",
+    "title": "netapp_snapshot_policy",
+    "slug": "netapp_snapshot_policy",
+    "subcategory": "NetApp",
+    "azureType": null
+  },
+  {
+    "id": "2858488",
+    "title": "netapp_volume",
+    "slug": "netapp_volume",
+    "subcategory": "NetApp",
+    "azureType": null
+  },
+  {
+    "id": "2858489",
+    "title": "netapp_volume_group_sap_hana",
+    "slug": "netapp_volume_group_sap_hana",
+    "subcategory": "NetApp",
+    "azureType": null
+  },
+  {
+    "id": "2858490",
+    "title": "netapp_volume_quota_rule",
+    "slug": "netapp_volume_quota_rule",
+    "subcategory": "NetApp",
+    "azureType": null
+  },
+  {
+    "id": "2858491",
+    "title": "network_connection_monitor",
+    "slug": "network_connection_monitor",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858492",
+    "title": "network_ddos_protection_plan",
+    "slug": "network_ddos_protection_plan",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858493",
+    "title": "network_function_azure_traffic_collector",
+    "slug": "network_function_azure_traffic_collector",
+    "subcategory": "Network Function",
+    "azureType": null
+  },
+  {
+    "id": "2858494",
+    "title": "network_interface",
+    "slug": "network_interface",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858495",
+    "title": "network_interface_application_gateway_backend_address_pool_association",
+    "slug": "network_interface_application_gateway_backend_address_pool_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858496",
+    "title": "network_interface_application_security_group_association",
+    "slug": "network_interface_application_security_group_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858497",
+    "title": "network_interface_backend_address_pool_association",
+    "slug": "network_interface_backend_address_pool_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858498",
+    "title": "network_interface_nat_rule_association",
+    "slug": "network_interface_nat_rule_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858499",
+    "title": "network_interface_security_group_association",
+    "slug": "network_interface_security_group_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858500",
+    "title": "network_manager",
+    "slug": "network_manager",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858501",
+    "title": "network_manager_admin_rule",
+    "slug": "network_manager_admin_rule",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858502",
+    "title": "network_manager_admin_rule_collection",
+    "slug": "network_manager_admin_rule_collection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858503",
+    "title": "network_manager_connectivity_configuration",
+    "slug": "network_manager_connectivity_configuration",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858504",
+    "title": "network_manager_deployment",
+    "slug": "network_manager_deployment",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858505",
+    "title": "network_manager_management_group_connection",
+    "slug": "network_manager_management_group_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858506",
+    "title": "network_manager_network_group",
+    "slug": "network_manager_network_group",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858507",
+    "title": "network_manager_scope_connection",
+    "slug": "network_manager_scope_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858508",
+    "title": "network_manager_security_admin_configuration",
+    "slug": "network_manager_security_admin_configuration",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858509",
+    "title": "network_manager_static_member",
+    "slug": "network_manager_static_member",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858510",
+    "title": "network_manager_subscription_connection",
+    "slug": "network_manager_subscription_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858511",
+    "title": "network_packet_capture",
+    "slug": "network_packet_capture",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858512",
+    "title": "network_profile",
+    "slug": "network_profile",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858513",
+    "title": "network_security_group",
+    "slug": "network_security_group",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858514",
+    "title": "network_security_rule",
+    "slug": "network_security_rule",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858515",
+    "title": "network_watcher",
+    "slug": "network_watcher",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858516",
+    "title": "network_watcher_flow_log",
+    "slug": "network_watcher_flow_log",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858517",
+    "title": "new_relic_monitor",
+    "slug": "new_relic_monitor",
+    "subcategory": "New Relic",
+    "azureType": null
+  },
+  {
+    "id": "2858518",
+    "title": "nginx_certificate",
+    "slug": "nginx_certificate",
+    "subcategory": "Nginx",
+    "azureType": null
+  },
+  {
+    "id": "2858519",
+    "title": "nginx_configuration",
+    "slug": "nginx_configuration",
+    "subcategory": "Nginx",
+    "azureType": null
+  },
+  {
+    "id": "2858520",
+    "title": "nginx_deployment",
+    "slug": "nginx_deployment",
+    "subcategory": "Nginx",
+    "azureType": null
+  },
+  {
+    "id": "2858521",
+    "title": "notification_hub",
+    "slug": "notification_hub",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858522",
+    "title": "notification_hub_authorization_rule",
+    "slug": "notification_hub_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858523",
+    "title": "notification_hub_namespace",
+    "slug": "notification_hub_namespace",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858524",
+    "title": "orbital_contact",
+    "slug": "orbital_contact",
+    "subcategory": "Orbital",
+    "azureType": null
+  },
+  {
+    "id": "2858525",
+    "title": "orbital_contact_profile",
+    "slug": "orbital_contact_profile",
+    "subcategory": "Orbital",
+    "azureType": null
+  },
+  {
+    "id": "2858526",
+    "title": "orbital_spacecraft",
+    "slug": "orbital_spacecraft",
+    "subcategory": "Orbital",
+    "azureType": null
+  },
+  {
+    "id": "2858527",
+    "title": "orchestrated_virtual_machine_scale_set",
+    "slug": "orchestrated_virtual_machine_scale_set",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858528",
+    "title": "palo_alto_local_rulestack",
+    "slug": "palo_alto_local_rulestack",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858529",
+    "title": "palo_alto_local_rulestack_certificate",
+    "slug": "palo_alto_local_rulestack_certificate",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858530",
+    "title": "palo_alto_local_rulestack_fqdn_list",
+    "slug": "palo_alto_local_rulestack_fqdn_list",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858531",
+    "title": "palo_alto_local_rulestack_outbound_trust_certificate_association",
+    "slug": "palo_alto_local_rulestack_outbound_trust_certificate_association",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858532",
+    "title": "palo_alto_local_rulestack_outbound_untrust_certificate_association",
+    "slug": "palo_alto_local_rulestack_outbound_untrust_certificate_association",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858533",
+    "title": "palo_alto_local_rulestack_prefix_list",
+    "slug": "palo_alto_local_rulestack_prefix_list",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858534",
+    "title": "palo_alto_local_rulestack_rule",
+    "slug": "palo_alto_local_rulestack_rule",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858535",
+    "title": "palo_alto_network_virtual_appliance",
+    "slug": "palo_alto_network_virtual_appliance",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858536",
+    "title": "palo_alto_next_generation_firewall_vhub_local_rulestack",
+    "slug": "palo_alto_next_generation_firewall_vhub_local_rulestack",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858537",
+    "title": "palo_alto_next_generation_firewall_vhub_panorama",
+    "slug": "palo_alto_next_generation_firewall_vhub_panorama",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858538",
+    "title": "palo_alto_next_generation_firewall_virtual_network_local_rulestack",
+    "slug": "palo_alto_next_generation_firewall_virtual_network_local_rulestack",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858539",
+    "title": "palo_alto_next_generation_firewall_virtual_network_panorama",
+    "slug": "palo_alto_next_generation_firewall_virtual_network_panorama",
+    "subcategory": "Palo Alto",
+    "azureType": null
+  },
+  {
+    "id": "2858540",
+    "title": "pim_active_role_assignment",
+    "slug": "pim_active_role_assignment",
+    "subcategory": "Authorization",
+    "azureType": null
+  },
+  {
+    "id": "2858541",
+    "title": "pim_eligible_role_assignment",
+    "slug": "pim_eligible_role_assignment",
+    "subcategory": "Authorization",
+    "azureType": null
+  },
+  {
+    "id": "2858542",
+    "title": "point_to_site_vpn_gateway",
+    "slug": "point_to_site_vpn_gateway",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858543",
+    "title": "policy_definition",
+    "slug": "policy_definition",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858544",
+    "title": "policy_set_definition",
+    "slug": "policy_set_definition",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858545",
+    "title": "policy_virtual_machine_configuration_assignment",
+    "slug": "policy_virtual_machine_configuration_assignment",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858546",
+    "title": "portal_dashboard",
+    "slug": "portal_dashboard",
+    "subcategory": "Portal",
+    "azureType": null
+  },
+  {
+    "id": "2858547",
+    "title": "portal_tenant_configuration",
+    "slug": "portal_tenant_configuration",
+    "subcategory": "Portal",
+    "azureType": null
+  },
+  {
+    "id": "2858548",
+    "title": "postgresql_active_directory_administrator",
+    "slug": "postgresql_active_directory_administrator",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858549",
+    "title": "postgresql_configuration",
+    "slug": "postgresql_configuration",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858550",
+    "title": "postgresql_database",
+    "slug": "postgresql_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858551",
+    "title": "postgresql_firewall_rule",
+    "slug": "postgresql_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858552",
+    "title": "postgresql_flexible_server",
+    "slug": "postgresql_flexible_server",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858553",
+    "title": "postgresql_flexible_server_active_directory_administrator",
+    "slug": "postgresql_flexible_server_active_directory_administrator",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858554",
+    "title": "postgresql_flexible_server_configuration",
+    "slug": "postgresql_flexible_server_configuration",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858555",
+    "title": "postgresql_flexible_server_database",
+    "slug": "postgresql_flexible_server_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858556",
+    "title": "postgresql_flexible_server_firewall_rule",
+    "slug": "postgresql_flexible_server_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858557",
+    "title": "postgresql_server",
+    "slug": "postgresql_server",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858558",
+    "title": "postgresql_server_key",
+    "slug": "postgresql_server_key",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858559",
+    "title": "postgresql_virtual_network_rule",
+    "slug": "postgresql_virtual_network_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858560",
+    "title": "powerbi_embedded",
+    "slug": "powerbi_embedded",
+    "subcategory": "PowerBI",
+    "azureType": null
+  },
+  {
+    "id": "2858562",
+    "title": "private_dns_aaaa_record",
+    "slug": "private_dns_aaaa_record",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858561",
+    "title": "private_dns_a_record",
+    "slug": "private_dns_a_record",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858563",
+    "title": "private_dns_cname_record",
+    "slug": "private_dns_cname_record",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858564",
+    "title": "private_dns_mx_record",
+    "slug": "private_dns_mx_record",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858565",
+    "title": "private_dns_ptr_record",
+    "slug": "private_dns_ptr_record",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858566",
+    "title": "private_dns_resolver",
+    "slug": "private_dns_resolver",
+    "subcategory": "Private DNS Resolver",
+    "azureType": null
+  },
+  {
+    "id": "2858567",
+    "title": "private_dns_resolver_dns_forwarding_ruleset",
+    "slug": "private_dns_resolver_dns_forwarding_ruleset",
+    "subcategory": "Private DNS Resolver",
+    "azureType": null
+  },
+  {
+    "id": "2858568",
+    "title": "private_dns_resolver_forwarding_rule",
+    "slug": "private_dns_resolver_forwarding_rule",
+    "subcategory": "Private DNS Resolver",
+    "azureType": null
+  },
+  {
+    "id": "2858569",
+    "title": "private_dns_resolver_inbound_endpoint",
+    "slug": "private_dns_resolver_inbound_endpoint",
+    "subcategory": "Private DNS Resolver",
+    "azureType": null
+  },
+  {
+    "id": "2858570",
+    "title": "private_dns_resolver_outbound_endpoint",
+    "slug": "private_dns_resolver_outbound_endpoint",
+    "subcategory": "Private DNS Resolver",
+    "azureType": null
+  },
+  {
+    "id": "2858571",
+    "title": "private_dns_resolver_virtual_network_link",
+    "slug": "private_dns_resolver_virtual_network_link",
+    "subcategory": "Private DNS Resolver",
+    "azureType": null
+  },
+  {
+    "id": "2858572",
+    "title": "private_dns_srv_record",
+    "slug": "private_dns_srv_record",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858573",
+    "title": "private_dns_txt_record",
+    "slug": "private_dns_txt_record",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858574",
+    "title": "private_dns_zone",
+    "slug": "private_dns_zone",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858575",
+    "title": "private_dns_zone_virtual_network_link",
+    "slug": "private_dns_zone_virtual_network_link",
+    "subcategory": "Private DNS",
+    "azureType": null
+  },
+  {
+    "id": "2858576",
+    "title": "private_endpoint",
+    "slug": "private_endpoint",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858577",
+    "title": "private_endpoint_application_security_group_association",
+    "slug": "private_endpoint_application_security_group_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858578",
+    "title": "private_link_service",
+    "slug": "private_link_service",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858579",
+    "title": "proximity_placement_group",
+    "slug": "proximity_placement_group",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858580",
+    "title": "public_ip",
+    "slug": "public_ip",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858581",
+    "title": "public_ip_prefix",
+    "slug": "public_ip_prefix",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858582",
+    "title": "purview_account",
+    "slug": "purview_account",
+    "subcategory": "Purview",
+    "azureType": null
+  },
+  {
+    "id": "2858583",
+    "title": "recovery_services_vault",
+    "slug": "recovery_services_vault",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858584",
+    "title": "recovery_services_vault_resource_guard_association",
+    "slug": "recovery_services_vault_resource_guard_association",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858585",
+    "title": "redis_cache",
+    "slug": "redis_cache",
+    "subcategory": "Redis",
+    "azureType": null
+  },
+  {
+    "id": "2858586",
+    "title": "redis_enterprise_cluster",
+    "slug": "redis_enterprise_cluster",
+    "subcategory": "Redis Enterprise",
+    "azureType": null
+  },
+  {
+    "id": "2858587",
+    "title": "redis_enterprise_database",
+    "slug": "redis_enterprise_database",
+    "subcategory": "Redis Enterprise",
+    "azureType": null
+  },
+  {
+    "id": "2858588",
+    "title": "redis_firewall_rule",
+    "slug": "redis_firewall_rule",
+    "subcategory": "Redis",
+    "azureType": null
+  },
+  {
+    "id": "2858589",
+    "title": "redis_linked_server",
+    "slug": "redis_linked_server",
+    "subcategory": "Redis",
+    "azureType": null
+  },
+  {
+    "id": "2858590",
+    "title": "relay_hybrid_connection",
+    "slug": "relay_hybrid_connection",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858591",
+    "title": "relay_hybrid_connection_authorization_rule",
+    "slug": "relay_hybrid_connection_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858592",
+    "title": "relay_namespace",
+    "slug": "relay_namespace",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858593",
+    "title": "relay_namespace_authorization_rule",
+    "slug": "relay_namespace_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858594",
+    "title": "resource_deployment_script_azure_cli",
+    "slug": "resource_deployment_script_azure_cli",
+    "subcategory": "Template",
+    "azureType": null
+  },
+  {
+    "id": "2858595",
+    "title": "resource_deployment_script_azure_power_shell",
+    "slug": "resource_deployment_script_azure_power_shell",
+    "subcategory": "Template",
+    "azureType": null
+  },
+  {
+    "id": "2858596",
+    "title": "resource_group",
+    "slug": "resource_group",
+    "subcategory": "Base",
+    "azureType": "Microsoft.Resources/resourceGroups"
+  },
+  {
+    "id": "2858597",
+    "title": "resource_group_cost_management_export",
+    "slug": "resource_group_cost_management_export",
+    "subcategory": "Cost Management",
+    "azureType": null
+  },
+  {
+    "id": "2858598",
+    "title": "resource_group_cost_management_view",
+    "slug": "resource_group_cost_management_view",
+    "subcategory": "Cost Management",
+    "azureType": null
+  },
+  {
+    "id": "2858599",
+    "title": "resource_group_policy_assignment",
+    "slug": "resource_group_policy_assignment",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858600",
+    "title": "resource_group_policy_exemption",
+    "slug": "resource_group_policy_exemption",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858601",
+    "title": "resource_group_policy_remediation",
+    "slug": "resource_group_policy_remediation",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858602",
+    "title": "resource_group_template_deployment",
+    "slug": "resource_group_template_deployment",
+    "subcategory": "Template",
+    "azureType": null
+  },
+  {
+    "id": "2858603",
+    "title": "resource_policy_assignment",
+    "slug": "resource_policy_assignment",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858604",
+    "title": "resource_policy_exemption",
+    "slug": "resource_policy_exemption",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858605",
+    "title": "resource_policy_remediation",
+    "slug": "resource_policy_remediation",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858606",
+    "title": "resource_provider_registration",
+    "slug": "resource_provider_registration",
+    "subcategory": "Base",
+    "azureType": null
+  },
+  {
+    "id": "2858607",
+    "title": "role_assignment",
+    "slug": "role_assignment",
+    "subcategory": "Authorization",
+    "azureType": null
+  },
+  {
+    "id": "2858608",
+    "title": "role_assignment_marketplace",
+    "slug": "role_assignment_marketplace",
+    "subcategory": "Authorization",
+    "azureType": null
+  },
+  {
+    "id": "2858609",
+    "title": "role_definition",
+    "slug": "role_definition",
+    "subcategory": "Authorization",
+    "azureType": null
+  },
+  {
+    "id": "2858610",
+    "title": "route",
+    "slug": "route",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858611",
+    "title": "route_filter",
+    "slug": "route_filter",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858612",
+    "title": "route_map",
+    "slug": "route_map",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858613",
+    "title": "route_server",
+    "slug": "route_server",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858614",
+    "title": "route_server_bgp_connection",
+    "slug": "route_server_bgp_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858615",
+    "title": "route_table",
+    "slug": "route_table",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858616",
+    "title": "search_service",
+    "slug": "search_service",
+    "subcategory": "Search",
+    "azureType": null
+  },
+  {
+    "id": "2858617",
+    "title": "search_shared_private_link_service",
+    "slug": "search_shared_private_link_service",
+    "subcategory": "Search",
+    "azureType": null
+  },
+  {
+    "id": "2858618",
+    "title": "security_center_assessment",
+    "slug": "security_center_assessment",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858619",
+    "title": "security_center_assessment_policy",
+    "slug": "security_center_assessment_policy",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858621",
+    "title": "security_center_automation",
+    "slug": "security_center_automation",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858620",
+    "title": "security_center_auto_provisioning",
+    "slug": "security_center_auto_provisioning",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858622",
+    "title": "security_center_contact",
+    "slug": "security_center_contact",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858623",
+    "title": "security_center_server_vulnerability_assessment_virtual_machine",
+    "slug": "security_center_server_vulnerability_assessment_virtual_machine",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858624",
+    "title": "security_center_setting",
+    "slug": "security_center_setting",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858625",
+    "title": "security_center_subscription_pricing",
+    "slug": "security_center_subscription_pricing",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858626",
+    "title": "security_center_workspace",
+    "slug": "security_center_workspace",
+    "subcategory": "Security Center",
+    "azureType": null
+  },
+  {
+    "id": "2858627",
+    "title": "sentinel_alert_rule_anomaly_built_in",
+    "slug": "sentinel_alert_rule_anomaly_built_in",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858628",
+    "title": "sentinel_alert_rule_anomaly_duplicate",
+    "slug": "sentinel_alert_rule_anomaly_duplicate",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858629",
+    "title": "sentinel_alert_rule_fusion",
+    "slug": "sentinel_alert_rule_fusion",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858630",
+    "title": "sentinel_alert_rule_ms_security_incident",
+    "slug": "sentinel_alert_rule_ms_security_incident",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858631",
+    "title": "sentinel_alert_rule_nrt",
+    "slug": "sentinel_alert_rule_nrt",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858632",
+    "title": "sentinel_alert_rule_scheduled",
+    "slug": "sentinel_alert_rule_scheduled",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858633",
+    "title": "sentinel_alert_rule_threat_intelligence",
+    "slug": "sentinel_alert_rule_threat_intelligence",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858634",
+    "title": "sentinel_automation_rule",
+    "slug": "sentinel_automation_rule",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858635",
+    "title": "sentinel_data_connector_aws_cloud_trail",
+    "slug": "sentinel_data_connector_aws_cloud_trail",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858636",
+    "title": "sentinel_data_connector_aws_s3",
+    "slug": "sentinel_data_connector_aws_s3",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858637",
+    "title": "sentinel_data_connector_azure_active_directory",
+    "slug": "sentinel_data_connector_azure_active_directory",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858638",
+    "title": "sentinel_data_connector_azure_advanced_threat_protection",
+    "slug": "sentinel_data_connector_azure_advanced_threat_protection",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858639",
+    "title": "sentinel_data_connector_azure_security_center",
+    "slug": "sentinel_data_connector_azure_security_center",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858640",
+    "title": "sentinel_data_connector_dynamics_365",
+    "slug": "sentinel_data_connector_dynamics_365",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858641",
+    "title": "sentinel_data_connector_iot",
+    "slug": "sentinel_data_connector_iot",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858642",
+    "title": "sentinel_data_connector_microsoft_cloud_app_security",
+    "slug": "sentinel_data_connector_microsoft_cloud_app_security",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858643",
+    "title": "sentinel_data_connector_microsoft_defender_advanced_threat_protection",
+    "slug": "sentinel_data_connector_microsoft_defender_advanced_threat_protection",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858644",
+    "title": "sentinel_data_connector_microsoft_threat_intelligence",
+    "slug": "sentinel_data_connector_microsoft_threat_intelligence",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858645",
+    "title": "sentinel_data_connector_microsoft_threat_protection",
+    "slug": "sentinel_data_connector_microsoft_threat_protection",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858646",
+    "title": "sentinel_data_connector_office_365",
+    "slug": "sentinel_data_connector_office_365",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858647",
+    "title": "sentinel_data_connector_office_365_project",
+    "slug": "sentinel_data_connector_office_365_project",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858648",
+    "title": "sentinel_data_connector_office_atp",
+    "slug": "sentinel_data_connector_office_atp",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858649",
+    "title": "sentinel_data_connector_office_irm",
+    "slug": "sentinel_data_connector_office_irm",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858650",
+    "title": "sentinel_data_connector_office_power_bi",
+    "slug": "sentinel_data_connector_office_power_bi",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858651",
+    "title": "sentinel_data_connector_threat_intelligence",
+    "slug": "sentinel_data_connector_threat_intelligence",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858652",
+    "title": "sentinel_data_connector_threat_intelligence_taxii",
+    "slug": "sentinel_data_connector_threat_intelligence_taxii",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858653",
+    "title": "sentinel_log_analytics_workspace_onboarding",
+    "slug": "sentinel_log_analytics_workspace_onboarding",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858654",
+    "title": "sentinel_metadata",
+    "slug": "sentinel_metadata",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858655",
+    "title": "sentinel_threat_intelligence_indicator",
+    "slug": "sentinel_threat_intelligence_indicator",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858656",
+    "title": "sentinel_watchlist",
+    "slug": "sentinel_watchlist",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858657",
+    "title": "sentinel_watchlist_item",
+    "slug": "sentinel_watchlist_item",
+    "subcategory": "Sentinel",
+    "azureType": null
+  },
+  {
+    "id": "2858661",
+    "title": "servicebus_namespace",
+    "slug": "servicebus_namespace",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858662",
+    "title": "servicebus_namespace_authorization_rule",
+    "slug": "servicebus_namespace_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858663",
+    "title": "servicebus_namespace_disaster_recovery_config",
+    "slug": "servicebus_namespace_disaster_recovery_config",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858664",
+    "title": "servicebus_namespace_network_rule_set",
+    "slug": "servicebus_namespace_network_rule_set",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858665",
+    "title": "servicebus_queue",
+    "slug": "servicebus_queue",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858666",
+    "title": "servicebus_queue_authorization_rule",
+    "slug": "servicebus_queue_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858667",
+    "title": "servicebus_subscription",
+    "slug": "servicebus_subscription",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858668",
+    "title": "servicebus_subscription_rule",
+    "slug": "servicebus_subscription_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858669",
+    "title": "servicebus_topic",
+    "slug": "servicebus_topic",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858670",
+    "title": "servicebus_topic_authorization_rule",
+    "slug": "servicebus_topic_authorization_rule",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858658",
+    "title": "service_fabric_cluster",
+    "slug": "service_fabric_cluster",
+    "subcategory": "Service Fabric",
+    "azureType": null
+  },
+  {
+    "id": "2858659",
+    "title": "service_fabric_managed_cluster",
+    "slug": "service_fabric_managed_cluster",
+    "subcategory": "Service Fabric Managed Clusters",
+    "azureType": null
+  },
+  {
+    "id": "2858660",
+    "title": "service_plan",
+    "slug": "service_plan",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858671",
+    "title": "shared_image",
+    "slug": "shared_image",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858672",
+    "title": "shared_image_gallery",
+    "slug": "shared_image_gallery",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858673",
+    "title": "shared_image_version",
+    "slug": "shared_image_version",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858674",
+    "title": "signalr_service",
+    "slug": "signalr_service",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858675",
+    "title": "signalr_service_custom_certificate",
+    "slug": "signalr_service_custom_certificate",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858676",
+    "title": "signalr_service_custom_domain",
+    "slug": "signalr_service_custom_domain",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858677",
+    "title": "signalr_service_network_acl",
+    "slug": "signalr_service_network_acl",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858678",
+    "title": "signalr_shared_private_link",
+    "slug": "signalr_shared_private_link",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858679",
+    "title": "site_recovery_fabric",
+    "slug": "site_recovery_fabric",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858680",
+    "title": "site_recovery_hyperv_network_mapping",
+    "slug": "site_recovery_hyperv_network_mapping",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858681",
+    "title": "site_recovery_hyperv_replication_policy",
+    "slug": "site_recovery_hyperv_replication_policy",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858682",
+    "title": "site_recovery_hyperv_replication_policy_association",
+    "slug": "site_recovery_hyperv_replication_policy_association",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858683",
+    "title": "site_recovery_network_mapping",
+    "slug": "site_recovery_network_mapping",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858684",
+    "title": "site_recovery_protection_container",
+    "slug": "site_recovery_protection_container",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858685",
+    "title": "site_recovery_protection_container_mapping",
+    "slug": "site_recovery_protection_container_mapping",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858686",
+    "title": "site_recovery_replicated_vm",
+    "slug": "site_recovery_replicated_vm",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858687",
+    "title": "site_recovery_replication_policy",
+    "slug": "site_recovery_replication_policy",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858688",
+    "title": "site_recovery_replication_recovery_plan",
+    "slug": "site_recovery_replication_recovery_plan",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858689",
+    "title": "site_recovery_services_vault_hyperv_site",
+    "slug": "site_recovery_services_vault_hyperv_site",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858690",
+    "title": "site_recovery_vmware_replication_policy",
+    "slug": "site_recovery_vmware_replication_policy",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858691",
+    "title": "site_recovery_vmware_replication_policy_association",
+    "slug": "site_recovery_vmware_replication_policy_association",
+    "subcategory": "Recovery Services",
+    "azureType": null
+  },
+  {
+    "id": "2858692",
+    "title": "snapshot",
+    "slug": "snapshot",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858693",
+    "title": "source_control_token",
+    "slug": "source_control_token",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858694",
+    "title": "spatial_anchors_account",
+    "slug": "spatial_anchors_account",
+    "subcategory": "Mixed Reality",
+    "azureType": null
+  },
+  {
+    "id": "2858695",
+    "title": "spring_cloud_accelerator",
+    "slug": "spring_cloud_accelerator",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858696",
+    "title": "spring_cloud_active_deployment",
+    "slug": "spring_cloud_active_deployment",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858697",
+    "title": "spring_cloud_api_portal",
+    "slug": "spring_cloud_api_portal",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858698",
+    "title": "spring_cloud_api_portal_custom_domain",
+    "slug": "spring_cloud_api_portal_custom_domain",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858699",
+    "title": "spring_cloud_app",
+    "slug": "spring_cloud_app",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858700",
+    "title": "spring_cloud_app_cosmosdb_association",
+    "slug": "spring_cloud_app_cosmosdb_association",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858703",
+    "title": "spring_cloud_application_live_view",
+    "slug": "spring_cloud_application_live_view",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858701",
+    "title": "spring_cloud_app_mysql_association",
+    "slug": "spring_cloud_app_mysql_association",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858702",
+    "title": "spring_cloud_app_redis_association",
+    "slug": "spring_cloud_app_redis_association",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858704",
+    "title": "spring_cloud_build_deployment",
+    "slug": "spring_cloud_build_deployment",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858706",
+    "title": "spring_cloud_builder",
+    "slug": "spring_cloud_builder",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858705",
+    "title": "spring_cloud_build_pack_binding",
+    "slug": "spring_cloud_build_pack_binding",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858707",
+    "title": "spring_cloud_certificate",
+    "slug": "spring_cloud_certificate",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858708",
+    "title": "spring_cloud_configuration_service",
+    "slug": "spring_cloud_configuration_service",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858709",
+    "title": "spring_cloud_connection",
+    "slug": "spring_cloud_connection",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858710",
+    "title": "spring_cloud_container_deployment",
+    "slug": "spring_cloud_container_deployment",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858711",
+    "title": "spring_cloud_custom_domain",
+    "slug": "spring_cloud_custom_domain",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858712",
+    "title": "spring_cloud_customized_accelerator",
+    "slug": "spring_cloud_customized_accelerator",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858713",
+    "title": "spring_cloud_dev_tool_portal",
+    "slug": "spring_cloud_dev_tool_portal",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858714",
+    "title": "spring_cloud_gateway",
+    "slug": "spring_cloud_gateway",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858715",
+    "title": "spring_cloud_gateway_custom_domain",
+    "slug": "spring_cloud_gateway_custom_domain",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858716",
+    "title": "spring_cloud_gateway_route_config",
+    "slug": "spring_cloud_gateway_route_config",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858717",
+    "title": "spring_cloud_java_deployment",
+    "slug": "spring_cloud_java_deployment",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858718",
+    "title": "spring_cloud_service",
+    "slug": "spring_cloud_service",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858719",
+    "title": "spring_cloud_storage",
+    "slug": "spring_cloud_storage",
+    "subcategory": "Spring Cloud",
+    "azureType": null
+  },
+  {
+    "id": "2858720",
+    "title": "sql_active_directory_administrator",
+    "slug": "sql_active_directory_administrator",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858721",
+    "title": "sql_database",
+    "slug": "sql_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858722",
+    "title": "sql_elasticpool",
+    "slug": "sql_elasticpool",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858723",
+    "title": "sql_failover_group",
+    "slug": "sql_failover_group",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858724",
+    "title": "sql_firewall_rule",
+    "slug": "sql_firewall_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858725",
+    "title": "sql_managed_database",
+    "slug": "sql_managed_database",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858726",
+    "title": "sql_managed_instance",
+    "slug": "sql_managed_instance",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858727",
+    "title": "sql_managed_instance_active_directory_administrator",
+    "slug": "sql_managed_instance_active_directory_administrator",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858728",
+    "title": "sql_managed_instance_failover_group",
+    "slug": "sql_managed_instance_failover_group",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858729",
+    "title": "sql_server",
+    "slug": "sql_server",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858730",
+    "title": "sql_virtual_network_rule",
+    "slug": "sql_virtual_network_rule",
+    "subcategory": "Database",
+    "azureType": null
+  },
+  {
+    "id": "2858731",
+    "title": "ssh_public_key",
+    "slug": "ssh_public_key",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858732",
+    "title": "stack_hci_cluster",
+    "slug": "stack_hci_cluster",
+    "subcategory": "Azure Stack HCI",
+    "azureType": null
+  },
+  {
+    "id": "2858733",
+    "title": "static_site",
+    "slug": "static_site",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858734",
+    "title": "static_site_custom_domain",
+    "slug": "static_site_custom_domain",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858735",
+    "title": "storage_account",
+    "slug": "storage_account",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858736",
+    "title": "storage_account_customer_managed_key",
+    "slug": "storage_account_customer_managed_key",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858737",
+    "title": "storage_account_local_user",
+    "slug": "storage_account_local_user",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858738",
+    "title": "storage_account_network_rules",
+    "slug": "storage_account_network_rules",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858739",
+    "title": "storage_blob",
+    "slug": "storage_blob",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858740",
+    "title": "storage_blob_inventory_policy",
+    "slug": "storage_blob_inventory_policy",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858741",
+    "title": "storage_container",
+    "slug": "storage_container",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858742",
+    "title": "storage_data_lake_gen2_filesystem",
+    "slug": "storage_data_lake_gen2_filesystem",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858743",
+    "title": "storage_data_lake_gen2_path",
+    "slug": "storage_data_lake_gen2_path",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858744",
+    "title": "storage_encryption_scope",
+    "slug": "storage_encryption_scope",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858745",
+    "title": "storage_management_policy",
+    "slug": "storage_management_policy",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858746",
+    "title": "storage_mover",
+    "slug": "storage_mover",
+    "subcategory": "Storage Mover",
+    "azureType": null
+  },
+  {
+    "id": "2858747",
+    "title": "storage_mover_agent",
+    "slug": "storage_mover_agent",
+    "subcategory": "Storage Mover",
+    "azureType": null
+  },
+  {
+    "id": "2858748",
+    "title": "storage_mover_job_definition",
+    "slug": "storage_mover_job_definition",
+    "subcategory": "Storage Mover",
+    "azureType": null
+  },
+  {
+    "id": "2858749",
+    "title": "storage_mover_project",
+    "slug": "storage_mover_project",
+    "subcategory": "Storage Mover",
+    "azureType": null
+  },
+  {
+    "id": "2858750",
+    "title": "storage_mover_source_endpoint",
+    "slug": "storage_mover_source_endpoint",
+    "subcategory": "Storage Mover",
+    "azureType": null
+  },
+  {
+    "id": "2858751",
+    "title": "storage_mover_target_endpoint",
+    "slug": "storage_mover_target_endpoint",
+    "subcategory": "Storage Mover",
+    "azureType": null
+  },
+  {
+    "id": "2858752",
+    "title": "storage_object_replication",
+    "slug": "storage_object_replication",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858753",
+    "title": "storage_queue",
+    "slug": "storage_queue",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858754",
+    "title": "storage_share",
+    "slug": "storage_share",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858755",
+    "title": "storage_share_directory",
+    "slug": "storage_share_directory",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858756",
+    "title": "storage_share_file",
+    "slug": "storage_share_file",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858757",
+    "title": "storage_sync",
+    "slug": "storage_sync",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858758",
+    "title": "storage_sync_cloud_endpoint",
+    "slug": "storage_sync_cloud_endpoint",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858759",
+    "title": "storage_sync_group",
+    "slug": "storage_sync_group",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858760",
+    "title": "storage_table",
+    "slug": "storage_table",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858761",
+    "title": "storage_table_entity",
+    "slug": "storage_table_entity",
+    "subcategory": "Storage",
+    "azureType": null
+  },
+  {
+    "id": "2858762",
+    "title": "stream_analytics_cluster",
+    "slug": "stream_analytics_cluster",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858763",
+    "title": "stream_analytics_function_javascript_uda",
+    "slug": "stream_analytics_function_javascript_uda",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858764",
+    "title": "stream_analytics_function_javascript_udf",
+    "slug": "stream_analytics_function_javascript_udf",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858765",
+    "title": "stream_analytics_job",
+    "slug": "stream_analytics_job",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858766",
+    "title": "stream_analytics_job_schedule",
+    "slug": "stream_analytics_job_schedule",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858767",
+    "title": "stream_analytics_managed_private_endpoint",
+    "slug": "stream_analytics_managed_private_endpoint",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858768",
+    "title": "stream_analytics_output_blob",
+    "slug": "stream_analytics_output_blob",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858769",
+    "title": "stream_analytics_output_cosmosdb",
+    "slug": "stream_analytics_output_cosmosdb",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858770",
+    "title": "stream_analytics_output_eventhub",
+    "slug": "stream_analytics_output_eventhub",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858771",
+    "title": "stream_analytics_output_function",
+    "slug": "stream_analytics_output_function",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858772",
+    "title": "stream_analytics_output_mssql",
+    "slug": "stream_analytics_output_mssql",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858773",
+    "title": "stream_analytics_output_powerbi",
+    "slug": "stream_analytics_output_powerbi",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858774",
+    "title": "stream_analytics_output_servicebus_queue",
+    "slug": "stream_analytics_output_servicebus_queue",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858775",
+    "title": "stream_analytics_output_servicebus_topic",
+    "slug": "stream_analytics_output_servicebus_topic",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858776",
+    "title": "stream_analytics_output_synapse",
+    "slug": "stream_analytics_output_synapse",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858777",
+    "title": "stream_analytics_output_table",
+    "slug": "stream_analytics_output_table",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858778",
+    "title": "stream_analytics_reference_input_blob",
+    "slug": "stream_analytics_reference_input_blob",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858779",
+    "title": "stream_analytics_reference_input_mssql",
+    "slug": "stream_analytics_reference_input_mssql",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858780",
+    "title": "stream_analytics_stream_input_blob",
+    "slug": "stream_analytics_stream_input_blob",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858781",
+    "title": "stream_analytics_stream_input_eventhub",
+    "slug": "stream_analytics_stream_input_eventhub",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858782",
+    "title": "stream_analytics_stream_input_eventhub_v2",
+    "slug": "stream_analytics_stream_input_eventhub_v2",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858783",
+    "title": "stream_analytics_stream_input_iothub",
+    "slug": "stream_analytics_stream_input_iothub",
+    "subcategory": "Stream Analytics",
+    "azureType": null
+  },
+  {
+    "id": "2858784",
+    "title": "subnet",
+    "slug": "subnet",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858785",
+    "title": "subnet_nat_gateway_association",
+    "slug": "subnet_nat_gateway_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858786",
+    "title": "subnet_network_security_group_association",
+    "slug": "subnet_network_security_group_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858787",
+    "title": "subnet_route_table_association",
+    "slug": "subnet_route_table_association",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858788",
+    "title": "subnet_service_endpoint_storage_policy",
+    "slug": "subnet_service_endpoint_storage_policy",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858789",
+    "title": "subscription",
+    "slug": "subscription",
+    "subcategory": "Base",
+    "azureType": null
+  },
+  {
+    "id": "2858790",
+    "title": "subscription_cost_management_export",
+    "slug": "subscription_cost_management_export",
+    "subcategory": "Cost Management",
+    "azureType": null
+  },
+  {
+    "id": "2858791",
+    "title": "subscription_cost_management_view",
+    "slug": "subscription_cost_management_view",
+    "subcategory": "Cost Management",
+    "azureType": null
+  },
+  {
+    "id": "2858792",
+    "title": "subscription_policy_assignment",
+    "slug": "subscription_policy_assignment",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858793",
+    "title": "subscription_policy_exemption",
+    "slug": "subscription_policy_exemption",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858794",
+    "title": "subscription_policy_remediation",
+    "slug": "subscription_policy_remediation",
+    "subcategory": "Policy",
+    "azureType": null
+  },
+  {
+    "id": "2858795",
+    "title": "subscription_template_deployment",
+    "slug": "subscription_template_deployment",
+    "subcategory": "Template",
+    "azureType": null
+  },
+  {
+    "id": "2858796",
+    "title": "synapse_firewall_rule",
+    "slug": "synapse_firewall_rule",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858797",
+    "title": "synapse_integration_runtime_azure",
+    "slug": "synapse_integration_runtime_azure",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858798",
+    "title": "synapse_integration_runtime_self_hosted",
+    "slug": "synapse_integration_runtime_self_hosted",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858799",
+    "title": "synapse_linked_service",
+    "slug": "synapse_linked_service",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858800",
+    "title": "synapse_managed_private_endpoint",
+    "slug": "synapse_managed_private_endpoint",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858801",
+    "title": "synapse_private_link_hub",
+    "slug": "synapse_private_link_hub",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858802",
+    "title": "synapse_role_assignment",
+    "slug": "synapse_role_assignment",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858803",
+    "title": "synapse_spark_pool",
+    "slug": "synapse_spark_pool",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858804",
+    "title": "synapse_sql_pool",
+    "slug": "synapse_sql_pool",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858805",
+    "title": "synapse_sql_pool_extended_auditing_policy",
+    "slug": "synapse_sql_pool_extended_auditing_policy",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858806",
+    "title": "synapse_sql_pool_security_alert_policy",
+    "slug": "synapse_sql_pool_security_alert_policy",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858807",
+    "title": "synapse_sql_pool_vulnerability_assessment",
+    "slug": "synapse_sql_pool_vulnerability_assessment",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858808",
+    "title": "synapse_sql_pool_vulnerability_assessment_baseline",
+    "slug": "synapse_sql_pool_vulnerability_assessment_baseline",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858809",
+    "title": "synapse_sql_pool_workload_classifier",
+    "slug": "synapse_sql_pool_workload_classifier",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858810",
+    "title": "synapse_sql_pool_workload_group",
+    "slug": "synapse_sql_pool_workload_group",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858811",
+    "title": "synapse_workspace",
+    "slug": "synapse_workspace",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858812",
+    "title": "synapse_workspace_aad_admin",
+    "slug": "synapse_workspace_aad_admin",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858813",
+    "title": "synapse_workspace_extended_auditing_policy",
+    "slug": "synapse_workspace_extended_auditing_policy",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858814",
+    "title": "synapse_workspace_key",
+    "slug": "synapse_workspace_key",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858815",
+    "title": "synapse_workspace_security_alert_policy",
+    "slug": "synapse_workspace_security_alert_policy",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858816",
+    "title": "synapse_workspace_sql_aad_admin",
+    "slug": "synapse_workspace_sql_aad_admin",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858817",
+    "title": "synapse_workspace_vulnerability_assessment",
+    "slug": "synapse_workspace_vulnerability_assessment",
+    "subcategory": "Synapse",
+    "azureType": null
+  },
+  {
+    "id": "2858818",
+    "title": "template_deployment",
+    "slug": "template_deployment",
+    "subcategory": "Template",
+    "azureType": null
+  },
+  {
+    "id": "2858819",
+    "title": "tenant_template_deployment",
+    "slug": "tenant_template_deployment",
+    "subcategory": "Template",
+    "azureType": null
+  },
+  {
+    "id": "2858820",
+    "title": "traffic_manager_azure_endpoint",
+    "slug": "traffic_manager_azure_endpoint",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858821",
+    "title": "traffic_manager_external_endpoint",
+    "slug": "traffic_manager_external_endpoint",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858822",
+    "title": "traffic_manager_nested_endpoint",
+    "slug": "traffic_manager_nested_endpoint",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858823",
+    "title": "traffic_manager_profile",
+    "slug": "traffic_manager_profile",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858824",
+    "title": "user_assigned_identity",
+    "slug": "user_assigned_identity",
+    "subcategory": "Authorization",
+    "azureType": null
+  },
+  {
+    "id": "2858825",
+    "title": "video_analyzer",
+    "slug": "video_analyzer",
+    "subcategory": "Video Analyzer",
+    "azureType": null
+  },
+  {
+    "id": "2858826",
+    "title": "video_analyzer_edge_module",
+    "slug": "video_analyzer_edge_module",
+    "subcategory": "Video Analyzer",
+    "azureType": null
+  },
+  {
+    "id": "2858827",
+    "title": "virtual_desktop_application",
+    "slug": "virtual_desktop_application",
+    "subcategory": "Desktop Virtualization",
+    "azureType": null
+  },
+  {
+    "id": "2858828",
+    "title": "virtual_desktop_application_group",
+    "slug": "virtual_desktop_application_group",
+    "subcategory": "Desktop Virtualization",
+    "azureType": null
+  },
+  {
+    "id": "2858829",
+    "title": "virtual_desktop_host_pool",
+    "slug": "virtual_desktop_host_pool",
+    "subcategory": "Desktop Virtualization",
+    "azureType": null
+  },
+  {
+    "id": "2858830",
+    "title": "virtual_desktop_host_pool_registration_info",
+    "slug": "virtual_desktop_host_pool_registration_info",
+    "subcategory": "Desktop Virtualization",
+    "azureType": null
+  },
+  {
+    "id": "2858831",
+    "title": "virtual_desktop_scaling_plan",
+    "slug": "virtual_desktop_scaling_plan",
+    "subcategory": "Desktop Virtualization",
+    "azureType": null
+  },
+  {
+    "id": "2858832",
+    "title": "virtual_desktop_workspace",
+    "slug": "virtual_desktop_workspace",
+    "subcategory": "Desktop Virtualization",
+    "azureType": null
+  },
+  {
+    "id": "2858833",
+    "title": "virtual_desktop_workspace_application_group_association",
+    "slug": "virtual_desktop_workspace_application_group_association",
+    "subcategory": "Desktop Virtualization",
+    "azureType": null
+  },
+  {
+    "id": "2858834",
+    "title": "virtual_hub",
+    "slug": "virtual_hub",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858835",
+    "title": "virtual_hub_bgp_connection",
+    "slug": "virtual_hub_bgp_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858836",
+    "title": "virtual_hub_connection",
+    "slug": "virtual_hub_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858837",
+    "title": "virtual_hub_ip",
+    "slug": "virtual_hub_ip",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858838",
+    "title": "virtual_hub_route_table",
+    "slug": "virtual_hub_route_table",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858839",
+    "title": "virtual_hub_route_table_route",
+    "slug": "virtual_hub_route_table_route",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858840",
+    "title": "virtual_hub_security_partner_provider",
+    "slug": "virtual_hub_security_partner_provider",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858841",
+    "title": "virtual_machine",
+    "slug": "virtual_machine",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858842",
+    "title": "virtual_machine_data_disk_attachment",
+    "slug": "virtual_machine_data_disk_attachment",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858843",
+    "title": "virtual_machine_extension",
+    "slug": "virtual_machine_extension",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858844",
+    "title": "virtual_machine_packet_capture",
+    "slug": "virtual_machine_packet_capture",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858845",
+    "title": "virtual_machine_scale_set",
+    "slug": "virtual_machine_scale_set",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858846",
+    "title": "virtual_machine_scale_set_extension",
+    "slug": "virtual_machine_scale_set_extension",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858847",
+    "title": "virtual_machine_scale_set_packet_capture",
+    "slug": "virtual_machine_scale_set_packet_capture",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858848",
+    "title": "virtual_network",
+    "slug": "virtual_network",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858849",
+    "title": "virtual_network_dns_servers",
+    "slug": "virtual_network_dns_servers",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858850",
+    "title": "virtual_network_gateway",
+    "slug": "virtual_network_gateway",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858851",
+    "title": "virtual_network_gateway_connection",
+    "slug": "virtual_network_gateway_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858852",
+    "title": "virtual_network_gateway_nat_rule",
+    "slug": "virtual_network_gateway_nat_rule",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858853",
+    "title": "virtual_network_peering",
+    "slug": "virtual_network_peering",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858854",
+    "title": "virtual_wan",
+    "slug": "virtual_wan",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858855",
+    "title": "vmware_cluster",
+    "slug": "vmware_cluster",
+    "subcategory": "VMware (AVS)",
+    "azureType": null
+  },
+  {
+    "id": "2858856",
+    "title": "vmware_express_route_authorization",
+    "slug": "vmware_express_route_authorization",
+    "subcategory": "VMware (AVS)",
+    "azureType": null
+  },
+  {
+    "id": "2858857",
+    "title": "vmware_netapp_volume_attachment",
+    "slug": "vmware_netapp_volume_attachment",
+    "subcategory": "VMware (AVS)",
+    "azureType": null
+  },
+  {
+    "id": "2858858",
+    "title": "vmware_private_cloud",
+    "slug": "vmware_private_cloud",
+    "subcategory": "VMware (AVS)",
+    "azureType": null
+  },
+  {
+    "id": "2858859",
+    "title": "voice_services_communications_gateway",
+    "slug": "voice_services_communications_gateway",
+    "subcategory": "Voice Services",
+    "azureType": null
+  },
+  {
+    "id": "2858860",
+    "title": "voice_services_communications_gateway_test_line",
+    "slug": "voice_services_communications_gateway_test_line",
+    "subcategory": "Voice Services",
+    "azureType": null
+  },
+  {
+    "id": "2858861",
+    "title": "vpn_gateway",
+    "slug": "vpn_gateway",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858862",
+    "title": "vpn_gateway_connection",
+    "slug": "vpn_gateway_connection",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858863",
+    "title": "vpn_gateway_nat_rule",
+    "slug": "vpn_gateway_nat_rule",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858864",
+    "title": "vpn_server_configuration",
+    "slug": "vpn_server_configuration",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858865",
+    "title": "vpn_server_configuration_policy_group",
+    "slug": "vpn_server_configuration_policy_group",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858866",
+    "title": "vpn_site",
+    "slug": "vpn_site",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858867",
+    "title": "web_app_active_slot",
+    "slug": "web_app_active_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858868",
+    "title": "web_app_hybrid_connection",
+    "slug": "web_app_hybrid_connection",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858869",
+    "title": "web_application_firewall_policy",
+    "slug": "web_application_firewall_policy",
+    "subcategory": "Network",
+    "azureType": null
+  },
+  {
+    "id": "2858870",
+    "title": "web_pubsub",
+    "slug": "web_pubsub",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858871",
+    "title": "web_pubsub_custom_certificate",
+    "slug": "web_pubsub_custom_certificate",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858872",
+    "title": "web_pubsub_custom_domain",
+    "slug": "web_pubsub_custom_domain",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858873",
+    "title": "web_pubsub_hub",
+    "slug": "web_pubsub_hub",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858874",
+    "title": "web_pubsub_network_acl",
+    "slug": "web_pubsub_network_acl",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858875",
+    "title": "web_pubsub_shared_private_link",
+    "slug": "web_pubsub_shared_private_link",
+    "subcategory": "Messaging",
+    "azureType": null
+  },
+  {
+    "id": "2858876",
+    "title": "windows_function_app",
+    "slug": "windows_function_app",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858877",
+    "title": "windows_function_app_slot",
+    "slug": "windows_function_app_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858878",
+    "title": "windows_virtual_machine",
+    "slug": "windows_virtual_machine",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858879",
+    "title": "windows_virtual_machine_scale_set",
+    "slug": "windows_virtual_machine_scale_set",
+    "subcategory": "Compute",
+    "azureType": null
+  },
+  {
+    "id": "2858880",
+    "title": "windows_web_app",
+    "slug": "windows_web_app",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  },
+  {
+    "id": "2858881",
+    "title": "windows_web_app_slot",
+    "slug": "windows_web_app_slot",
+    "subcategory": "App Service (Web Apps)",
+    "azureType": null
+  }
+]

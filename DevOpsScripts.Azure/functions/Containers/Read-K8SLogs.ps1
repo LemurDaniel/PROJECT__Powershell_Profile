@@ -107,10 +107,6 @@ function Read-K8SLogs {
     $deploymentData = Get-K8SResources -Type Deployment -Namespace $Namespace
     | Where-Object { $_.metadata.name -EQ $Deployment }
 
-    # TODO selector failing with some deployments
-    $matchLabels = $deploymentData.spec.selector.matchLabels.PSObject.Properties
-    | ForEach-Object { "$($_.Name)=$($_.Value)" }
-
     [System.String[]]$options = $()
     if ($Follow) {
         $options += "--follow"

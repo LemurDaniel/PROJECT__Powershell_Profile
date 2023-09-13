@@ -16,13 +16,13 @@
 
     Get all available resource kinds in the current cluster:
 
-    PS> Get-K8SResourceKinds
+    PS> Get-K8SResourceKind
 
     .EXAMPLE
 
     Get all available resource kinds in a specific cluster:
 
-    PS> Get-K8SResourceKinds <autocompleted_cluster>
+    PS> Get-K8SResourceKind <autocompleted_cluster>
 
 
     .LINK
@@ -30,11 +30,11 @@
 #>
 
 
-function Get-K8SResourceKinds {
+function Get-K8SResourceKind {
     param (
         [Parameter(
             Mandatory = $false,
-            Position = 0
+            Position = 1
         )]
         [System.String]
         [ArgumentCompleter(
@@ -55,7 +55,32 @@ function Get-K8SResourceKinds {
             ErrorMessage = "Not a valid context in the kubeconfig file."
         )]
         [Alias('c')]
-        $Cluster
+        $Cluster,
+
+        [Parameter(
+            Mandatory = $false,
+            Position = 0
+        )]
+        [System.String]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+                $validValues = @((Get-K8SResourceKind -Cluster $fakeBoundParameters['Cluster']).aliases | ForEach-Object { $_ })
+
+                $validValues 
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [ValidateScript(
+            {
+                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-K8SResourceKind -Cluster $PSBoundParameters['Cluster']).aliases
+            },
+            ErrorMessage = "Not a valid resource kind."
+        )]
+        [Alias('k')]
+        $Kind
     )
     
     if ([System.String]::IsNullOrEmpty($Cluster)) {
@@ -73,16 +98,28 @@ function Get-K8SResourceKinds {
             if ($lineElements.Count -LT 5) {
                 $lineElements = $($lineElements[0], $null) + $lineElements[1..($lineElements.Count - 1)]
             }
-            return [PSCustomObject]@{
+            $kindData = [PSCustomObject]@{
                 name       = $lineElements[0]
                 shortname  = $lineElements[1]
                 apiVersion = $lineElements[2]
                 namespaced = [System.Boolean]::Parse($lineElements[3])
                 kind       = $lineElements[4]
+                aliases    = ([System.String[]] @($lineElements[4]) )
             } 
+
+            if (![System.String]::IsNullOrEmpty($kindData.shortname)) {
+                $kindData.aliases += $kindData.shortname
+            }
+            return $kindData
         } 
         | Set-UtilsCache -Identifier "k8s.$Cluster.resourceKinds.list" -Alive 5
     }
 
-    return $resourceKinds
+    if ($PSBoundParameters.ContainsKey('Kind')) {
+        return $resourceKinds
+        | Where-Object -Property aliases -Contains $Kind
+    }
+    else {
+        return $resourceKinds
+    }
 }

@@ -55,7 +55,7 @@ function Get-K8SClusterResources {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = (Get-K8SResourceKinds | Where-Object -Property namespaced -EQ $false).kind
+                $validValues = (Get-K8SResourceKind | Where-Object -Property namespaced -EQ $false).aliases
                 
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
@@ -64,7 +64,7 @@ function Get-K8SClusterResources {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-K8SResourceKinds | Where-Object -Property namespaced -EQ $false).kind
+                $_ -in (Get-K8SResourceKind | Where-Object -Property namespaced -EQ $false).aliases
             },
             ErrorMessage = "Not a valid resource kind for the current cluster."
         )]
@@ -114,7 +114,7 @@ function Get-K8SClusterResources {
         $resourceList = Kubectl get $Kind --context $Cluster -o JSON 
         | ConvertFrom-Json -Depth 99
         | Select-Object -ExpandProperty items
-        | Set-UtilsCache -Identifier "k8s.$Cluster.$Kind.list" -AliveMilli 3000
+        | Set-UtilsCache -Identifier "k8s.$Cluster.$Kind.list" -AliveMilli 5000
     }
 
     if ($PSBoundParameters.ContainsKey('Attribute')) {

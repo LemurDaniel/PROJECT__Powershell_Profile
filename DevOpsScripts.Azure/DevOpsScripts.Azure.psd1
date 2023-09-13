@@ -71,7 +71,10 @@ RequiredAssemblies = @()
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Backup-AzTables', 'Connect-AzTenant', 
                'Get-NonCompliantRoleAssignments', 'Invoke-AzureRest', 
-               'Restore-AzTables', 'Test-AzLogin', 'Backup-AzState', 
+               'Restore-AzTables', 'Test-AzLogin', 'Get-AzureResourceId', 
+               'Get-AzureResourceTypes', 'Get-TerraformAzuremMapping', 
+               'Get-TerraformModuleCalls', 'Get-TerraformModuleResources', 
+               'New-TerraformAzureImportStatement ', 'Backup-AzState', 
                'Get-AzResourceGraphChangesCreate', 
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
@@ -101,8 +104,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'FAConf', 'STCtx', 'k8s-exec', 'k8s-logs', 'k8s-describe', 'k8s-cluster', 
-               'k8s-ns', 'pim', 'pimDeactivate'
+AliasesToExport = 'az-id', 'tf-azimport', 'FAConf', 'STCtx', 'k8s-exec', 'k8s-logs', 
+               'k8s-describe', 'k8s-cluster', 'k8s-ns', 'pim', 'pimDeactivate'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -155,7 +155,7 @@ function New-TerraformAzureImportStatement {
     $importStatement = @"
 import {
     id = "$($azureResource.ResourceId)"
-    to = "$ModulePath.$Resource"
+    to = $ModulePath.$Resource
 }
 "@
 

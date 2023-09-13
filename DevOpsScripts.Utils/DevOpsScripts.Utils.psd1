@@ -69,19 +69,20 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Get-Property', 'Join-PsObject', 'Search-In', 'Convert-TFVarsToObject', 
+FunctionsToExport = 'Get-Property', 'Join-PsObject', 'Search-In', 
+               'Clear-SecureStringFromFile', 'Clear-UtilsCache', 'Get-CleanFilename', 
+               'Get-UtilsCache', 'Open-SecureStringFolder', 'Open-UtilsCacheFolder', 
+               'Read-SecureStringFromFile', 'Save-SecureStringToFile', 
+               'Set-UtilsCache', 'Convert-TFVarsToObject', 
                'Get-TerraformProviderInfo', 'Get-TerraformProviders', 
                'Get-TerraformVersions', 'Open-TerraformProviderDocs', 
-               'Remove-MovedBlocks', 'Set-Terraform', 'Format-SendGridContent', 
+               'Remove-MovedBlocks', 'Set-Terraform', 'Add-CodeEditor', 
+               'Clear-CodeEditor', 'Get-CodeEditor', 'New-RandomBytes', 
+               'Open-InCodeEditor', 'Read-UserInput', 'Select-ConsoleMenu', 
+               'Switch-DefaultCodeEditor', 'Test-IsRepository', 'Edit-RegexOnFiles', 
+               'Remove-InvisibleUnicode', 'Format-SendGridContent', 
                'Format-SendGridResourceReport', 'Send-SendGridEmail', 
-               'New-SendGridHtmlFormat', 'Clear-SecureStringFromFile', 
-               'Clear-UtilsCache', 'Get-CleanFilename', 'Get-UtilsCache', 
-               'Open-SecureStringFolder', 'Open-UtilsCacheFolder', 
-               'Read-SecureStringFromFile', 'Save-SecureStringToFile', 
-               'Set-UtilsCache', 'Add-CodeEditor', 'Clear-CodeEditor', 
-               'Get-CodeEditor', 'New-RandomBytes', 'Open-InCodeEditor', 
-               'Read-UserInput', 'Select-ConsoleMenu', 'Switch-DefaultCodeEditor', 
-               'Test-IsRepository', 'Edit-RegexOnFiles', 'Remove-InvisibleUnicode'
+               'New-SendGridHtmlFormat'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

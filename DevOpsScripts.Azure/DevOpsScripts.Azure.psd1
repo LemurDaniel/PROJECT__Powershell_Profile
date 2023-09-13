@@ -71,20 +71,20 @@ RequiredAssemblies = @()
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Backup-AzTables', 'Connect-AzTenant', 
                'Get-NonCompliantRoleAssignments', 'Invoke-AzureRest', 
-               'Restore-AzTables', 'Test-AzLogin', 'Get-AzureResourceId', 
-               'Get-AzureResourceTypes', 'Get-TerraformAzuremMapping', 
-               'Get-TerraformModuleCalls', 'Get-TerraformModuleResources', 
-               'New-TerraformAzureImportStatement ', 'Backup-AzState', 
+               'Restore-AzTables', 'Test-AzLogin', 'Get-AKScredentials', 
+               'Get-AzContextsWrapper', 'Get-K8SClusterResources', 'Get-K8SContexts', 
+               'Get-K8SResourceKind', 'Get-K8SResources', 'Invoke-K8SExec', 
+               'Read-K8SLogs', 'Select-K8SResource', 'Show-K8SResource', 
+               'Switch-K8SCluster', 'Switch-K8SNamespace', 'Backup-AzState', 
                'Get-AzResourceGraphChangesCreate', 
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
                'Search-AzFunctionAppSettings', 'Search-AzResource', 
                'Search-AzResourceGraphResults', 'Search-AzStorageAccount', 
-               'Search-AzStorageContext', 'Search-AzVm', 'Test', 'Get-AKScredentials', 
-               'Get-AzContextsWrapper', 'Get-K8SClusterResources', 'Get-K8SContexts', 
-               'Get-K8SResourceKind', 'Get-K8SResources', 'Invoke-K8SExec', 
-               'Read-K8SLogs', 'Select-K8SResource', 'Show-K8SResource', 
-               'Switch-K8SCluster', 'Switch-K8SNamespace', 
+               'Search-AzStorageContext', 'Search-AzVm', 'Test', 'Get-AzureResourceId', 
+               'Get-AzureResourceTypes', 'Get-TerraformAzuremMapping', 
+               'Get-TerraformModuleCalls', 'Get-TerraformModuleResources', 
+               'New-TerraformAzureImportStatement', 
                'New-AzAccessPackageCatalogRoleAssignment', 
                'Remove-AzAccessPackageCatalogRoleAssignment', 
                'Get-GraphApiManager', 'Get-onPremisesExtensionAttributes', 
@@ -104,8 +104,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'az-id', 'tf-azimport', 'FAConf', 'STCtx', 'k8s-exec', 'k8s-logs', 
-               'k8s-describe', 'k8s-cluster', 'k8s-ns', 'pim', 'pimDeactivate'
+AliasesToExport = 'k8s-exec', 'k8s-logs', 'k8s-describe', 'k8s-cluster', 'k8s-ns', 'FAConf', 
+               'STCtx', 'az-id', 'tf-azimport', 'pim', 'pimDeactivate'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -97,28 +97,7 @@ function New-TerraformAzureImportStatement {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
                     
-                $providerResource = $fakeBoundParameters['Resource'] -split '\.' | Select-Object -First 1 
-                $azureType = Get-TerraformAzuremMapping -ProviderResource $providerResource
-                | Select-Object -ExpandProperty azureType
-
-                if ($null -EQ $azureType) {
-                    return "--TODO--"
-                }
-                
-
-                if ($azureType -like "Microsoft.Resources/resourceGroups") {
-                    $validValues = Get-AzResourceGroup
-                    | ForEach-Object {
-                        $_.ResourceGroupName
-                    }
-                }
-                else {
-                    $validValues = Get-AzResource -ResourceType $azureType
-                    | ForEach-Object {
-                        "$($_.ResourceGroupName)/$($_.Name)"
-                    }
-                }    
-
+                $validValues = (Get-AzureResources -AzurermResource $fakeBoundParameters['Resource']).slug
 
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
@@ -137,24 +116,13 @@ function New-TerraformAzureImportStatement {
         throw "The corresponding type in azure ist not set for '$ProviderResource'. Please update '$PSScriptRoot/azurerm.resources.json' accordingly."
     }
 
-    $azureResource = $null
-    if ($azureType -like "Microsoft.Resources/resourceGroups") {
-        $azureResource = Get-AzResourceGroup
-        | Where-Object {
-            $_.ResourceGroupName -EQ $Name
-        }
-    }
-    else {
-        $azureResource = Get-AzResource -ResourceType $azureType
-        | Where-Object {
-            "$($_.ResourceGroupName)/$($_.Name)" -EQ $Name
-        }
-    }    
+    $azureResource = Get-AzureResources -AzurermResource $fakeBoundParameters['Resource']
+    | Where-Object -Property slug -EQ $Name
 
 
     $importStatement = @"
 import {
-    id = "$($azureResource.ResourceId)"
+    id = "$($azureResource.importId)"
     to = $ModulePath.$Resource
 }
 "@
@@ -182,3 +150,28 @@ import {
 | Out-File azurerm.resources.json
 
 #>
+
+
+$file = Get-Item -Path ".\azurerm.resources.json"
+$data = Get-Content -Path $file 
+| ConvertFrom-Json 
+| ForEach-Object {
+
+    if ($null -EQ $_.azureType) {
+        $title = $_.slug -replace '_', ''
+        $type = Get-AzureResourceTypes 
+        | Where-Object {
+            $_ -like "*$title*"
+        }
+        | Select-Object -First 1
+
+        if ($null -NE $type) {
+            $_.azureType = $type
+            Write-Host $title, $type
+        }
+    }
+
+    return $_
+}
+| ConvertTo-Json
+$data | Out-File $file

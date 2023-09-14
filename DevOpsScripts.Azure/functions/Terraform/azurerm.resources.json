@@ -32,7 +32,7 @@
     "title": "advanced_threat_protection",
     "slug": "advanced_threat_protection",
     "subcategory": "Security Center",
-    "azureType": null
+    "azureType": "Microsoft.Security/advancedThreatProtectionSettings"
   },
   {
     "id": "2857866",
@@ -53,7 +53,7 @@
     "title": "api_management",
     "slug": "api_management",
     "subcategory": "API Management",
-    "azureType": null
+    "azureType": "Microsoft.ApiManagement/service"
   },
   {
     "id": "2857869",
@@ -396,7 +396,7 @@
     "title": "application_gateway",
     "slug": "application_gateway",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/applicationGateways"
   },
   {
     "id": "2857938",
@@ -459,14 +459,14 @@
     "title": "application_security_group",
     "slug": "application_security_group",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/applicationSecurityGroups"
   },
   {
     "id": "2857917",
     "title": "app_service",
     "slug": "app_service",
     "subcategory": "App Service (Web Apps)",
-    "azureType": null
+    "azureType": "Microsoft.Web/sites"
   },
   {
     "id": "2857918",
@@ -655,7 +655,7 @@
     "title": "automation_account",
     "slug": "automation_account",
     "subcategory": "Automation",
-    "azureType": null
+    "azureType": "Microsoft.Automation/automationAccounts"
   },
   {
     "id": "2857955",
@@ -837,7 +837,7 @@
     "title": "availability_set",
     "slug": "availability_set",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/availabilitySets"
   },
   {
     "id": "2857981",
@@ -900,7 +900,7 @@
     "title": "bastion_host",
     "slug": "bastion_host",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/bastionHosts"
   },
   {
     "id": "2857990",
@@ -949,7 +949,7 @@
     "title": "blueprint_assignment",
     "slug": "blueprint_assignment",
     "subcategory": "Blueprints",
-    "azureType": null
+    "azureType": "Microsoft.Blueprint/blueprintAssignments"
   },
   {
     "id": "2857997",
@@ -1068,7 +1068,7 @@
     "title": "capacity_reservation_group",
     "slug": "capacity_reservation_group",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/capacityReservationGroups"
   },
   {
     "id": "2858014",
@@ -1243,7 +1243,7 @@
     "title": "container_app",
     "slug": "container_app",
     "subcategory": "Container Apps",
-    "azureType": null
+    "azureType": "Microsoft.Web/containerApps"
   },
   {
     "id": "2858039",
@@ -1285,14 +1285,14 @@
     "title": "container_group",
     "slug": "container_group",
     "subcategory": "Container",
-    "azureType": null
+    "azureType": "Microsoft.ContainerInstance/containerGroups"
   },
   {
     "id": "2858045",
     "title": "container_registry",
     "slug": "container_registry",
     "subcategory": "Container",
-    "azureType": null
+    "azureType": "Microsoft.ContainerRegistry/registries"
   },
   {
     "id": "2858046",
@@ -1544,21 +1544,21 @@
     "title": "custom_ip_prefix",
     "slug": "custom_ip_prefix",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/customIpPrefixes"
   },
   {
     "id": "2858082",
     "title": "custom_provider",
     "slug": "custom_provider",
     "subcategory": "Custom Providers",
-    "azureType": null
+    "azureType": "Microsoft.CustomProviders/resourceProviders"
   },
   {
     "id": "2858083",
     "title": "dashboard",
     "slug": "dashboard",
     "subcategory": "Portal",
-    "azureType": null
+    "azureType": "Microsoft.Portal/dashboards"
   },
   {
     "id": "2858084",
@@ -2111,7 +2111,7 @@
     "title": "dev_test_lab",
     "slug": "dev_test_lab",
     "subcategory": "Dev Test",
-    "azureType": null
+    "azureType": "Microsoft.DevTestLab/labs/environments"
   },
   {
     "id": "2858163",
@@ -2188,14 +2188,14 @@
     "title": "disk_access",
     "slug": "disk_access",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/diskAccesses"
   },
   {
     "id": "2858174",
     "title": "disk_encryption_set",
     "slug": "disk_encryption_set",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/diskEncryptionSets"
   },
   {
     "id": "2858175",
@@ -2300,7 +2300,7 @@
     "title": "dns_zone",
     "slug": "dns_zone",
     "subcategory": "DNS",
-    "azureType": null
+    "azureType": "Microsoft.Network/dnszones"
   },
   {
     "id": "2858190",
@@ -2363,7 +2363,7 @@
     "title": "eventhub",
     "slug": "eventhub",
     "subcategory": "Messaging",
-    "azureType": null
+    "azureType": "Microsoft.EventHub/namespaces"
   },
   {
     "id": "2858199",
@@ -2426,7 +2426,7 @@
     "title": "express_route_circuit",
     "slug": "express_route_circuit",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/expressRouteCircuits"
   },
   {
     "id": "2858208",
@@ -2461,7 +2461,7 @@
     "title": "express_route_gateway",
     "slug": "express_route_gateway",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/expressRouteGateways"
   },
   {
     "id": "2858213",
@@ -2482,7 +2482,7 @@
     "title": "federated_identity_credential",
     "slug": "federated_identity_credential",
     "subcategory": "Authorization",
-    "azureType": null
+    "azureType": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials"
   },
   {
     "id": "2858216",
@@ -2566,7 +2566,7 @@
     "title": "function_app",
     "slug": "function_app",
     "subcategory": "App Service (Web Apps)",
-    "azureType": null
+    "azureType": "Microsoft.Web/sites"
   },
   {
     "id": "2858228",
@@ -2748,7 +2748,7 @@
     "title": "integration_service_environment",
     "slug": "integration_service_environment",
     "subcategory": "Logic App",
-    "azureType": null
+    "azureType": "Microsoft.Logic/integrationServiceEnvironments"
   },
   {
     "id": "2858262",
@@ -2769,7 +2769,7 @@
     "title": "iothub",
     "slug": "iothub",
     "subcategory": "IoT Hub",
-    "azureType": null
+    "azureType": "Microsoft.Devices/IotHubs"
   },
   {
     "id": "2858265",
@@ -2895,7 +2895,7 @@
     "title": "iot_security_solution",
     "slug": "iot_security_solution",
     "subcategory": "Security Center",
-    "azureType": null
+    "azureType": "Microsoft.Security/iotSecuritySolutions"
   },
   {
     "id": "2858256",
@@ -2944,7 +2944,7 @@
     "title": "ip_group",
     "slug": "ip_group",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/ipGroups"
   },
   {
     "id": "2858282",
@@ -2958,7 +2958,7 @@
     "title": "key_vault",
     "slug": "key_vault",
     "subcategory": "Key Vault",
-    "azureType": null
+    "azureType": "Microsoft.KeyVault/vaults"
   },
   {
     "id": "2858284",
@@ -3182,7 +3182,7 @@
     "title": "lb",
     "slug": "lb",
     "subcategory": "Load Balancer",
-    "azureType": null
+    "azureType": "Microsoft.Network/loadBalancers"
   },
   {
     "id": "2858316",
@@ -3301,7 +3301,7 @@
     "title": "local_network_gateway",
     "slug": "local_network_gateway",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/localNetworkGateways"
   },
   {
     "id": "2858333",
@@ -3616,7 +3616,7 @@
     "title": "maintenance_configuration",
     "slug": "maintenance_configuration",
     "subcategory": "Maintenance",
-    "azureType": null
+    "azureType": "Microsoft.Maintenance/maintenanceConfigurations"
   },
   {
     "id": "2858378",
@@ -3651,7 +3651,7 @@
     "title": "management_group",
     "slug": "management_group",
     "subcategory": "Management",
-    "azureType": null
+    "azureType": "Microsoft.Management/managementGroups"
   },
   {
     "id": "2858383",
@@ -4295,7 +4295,7 @@
     "title": "mysql_flexible_server",
     "slug": "mysql_flexible_server",
     "subcategory": "Database",
-    "azureType": null
+    "azureType": "Microsoft.DBforMySQL/flexibleServers"
   },
   {
     "id": "2858475",
@@ -4344,7 +4344,7 @@
     "title": "nat_gateway",
     "slug": "nat_gateway",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/natGateways"
   },
   {
     "id": "2858482",
@@ -4435,7 +4435,7 @@
     "title": "network_interface",
     "slug": "network_interface",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/networkInterfaces"
   },
   {
     "id": "2858495",
@@ -4477,7 +4477,7 @@
     "title": "network_manager",
     "slug": "network_manager",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/networkManagers"
   },
   {
     "id": "2858501",
@@ -4561,14 +4561,14 @@
     "title": "network_profile",
     "slug": "network_profile",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/networkProfiles"
   },
   {
     "id": "2858513",
     "title": "network_security_group",
     "slug": "network_security_group",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/networkSecurityGroups"
   },
   {
     "id": "2858514",
@@ -4582,7 +4582,7 @@
     "title": "network_watcher",
     "slug": "network_watcher",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/networkWatchers"
   },
   {
     "id": "2858516",
@@ -4624,7 +4624,7 @@
     "title": "notification_hub",
     "slug": "notification_hub",
     "subcategory": "Messaging",
-    "azureType": null
+    "azureType": "Microsoft.NotificationHubs/namespaces"
   },
   {
     "id": "2858522",
@@ -4778,14 +4778,14 @@
     "title": "policy_definition",
     "slug": "policy_definition",
     "subcategory": "Policy",
-    "azureType": null
+    "azureType": "Microsoft.Authorization/policyDefinitions"
   },
   {
     "id": "2858544",
     "title": "policy_set_definition",
     "slug": "policy_set_definition",
     "subcategory": "Policy",
-    "azureType": null
+    "azureType": "Microsoft.Authorization/policySetDefinitions"
   },
   {
     "id": "2858545",
@@ -4995,7 +4995,7 @@
     "title": "private_dns_zone",
     "slug": "private_dns_zone",
     "subcategory": "Private DNS",
-    "azureType": null
+    "azureType": "Microsoft.Network/privatednszones"
   },
   {
     "id": "2858575",
@@ -5009,7 +5009,7 @@
     "title": "private_endpoint",
     "slug": "private_endpoint",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/privateEndpoints"
   },
   {
     "id": "2858577",
@@ -5023,28 +5023,28 @@
     "title": "private_link_service",
     "slug": "private_link_service",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/privateEndpoints/privateLinkServiceProxies"
   },
   {
     "id": "2858579",
     "title": "proximity_placement_group",
     "slug": "proximity_placement_group",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/proximityPlacementGroups"
   },
   {
     "id": "2858580",
     "title": "public_ip",
     "slug": "public_ip",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/publicIPAddresses"
   },
   {
     "id": "2858581",
     "title": "public_ip_prefix",
     "slug": "public_ip_prefix",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/publicIPPrefixes"
   },
   {
     "id": "2858582",
@@ -5226,21 +5226,21 @@
     "title": "role_assignment",
     "slug": "role_assignment",
     "subcategory": "Authorization",
-    "azureType": null
+    "azureType": "Microsoft.Authorization/roleAssignments"
   },
   {
     "id": "2858608",
     "title": "role_assignment_marketplace",
     "slug": "role_assignment_marketplace",
     "subcategory": "Authorization",
-    "azureType": null
+    "azureType": "Microsoft.Authorization/roleAssignments"
   },
   {
     "id": "2858609",
     "title": "role_definition",
     "slug": "role_definition",
     "subcategory": "Authorization",
-    "azureType": null
+    "azureType": "notworking | Microsoft.Authorization/roleDefinitions"
   },
   {
     "id": "2858610",
@@ -5254,7 +5254,7 @@
     "title": "route_filter",
     "slug": "route_filter",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/routeFilters"
   },
   {
     "id": "2858612",
@@ -5282,14 +5282,14 @@
     "title": "route_table",
     "slug": "route_table",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/routeTables"
   },
   {
     "id": "2858616",
     "title": "search_service",
     "slug": "search_service",
     "subcategory": "Search",
-    "azureType": null
+    "azureType": "Microsoft.Search/searchServices"
   },
   {
     "id": "2858617",
@@ -5821,7 +5821,7 @@
     "title": "snapshot",
     "slug": "snapshot",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "icrosoft.Compute/snapshots"
   },
   {
     "id": "2858693",
@@ -5835,7 +5835,7 @@
     "title": "spatial_anchors_account",
     "slug": "spatial_anchors_account",
     "subcategory": "Mixed Reality",
-    "azureType": null
+    "azureType": "Microsoft.MixedReality/spatialAnchorsAccounts"
   },
   {
     "id": "2858695",
@@ -6094,7 +6094,7 @@
     "title": "ssh_public_key",
     "slug": "ssh_public_key",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/sshPublicKeys"
   },
   {
     "id": "2858732",
@@ -6108,7 +6108,7 @@
     "title": "static_site",
     "slug": "static_site",
     "subcategory": "App Service (Web Apps)",
-    "azureType": null
+    "azureType": "Microsoft.Web/staticSites"
   },
   {
     "id": "2858734",
@@ -6122,7 +6122,7 @@
     "title": "storage_account",
     "slug": "storage_account",
     "subcategory": "Storage",
-    "azureType": null
+    "azureType": "Microsoft.Storage/storageAccounts "
   },
   {
     "id": "2858736",
@@ -6500,7 +6500,7 @@
     "title": "subscription",
     "slug": "subscription",
     "subcategory": "Base",
-    "azureType": null
+    "azureType": "Microsoft.Subscription/subscriptions"
   },
   {
     "id": "2858790",
@@ -6738,21 +6738,21 @@
     "title": "traffic_manager_profile",
     "slug": "traffic_manager_profile",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/trafficmanagerprofiles"
   },
   {
     "id": "2858824",
     "title": "user_assigned_identity",
     "slug": "user_assigned_identity",
     "subcategory": "Authorization",
-    "azureType": null
+    "azureType": "Microsoft.ManagedIdentity/userAssignedIdentities"
   },
   {
     "id": "2858825",
     "title": "video_analyzer",
     "slug": "video_analyzer",
     "subcategory": "Video Analyzer",
-    "azureType": null
+    "azureType": "Microsoft.Media/videoAnalyzers"
   },
   {
     "id": "2858826",
@@ -6815,7 +6815,7 @@
     "title": "virtual_hub",
     "slug": "virtual_hub",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/virtualHubs"
   },
   {
     "id": "2858835",
@@ -6864,7 +6864,7 @@
     "title": "virtual_machine",
     "slug": "virtual_machine",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/virtualMachines"
   },
   {
     "id": "2858842",
@@ -6892,7 +6892,7 @@
     "title": "virtual_machine_scale_set",
     "slug": "virtual_machine_scale_set",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/virtualMachineScaleSets"
   },
   {
     "id": "2858846",
@@ -6913,21 +6913,21 @@
     "title": "virtual_network",
     "slug": "virtual_network",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/virtualNetworks"
   },
   {
     "id": "2858849",
     "title": "virtual_network_dns_servers",
     "slug": "virtual_network_dns_servers",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/virtualNetworks/listDnsResolvers"
   },
   {
     "id": "2858850",
     "title": "virtual_network_gateway",
     "slug": "virtual_network_gateway",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/virtualNetworkGateways"
   },
   {
     "id": "2858851",
@@ -6955,7 +6955,7 @@
     "title": "virtual_wan",
     "slug": "virtual_wan",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/virtualWans"
   },
   {
     "id": "2858855",
@@ -7004,7 +7004,7 @@
     "title": "vpn_gateway",
     "slug": "vpn_gateway",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/vpnGateways"
   },
   {
     "id": "2858862",
@@ -7025,7 +7025,7 @@
     "title": "vpn_server_configuration",
     "slug": "vpn_server_configuration",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/vpnServerConfigurations"
   },
   {
     "id": "2858865",
@@ -7039,7 +7039,7 @@
     "title": "vpn_site",
     "slug": "vpn_site",
     "subcategory": "Network",
-    "azureType": null
+    "azureType": "Microsoft.Network/vpnSites"
   },
   {
     "id": "2858867",

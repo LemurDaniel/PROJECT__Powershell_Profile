@@ -6122,7 +6122,7 @@
     "title": "storage_account",
     "slug": "storage_account",
     "subcategory": "Storage",
-    "azureType": "Microsoft.Storage/storageAccounts "
+    "azureType": "Microsoft.Storage/storageAccounts"
   },
   {
     "id": "2858736",

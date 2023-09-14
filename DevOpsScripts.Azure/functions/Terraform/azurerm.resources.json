@@ -4288,7 +4288,7 @@
     "title": "mysql_flexible_database",
     "slug": "mysql_flexible_database",
     "subcategory": "Database",
-    "azureType": null
+    "azureType": "Microsoft.DBforMySQL/flexibleDatabase"
   },
   {
     "id": "2858474",

@@ -8,6 +8,7 @@ function Get-AzureResources {
 
     param (
         [Parameter(
+            Position = 0,
             Mandatory = $true
         )]
         [System.String]
@@ -18,6 +19,9 @@ function Get-AzureResources {
     $providerResource = Get-TerraformAzuremMapping -ProviderResource $providerResource
 
     switch ($providerResource.slug) {
+
+        ##########################################################################################################
+        ####### Microsoft.Authorization
 
         'policy_definition' {
             return Get-AzPolicyDefinition -Custom
@@ -94,6 +98,62 @@ function Get-AzureResources {
             return '--TODO--'
         }
 
+        ##########################################################################################################
+        ####### Microsoft.DBforMySQL
+
+        'mysql_flexible_server_firewall_rule' {
+            return Get-AzMySqlFlexibleServer 
+            | ForEach-Object {
+                $resourceGroup = $_.id -split '/' | Select-Object -First 1 -Skip 4
+                $serverName = $_.FullyQualifiedDomainName
+                Get-AzMySqlFlexibleServerFirewallRule -ResourceGroupName $resourceGroup -ServerName $_.Name
+                | Select-Object -Property *, 
+                @{
+                    Name       = "slug"; 
+                    Expression = { @($serverName, $_.name) -join '/' }
+                },
+                @{
+                    Name       = "importId"; 
+                    Expression = { $_.Id }
+                }
+            }
+        }
+
+        'mysql_flexible_database' {
+            return Get-AzMySqlFlexibleServer 
+            | ForEach-Object {
+                $resourceGroup = $_.id -split '/' | Select-Object -First 1 -Skip 4
+                $serverName = $_.FullyQualifiedDomainName
+                Get-AzMySqlFlexibleServerDatabase -ResourceGroupName $resourceGroup -ServerName $_.Name
+                | Select-Object -Property *, 
+                @{
+                    Name       = "slug"; 
+                    Expression = { @($serverName, $_.name) -join '/' }
+                },
+                @{
+                    Name       = "importId"; 
+                    Expression = { $_.Id }
+                }
+            }
+        }
+
+
+        ##########################################################################################################
+        ####### Others
+
+        'management_group' {
+            return  Get-AzManagementGroup 
+            | Select-Object -Property *, 
+            @{
+                Name       = "slug"; 
+                Expression = { $_.Id }
+            },
+            @{
+                Name       = "importId"; 
+                Expression = { $_.Id }
+            }
+        }
+
         'resource_group' {
             return  Get-AzResourceGroup 
             | Select-Object -Property *, 
@@ -116,7 +176,7 @@ function Get-AzureResources {
     }
 
 
-    return Get-AzResource -ResourceType $azureType
+    return Get-AzResource -ResourceType $providerResource.azureType
     | Select-Object -Property *, 
     @{
         Name       = "slug"; 

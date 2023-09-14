@@ -149,7 +149,6 @@ import {
 | ConvertTo-Json
 | Out-File azurerm.resources.json
 
-#>
 
 
 $file = Get-Item -Path ".\azurerm.resources.json"
@@ -175,3 +174,6 @@ $data = Get-Content -Path $file
 }
 | ConvertTo-Json
 $data | Out-File $file
+
+
+#>

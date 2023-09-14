@@ -105,7 +105,7 @@ function Read-K8SLogs {
     }
 
     $deploymentData = Get-K8SResources -Type Deployment -Namespace $Namespace
-    | Where-Object { $_.metadata.name -EQ $Deployment }
+    | Select-K8SResource metadata.name EQ $Deployment
 
     [System.String[]]$options = $()
     if ($Follow) {
@@ -124,12 +124,13 @@ function Read-K8SLogs {
         do {
         
             $deploymentPod = Get-K8SResources -Namespace $Namespace -Kind Pod
-            | Select-K8SResource metadata.name LIKE "$Deployment*"
+            | Select-K8SLabels $deploymentData.spec.selector
             | Select-Object -ExpandProperty metadata
             | Select-Object -ExpandProperty name
             | Select-Object -First 1
 
             # kubectl logs $options --namespace $Namespace --selector ($matchLabels -join ',')
+            Write-Host -ForegroundColor Magenta "Found Pod '$($deploymentPod)'."
             kubectl logs $options --namespace $Namespace $deploymentPod
 
             Write-Host -ForegroundColor Magenta "--------------------------------"

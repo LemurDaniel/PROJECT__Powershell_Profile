@@ -206,18 +206,18 @@ function Invoke-K8SExec {
 
     elseif ($PSBoundParameters.ContainsKey('Deployment')) {
 
-        $deployData = Get-K8SResources -Namespace $Namespace -Kind Deployment
+        $deploymentData = Get-K8SResources -Namespace $Namespace -Kind Deployment
         | Select-K8SResource metadata.name EQ $Deployment
 
         if ([System.String]::IsNullOrEmpty($Container)) {
-            $Container = $deployData.spec.template.spec.containers.name | Select-Object -First 1
+            $Container = $deploymentData.spec.template.spec.containers.name | Select-Object -First 1
         }
 
         $inputKeyEvent = $null
         do {
         
             $deploymentPod = Get-K8SResources -Namespace $Namespace -Kind Pod
-            | Select-K8SResource metadata.name LIKE "$Deployment*"
+            | Select-K8SLabels $deploymentData.spec.selector
             | Select-Object -ExpandProperty metadata
             | Select-Object -ExpandProperty name
             | Select-Object -First 1

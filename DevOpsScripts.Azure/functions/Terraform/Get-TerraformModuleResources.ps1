@@ -1,22 +1,17 @@
 
-
 <#
 
 .SYNOPSIS
-    TODO
+    Get all provider resources as 'provider_resource.name' on a given path.
+    Used by New-TerraformAzureImportStatement.ps1
 
 .DESCRIPTION
-    TODO
-
-
-.EXAMPLE
-    TODO
+    Get all provider resources as 'provider_resource.name' on a given path.
+    Used by New-TerraformAzureImportStatement.ps1
 
 .LINK
   
-
 #>
-
 
 
 function Get-TerraformModuleResources {

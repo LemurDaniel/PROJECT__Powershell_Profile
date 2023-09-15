@@ -1,10 +1,41 @@
 
 
 
+<#
+
+.SYNOPSIS
+    Get resource-options for the given provider resource of the azurerm_provider.
+    Only current set subscription is considered.
+    Used by New-TerraformAzureImportStatement.ps1
+
+.DESCRIPTION
+    Get resource-options for the given provider resource of the azurerm_provider.
+    Only current set subscription is considered.
+    Used by New-TerraformAzureImportStatement.ps1
+
+.OUTPUTS
+    A list of resource options of
+    @{
+        slug      = ""
+        import_id = ""
+        .
+        .
+        .
+        other properties depending on type
+    }
+
+.EXAMPLE
+
+    Get all resources for provider type 'azurerm_resource_group':
+
+    PS> Get-AzurermResources -Azurermresource 'azurerm_resource_group'
+
+.LINK
+  
+#>
 
 
-
-function Get-AzureResources {
+function Get-AzurermResources {
 
     param (
         [Parameter(
@@ -15,8 +46,7 @@ function Get-AzureResources {
         $AzurermResource
     )
 
-    $providerResource = $AzurermResource -split '\.' | Select-Object -First 1 
-    $providerResource = Get-TerraformAzuremMapping -ProviderResource $providerResource
+    $providerResource = Get-TerraformAzuremMapping -ProviderResource $AzurermResource
 
     switch ($providerResource.slug) {
 
@@ -82,7 +112,7 @@ function Get-AzureResources {
         }
 
         'role_assignment' { 
-            return Get-AzRoleAssignment 
+            return Get-AzRoleAssignment
             | Select-Object -Property *, 
             @{
                 Name       = "slug"; 
@@ -94,9 +124,7 @@ function Get-AzureResources {
             }
         }
 
-        'role_assignment_marketplace' {
-            return '--TODO--'
-        }
+        'role_assignment_marketplace' {}
 
         ##########################################################################################################
         ####### Microsoft.DBforMySQL

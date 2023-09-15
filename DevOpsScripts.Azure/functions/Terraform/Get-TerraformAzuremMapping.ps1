@@ -1,29 +1,16 @@
-
-
 <#
 
 .SYNOPSIS
-    TODO
+    Get information about a azurerm provider resource.
+    Used by New-TerraformAzureImportStatement.ps1
 
 .DESCRIPTION
-    TODO
-
-
-.EXAMPLE
-    TODO
-
-    Mostly still testing
-
-    Select-AzContext ...
-    tf-azimport ... ... ...
+    Get information about a azurerm provider resource.
+    Used by New-TerraformAzureImportStatement.ps1
 
 .LINK
   
-
 #>
-
-
-
 
 function Get-TerraformAzuremMapping {
 

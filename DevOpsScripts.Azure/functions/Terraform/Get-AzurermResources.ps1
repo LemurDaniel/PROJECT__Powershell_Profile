@@ -28,7 +28,7 @@
 
     Get all resources for provider type 'azurerm_resource_group':
 
-    PS> Get-AzurermResources -Azurermresource 'azurerm_resource_group'
+    PS> Get-AzurermResources -Azurermresource 'azurerm_resource_group' | Select-Object -Property slug, importId
 
 .LINK
   
@@ -112,7 +112,8 @@ function Get-AzurermResources {
         }
 
         'role_assignment' { 
-            return Get-AzRoleAssignment
+            return Get-AzRoleAssignment 
+            | Where-Object -Property Scope -NE '/providers/Microsoft.Marketplace'
             | Select-Object -Property *, 
             @{
                 Name       = "slug"; 
@@ -124,7 +125,18 @@ function Get-AzurermResources {
             }
         }
 
-        'role_assignment_marketplace' {}
+        'role_assignment_marketplace' {
+            return Get-AzRoleAssignment -Scope "/providers/Microsoft.Marketplace"
+            | Select-Object -Property *, 
+            @{
+                Name       = "slug"; 
+                Expression = { @($_.RoleDefinitionName, $_.DisplayName, $_.Scope ) -join '/' }
+            },
+            @{
+                Name       = "importId"; 
+                Expression = { $_.RoleAssignmentId }
+            }
+        }
 
         ##########################################################################################################
         ####### Microsoft.DBforMySQL

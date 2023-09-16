@@ -124,21 +124,34 @@ function Get-K8SResources {
             Position = 1
         )]
         [System.String]
-        $Attribute
+        $Attribute,
+
+        # Returns resources from all namespaces
+        [Parameter()]
+        [switch]
+        $AllNamespaces
     )
 
     if ([System.String]::IsNullOrEmpty($Cluster)) {
         $Cluster = (Get-K8SContexts -Current).name
     }
 
-    if ([System.String]::IsNullOrEmpty($Namespace)) {
+    $options = @("--context", $Cluster)
+
+    if ($AllNamespaces) {
+        $Namespace = $null
+        $options += "--all-namespaces"
+    }
+    elseif ([System.String]::IsNullOrEmpty($Namespace)) {
         $Namespace = (Get-K8SContexts -Current).namespace
+        $options += "--namespace"
+        $options += $Namespace
     }
 
     $resourceList = Get-UtilsCache -Identifier "k8s.$Cluster.$Kind.$Namespace.list"
 
     if ($null -EQ $resourceList) {
-        $resourceList = Kubectl get $Kind --context $Cluster --namespace $Namespace -o JSON 
+        $resourceList = Kubectl get $Kind $options -o JSON 
         | ConvertFrom-Json -Depth 99
         | Select-Object -ExpandProperty items
         | Set-UtilsCache -Identifier "k8s.$Cluster.$Kind.$Namespace.list" -AliveMilli 5000

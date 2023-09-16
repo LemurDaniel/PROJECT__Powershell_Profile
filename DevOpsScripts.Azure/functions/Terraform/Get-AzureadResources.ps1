@@ -43,10 +43,10 @@ function Get-AzureadResources {
             Mandatory = $true
         )]
         [System.String]
-        $Azureadresource
+        $AzureadResource
     )
 
-    switch ($Azureadresource) {
+    switch ($AzureadResource) {
 
         'azuread_application' {
             return Get-AzADApplication

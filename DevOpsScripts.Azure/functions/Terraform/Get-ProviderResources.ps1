@@ -49,10 +49,17 @@ function Get-ProviderResources {
         { $ProviderResource -like "azurerm_*" } { 
             return Get-AzurermResources -AzurermResource $ProviderResource
         }
+        
 
         { $ProviderResource -like "azuread_*" } { 
             return Get-AzureadResources -AzureadResource $ProviderResource
         }
+
+
+        { $ProviderResource -like "kubernetes_*" } { 
+            return Get-KubernetesResources -KubernetesResource $ProviderResource
+        }
+
 
         Default {
             throw "'$ProviderResource' not supported!"

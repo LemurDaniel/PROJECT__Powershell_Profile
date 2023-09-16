@@ -83,7 +83,7 @@ function Select-K8SResource {
             Mandatory = $true,
             Position = 1
         )]
-        [ValidateSet('EQ', 'LIKE')]
+        [ValidateSet('EQ', 'NE', 'LIKE')]
         [System.String]
         $Filter,
 
@@ -121,6 +121,11 @@ function Select-K8SResource {
 
             EQ { 
                 if ($attributeValue -EQ $Value) {
+                    $Selection += $resource
+                }
+            }
+            NE { 
+                if ($attributeValue -NE $Value) {
                     $Selection += $resource
                 }
             }

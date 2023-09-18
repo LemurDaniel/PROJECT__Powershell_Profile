@@ -3028,7 +3028,7 @@
     "title": "kubernetes_cluster",
     "slug": "kubernetes_cluster",
     "subcategory": "Container",
-    "azureType": null
+    "azureType": "Microsoft.ContainerService/ManagedClusters"
   },
   {
     "id": "2858294",
@@ -3252,7 +3252,7 @@
     "title": "linux_function_app",
     "slug": "linux_function_app",
     "subcategory": "App Service (Web Apps)",
-    "azureType": null
+    "azureType": "Microsoft.Web/sites"
   },
   {
     "id": "2858326",
@@ -3266,14 +3266,14 @@
     "title": "linux_virtual_machine",
     "slug": "linux_virtual_machine",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/virtualMachine"
   },
   {
     "id": "2858328",
     "title": "linux_virtual_machine_scale_set",
     "slug": "linux_virtual_machine_scale_set",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/virtualMachineScaleSets"
   },
   {
     "id": "2858329",
@@ -4645,21 +4645,21 @@
     "title": "orbital_contact",
     "slug": "orbital_contact",
     "subcategory": "Orbital",
-    "azureType": null
+    "azureType": "Microsoft.Orbital/spacecrafts"
   },
   {
     "id": "2858525",
     "title": "orbital_contact_profile",
     "slug": "orbital_contact_profile",
     "subcategory": "Orbital",
-    "azureType": null
+    "azureType": "Microsoft.Orbital/contactProfiles"
   },
   {
     "id": "2858526",
     "title": "orbital_spacecraft",
     "slug": "orbital_spacecraft",
     "subcategory": "Orbital",
-    "azureType": null
+    "azureType": "Microsoft.Orbital/spacecrafts"
   },
   {
     "id": "2858527",
@@ -5583,7 +5583,7 @@
     "title": "servicebus_namespace",
     "slug": "servicebus_namespace",
     "subcategory": "Messaging",
-    "azureType": null
+    "azureType": "Microsoft.ServiceBus/Namespaces"
   },
   {
     "id": "2858662",
@@ -5611,7 +5611,7 @@
     "title": "servicebus_queue",
     "slug": "servicebus_queue",
     "subcategory": "Messaging",
-    "azureType": null
+    "azureType": "Microsoft.ServiceBus/namespaces"
   },
   {
     "id": "2858666",
@@ -5667,7 +5667,7 @@
     "title": "service_plan",
     "slug": "service_plan",
     "subcategory": "App Service (Web Apps)",
-    "azureType": null
+    "azureType": "Microsoft.Web/serverfarms"
   },
   {
     "id": "2858671",
@@ -5821,7 +5821,7 @@
     "title": "snapshot",
     "slug": "snapshot",
     "subcategory": "Compute",
-    "azureType": "icrosoft.Compute/snapshots"
+    "azureType": "Microsoft.Compute/snapshots"
   },
   {
     "id": "2858693",
@@ -6024,7 +6024,7 @@
     "title": "sql_database",
     "slug": "sql_database",
     "subcategory": "Database",
-    "azureType": null
+    "azureType": "Microsoft.Sql/servers/databases"
   },
   {
     "id": "2858722",
@@ -6080,7 +6080,7 @@
     "title": "sql_server",
     "slug": "sql_server",
     "subcategory": "Database",
-    "azureType": null
+    "azureType": "Microsoft.Sql/servers"
   },
   {
     "id": "2858730",
@@ -6864,7 +6864,7 @@
     "title": "virtual_machine",
     "slug": "virtual_machine",
     "subcategory": "Compute",
-    "azureType": "Microsoft.Compute/virtualMachines"
+    "azureType": "Microsoft.Compute/virtualMachine"
   },
   {
     "id": "2858842",
@@ -7109,7 +7109,7 @@
     "title": "windows_function_app",
     "slug": "windows_function_app",
     "subcategory": "App Service (Web Apps)",
-    "azureType": null
+    "azureType": "Microsoft.Web/sites"
   },
   {
     "id": "2858877",
@@ -7123,21 +7123,21 @@
     "title": "windows_virtual_machine",
     "slug": "windows_virtual_machine",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/virtualMachine"
   },
   {
     "id": "2858879",
     "title": "windows_virtual_machine_scale_set",
     "slug": "windows_virtual_machine_scale_set",
     "subcategory": "Compute",
-    "azureType": null
+    "azureType": "Microsoft.Compute/virtualMachineScaleSets"
   },
   {
     "id": "2858880",
     "title": "windows_web_app",
     "slug": "windows_web_app",
     "subcategory": "App Service (Web Apps)",
-    "azureType": null
+    "azureType": "Microsoft.Web/sites"
   },
   {
     "id": "2858881",

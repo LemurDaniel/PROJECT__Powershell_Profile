@@ -83,11 +83,17 @@ function Read-UserInput {
         # Only return user input, also if empty. Disregard placeholder.
         [Parameter()]
         [switch]
-        $OnlyUserinput
+        $OnlyUserinput,
+
+        # Marks this input as required. Similar to setting minimum above 0, but with different Error-Display.
+        [Parameter()]
+        [switch]
+        $Required
     )
 
     $Prompt = $Prompt.TrimEnd() + " "
     $Placeholder = $Placeholder.Trim()
+    $ErrorMessage = ""
     $UserInput = ""
     $CursorOffset = 0 # Offset cursor from left to right
     try {
@@ -134,6 +140,11 @@ function Read-UserInput {
                 )
             }
 
+            if($ErrorMessage) {
+                Write-Host -ForegroundColor Red -NoNewline " $ErrorMessage"
+                $ErrorMessage = $null
+            }
+
             # That the Cursor visible again as user input is now expected.
             [System.Console]::CursorVisible = $true
  
@@ -176,10 +187,6 @@ function Read-UserInput {
                     break
                 }
 
-                { $null -EQ [System.ConsoleKey]::Enter } {
-                    break
-                }
-
                 # Anything thats an actual character
                 { ![System.Char]::IsControl($_.KeyChar) } {
 
@@ -201,12 +208,33 @@ function Read-UserInput {
                     break
                 }
 
+
+                { $_.Key -EQ [System.ConsoleKey]::Enter } {
+
+                    $returnValue = [System.String]::IsNullOrEmpty($UserInput) -AND !$OnlyUserinput ? $Placeholder : $UserInput
+
+                    if($Required -AND [System.String]::isNullOrEmpty($UserInput)) {
+                        $ErrorMessage = "Input is required"
+                    }
+
+                    elseif ($returnValue.Length -LT $Minimum) {
+                        $ErrorMessage = "At least '$Minimum'-Characters required!"
+                    }
+
+                    else {
+                        # Return value from Method if everything is correct
+                        return $AsSecureString -AND $returnValue.length -GT 0 ? ($returnValue | ConvertTo-SecureString -AsPlainText) : $returnValue
+                    }
+
+                    break
+                }
+
                 # Disregard any other inputs.
                 default {}
 
             }
 
-        } while ($keyEvent.Key -ne [System.ConsoleKey]::Enter)
+        } while ($keyEvent.Key -ne [System.ConsoleKey]::Escape)
     }
     finally {
         # Make sure to always leave in any case function with a visible cursor again.
@@ -215,11 +243,4 @@ function Read-UserInput {
     }
 
 
-    $returnValue = [System.String]::IsNullOrEmpty($UserInput) -AND !$OnlyUserinput ? $Placeholder : $UserInput
-
-    if ($returnValue.Length -LT $Minimum) {
-        throw "Input length must be at least '$Minimum'-Characters."
-    }
-
-    return $AsSecureString -AND $returnValue.length -GT 0 ? ($returnValue | ConvertTo-SecureString -AsPlainText) : $returnValue
 }

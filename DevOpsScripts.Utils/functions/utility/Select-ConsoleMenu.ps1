@@ -84,7 +84,8 @@ Function Select-ConsoleMenu {
         do {
             [System.Console]::CursorTop = 0
             [System.Console]::CursorVisible = $false
-            [System.Console]::Clear()
+            # [System.Console]::Clear()
+            Clear-Host
           
             Write-Host -ForegroundColor Magenta ("**$($Description.trim() -replace '_+', ' ')**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
 
@@ -136,7 +137,7 @@ Function Select-ConsoleMenu {
             if ($totalCountOfPages -gt 0) {
                 Write-Host
                 #Write-Host -NoNewline "Page " 
-                Write-Host -NoNewline -BackgroundColor white "$($currentPage+1)/$totalCountOfPages"
+                Write-Host -NoNewline -ForegroundColor Black -BackgroundColor white "$($currentPage+1)/$totalCountOfPages"
             }
     
             if ($searchString.Length -gt 0) {

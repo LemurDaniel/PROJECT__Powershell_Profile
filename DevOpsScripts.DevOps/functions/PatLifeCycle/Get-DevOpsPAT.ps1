@@ -146,7 +146,8 @@ function Get-DevOpsPAT {
         $null = New-Item -ItemType Directory -Path $Path
     }
 
-    $Path = Get-Item -Path $Path | Select-Object -ExpandProperty FullName
+    # Doesn't find hidden directories
+    # $Path = Get-Item -Path $Path | Select-Object -ExpandProperty FullName
 
     # Convert all data to an identifier. For the same parameter inputs, the same pat will be retrieved
     $bytes = [System.Text.Encoding]::GetEncoding('UTF-8').GetBytes(@(

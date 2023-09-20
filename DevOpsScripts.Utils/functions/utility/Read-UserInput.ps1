@@ -31,9 +31,22 @@
 
     .EXAMPLE
 
-     Read user input with a prompt and a placeholder value as a SecureString:
+    Read user input with a prompt and a placeholder value as a SecureString:
 
     PS> Read-UserInput -Prompt "Enter a Value:" -Placeholder "default-bla-bla" -AsSecureString
+
+    .EXAMPLE
+
+    Read user input with a prompt and a placeholder value as a SecureString:
+
+    PS> $readUserInputOptions = @{
+            Prompt = "Enter a Tenant ID: "
+            Matches = @{
+                "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$" = "Must be a valid GUID!"
+            }
+        }
+
+    PS> Read-UserInput @readUserInputOptions
 
 #>
 
@@ -55,6 +68,9 @@ function Read-UserInput {
         [System.String]
         $Placeholder,
 
+
+
+
         # The maximum input length. Defaults to a high value.
         [Parameter(
             Mandatory = $false
@@ -62,23 +78,32 @@ function Read-UserInput {
         [System.String]
         $Maximum = [System.Int32]::MaxValue,
 
-        
-        # The minum input length. Defaults to 0.
+        # The minimum input length. Defaults to 0.
         [Parameter(
             Mandatory = $false
         )]
         [System.String]
         $Minimum = 0,
 
+        # A map of regex-matches (keys) and error-messages (values).
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Collections.Hashtable]
+        $Matches = @{},
+
+
         # A passwordlike field returning a secure string.
         [Parameter()]
         [switch]
         $AsSecureString,
 
+
         # A Foregroundcolor for the text prompt.
         [Parameter()]
         [System.ConsoleColor]
         $Foregroundcolor = [System.ConsoleColor]::White,
+
 
         # Only return user input, also if empty. Disregard placeholder.
         [Parameter()]
@@ -140,7 +165,7 @@ function Read-UserInput {
                 )
             }
 
-            if($ErrorMessage) {
+            if ($ErrorMessage) {
                 Write-Host -ForegroundColor Red -NoNewline " $ErrorMessage"
                 $ErrorMessage = $null
             }
@@ -213,17 +238,27 @@ function Read-UserInput {
 
                     $returnValue = [System.String]::IsNullOrEmpty($UserInput) -AND !$OnlyUserinput ? $Placeholder : $UserInput
 
-                    if($Required -AND [System.String]::isNullOrEmpty($UserInput)) {
-                        $ErrorMessage = "Input is required"
+                    foreach ($match in $Matches.GetEnumerator()) {
+                        if (![regex]::Match($returnValue, $match.Name).Success) {
+                            $ErrorMessage = $match.Value
+                        }
                     }
 
-                    elseif ($returnValue.Length -LT $Minimum) {
-                        $ErrorMessage = "At least '$Minimum'-Characters required!"
-                    }
 
-                    else {
-                        # Return value from Method if everything is correct
-                        return $AsSecureString -AND $returnValue.length -GT 0 ? ($returnValue | ConvertTo-SecureString -AsPlainText) : $returnValue
+                    if ([System.String]::isNullOrEmpty($ErrorMessage)) {
+                        if ($Required -AND [System.String]::isNullOrEmpty($returnValue)) {
+                            $ErrorMessage = "Input is required"
+                            break
+                        }
+
+                        elseif ($returnValue.Length -LT $Minimum) {
+                            $ErrorMessage = "At least '$Minimum'-Characters required!"
+                        }
+
+                        else {
+                            # Return value from Method if everything is correct
+                            return $AsSecureString -AND $returnValue.length -GT 0 ? ($returnValue | ConvertTo-SecureString -AsPlainText) : $returnValue
+                        }
                     }
 
                     break

@@ -57,34 +57,47 @@ function Test-AzLogin {
 
         [Parameter()]
         [switch]
-        $AutoLogin
+        $AutoLogin,
+
+        [Parameter()]
+        [switch]
+        $UseDeviceAuthentication
     )
 
     $token = $null
     $expired = $false
 
     if ($Tool -EQ 'AzPowerShell') {
-        try {
-            if ($TenantId) {
-                $token = Get-AzAccessToken -TenantId $TenantId
-            }
-            else {
-                $token = Get-AzAccessToken
-            }
+
+        if ($TenantId) {
+            $token = Get-AzAccessToken -TenantId $TenantId -ErrorAction SilentlyContinue
         }
-        catch {}
+        else {
+            $token = Get-AzAccessToken  -ErrorAction SilentlyContinue
+        }
+      
 
         $expired = $null -EQ $token -OR $token.ExpiresOn.UtcDateTime -LT [DateTime]::Now.ToUniversalTime()
-        if (!$expired -AND $AutoLogin) {
-            if ($TenantId) {
-                Connect-AzAccount -TenantId $TenantId
-                $token = Get-AzAccessToken -TenantId $TenantId
-            }
-            else {
-                Connect-AzAccount
-                $token = Get-AzAccessToken
-            }
+        if(!$expired) {
+            return $token
         }
+        elseif(!$AutoLogin) {
+            return $false
+        }
+
+
+        if($UseDeviceAuthentication) {
+            Write-Host -ForegroundColor Yellow "https://microsoft.com/devicelogin"
+        }
+        if ($TenantId) {
+            Connect-AzAccount -TenantId $TenantId -UseDeviceAuthentication:$UseDeviceAuthentication
+            $token = Get-AzAccessToken -TenantId $TenantId
+        }
+        else {
+            Connect-AzAccount -UseDeviceAuthentication:$UseDeviceAuthentication
+            $token = Get-AzAccessToken
+        }
+     
     }
 
     if ($Tool -EQ 'AzCLI') {
@@ -96,18 +109,32 @@ function Test-AzLogin {
         }
 
         $expired = $null -EQ $token -OR [DateTime]::parse($token.ExpiresOn) -LT [DateTime]::Now.ToUniversalTime()
-        if (!$expired -AND $AutoLogin) {
-            if ($TenantId) {
-                az login --tenant $TenantId
-                $token = az account get-access-token --tenant $TenantId 2>$null | ConvertFrom-Json -Depth 4
-            }
-            else {
-                az login
-                $token = az account get-access-token 2>$null | ConvertFrom-Json -Depth 4
-            }
+        if(!$expired) {
+            return $token
         }
+        elseif(!$AutoLogin) {
+            return $false
+        }
+
+        $loginOptions = @()
+        if($UseDeviceAuthentication) {
+            $loginOptions += "--use-device-code"
+        }   
+        if($tenantId) {
+            $loginOptions += "--tenant"
+            $loginOptions += $TenantId
+        }
+
+        az login $loginOptions
+        if ($TenantId) {
+            $token = az account get-access-token --tenant $TenantId 2>$null | ConvertFrom-Json -Depth 4
+        }
+        else {
+            $token = az account get-access-token 2>$null | ConvertFrom-Json -Depth 4
+        }
+
     }
 
 
-    return $expired ? $false : $token
+    return $token
 }

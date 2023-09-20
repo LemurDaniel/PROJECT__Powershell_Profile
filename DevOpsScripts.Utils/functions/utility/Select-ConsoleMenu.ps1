@@ -50,7 +50,7 @@ Function Select-ConsoleMenu {
             Mandatory = $false
         )]
         [System.String]
-        $Property,
+        $Property = 'display',
 
         [Parameter(
             Mandatory = $false
@@ -61,7 +61,7 @@ Function Select-ConsoleMenu {
 
     $SelectionOptions = $Options | ForEach-Object {
         return @{
-            name        = $PSBoundParameters.ContainsKey('Property') ? ($_."$Property") : $_
+            name        = $_.GetType().BaseType -is [System.Object] ? ($_."$Property") : $_
             returnValue = $_
         }
     }

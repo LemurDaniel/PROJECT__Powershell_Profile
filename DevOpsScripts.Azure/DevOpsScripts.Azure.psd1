@@ -73,10 +73,11 @@ FunctionsToExport = 'Backup-AzTables', 'Connect-AzTenant',
                'Get-NonCompliantRoleAssignments', 'Invoke-AzureRest', 
                'Restore-AzTables', 'Test-AzLogin', 'Get-AKScredentials', 
                'Get-AzContextsWrapper', 'Get-K8SClusterResources', 'Get-K8SContexts', 
-               'Get-K8SResourceKind', 'Get-K8SResources', 'Invoke-K8SExec', 
-               'Read-K8SLogs', 'Select-K8SLabels', 'Select-K8SResource', 
-               'Show-K8SResource', 'Switch-K8SCluster', 'Switch-K8SNamespace', 
-               'Backup-AzState', 'Get-AzResourceGraphChangesCreate', 
+               'Get-K8SKindPropertyTree', 'Get-K8SResourceKind', 'Get-K8SResources', 
+               'Invoke-K8SExec', 'Read-K8SLogs', 'Select-K8SLabels', 
+               'Select-K8SResource', 'Show-K8SExplanation', 'Show-K8SResource', 
+               'Switch-K8SCluster', 'Switch-K8SNamespace', 'Backup-AzState', 
+               'Get-AzResourceGraphChangesCreate', 
                'Get-AzResourceGraphChangesDelete', 
                'Get-AzResourceGraphChangesUpdate', 'Search-AzFunctionApp', 
                'Search-AzFunctionAppSettings', 'Search-AzResource', 
@@ -106,8 +107,9 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'k8s-exec', 'k8s-logs', 'k8s-describe', 'k8s-cluster', 'k8s-ns', 'FAConf', 
-               'STCtx', 'tf-azimport', 'staterm', 'pim', 'pimDeactivate'
+AliasesToExport = 'k8s-exec', 'k8s-logs', 'k8s-explain', 'k8s-expl', 'k8s-describe', 
+               'k8s-cluster', 'k8s-ns', 'FAConf', 'STCtx', 'tf-azimport', 'staterm', 'pim', 
+               'pimDeactivate'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

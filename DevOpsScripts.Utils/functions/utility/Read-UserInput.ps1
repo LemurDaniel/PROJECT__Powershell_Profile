@@ -35,6 +35,20 @@
 
     PS> Read-UserInput -Prompt "Enter a Value:" -Placeholder "default-bla-bla" -AsSecureString
 
+
+    .EXAMPLE
+
+    Read user input with a prompt and a placeholder value as a SecureString:
+
+    PS> $readUserInputOptions = @{
+            Prompt = "Enter a Tenant ID: "
+            Matches = @{
+                "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$" = "Must be a valid GUID!"
+            }
+        }
+        
+    PS> Read-UserInput @readUserInputOptions
+
 #>
 
 

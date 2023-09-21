@@ -31,22 +31,9 @@
 
     .EXAMPLE
 
-    Read user input with a prompt and a placeholder value as a SecureString:
+     Read user input with a prompt and a placeholder value as a SecureString:
 
     PS> Read-UserInput -Prompt "Enter a Value:" -Placeholder "default-bla-bla" -AsSecureString
-
-    .EXAMPLE
-
-    Read user input with a prompt and a placeholder value as a SecureString:
-
-    PS> $readUserInputOptions = @{
-            Prompt = "Enter a Tenant ID: "
-            Matches = @{
-                "^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$" = "Must be a valid GUID!"
-            }
-        }
-
-    PS> Read-UserInput @readUserInputOptions
 
 #>
 
@@ -167,7 +154,6 @@ function Read-UserInput {
 
             if ($ErrorMessage) {
                 Write-Host -ForegroundColor Red -NoNewline " $ErrorMessage"
-                $ErrorMessage = $null
             }
 
             # That the Cursor visible again as user input is now expected.
@@ -182,6 +168,12 @@ function Read-UserInput {
                 }
 
                 { $_.Key -EQ [System.ConsoleKey]::Backspace } {
+
+                    if($ErrorMessage) {
+                        # If an error message is displayed, clear the message.
+                        $ErrorMessage = $null
+                        break
+                    }
 
                     if ($CursorOffset -EQ 0) {
                         break # Ignore backspace when Cursor position is at start of userinput.
@@ -202,20 +194,22 @@ function Read-UserInput {
                 }
 
                 { $_.Key -EQ [System.ConsoleKey]::RightArrow } {
-                    #Write-Host $CursorOffset
                     $CursorOffset = [System.Math]::Min($UserInput.Length, $CursorOffset + 1)
+                    $ErrorMessage = $null
                     break
                 }
 
                 { $_.Key -EQ [System.ConsoleKey]::LeftArrow } {
                     $CursorOffset = [System.Math]::Max(0, $CursorOffset - 1)
+                    $ErrorMessage = $null
                     break
                 }
 
                 # Anything thats an actual character
                 { ![System.Char]::IsControl($_.KeyChar) } {
 
-                    if ($UserInput.Length -GT $Maximum) {
+                    if ($UserInput.Length -EQ $Maximum) {
+                        $ErrorMessage = "Maximaly '$Maximum'-Characters allowed!"
                         break # Ignore when max-length is reached
                     }
 
@@ -253,6 +247,10 @@ function Read-UserInput {
 
                         elseif ($returnValue.Length -LT $Minimum) {
                             $ErrorMessage = "At least '$Minimum'-Characters required!"
+                        }
+
+                        elseif ($returnValue.Length -GT $Maximum) {
+                            $ErrorMessage = "Maximaly '$Maximum'-Characters allowed!"
                         }
 
                         else {

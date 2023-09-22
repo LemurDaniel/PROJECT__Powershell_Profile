@@ -73,7 +73,7 @@ FunctionsToExport = 'Install-Software', 'New-TerraformReadmeLoro', 'Prompt', 'Pu
                'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
                'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
                'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
-               'Clone-Repository', 'Open-Repository', 'Convert-SecretObject', 
+               'Invoke-GitClone', 'Open-Repository', 'Convert-SecretObject', 
                'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
                'Set-VersionActiveTF', 'Update-SecretStore', 'Start-Fireworks', 
                'Start-GenericGameLoop', 'Start-InvadersGame', 'Start-SnakeGame', 

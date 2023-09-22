@@ -73,13 +73,13 @@ FunctionsToExport = 'Install-Software', 'New-TerraformReadmeLoro', 'Prompt', 'Pu
                'Get-DallEFromJoke', 'Get-OpenAIAPIAuthentication', 
                'Invoke-DalleRequest', 'Invoke-OpenAICompletion', 
                'Invoke-OpenAIImageGeneration', 'Invoke-OpenAIMoodToColor', 
-               'Convert-SecretObject', 'Get-SecretFromStore', 'Get-SecretsFromStore', 
-               'Get-SecretStore', 'Set-VersionActiveTF', 'Update-SecretStore', 
-               'Start-Fireworks', 'Start-GenericGameLoop', 'Start-InvadersGame', 
-               'Start-SnakeGame', 'New-TetrisGame', 'Get-BlenderFiles', 
-               'Open-BlenderFile', 'Get-DailyMsRewards', 'Get-MsRewards', 
-               'Get-ScrambledText', 'Switch-Terraform', 'New-WindowBindings', 
-               'New-WindowWPF'
+               'Clone-Repository', 'Open-Repository', 'Convert-SecretObject', 
+               'Get-SecretFromStore', 'Get-SecretsFromStore', 'Get-SecretStore', 
+               'Set-VersionActiveTF', 'Update-SecretStore', 'Start-Fireworks', 
+               'Start-GenericGameLoop', 'Start-InvadersGame', 'Start-SnakeGame', 
+               'New-TetrisGame', 'Get-BlenderFiles', 'Open-BlenderFile', 
+               'Get-DailyMsRewards', 'Get-MsRewards', 'Get-ScrambledText', 
+               'Switch-Terraform', 'New-WindowBindings', 'New-WindowWPF'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -88,7 +88,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'openAiImage', 'moodToColor'
+AliasesToExport = 'openAiImage', 'moodToColor', 'git-clone', 'git-open'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

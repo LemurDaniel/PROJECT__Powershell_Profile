@@ -18,7 +18,7 @@
 #>
 
 
-function Clone-Repository {
+function Invoke-GitClone {
 
     [Alias('git-clone')]
     param (

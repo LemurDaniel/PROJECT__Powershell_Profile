@@ -118,6 +118,8 @@ function Open-GithubRepository {
         )]
         [ArgumentCompleter(
             {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
                 return (Get-CodeEditor -ListAvailable).Keys
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }

@@ -39,7 +39,7 @@
     .LINK
         
 #>
-function Open-RepositoryInBrowser {
+function Open-DevOpsRepositoryInBrowser {
 
     [Alias('repoBrowser')]
     [cmdletbinding(

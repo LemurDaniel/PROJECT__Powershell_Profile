@@ -30,7 +30,7 @@
     .LINK
         
 #>
-function Open-Repository {
+function Open-DevOpsRepository {
 
     [Alias('vc')]
     [cmdletbinding(
@@ -104,6 +104,8 @@ function Open-Repository {
         )]
         [ArgumentCompleter(
             {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+
                 return (Get-CodeEditor -ListAvailable).Keys
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }

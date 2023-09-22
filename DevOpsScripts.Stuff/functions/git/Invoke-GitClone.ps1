@@ -50,7 +50,7 @@ function Invoke-GitClone {
         $Directory,
 
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [ArgumentCompleter(
             {

@@ -53,37 +53,51 @@ function Get-DevOpsOrganizations {
         }
     }
 
-
-    
-    Get-AzTenant | ForEach-Object {
-
-        $tenantId = $_.id
-        $Request = @{
-            TenantId = $tenantId
-            Method   = 'GET'
-            Call     = 'None'
-            Domain   = 'app.vssps.visualstudio'
-            API      = '_apis/accounts?api-version=6.0'
-            Query    = @{
-                # Note the same user on each tenant has a different publicAlias and needs to be called for every tenant.
-                # TODO fix same problem in VsCode Extension
-                memberId = (Get-DevOpsUser).publicAliases."$tenantId"
+    $requestJobs = @()
+    foreach ($tenantId in (Get-AzTenant).Id) {
+        $requestJobs += Start-Job -ArgumentList $tenantId, ((Get-DevOpsUser).publicAliases."$tenantId") {
+            $tenantId = $args[0]
+            $memberId = $args[1]
+            $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $tenantId).Token 
+            $Request = @{        
+                Method  = "GET"      
+                Headers = @{            
+                    username       = $null        
+                    Authorization  = "Bearer $token"          
+                    'Content-Type' = 'application/x-www-form-urlencoded'      
+                }        
+                Uri     = "https://app.vssps.visualstudio.com/_apis/accounts?memberId=$memberId&api-version=7.0"
             }
-        }
-
-        $response = Invoke-DevOpsRest @Request  -ErrorAction SilentlyContinue 
-
-        if ($null -NE $response -OR $response.count -gt 0) {
-
-            $Organizations += $response | Select-Object -ExpandProperty value -ErrorAction SilentlyContinue
-            | ForEach-Object {
-                $_ | Add-Member NoteProperty isPATauthenticated $false
-                $_ | Add-Member NoteProperty tenantId $tenantId -PassThru
-                $_ | Add-Member NoteProperty publicAlias (Get-DevOpsUser).publicAliases."$tenantId"
+            try {
+                return Invoke-RestMethod @Request
+                | Select-Object -ExpandProperty value
+                | ForEach-Object {
+                    $_ | Add-Member NoteProperty isPATauthenticated $false
+                    $_ | Add-Member NoteProperty tenantId $tenantId -PassThru
+                    $_ | Add-Member NoteProperty publicAlias $memberId
+                }
             }
-
+            catch {
+                return @()
+            }
         }
     }
+
+    while ($requestJobs.Count -GT 0) {
+
+        $unfinished = @()
+        foreach ($job in $requestJobs) {
+            if ($job.state -EQ [System.Management.Automation.JobState]::Running) {
+                $unfinished += $job
+            }
+            else {
+                $Organizations += Receive-Job -Job $job
+            }
+        }
+        $requestJobs = $unfinished
+        Start-Sleep -Milliseconds 100
+    }
+
 
 
     if (($Organizations | Measure-Object).Count -eq 0) {

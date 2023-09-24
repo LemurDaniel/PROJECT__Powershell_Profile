@@ -53,22 +53,44 @@ function Get-DevOpsUser {
     $User = Invoke-DevOpsRest @Request
     $User | Add-Member NoteProperty publicAliases ([PSCustomObject]@{})
 
-    Get-AzTenant | ForEach-Object {
-        $Request = @{
-            TenantId = $_.Id
-            Method = 'GET'
-            Call   = 'None'
-            Domain = 'app.vssps.visualstudio'
-            API    = '_apis/profile/profiles/me?api-version=7.0'
-            Query  = @{
-                details = $false
+    $requestJobs = @()
+    foreach ($tenant in (Get-AzTenant)) {
+        $requestJobs += Start-Job -ArgumentList $tenant.Id {
+            $tenantId = $args[0]
+            $token = (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $tenantId).Token 
+            $Request = @{        
+                Method  = "GET"      
+                Headers = @{            
+                    username       = $null        
+                    Authorization  = "Bearer $token"          
+                    'Content-Type' = 'application/x-www-form-urlencoded'      
+                }        
+                Uri     = "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?details=False&api-version=7.0"
+            }
+            $response = Invoke-RestMethod @Request
+            return @{
+                publicAlias = $response.publicAlias
+                tenantId    = $tenantId
             }
         }
-        $publicAlias = Invoke-DevOpsRest @Request | Select-Object -ExpandProperty publicAlias
-        $User.publicAliases | Add-Member NoteProperty $_.id $publicAlias
     }
 
+    while ($requestJobs.Count -GT 0) {
 
+        $unfinished = @()
+        foreach ($job in $requestJobs) {
+            if ($job.state -EQ [System.Management.Automation.JobState]::Running) {
+                $unfinished += $job
+            }
+            else {
+                $data = Receive-Job -Job $job
+                $null = $User.publicAliases
+                | Add-Member NoteProperty $data.tenantId $data.publicAlias
+            }
+        }
+        $requestJobs = $unfinished
+        Start-Sleep -Milliseconds 100
+    }
 
 
     <#
@@ -97,6 +119,8 @@ function Get-DevOpsUser {
         $User | Add-Member NoteProperty GraphUser $graphUser -Force
     #>
 
-    $null = Set-UtilsCache -Object $User -Type User -Identifier 'devops' -Alive 1200
-    return Get-Property -Object $User -Property $Property
+    $User 
+    | Set-UtilsCache -Type User -Identifier 'devops' -Alive (24 * 60 * 7)
+    | Get-Property -Property $Property
+
 }

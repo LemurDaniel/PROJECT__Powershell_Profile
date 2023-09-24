@@ -90,6 +90,6 @@ function Get-DevOpsOrganizations {
         Throw "Couldnt find any DevOps Organizations associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
     }
 
-    return Set-UtilsCache -Object $Organizations -Type Organization -Identifier $Identifier
+    return Set-UtilsCache -Object $Organizations -Type Organization -Identifier $Identifier -Alive 1200
 
 }

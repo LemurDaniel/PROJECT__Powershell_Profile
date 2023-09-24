@@ -55,7 +55,13 @@ function Get-OrganizationInfo {
         $Refresh
     )
 
-    $OrganizationData = Get-AzureDevOpsCache -Type Project -Organization $Organization -Identifier 'all'
+    $devOpsCache = @{
+        Type         = "Project"
+        Organization = $Organization
+        identifier   = 'all'
+    }
+    $OrganizationData = Get-AzureDevOpsCache @devOpsCache
+
 
     if (!$OrganizationData -OR $Refresh) {
 
@@ -75,10 +81,9 @@ function Get-OrganizationInfo {
             Throw "Couldnt find any DevOps Projects associated with User: '$(Get-DevOpsUser 'displayName')' - '$(Get-DevOpsUser 'emailAddress')'"
         }
 
-        $OrganizationData | Add-Member -MemberType NoteProperty -Name projects -Value $projects
-
-        $OrganizationData = Set-AzureDevOpsCache -Object $OrganizationData -Type Project -Organization $Organization -Identifier 'all'
-
+        $OrganizationData = $OrganizationData 
+        | Add-Member -MemberType NoteProperty -Name projects -Value $projects -PassThru
+        | Set-AzureDevOpsCache @devOpsCache
     }
 
     return $OrganizationData

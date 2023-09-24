@@ -62,9 +62,9 @@ function Get-ProjectInfo {
                 param($cmd, $param, $wordToComplete)
                 $validValues = (Get-OrganizationInfo).projects.name
                 
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+                $validValues 
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
         [System.String]
@@ -83,7 +83,7 @@ function Get-ProjectInfo {
                 $object = Get-ProjectInfo -name $fakeBoundsParameters['Name']
                 $autoCompletePrefix = @()
 
-                if($wordToComplete.contains('.')){
+                if ($wordToComplete.contains('.')) {
                     # Won't work for thins like, 'System.Title' which is one Property with a dot in it.
                     $wordToComplete.split('.') | Select-Object -SkipLast 1 | ForEach-Object {
                         $autoCompletePrefix += $_
@@ -95,10 +95,9 @@ function Get-ProjectInfo {
                     $autoCompletePrefix.Length -eq 0 ? $_ : "$($autoCompletePrefix -join '.').$_"
                 }
                 
-                $validValues | `
-                    Where-Object {
-                        $_.toLower() -like ($wordToComplete.Length -lt 3 ? "$wordToComplete*" : "*$wordToComplete*").toLower() 
-                    } | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+                $validValues 
+                | Where-Object { $_.toLower() -like ($wordToComplete.Length -lt 3 ? "$wordToComplete*" : "*$wordToComplete*").toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
             }
         )]
         [System.String]
@@ -114,7 +113,13 @@ function Get-ProjectInfo {
     $ProjectName = ![System.String]::IsNullOrEmpty($Name) ? $Name : (Get-DevOpsContext -Project)
     $Organization = Get-DevOpsContext -Organization
 
-    $Cache = Get-AzureDevOpsCache -Type Project -Identifier $ProjectName
+    $devOpsCache = @{
+        Type         = "Project"
+        Organization = $Organization
+        identifier   = $ProjectName
+    }
+
+    $Cache = Get-AzureDevOpsCache @devOpsCache
     if (-not $Refresh -AND $Cache) {
         return $Cache | Get-Property -return $Property
     }
@@ -129,15 +134,10 @@ function Get-ProjectInfo {
         Property = 'value'
     }
 
-    $project = (Invoke-DevOpsRest @RequestBlueprint -API '_apis/projects?api-version=6.0') | Where-Object -Property name -EQ -Value $ProjectName 
-    if ($null -eq $project) {
-        Throw "Project '$ProjectName' was not found in Current Organization: '$Organization'"
-    }
-   
-
-    # Get Teams and Repositories associated with project.
-    $project = $project | `
-        Select-Object *, @{
+    $project = Get-OrganizationInfo -Organization horsch
+    | Select-Object -ExpandProperty projects 
+    | Where-Object -Property name -EQ -Value $ProjectName 
+    | Select-Object *, @{
         Name       = 'Teams'; 
         Expression = {  
             Invoke-DevOpsRest @RequestBlueprint -API "/_apis/projects/$($_.id)/teams?mine={true}&api-version=6.0" 
@@ -150,6 +150,9 @@ function Get-ProjectInfo {
         }
     }
 
+    if ($null -EQ $project) {
+        Throw "Project '$ProjectName' was not found in Current Organization: '$Organization'"
+    }
 
     # Location where to download repositories.
     $basePath = [System.String]::IsNullOrEmpty($env:GIT_RepositoryPath) ? "$env:USERPROFILE\git\repos" : $env:GIT_RepositoryPath
@@ -159,10 +162,15 @@ function Get-ProjectInfo {
     }
 
 
-    $project | Add-Member NoteProperty Projectpath $projectPath -Force
-    $project.repositories | ForEach-Object {
-        $_ | Add-Member NoteProperty Localpath (Join-Path "$projectPath" "$($_.name)") -Force
+    foreach ($repository in $project.repositories) {
+        $Localpath = Join-Path -Path $projectPath -ChildPath $repository.name
+        $repository | Add-Member NoteProperty Localpath $Localpath -Force
     }
 
-    return Set-AzureDevOpsCache -Object $Project -Type Project -Identifier $ProjectName | Get-Property -return $Property
+    $project 
+    | Add-Member NoteProperty Projectpath $projectPath -Force -PassThru
+    | Set-AzureDevOpsCache @devOpsCache
+    | Get-Property -return $Property
+
+    
 }

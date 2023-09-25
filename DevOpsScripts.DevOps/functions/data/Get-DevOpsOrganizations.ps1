@@ -56,7 +56,7 @@ function Get-DevOpsOrganizations {
 
 
     $Organizations += Get-AzTenant
-    | Select-Object -Property @{
+    | Select-Object -Property Id, @{
         Name       = "memberId"
         Expression = { 
             (Get-DevOpsUser).publicAliases."$($_.Id)" 
@@ -69,6 +69,7 @@ function Get-DevOpsOrganizations {
     }
     # Using powershell -parallel instead of manually creating background-jobs
     | ForEach-Object -AsJob -Parallel {
+        $tenantId = $_.Id
         $memberId = $_.memberId
         $token = $_.accessToken
         $Request = @{        

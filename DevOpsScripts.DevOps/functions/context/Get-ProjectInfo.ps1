@@ -134,7 +134,7 @@ function Get-ProjectInfo {
         Property = 'value'
     }
 
-    $project = Get-OrganizationInfo -Organization horsch
+    $project = Get-OrganizationInfo -Organization $Organization
     | Select-Object -ExpandProperty projects 
     | Where-Object -Property name -EQ -Value $ProjectName 
     | Select-Object *, @{

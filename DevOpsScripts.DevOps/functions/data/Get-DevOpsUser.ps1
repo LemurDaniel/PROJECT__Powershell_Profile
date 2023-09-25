@@ -51,41 +51,44 @@ function Get-DevOpsUser {
         }
     }
     $User = Invoke-DevOpsRest @Request
-    $User | Add-Member NoteProperty publicAliases ([PSCustomObject]@{})
 
-    $null = Get-AzTenant
-    | Select-Object -Property @{
-        Name       = "tenantId"
-        Expression = { $_.Id }
-    },
-    @{
-        Name       = "accessToken"
-        Expression = { 
-            (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $_.Id).Token 
+    <#
+        $User | Add-Member NoteProperty publicAliases ([PSCustomObject]@{})
+
+        $null = Get-AzTenant
+        | Select-Object -Property @{
+            Name       = "tenantId"
+            Expression = { $_.Id }
+        },
+        @{
+            Name       = "accessToken"
+            Expression = { 
+                (Get-AzAccessToken -ResourceUrl '499b84ac-1321-427f-aa17-267ca6975798' -TenantId $_.Id).Token 
+            }
         }
-    }
-    # Using powershell -parallel instead of manually creating background-jobs
-    | ForEach-Object -AsJob -Parallel {
-        $token = $_.accessToken
-        $Request = @{        
-            Method  = "GET"      
-            Headers = @{            
-                username       = $null        
-                Authorization  = "Bearer $token"          
-                'Content-Type' = 'application/x-www-form-urlencoded'      
-            }        
-            Uri     = "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?details=False&api-version=7.0"
+        # Using powershell -parallel instead of manually creating background-jobs
+        | ForEach-Object -AsJob -Parallel {
+            $token = $_.accessToken
+            $Request = @{        
+                Method  = "GET"      
+                Headers = @{            
+                    username       = $null        
+                    Authorization  = "Bearer $token"          
+                    'Content-Type' = 'application/x-www-form-urlencoded'      
+                }        
+                Uri     = "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?details=False&api-version=7.0"
+            }
+            return @{
+                publicAlias = (Invoke-RestMethod @Request).publicAlias
+                tenantId    = $_.tenantId
+            }
         }
-        return @{
-            publicAlias = (Invoke-RestMethod @Request).publicAlias
-            tenantId    = $_.tenantId
+        | Wait-Job | Receive-Job
+        | ForEach-Object {
+            $User.publicAliases
+            | Add-Member NoteProperty $_.tenantId $_.publicAlias
         }
-    }
-    | Wait-Job | Receive-Job
-    | ForEach-Object {
-        $User.publicAliases
-        | Add-Member NoteProperty $_.tenantId $_.publicAlias
-    }
+    #>
 
     <#
         $Request = @{

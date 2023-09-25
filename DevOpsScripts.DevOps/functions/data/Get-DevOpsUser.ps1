@@ -65,7 +65,7 @@ function Get-DevOpsUser {
         }
     }
     # Using powershell -parallel instead of manually creating background-jobs
-    | ForEach-Object -Parallel {
+    | ForEach-Object -AsJob -Parallel {
         $token = $_.accessToken
         $Request = @{        
             Method  = "GET"      
@@ -81,6 +81,7 @@ function Get-DevOpsUser {
             tenantId    = $_.tenantId
         }
     }
+    | Wait-Job | Receive-Job
     | ForEach-Object {
         $User.publicAliases
         | Add-Member NoteProperty $_.tenantId $_.publicAlias

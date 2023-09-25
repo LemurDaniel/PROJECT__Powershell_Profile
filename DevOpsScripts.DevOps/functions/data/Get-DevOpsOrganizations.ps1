@@ -68,7 +68,7 @@ function Get-DevOpsOrganizations {
         }
     }
     # Using powershell -parallel instead of manually creating background-jobs
-    | ForEach-Object -Parallel {
+    | ForEach-Object -AsJob -Parallel {
         $memberId = $_.memberId
         $token = $_.accessToken
         $Request = @{        
@@ -93,6 +93,7 @@ function Get-DevOpsOrganizations {
             return @()
         }
     }
+    | Wait-Job | Receive-Job
 
     <#
         $requestJobs = @()

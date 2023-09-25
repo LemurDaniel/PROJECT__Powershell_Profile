@@ -64,6 +64,7 @@ function Get-DevOpsOrganizations {
     }
     # Using powershell -parallel instead of manually creating background-jobs
     | ForEach-Object -AsJob -Parallel {
+        
         $tenantId = $_.Id
         $token = $_.accessToken
         $Request = @{        
@@ -78,6 +79,7 @@ function Get-DevOpsOrganizations {
         $publicAlias = Invoke-RestMethod @Request
         | Select-Object -ExpandProperty publicAlias
 
+
         $Request = @{        
             Method  = "GET"      
             Headers = @{            
@@ -87,13 +89,14 @@ function Get-DevOpsOrganizations {
             }        
             Uri     = "https://app.vssps.visualstudio.com/_apis/accounts?memberId=$publicAlias&api-version=7.0"
         }
+
         try {
             return Invoke-RestMethod @Request
             | Select-Object -ExpandProperty value
             | ForEach-Object {
                 $_ | Add-Member NoteProperty isPATauthenticated $false
                 $_ | Add-Member NoteProperty tenantId $tenantId -PassThru
-                $_ | Add-Member NoteProperty publicAlias $memberId
+                $_ | Add-Member NoteProperty publicAlias $publicAlias
             }
         }
         catch {

@@ -71,6 +71,8 @@ function Select-K8SLabels {
 
         foreach ($expression in $matchingExpressions) {
 
+            Write-Host $expression, $Resource.metadata.labels
+
             switch ($expression.operator) {
 
                 'In' { 

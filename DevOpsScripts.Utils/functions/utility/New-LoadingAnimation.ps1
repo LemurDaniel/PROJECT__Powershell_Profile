@@ -88,6 +88,7 @@ function Start-LoadingAnimation {
     $cumulatedOffset = 0
     $positions = @()
     Clear-Host
+
     while ($true) {
 
         switch ($kind) {
@@ -206,7 +207,7 @@ function Start-LoadingAnimation {
         }
 
 
-        if ($Job.State -NE [System.Management.Automation.JobState]::Running) {
+        if ($Job.State -NE [System.Management.Automation.JobState]::Running -AND $Job.State -NE [System.Management.Automation.JobState]::NotStarted) {
             return
         }
     }

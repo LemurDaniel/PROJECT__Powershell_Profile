@@ -80,8 +80,6 @@ function Start-LoadingAnimation {
                     $positionX = [System.Math]::Round([System.Math]::Cos($angle + $offsetAngle) * $Radius * 2)
                     $positionY = [System.Math]::Round([System.Math]::Sin($angle + $offsetAngle) * $Radius )
         
-                    $positionY = $positionY + ($positionY -GT 0 ? 0 : 0) 
-        
                     $cursorPositionY = [System.Math]::Round($windowHeight / 2) + $positionY - $offsetWindowY
                     $cursorPositionX = [System.Math]::Round($windowWidth / 2) + $positionX
         

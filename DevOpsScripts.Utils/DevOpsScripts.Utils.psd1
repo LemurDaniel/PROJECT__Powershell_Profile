@@ -79,15 +79,15 @@ FunctionsToExport = 'Get-Property', 'Join-PsObject', 'Search-In',
                'Remove-MovedBlocks', 'Set-Terraform', 'Add-CodeEditor', 
                'Clear-CodeEditor', 'Get-CodeEditor', 'New-LoadingAnimation', 
                'New-RandomBytes', 'Open-InCodeEditor', 'Read-UserInput', 
-               'Select-ConsoleMenu', 'Switch-DefaultCodeEditor', 'Test-IsRepository', 
-               'Edit-RegexOnFiles', 'Remove-InvisibleUnicode', 
-               'Format-SendGridContent', 'Format-SendGridResourceReport', 
-               'Send-SendGridEmail', 'New-SendGridHtmlFormat', 
-               'Get-K8SClusterResources', 'Get-K8SContexts', 
-               'Get-K8SKindPropertyTree', 'Get-K8SResourceKind', 'Get-K8SResources', 
-               'Invoke-K8SExec', 'Read-K8SLogs', 'Select-K8SLabels', 
-               'Select-K8SResource', 'Show-K8SExplanation', 'Show-K8SResource', 
-               'Switch-K8SCluster', 'Switch-K8SNamespace'
+               'Select-ConsoleMenu', 'Start-LoacdingBarAnimation', 
+               'Switch-DefaultCodeEditor', 'Test-IsRepository', 'Edit-RegexOnFiles', 
+               'Remove-InvisibleUnicode', 'Format-SendGridContent', 
+               'Format-SendGridResourceReport', 'Send-SendGridEmail', 
+               'New-SendGridHtmlFormat', 'Get-K8SClusterResources', 
+               'Get-K8SContexts', 'Get-K8SKindPropertyTree', 'Get-K8SResourceKind', 
+               'Get-K8SResources', 'Invoke-K8SExec', 'Read-K8SLogs', 
+               'Select-K8SLabels', 'Select-K8SResource', 'Show-K8SExplanation', 
+               'Show-K8SResource', 'Switch-K8SCluster', 'Switch-K8SNamespace'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

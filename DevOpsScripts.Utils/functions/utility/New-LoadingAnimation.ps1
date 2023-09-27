@@ -62,6 +62,37 @@ function Start-LoadingAnimation {
         [Parameter(
             Mandatory = $false
         )]
+        [System.Int32]
+        $BarLength,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Int32]
+        $BarWidth = 3,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Int32]
+        $OffsetX = 2,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Int32]
+        $OffsetY = 2,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $displayText = 'Deploying...',
+
+
+        [Parameter(
+            Mandatory = $false
+        )]
         [PSCustomObject]
         $DefaultParameters = @{
             Circle = @{
@@ -71,15 +102,10 @@ function Start-LoadingAnimation {
                 steps       = 16
             }
             Bar    = @{
-                length          = 50
-                width           = 3
-                offsetX         = 2
-                offsetY         = 2
                 segmentLength   = 3
                 segmentDistance = 9
                 segmentSteps    = 2
                 character       = '#'
-                displayText     = 'Deploying...'
             }
         }
     )

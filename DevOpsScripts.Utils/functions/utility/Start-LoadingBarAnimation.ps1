@@ -91,7 +91,6 @@ function Start-LoadingBarAnimation {
     Clear-Host
 
     while (
-        $true -OR
         $Job.State -NE [System.Management.Automation.JobState]::Running -AND 
         $Job.State -NE [System.Management.Automation.JobState]::NotStarted
     ) {

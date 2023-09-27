@@ -44,7 +44,7 @@
     PS> Start-LoadingAnimation Bar $Job
 #>
 
-function Start-LoadingAnimation {
+function Start-LoadingCircleAnimation {
 
     param(
         [Parameter(
@@ -58,38 +58,7 @@ function Start-LoadingAnimation {
         )]
         [System.Management.Automation.Job]
         $Job,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Int32]
-        $BarLength,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Int32]
-        $BarWidth = 3,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Int32]
-        $OffsetX = 2,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Int32]
-        $OffsetY = 2,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.String]
-        $displayText = 'Deploying...',
-
-
+        
         [Parameter(
             Mandatory = $false
         )]

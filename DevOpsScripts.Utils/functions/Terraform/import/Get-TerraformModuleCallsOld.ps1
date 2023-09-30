@@ -15,7 +15,7 @@
 #>
 
 
-function Get-TerraformModuleCalls {
+function Get-TerraformModuleCallsOld {
 
     param (
         # The path to the module
@@ -36,38 +36,42 @@ function Get-TerraformModuleCalls {
     $terraformFiles = Get-ChildItem -Path $Path -Filter "*.tf"
     $totalModuleCallPaths = @()
 
+    # Check all terraform files
     foreach ($file in $terraformFiles) {
 
         $fileData = Get-Content -Raw -Path $file.FullName
-
         if ($fileData.Length -EQ 0) {
             continue
         }
 
+        # Check all files for module-calls
         $moduleCalls = [regex]::Matches($fileData, 'module\s*"[^"]+"')
 
+        # Get the source filesystem path for each module call
         foreach ($module in $moduleCalls) {
             $source = [regex]::Match($fileData.Substring($module.Index), 'source\s*=\s*"[^"]+"')
             $source = [regex]::Match($source.Value, '"[^"]+"').Value -replace '"', ''
 
-            if($source -notlike ".*") { # not a path on filesystem
+            if ($source -notlike ".*") {
+                # not a path on filesystem
                 continue
             }
 
             $fsPath = Join-Path -Path $Path -ChildPath $source
             $fsPath = (Get-Item -Path $fsPath).FullName
 
+            # Get all defined resources at that file location
             $resources = Get-TerraformModuleResources -Path $fsPath
             
             $baseModulePath = $module.Value -replace '"+', '' -replace "\s+", '.'
             $baseModulePath = [System.String]::IsNullOrEmpty($ParentModule) ? $baseModulePath : "$ParentModule.$baseModulePath"
             $totalModuleCallPaths += [PSCustomObject]@{
-                modulePath = $baseModulePath
-                fsPath     = $fsPath
-                resources  = $resources
-                fullPaths  = $resources 
+                modulePath = $baseModulePath # path in terraform state
+                fsPath     = $fsPath # path in filesystem
+                resources  = $resources # terraform resources at path
+                fullPaths  = $resources # full module path for each resource
                 | ForEach-Object {
-                    "$baseModulePath.$_"
+                    [System.String]::IsNullOrEmpty($baseModulePath) ? $_ : "$baseModulePath.$_"
                 }
             }
             

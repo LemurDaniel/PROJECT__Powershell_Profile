@@ -24,25 +24,25 @@ function Get-TerraformModuleResources {
         $Path
     )
 
-    $Path = (Get-Item -Path $Path).FullName
+    $Path = Get-Item -Path $Path -ErrorAction SilentlyContinue
+    if($null -EQ $Path) {
+        return
+    }
 
-    $terraformFiles = Get-ChildItem -Path $Path -Filter "*.tf"
+    $terraformFiles = Get-ChildItem -Path $Path.FullName -Filter "*.tf"
+
     $totalResources = @()
-
     foreach ($file in $terraformFiles) {
 
         $fileData = Get-Content -Raw -Path $file.FullName
-
         if ($fileData.Length -EQ 0) {
             continue
         }
 
         $resourceDefinitions = [regex]::Matches($fileData, 'resource\s*"[^"]+"\s*"[^"]+"')
-
         foreach ($resource in $resourceDefinitions) {
             $totalResources += [regex]::Matches($resource.Value, '"[^"]+"').Value -join '.' -replace '"', ''
         }
-    
     }
 
     return $totalResources

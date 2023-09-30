@@ -29,7 +29,7 @@
 function New-TerraformAzureImportStatement {
 
     [CmdletBinding()]
-    [Alias('tf-azimport')]
+    [Alias('tf-import')]
     param (
         
         # The path to the module resource
@@ -43,6 +43,7 @@ function New-TerraformAzureImportStatement {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
                 $validValues = (Get-TerraformModuleCalls).fullPaths
+                | Where-Object -Property Length -GT 0
                 
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 

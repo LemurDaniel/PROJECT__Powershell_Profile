@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: [template_name]
+  labels: &selectorLabels
+    [template_selectors]
+  [template_namespace]
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels: *selectorLabels
+  template:
+    metadata:
+      labels: *selectorLabels
+
+    spec:
+    
+      [template_volume_definitions]
+
+      containers:
+        - name: [template_name]
+          image: [template_image]
+
+          ports:
+            - containerPort: 80
+              protocol: TCP
+
+          # Overwrite command
+          # command: []
+
+          # Mount volumes on paths
+          # volumeMounts:
+          #   - name: volume_name
+          #     mountPath: /var/mountpath
+          #     readOnly: true
+
+
+          # Define environment variables:
+          #envFrom:
+          #  - configMapRef:
+          #      name: configmap-name
+          #      optional: false
+          #
+          #  - secretRef:
+          #      name: secret-name
+          #      optional: false
+
+          env:
+            - name: name
+              value: value
+
+            # - name: secret_ref
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: environment_var_name
+            #       key: config_map_key
+
+            # - name: config_ref
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: environment_var_name
+            #       key: config_map_key

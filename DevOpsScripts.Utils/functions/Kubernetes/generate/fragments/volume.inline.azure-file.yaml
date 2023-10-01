@@ -1,0 +1,12 @@
+# Inline Volume mount for an fileshare in an Azure Storage Account
+# Note the Secret must containt:
+#   storageaccountname=""
+#   storageaccountkey=""
+volumes:
+  - name: [fragment_name] # Name of the volume
+    csi:
+      driver: file.csi.azure.com
+      readOnly: true
+      volumeAttributes:
+        secretName: fileshare-secret
+        shareName: # Name of the fileshare

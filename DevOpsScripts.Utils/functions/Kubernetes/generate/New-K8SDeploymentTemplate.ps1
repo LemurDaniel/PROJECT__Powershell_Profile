@@ -1,32 +1,40 @@
 
+<#
+    .SYNOPSIS
+    Interactivley ask user for input to create a deployment template
 
+    .DESCRIPTION
+    Interactivley ask user for input to create a deployment template
 
-# Function for quickly creating templates to expand on.
+    .INPUTS
+    None. You cannot Pipe values into the Function.
+
+    .OUTPUTS
+    The created template for use.
+
+#>
 
 function New-K8SDeploymentTemplate {
 
     param ()
 
-
-    $path = "C:\Users\Daniel\git\repos\GITHUB\LemurDaniel\LemurDaniel\PROJECT__Powershell_Profile\DevOpsScripts.Utils\functions\Kubernetes\generate"
-    
-    $templates = "$path/templates"
-    $fragments = "$path/fragments"
-
-
-
+    $spacing = 5
     $outputTemplates = @()
+    $templates = (Get-K8STemplateFiles).templates
+    $fragments = (Get-K8STemplateFiles).fragments
+
+
     Write-Host -ForegroundColor Magenta "Create a template deployment: "
 
-    $Name = Read-UserInput -Prompt      "   Name: "  -Required
-    $Namespace = Read-UserInput -Prompt "   Namespace: " -Placeholder "None"
-    $Selector = Read-UserInput -Prompt  "   Selector: " -Placeholder "name: $Name"
+    $Name = Read-UserInput "Name: " -i $spacing -Required
+    $Namespace = Read-UserInput "Namespace: " -i $spacing -Placeholder "None"
+    $Selector = Read-UserInput "Selector: " -i $spacing -Placeholder "name: $Name"
     $Namespace = $Namespace -NE 'None' ? "namespace: $Namespace" : ""
 
-    $Service = Read-UserOption -Prompt  "   Service: " -Options $("None", "ClusterIP", "LoadBalancer")
+    $Service = Read-UserOption "Service: " -i $spacing -Options $("None", "ClusterIP", "LoadBalancer")
     if ($Service -NE 'None') {
 
-        $serviceTemplate = Get-Content -Raw -Path "$templates/service.template.yaml"
+        $serviceTemplate = $templates["service"]
         $outputTemplates += $serviceTemplate `
             -replace "\[template_selectors\]", $Selector `
             -replace "\[template_namespace\]", $Namespace `
@@ -38,22 +46,21 @@ function New-K8SDeploymentTemplate {
     $Volume = $null
     $VolumeMounts = @()
     do {
-        $Volume = Read-UserOption -Prompt  "   Volumes: " -Options $("None", "Inline", "PVC") -NoNewLine
+        $Volume = Read-UserOption "Volumes: " -i $spacing -Options $("None", "Inline", "PVC") -NoNewLine
         if ($Volume -NE "None") {
-            $Options = Get-ChildItem -Path "$fragments" -Filter "volume.$Volume.*"
-            $Template = Read-UserOption -Prompt  "   Volumes: " -Options $Options.BaseName.split('.')[-1]
-            $Template = Get-Content -Raw -Path "$fragments/volume.$Volume.$Template.yaml"
-
-            $VolumeMounts += $Template -replace "\[fragment_name\]", "mount_name_$($VolumeMounts.Count)"
+            $Options = $fragments['volume'][$Volume]
+            $Selected = Read-UserOption -Prompt  "Volumes: " -i $spacing -Options $Options.keys
+            $VolumeMounts += $Options[$Selected] `
+                -replace "\[fragment_name\]", "mount_name_$($VolumeMounts.Count)"
         }
     } while ($Volume -NE 'None')
+
     $VolumeMounts = $VolumeMounts -join "`n" 
     $VolumeMounts = $VolumeMounts -split "`n"  
     $VolumeMounts = $VolumeMounts | ForEach-Object { "      $_" }
     $VolumeMounts = $VolumeMounts -join "`n" 
 
-    $deploymentTemplate = Get-Content -Raw -Path "$templates/deployment.template.yaml"
-    $outputTemplates += $deploymentTemplate `
+    $outputTemplates += $templates['deployment'] `
         -replace "\[template_selectors\]", $Selector `
         -replace "\[template_namespace\]", $Namespace `
         -replace "\[template_name\]", $Name `

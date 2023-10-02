@@ -25,6 +25,12 @@
 
     .EXAMPLE
 
+    Read user input with a prompt and a indentation:
+
+    PS> Read-UserInput -Prompt "Enter a Value:" -i 5 
+
+    .EXAMPLE
+
     Read user input with a prompt and a placeholder value:
 
     PS> Read-UserInput -Prompt "Enter a Value:" -Placeholder "default-bla-bla"
@@ -69,8 +75,13 @@ function Read-UserInput {
         [System.String]
         $Placeholder,
 
-
-
+        # Indentation for the prompt to display.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.int32]
+        [Alias('i')]
+        $Indendation = 0,
 
         # The maximum input length. Defaults to a high value.
         [Parameter(
@@ -117,11 +128,17 @@ function Read-UserInput {
         $Required
     )
 
-    $Prompt = $Prompt.TrimEnd() + " "
+    $prefix = ''
+    if ($Indendation -GT 0) {
+        $prefix = (0..$indendation | ForEach-Object { ' ' }) -join ''
+    }
+    $Prompt = $prefix + $Prompt.TrimEnd() + " "
+
     $Placeholder = $Placeholder.Trim()
     $ErrorMessage = ""
     $UserInput = ""
     $CursorOffset = 0 # Offset cursor from left to right
+    
     try {
         do {
 
@@ -183,7 +200,7 @@ function Read-UserInput {
 
                 { $_.Key -EQ [System.ConsoleKey]::Backspace } {
 
-                    if($ErrorMessage) {
+                    if ($ErrorMessage) {
                         # If an error message is displayed, clear the message.
                         $ErrorMessage = $null
                         break
@@ -238,6 +255,7 @@ function Read-UserInput {
                     }
 
                     $CursorOffset += 1
+                    $ErrorMessage = $null
                     break
                 }
 

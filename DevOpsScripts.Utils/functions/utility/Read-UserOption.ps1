@@ -13,11 +13,19 @@
     .OUTPUTS
     The selected option by the user.
 
+
     .EXAMPLE
 
     Present a simple prompt with two selections:
 
     Read-UserOption -Prompt "Confirm: "
+
+
+    .EXAMPLE
+
+    Present a simple prompt with two selections and an identation:
+
+    Read-UserOption -Prompt "Confirm: " -i 5
 
 #>
 
@@ -32,6 +40,14 @@ function Read-UserOption {
         [System.String]
         $Prompt,
 
+        # Indentation for the prompt to display.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.int32]
+        [Alias('i')]
+        $Indendation = 0,
+                
         # The Options to display for selection
         [Parameter(
             Mandatory = $false
@@ -53,6 +69,11 @@ function Read-UserOption {
     )
 
     try {
+        $prefix = ''
+        if ($Indendation -GT 0) {
+            $prefix = (0..$indendation | ForEach-Object { ' ' }) -join ''
+        }
+        $Prompt = $prefix + $Prompt.TrimEnd()
 
         $optionsSpacing = 2
         $optionsSpacing = (1..$optionsSpacing | ForEach-Object { ' ' }) -join ''

@@ -15,12 +15,16 @@ spec:
       labels: *selectorLabels
 
     spec:
+
+      # serviceAccountName: service_account_name
+
     
       [template_volume_definitions]
 
       containers:
         - name: [template_name]
           image: [template_image]
+          # workingDir: optional
 
           ports:
             - containerPort: 80
@@ -28,6 +32,16 @@ spec:
 
           # Overwrite command
           # command: []
+
+          # resources:
+          #   requests:
+          #     memory: "#Mi"
+          #     cpu: "#m"
+          #   limits:
+          #     memory: "#Mi"
+          #     cpu: "#m"
+
+
 
           # Mount volumes on paths
           # volumeMounts:

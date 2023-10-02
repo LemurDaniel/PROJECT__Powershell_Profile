@@ -1,0 +1,106 @@
+#
+#
+# Requires the nginx-Ingress controller to be installed:
+#
+# - https://github.com/kubernetes/ingress-nginx
+#
+#
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: [template_name]_no_target_rewrite
+  [template_namespace]
+
+  annotations:
+    # optional for auto creating certificates with cert-manger
+    # requires cert-manager to be installed
+    # cert-manager.io/issuer: 
+    # cert-manager.io/cluster-issuer:
+
+    ingress.kubernetes.io/ingress.class: [template_class_name]
+
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/rewrite-target: /$2
+
+spec:
+  # tls:
+  #   - hosts:
+  #       - domain.subdomain.com
+  #       - domain.subdomain.com
+  #     secretName: # tls-secret-name
+
+  ingressClassName: [template_class_name]
+  rules:
+    # # When using tls
+    # - host: domain.subdomain.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix # Prefix | Exact
+    #         backend: 
+    #           service:
+    #             name: # service_name
+    #             port:
+    #               number: 80
+ 
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix # Prefix | Exact
+            backend: 
+              service:
+                name: # service_name
+                port:
+                  number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: [template_name]_target_rewrite
+  [template_namespace]
+
+  annotations:
+    # optional for auto creating certificates with cert-manger
+    # requires cert-manager to be installed
+    # cert-manager.io/issuer: 
+    # cert-manager.io/cluster-issuer:
+
+    ingress.kubernetes.io/ingress.class: [template_class_name]
+
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+
+spec:
+  # tls:
+  #   - hosts:
+  #       - domain.subdomain.com
+  #       - domain.subdomain.com
+  #     secretName: # tls-secret-name
+
+  ingressClassName: [template_class_name]
+  rules:
+    # # When using tls
+    # - host: domain.subdomain.com
+    #   http:
+    #     paths:
+    #       - path: /some-api(/|$)(.*)
+    #         pathType: Prefix # Prefix | Exact
+    #         backend: 
+    #           service:
+    #             name: # service_name
+    #             port:
+    #               number: 80
+
+    - http:
+        paths:
+          - path: /some-api(/|$)(.*)
+            pathType: Prefix # Prefix | Exact
+            backend:
+              service:
+                name: # service_name
+                port:
+                  number: 80

@@ -20,9 +20,8 @@ function Get-K8STemplateFiles {
 
     $templates = [System.Collections.Hashtable]::new()
     $fragments = [System.Collections.Hashtable]::new()
-    $path = "C:\Users\dlandau\git\repos\GITHUB\LemurDaniel\LemurDaniel\PROJECT__Powershell_Profile\DevOpsScripts.Utils\functions\Kubernetes\generate"
- 
-    Get-ChildItem -Path "$path/fragments" 
+
+    Get-ChildItem -Path "$PSScriptRoot/fragments" 
     | ForEach-Object {
         $hashtable = $fragments
         $segments = $_.BaseName.split('.')
@@ -40,7 +39,7 @@ function Get-K8STemplateFiles {
         }
     }
 
-    Get-ChildItem -Path "$path/templates" 
+    Get-ChildItem -Path "$PSScriptRoot/templates" 
     | ForEach-Object {
         $hashtable = $templates
         $segments = $_.BaseName.split('.')

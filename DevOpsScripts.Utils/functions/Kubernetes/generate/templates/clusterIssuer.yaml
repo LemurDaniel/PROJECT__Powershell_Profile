@@ -1,0 +1,25 @@
+# Requires the cert-manager to be installed:
+#
+# - https://github.com/cert-manager/cert-manager
+#
+#
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: [template_name]
+spec:
+  acme:
+    # The ACME server URL
+    # https://acme-v02-staging.api.letsencrypt.org/directory  => testing, staging are not trusted by browsers
+    server: https://acme-v02.api.letsencrypt.org/directory
+
+    # email: none
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: # secret key ref to save generated certificate
+
+    # Enable the HTTP-01 challenge provider
+    solvers:
+      - http01:
+          ingress:
+            class: [template_class_name]

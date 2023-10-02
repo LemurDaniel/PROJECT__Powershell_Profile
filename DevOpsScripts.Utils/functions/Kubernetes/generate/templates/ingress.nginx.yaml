@@ -27,14 +27,14 @@ metadata:
 spec:
   # tls:
   #   - hosts:
-  #       - domain.subdomain.com
-  #       - domain.subdomain.com
+  #       - subdomain.domain.com
+  #       - subdomain.domain.com
   #     secretName: # tls-secret-name
 
   ingressClassName: [template_class_name]
   rules:
     # # When using tls
-    # - host: domain.subdomain.com
+    # - host: subdomain.domain.com
     #   http:
     #     paths:
     #       - path: /
@@ -77,14 +77,14 @@ metadata:
 spec:
   # tls:
   #   - hosts:
-  #       - domain.subdomain.com
-  #       - domain.subdomain.com
+  #       - subdomain.domain.com
+  #       - subdomain.domain.com
   #     secretName: # tls-secret-name
 
   ingressClassName: [template_class_name]
   rules:
     # # When using tls
-    # - host: domain.subdomain.com
+    # - host: subdomain.domain.com
     #   http:
     #     paths:
     #       - path: /some-api(/|$)(.*)

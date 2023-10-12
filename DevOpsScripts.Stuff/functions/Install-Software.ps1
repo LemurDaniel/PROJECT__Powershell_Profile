@@ -60,6 +60,8 @@ function Install-Software {
             "Docker.DockerDesktop",
             "Kubernetes.kubectl",
             "Notepad++.Notepad++",
+            "OBSProject.OBSStudio",
+            "Ultimaker.Cura",
             "Microsoft.Teams",
             "Microsoft.AzureCLI",
             "Microsoft.PowerBI",
@@ -67,13 +69,13 @@ function Install-Software {
             "Microsoft.VisualStudioCode",
             "Microsoft.VisualStudio.2022.Community",
             "Microsoft.SQLServerManagementStudio",
+            "Microsoft.Azure.FunctionsCoreTools"
             "Microsoft.Azure.StorageExplorer",
             "Microsoft.AzureDataStudio",
             "Microsoft.PowerShell",
             "OpenJS.NodeJS",
             "Microsoft.DotNet.SDK.7",
-            "VMware.WorkstationPlayer",
-            "Microsoft.Azure.FunctionsCoreTools"
+            "VMware.WorkstationPlayer"
         )
     )
 

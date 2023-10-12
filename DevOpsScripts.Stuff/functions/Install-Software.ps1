@@ -82,6 +82,7 @@ function Install-Software {
     ) {
         Write-Host -ForeGroundColor Magenta "Installing required Module 'Microsoft.WinGet.Client'"
         Install-Module -Name Microsoft.WinGet.Client -Repository PSGallery
+        Import-Module -Name Microsoft.WinGet.Client
 
         $null = Read-Host "...Continue"
     }

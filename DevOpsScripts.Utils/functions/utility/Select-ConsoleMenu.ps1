@@ -61,7 +61,7 @@ Function Select-ConsoleMenu {
 
     $SelectionOptions = $Options | ForEach-Object {
         return @{
-            name        = $_.GetType().BaseType -is [System.Object] ? ($_."$Property") : $_
+            name        = $_.GetType().BaseType -IS [System.ValueType] -OR $_.GetType().Name -EQ "String" ? $_ : ($_."$Property")
             returnValue = $_
         }
     }

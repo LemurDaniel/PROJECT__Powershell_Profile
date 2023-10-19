@@ -72,6 +72,7 @@ function Get-GithubRepositories {
     $Cache = Get-GithubCache -Identifier "repositories.$Context" -Account $Account
     if ($null -eq $Cache -OR $Refresh) {
        
+        $Account = (Get-GithubAccountContext -Account $Account).name
         if ($Context -eq (Get-GithubUser -Account $Account).login) {
             $Request = @{
                 Method      = 'GET'
@@ -89,7 +90,14 @@ function Get-GithubRepositories {
         }
 
         $gitRepositories = Invoke-GithubRest @Request -Account $Account
-        | Select-Object *, @{
+        | Select-Object *, 
+        @{
+            Name       = 'Account';
+            Expression = {
+                $Account
+            }
+        },
+        @{
             Name       = 'Context'; 
             Expression = { 
                 $_.owner.login 

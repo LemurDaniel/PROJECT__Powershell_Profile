@@ -26,25 +26,33 @@ function Invoke-GithubRest {
 
 
     [CmdletBinding(
-        SupportsShouldProcess = $true
+        SupportsShouldProcess = $true,
+        DefaultParameterSetName = "api"
     )]
     param(
         # The Rest-Method to use.
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true
+        )]
         [Microsoft.PowerShell.Commands.WebRequestMethod]
         $METHOD,
 
-        # The API-Domain, this will always be github in this case.
-        [Alias('Type')]
-        [Parameter()]
-        [System.String]
-        #[ValidateSet('api.github')]
-        $DOMAIN = 'github.loro.swiss/api/v3',
-
         # The API-Endpoint to call.
-        [Parameter()]
+        [Parameter(
+            Mandatory = $true,
+            ParameterSetName = "api"
+        )]
         [System.String]
         $API,
+
+
+        # Override with complete url
+        [Parameter(
+            ParameterSetName = "url"
+        )]
+        [System.String]
+        $URL,
+
 
         # Any Query-Parameters that are not specifed in the API-String
         [Parameter()]
@@ -60,6 +68,8 @@ function Invoke-GithubRest {
         [Parameter()]
         [switch]
         $AsArray,
+
+
 
         # When using scope Orgs.
         [parameter(
@@ -104,6 +114,8 @@ function Invoke-GithubRest {
         #    }
         #)]
         $Account,
+
+
 
         # The affiliation of requested resources. owner for example only returns repositories that you are owner of.
         [parameter()]
@@ -162,7 +174,7 @@ function Invoke-GithubRest {
             'X-GitHub-Api-Version' = $apiVersion
             Authorization          = "Bearer $PAT"
         }
-        uri    = "https://" + ([System.String]::Format("{0}/{1}?{2}", $AccountContext.domain, $APIEndpoint, $QueryString) -replace '/+', '/')
+        uri    = $PSBoundParameters.ContainsKey('URL') ? $URL : "https://" + ([System.String]::Format("{0}/{1}?{2}", $AccountContext.domain, $APIEndpoint, $QueryString) -replace '/+', '/')
         Body   = $bodyByteArray   
     }
 

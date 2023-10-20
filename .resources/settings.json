@@ -74,6 +74,7 @@
                 "adjustIndistinguishableColors": "indexed",
                 "colorScheme": "Campbell Powershell",
                 "commandline": "pwsh.exe",
+                "elevate": true,
                 "experimental.retroTerminalEffect": false,
                 "font": 
                 {
@@ -83,8 +84,10 @@
                 "guid": "{91c960b3-4b36-415e-807a-b10622487d21}",
                 "hidden": false,
                 "name": "PS 7",
+                "startingDirectory": "%USERPROFILE%/Desktop",
                 "suppressApplicationTitle": false,
-                "useAcrylic": true
+                "useAcrylic": true,
+                "useAtlasEngine": true
             },
             {
                 "connectionType": "{d9fcfdfa-a479-412c-83b7-c5640e61cd62}",

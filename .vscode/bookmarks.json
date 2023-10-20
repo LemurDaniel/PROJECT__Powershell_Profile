@@ -1,12 +1,22 @@
 {
 	"files": [
 		{
-			"path": "DevOpsScripts.Github/functions/New-GithubPullRequest.ps1",
+			"path": "DevOpsScripts.Github/functions/repos/New-GithubPullRequest.ps1",
 			"bookmarks": [
 				{
 					"line": 14,
 					"column": 0,
 					"label": "Update Examples"
+				}
+			]
+		},
+		{
+			"path": "DevOpsScripts.Github/functions/repos/New-GithubBranch.ps1",
+			"bookmarks": [
+				{
+					"line": 1,
+					"column": 0,
+					"label": "Update Documentation"
 				}
 			]
 		}

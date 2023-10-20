@@ -40,6 +40,7 @@
 function New-GithubPullRequest {
 
     [CmdletBinding()]
+    [Alias('git-pr')]
     param (
         [Parameter(
             Position = 3,
@@ -159,6 +160,7 @@ function New-GithubPullRequest {
                     Repository = $fakeBoundParameters['Repository']
                 }
                 $validValues = Get-GithubIssues @Source
+                | Where-Object -Property state -EQ open
                 | Select-Object -ExpandProperty title
 
                 $validValues 
@@ -188,10 +190,9 @@ function New-GithubPullRequest {
     )
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
-    $localPath = $repositoryData.LocalPath
 
     if ([System.String]::IsNullOrEmpty($Head)) {
-        $Head = git -C $localPath branch --show-current
+        $Head = git -C $repositoryData.LocalPath branch --show-current
     }
     if ([System.String]::IsNullOrEmpty($base)) {
         $Base = $repositoryData.default_branch

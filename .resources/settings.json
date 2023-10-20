@@ -1,7 +1,8 @@
 {
     "$help": "https://aka.ms/terminal-documentation",
     "$schema": "https://aka.ms/terminal-profiles-schema",
-    "actions": [
+    "actions": 
+    [
         {
             "command": "unbound",
             "keys": "ctrl+alt+8"
@@ -19,7 +20,8 @@
             "keys": "ctrl+alt+7"
         },
         {
-            "command": {
+            "command": 
+            {
                 "action": "splitPane",
                 "split": "auto",
                 "splitMode": "duplicate"
@@ -27,7 +29,8 @@
             "keys": "alt+shift+d"
         },
         {
-            "command": {
+            "command": 
+            {
                 "action": "copy",
                 "singleLine": false
             },
@@ -46,23 +49,34 @@
     "copyOnSelect": false,
     "defaultProfile": "{91c960b3-4b36-415e-807a-b10622487d21}",
     "focusFollowMouse": true,
-    "profiles": {
-        "defaults": {
+    "newTabMenu": 
+    [
+        {
+            "type": "remainingProfiles"
+        }
+    ],
+    "profiles": 
+    {
+        "defaults": 
+        {
             "colorScheme": "Campbell Powershell",
             "elevate": false,
             "experimental.retroTerminalEffect": false,
-            "font": {
+            "font": 
+            {
                 "face": "JetBrains Mono"
             },
             "intenseTextStyle": "bold"
         },
-        "list": [
+        "list": 
+        [
             {
                 "adjustIndistinguishableColors": "indexed",
                 "colorScheme": "Campbell Powershell",
                 "commandline": "pwsh.exe",
                 "experimental.retroTerminalEffect": false,
-                "font": {
+                "font": 
+                {
                     "size": 12.0,
                     "weight": "light"
                 },
@@ -73,32 +87,19 @@
                 "useAcrylic": true
             },
             {
+                "connectionType": "{d9fcfdfa-a479-412c-83b7-c5640e61cd62}",
+                "guid": "{0cd64b9d-43b0-46bb-8a25-101d7e55e660}",
+                "hidden": false,
+                "icon": "ms-appx:///ProfileIcons/{b453ae62-4e3d-5e58-b989-0a998ec441b8}.png",
+                "name": "Azure Cloud Shell",
+                "startingDirectory": "%USERPROFILE%"
+            },
+            {
                 "colorScheme": "Tango Dark",
                 "commandline": "%SystemRoot%\\System32\\cmd.exe",
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
                 "hidden": false,
                 "name": "CMD"
-            },
-            {
-                "colorScheme": "Tango Dark",
-                "commandline": "%USERPROFILE%\\OneDrive\\Dokumente\\_Apps\\nodejs\\node.exe",
-                "guid": "{0cade351-3084-4d91-9f8e-a46222483b3a}",
-                "hidden": false,
-                "name": "node"
-            },
-            {
-                "colorScheme": "Tango Dark",
-                "guid": "{7c282e37-0b23-59b0-b227-800a8a4492d0}",
-                "hidden": true,
-                "name": "Developer Command Prompt for VS 2019",
-                "source": "Windows.Terminal.VisualStudio"
-            },
-            {
-                "colorScheme": "Tango Dark",
-                "guid": "{53200de2-35c4-5839-a95e-72146b046453}",
-                "hidden": true,
-                "name": "Developer PowerShell for VS 2019",
-                "source": "Windows.Terminal.VisualStudio"
             },
             {
                 "colorScheme": "Tango Dark",
@@ -109,7 +110,8 @@
             }
         ]
     },
-    "schemes": [
+    "schemes": 
+    [
         {
             "background": "#0C0C0C",
             "black": "#0C0C0C",
@@ -318,6 +320,29 @@
             "yellow": "#C4A000"
         },
         {
+            "background": "#300A24",
+            "black": "#171421",
+            "blue": "#0037DA",
+            "brightBlack": "#767676",
+            "brightBlue": "#08458F",
+            "brightCyan": "#2C9FB3",
+            "brightGreen": "#26A269",
+            "brightPurple": "#A347BA",
+            "brightRed": "#C01C28",
+            "brightWhite": "#F2F2F2",
+            "brightYellow": "#A2734C",
+            "cursorColor": "#FFFFFF",
+            "cyan": "#3A96DD",
+            "foreground": "#FFFFFF",
+            "green": "#26A269",
+            "name": "Ubuntu-ColorScheme",
+            "purple": "#881798",
+            "red": "#C21A23",
+            "selectionBackground": "#FFFFFF",
+            "white": "#CCCCCC",
+            "yellow": "#A2734C"
+        },
+        {
             "background": "#000000",
             "black": "#000000",
             "blue": "#000080",
@@ -342,5 +367,49 @@
         }
     ],
     "startOnUserLogin": true,
-    "themes": []
+    "themes": 
+    [
+        {
+            "name": "legacyDark",
+            "tab": 
+            {
+                "background": null,
+                "showCloseButton": "always",
+                "unfocusedBackground": null
+            },
+            "window": 
+            {
+                "applicationTheme": "dark",
+                "useMica": false
+            }
+        },
+        {
+            "name": "legacyLight",
+            "tab": 
+            {
+                "background": null,
+                "showCloseButton": "always",
+                "unfocusedBackground": null
+            },
+            "window": 
+            {
+                "applicationTheme": "light",
+                "useMica": false
+            }
+        },
+        {
+            "name": "legacySystem",
+            "tab": 
+            {
+                "background": null,
+                "showCloseButton": "always",
+                "unfocusedBackground": null
+            },
+            "window": 
+            {
+                "applicationTheme": "system",
+                "useMica": false
+            }
+        }
+    ]
 }

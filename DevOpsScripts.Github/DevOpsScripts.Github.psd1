@@ -69,16 +69,16 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-GithubRest', 'New-GithubPullRequest', 
-               'Add-GithubAccountContext', 'Clear-GithubAccountContext', 
-               'Get-GithubAccountContext', 'Get-GithubCache', 'Get-GithubContext', 
-               'Get-GithubContextInfo', 'Get-GithubRepositoryInfo', 
-               'Set-GithubCache', 'Switch-GithubAccountContext', 
-               'Switch-GithubContext', 'Update-GithubAccountContext', 
-               'Clear-GithubPat', 'Get-GithubContexts', 'Get-GithubIssues', 
-               'Get-GithubPat', 'Get-GithubReleases', 'Get-GithubRepositories', 
-               'Get-GithubUser', 'New-GithubRepository', 'Open-GithubBrowser', 
-               'Open-GithubRepository'
+FunctionsToExport = 'Invoke-GithubRest', 'Add-GithubAccountContext', 
+               'Clear-GithubAccountContext', 'Get-GithubAccountContext', 
+               'Get-GithubCache', 'Get-GithubContext', 'Get-GithubContextInfo', 
+               'Get-GithubRepositoryInfo', 'Set-GithubCache', 
+               'Switch-GithubAccountContext', 'Switch-GithubContext', 
+               'Update-GithubAccountContext', 'Clear-GithubPat', 
+               'Get-GithubContexts', 'Get-GithubIssues', 'Get-GithubPat', 
+               'Get-GithubReleases', 'Get-GithubRepositories', 'Get-GithubUser', 
+               'New-GithubBranch', 'New-GithubPullRequest', 'New-GithubRepository', 
+               'Open-GithubBrowser', 'Open-GithubRepository'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -87,7 +87,7 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'github-swa', 'github-swc', 'gitbrowser', 'gitvc'
+AliasesToExport = 'github-swa', 'github-swc', 'git-branch', 'git-pr', 'gitbrowser', 'gitvc'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

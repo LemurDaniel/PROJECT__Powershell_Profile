@@ -32,10 +32,10 @@ function Invoke-GithubRest {
     param(
         # The Rest-Method to use.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [Microsoft.PowerShell.Commands.WebRequestMethod]
-        $METHOD,
+        $METHOD = [Microsoft.PowerShell.Commands.WebRequestMethod]::GET,
 
         # The API-Endpoint to call.
         [Parameter(

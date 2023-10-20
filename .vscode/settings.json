@@ -2,5 +2,6 @@
     "files.associations": {
         "*.wiql": "sql"
     },
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "bookmarks.saveBookmarksInProject": true
 }

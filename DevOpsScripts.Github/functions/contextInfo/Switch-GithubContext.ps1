@@ -30,7 +30,7 @@
 #>
 function Switch-GithubContext {
 
-    [Alias('github-swc')]
+    [Alias('git-swc')]
     param(
         [Parameter(
             Position = 1,

@@ -16,7 +16,7 @@
 #>
 function Switch-GithubAccountContext {
 
-    [Alias('github-swa')]
+    [Alias('git-swa')]
     param(
         [Parameter(
             Mandatory = $true

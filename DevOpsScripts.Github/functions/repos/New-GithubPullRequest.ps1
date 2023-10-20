@@ -40,7 +40,7 @@
 function New-GithubPullRequest {
 
     [CmdletBinding()]
-    [Alias('git-pr')]
+    [Alias('git-pull')]
     param (
         [Parameter(
             Position = 3,

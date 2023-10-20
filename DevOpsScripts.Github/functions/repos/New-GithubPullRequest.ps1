@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Get a list of all releases of a repository.
+    Create a new Pull Request.
 
     .DESCRIPTION
-    Get a list of all releases of a repository.
+    Create a new Pull Request.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -12,25 +12,29 @@
     None
 
 
-        .EXAMPLE
+    .EXAMPLE
 
-        Get a list of releases for the repository on the current path:
+    Create a new Pull-Request from the current branch to the default branch from a title:
 
-        PS> Get-GithubReleases
-
-
-        .EXAMPLE
-
-        Get a list of releases a specific repository in another account:
-
-        PS> Get-GithubReleases -Account <autocompleted_account> <autocomplete_repo>
+    PS> New-GithubPullRequest -Title "Merge some changes"
 
 
-        .EXAMPLE
+    .EXAMPLE
 
-        Get a list of releases in another Account and another Context in the current account:
+    Convert an issue to a Pull-Request from the current branch to master branch:
 
-        PS> Get-GithubReleases -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    PS> New-GithubPullRequest -Base master -FromIssue <auto_completed_title>
+
+
+    .EXAMPLE
+
+    Create a new Pull-Request in another context, etc:
+
+    PS> New-GithubPullRequest <autocomplete_repo> -Title "Merge some changes" -Base master 
+    
+    PS> New-GithubPullRequest -Context <autocomplete_context> <autocomplete_repo>
+
+    PS> New-GithubPullRequest -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
 
 
     .LINK

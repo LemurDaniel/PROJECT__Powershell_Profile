@@ -12,25 +12,11 @@
     None
 
 
-        .EXAMPLE
+    .EXAMPLE
 
-        Get a list of releases for the repository on the current path:
+    Create a Branch name from an Issue:
 
-        PS> Get-GithubReleases
-
-
-        .EXAMPLE
-
-        Get a list of releases a specific repository in another account:
-
-        PS> Get-GithubReleases -Account <autocompleted_account> <autocomplete_repo>
-
-
-        .EXAMPLE
-
-        Get a list of releases in another Account and another Context in the current account:
-
-        PS> Get-GithubReleases -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    PS> New-GithubBranch --FromIssue <autocompleted_issue_title>
 
 
     .LINK
@@ -112,7 +98,6 @@ function New-GithubBranch {
         $Repository,
 
 
-
         # The base branch from which to create another. Defaults to default branch.
         [Parameter(
             Mandatory = $false
@@ -155,7 +140,13 @@ function New-GithubBranch {
         $Issue = Get-GithubIssues -Account $Account -Context $Context -Repository $Repository
         | Where-Object -Property title -EQ $FromIssue
 
-        $target = $Issue.title.toLower().replace(' ', '_')
+        $target = [System.String]::Format("{0}-{1}", $Issue.number, $Issue.title).toLower() `
+            -replace '[^a-z0-9_-]', '_' `
+            -replace '-+', '-' `
+            -replace '_+', '_' `
+            -replace '_-', '_' `
+            -replace '-_', '_' `
+            -replace '_$|-$', ''
 
         git -C $repositoryData.LocalPath fetch origin
         git -C $repositoryData.LocalPath checkout $Base

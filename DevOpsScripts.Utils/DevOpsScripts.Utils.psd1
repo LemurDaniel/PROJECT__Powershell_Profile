@@ -88,11 +88,12 @@ FunctionsToExport = 'Get-Property', 'Join-PsObject', 'Search-In', 'Convert-TFVar
                'Get-K8STemplateFiles', 'New-K8SDeployment', 'New-K8SIngress', 
                'Add-CodeEditor', 'Clear-CodeEditor', 'Get-CodeEditor', 
                'New-RandomBytes', 'Open-InCodeEditor', 'Read-UserInput', 
-               'Read-UserOption', 'Select-ConsoleMenu', 'Start-LoadingBarAnimation', 
-               'Start-LoadingCircleAnimation', 'Switch-DefaultCodeEditor', 
-               'Test-IsRepository', 'Edit-RegexOnFiles', 'Remove-InvisibleUnicode', 
-               'Clear-SecureStringFromFile', 'Clear-UtilsCache', 'Get-CleanFilename', 
-               'Get-UtilsCache', 'Open-SecureStringFolder', 'Open-UtilsCacheFolder', 
+               'Read-UserOption', 'Select-ConsoleMenu', 'Show-ConsoleImage', 
+               'Start-LoadingBarAnimation', 'Start-LoadingCircleAnimation', 
+               'Switch-DefaultCodeEditor', 'Test-IsRepository', 'Edit-RegexOnFiles', 
+               'Remove-InvisibleUnicode', 'Clear-SecureStringFromFile', 
+               'Clear-UtilsCache', 'Get-CleanFilename', 'Get-UtilsCache', 
+               'Open-SecureStringFolder', 'Open-UtilsCacheFolder', 
                'Read-SecureStringFromFile', 'Save-SecureStringToFile', 
                'Set-UtilsCache'
 

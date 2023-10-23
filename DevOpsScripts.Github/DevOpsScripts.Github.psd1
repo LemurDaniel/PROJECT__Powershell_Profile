@@ -75,10 +75,11 @@ FunctionsToExport = 'Invoke-GithubRest', 'Add-GithubAccountContext',
                'Get-GithubRepositoryInfo', 'Set-GithubCache', 
                'Switch-GithubAccountContext', 'Switch-GithubContext', 
                'Update-GithubAccountContext', 'Clear-GithubPat', 
-               'Get-GithubContexts', 'Get-GithubIssues', 'Get-GithubPat', 
-               'Get-GithubReleases', 'Get-GithubRepositories', 'Get-GithubUser', 
-               'New-GithubBranch', 'New-GithubPullRequest', 'New-GithubRepository', 
-               'Open-GithubBrowser', 'Open-GithubRepository'
+               'Get-GithubContexts', 'Get-GithubEmojies', 'Get-GithubIssues', 
+               'Get-GithubPat', 'Get-GithubReleases', 'Get-GithubRepositories', 
+               'Get-GithubUser', 'New-GithubBranch', 'New-GithubPullRequest', 
+               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository', 
+               'Show-GithubEmojie'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -87,7 +88,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'git-swa', 'git-swc', 'git-branch', 'git-pull', 'gitbrowser', 'gitvc'
+AliasesToExport = 'git-swa', 'git-swc', 'git-branch', 'git-pull', 'gitbrowser', 'gitvc', 
+               'git-emojie'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

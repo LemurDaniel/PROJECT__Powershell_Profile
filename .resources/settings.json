@@ -84,7 +84,7 @@
                 "guid": "{91c960b3-4b36-415e-807a-b10622487d21}",
                 "hidden": false,
                 "name": "PS 7",
-                "startingDirectory": "%USERPROFILE%/Desktop",
+                "startingDirectory": "%USERPROFILE%",
                 "suppressApplicationTitle": false,
                 "useAcrylic": true,
                 "useAtlasEngine": true

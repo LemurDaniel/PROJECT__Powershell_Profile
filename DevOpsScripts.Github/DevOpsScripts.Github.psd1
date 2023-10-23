@@ -69,7 +69,7 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-GithubRest', 'Add-GithubAccountContext', 
+FunctionsToExport = 'Invoke-GithubRest', 'Show-GithubEmojie', 'Add-GithubAccountContext', 
                'Clear-GithubAccountContext', 'Get-GithubAccountContext', 
                'Get-GithubCache', 'Get-GithubContext', 'Get-GithubContextInfo', 
                'Get-GithubRepositoryInfo', 'Set-GithubCache', 
@@ -78,8 +78,7 @@ FunctionsToExport = 'Invoke-GithubRest', 'Add-GithubAccountContext',
                'Get-GithubContexts', 'Get-GithubEmojies', 'Get-GithubIssues', 
                'Get-GithubPat', 'Get-GithubReleases', 'Get-GithubRepositories', 
                'Get-GithubUser', 'New-GithubBranch', 'New-GithubPullRequest', 
-               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository', 
-               'Show-GithubEmojie'
+               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -88,8 +87,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'git-swa', 'git-swc', 'git-branch', 'git-pull', 'gitbrowser', 'gitvc', 
-               'git-emojie'
+AliasesToExport = 'git-emojie', 'git-swa', 'git-swc', 'git-branch', 'git-pull', 'gitbrowser', 
+               'gitvc'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

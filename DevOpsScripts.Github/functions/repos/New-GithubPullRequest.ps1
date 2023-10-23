@@ -238,9 +238,8 @@ function New-GithubPullRequest {
         }
 
         elseif ($PSBoundParameters.ContainsKey('Title')) {
-            $Request.Body.title 
-            | Add-Member -PassThru -MemberType NoteProperty -Name issue -Value $Title
-            | Add-Member -MemberType NoteProperty -Name issue -Value $Body
+            $null = $Request.Body.Add('title', $Title)
+            $null = $Request.Body.Add('body', $Body)
         }
 
         $pullRequest = Invoke-GithubRest @Request

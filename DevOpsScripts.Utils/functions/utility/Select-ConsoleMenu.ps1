@@ -66,6 +66,13 @@ Function Select-ConsoleMenu {
         }
     }
 
+    # [System.Console]::WriteLine seems a bit more performent
+    $_reset_ = "`e[0m"
+    $_linebreak_ = "`n"
+    $_highlightPage_ = "`e[47m`e[90m"
+    $_highlightSelect_ = "`e[45m"
+    $_highlightSearch_ = "`e[46m"
+
     $reservedLines = 8
     $initialSelectionSize = [System.Math]::Max($Host.UI.RawUI.WindowSize.Height, 10)
     $selectionIndexOnPage = 0
@@ -86,11 +93,14 @@ Function Select-ConsoleMenu {
             [System.Console]::CursorVisible = $false
             # [System.Console]::Clear()
             Clear-Host
-          
-            Write-Host -ForegroundColor Magenta ("**$($Description.trim() -replace '_+', ' ')**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+        
+            $DescriptionEndocded = ("**$($Description.trim() -replace '_+', ' ')**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+            [System.Console]::WriteLine($DescriptionEndocded)
+
 
             # Filter Options !!! Wrap in Array to make sure to still have an array, when only one element remains. !!!
             $filteredOptions = @($SelectionOptions | Where-Object { $_.name.toLower() -Like "*$($searchString.ToLower())*" })
+
 
             # Do page and selection calculations.
             $maxSelectionsPerPage = $initialSelectionSize - $reservedLines
@@ -100,22 +110,28 @@ Function Select-ConsoleMenu {
             # Fix if current Page is out-of-range.
             $currentPage = $currentPage -GE $totalCountOfPages ? $totalCountOfPages - 1 : $currentPage
 
+
             # Caluclation for current Page
             $isLastPage = $currentPage -EQ ($totalCountOfPages - 1)
             $selectionPageOffset = $currentPage * $maxSelectionsPerPage
             $selectionIndexOnPage = ($selectionIndexOnPage -GT $lastPageMaxIndex) -AND $isLastPage ? $lastPageMaxIndex : $selectionIndexOnPage
 
-            $filteredOptions | `
-                Select-Object -Skip $selectionPageOffset | `
-                Select-Object -First $maxSelectionsPerPage | `
-                ForEach-Object { $index = 0 } {
+
+            $filteredOptions 
+            | Select-Object -Skip $selectionPageOffset 
+            | Select-Object -First $maxSelectionsPerPage 
+            | ForEach-Object { $index = 0 } {
 
                 $displayedText = $_.Name.Substring(0, [System.Math]::Min($_.Name.length, $initialSelectionWitdh))
                 $displayedText += $_.Name.length -GT $initialSelectionWitdh ? $shortendSuffix : ''
+
                 if ($index -eq $selectionIndexOnPage) {
-                    Write-Host "$prefixSelected" -NoNewline
-                    Write-Host $displayedText -BackgroundColor Magenta
+                    $displayedText = @(
+                        $prefixSelected, $_highlightSelect_, $displayedText, $_reset_
+                    ) -join ''
+                    [System.Console]::WriteLine($displayedText)
                 } 
+
                 else {
 
                     $startIndex = $displayedText.toLower().IndexOf($searchString.toLower())
@@ -123,11 +139,10 @@ Function Select-ConsoleMenu {
                     $highlightedPart = $displayedText.Substring($startIndex, [System.Math]::Max($searchString.Length, 0))
                     $lastPart = $displayedText.Substring($startIndex + $searchString.Length)
 
-                    Write-Host "$prefixNonSelected" -NoNewline
-                    Write-Host -NoNewline $firstPart
-                    Write-Host -NoNewline $highlightedPart -BackgroundColor Cyan
-                    Write-Host -NoNewline $lastPart 
-                    Write-Host
+                    $displayedText = @(
+                        $prefixNonSelected, $firstPart, $_highlightSearch_, $highlightedPart, $_reset_, $lastPart
+                    ) -join ''
+                    [System.Console]::WriteLine($displayedText)
                 }
 
                 $index++
@@ -135,18 +150,20 @@ Function Select-ConsoleMenu {
             }
 
             if ($totalCountOfPages -gt 0) {
-                Write-Host
-                #Write-Host -NoNewline "Page " 
-                Write-Host -NoNewline -ForegroundColor Black -BackgroundColor white "$($currentPage+1)/$totalCountOfPages"
+                $displayedText = @(
+                    $_linebreak_, $_highlightPage_, "$($currentPage+1)/$totalCountOfPages", $_reset_
+                ) -join ''
+                [System.Console]::Write($displayedText)
             }
     
             if ($searchString.Length -gt 0) {
-                Write-Host -NoNewline '     Searching For: '
-                Write-Host -NoNewline -BackgroundColor Cyan "'$SearchString'"
-                Write-Host -NoNewline " | Remaining $($filteredOptions.Count) of $($Options.Count) Elements"
+                $displayedText = @(
+                    '     Searching For: ', $_highlightSearch_, "'$SearchString'", $_reset_, " | Remaining $($filteredOptions.Count) of $($Options.Count) Elements"
+                ) -join ''
+                [System.Console]::Write($displayedText)
             }
                             
-            Write-Host
+            [System.Console]::WriteLine()
 
             # Process and switch key presses
             Switch ([System.Console]::ReadKey($true)) {

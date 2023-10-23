@@ -60,14 +60,14 @@ function Show-GithubEmojie {
     )
 
 
-    $Identifier = "emojies.$Emojie"
-    $base64 = Get-GithubCache -Identifier $Identifier
+    $Identifier = "gitub.emojies.$Emojie"
+    $base64 = Get-UtilsCache -Identifier $Identifier
 
     if ($null -EQ $base64 -OR $Refresh) {
         $tempFile = [System.IO.Path]::GetTempFileName()
         Invoke-WebRequest -Uri (Get-GithubEmojies)[$Emojie] -OutFile $tempFile
         $base64 = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes($tempFile))
-        $base64 = Set-GithubCache -Object $base64 -Identifier $Identifier
+        $base64 = Set-UtilsCache -Object $base64 -Identifier $Identifier
         Remove-Item -Path $tempFile -ErrorAction SilentlyContinue
     }
 

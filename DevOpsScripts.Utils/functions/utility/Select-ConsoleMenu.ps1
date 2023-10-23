@@ -69,9 +69,9 @@ Function Select-ConsoleMenu {
     # [System.Console]::WriteLine seems a bit more performent
     $_reset_ = "`e[0m"
     $_linebreak_ = "`n"
-    $_highlightPage_ = "`e[47m`e[90m"
-    $_highlightSelect_ = "`e[45m"
-    $_highlightSearch_ = "`e[46m"
+    $_highlightPage_ = "`e[47m`e[30m"
+    $_highlightSelect_ = "`e[90m`e[45m"
+    $_highlightSearch_ = "`e[46m`e[30m"
 
     $reservedLines = 8
     $initialSelectionSize = [System.Math]::Max($Host.UI.RawUI.WindowSize.Height, 10)

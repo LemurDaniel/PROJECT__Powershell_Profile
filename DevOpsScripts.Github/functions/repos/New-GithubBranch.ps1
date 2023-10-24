@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Get a list of all releases of a repository.
+    Create a new Github branch from an issue.
 
     .DESCRIPTION
-    Get a list of all releases of a repository.
+    Create a new Github branch from an issue.
 
     .INPUTS
     None. You cannot pipe objects into the Function.

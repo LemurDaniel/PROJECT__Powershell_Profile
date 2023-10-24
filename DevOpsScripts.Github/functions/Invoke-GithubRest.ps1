@@ -12,11 +12,6 @@
     .OUTPUTS
     return the API-Response.
 
-    .EXAMPLE
-
-
-    .EXAMPLE
-
 
     .LINK
         

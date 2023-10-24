@@ -67,7 +67,7 @@ function Show-GithubEmojie {
         $tempFile = [System.IO.Path]::GetTempFileName()
         Invoke-WebRequest -Uri (Get-GithubEmojies)[$Emojie] -OutFile $tempFile
         $base64 = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes($tempFile))
-        $base64 = Set-UtilsCache -Object $base64 -Identifier $Identifier
+        $base64 = Set-UtilsCache -Object $base64 -Identifier $Identifier -Forever
         Remove-Item -Path $tempFile -ErrorAction SilentlyContinue
     }
 

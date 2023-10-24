@@ -28,7 +28,7 @@ function Get-GithubEmojies {
     $emojies = Get-UtilsCache -Identifier $Identifier -AsHashtable
 
     if ($null -EQ $emojies -OR $Refresh) {
-        $emojies = Invoke-GithubRest -Method GET -URL "https://api.github.com/emojis"
+        $emojies = Invoke-RestMethod -Uri "https://api.github.com/emojis"
         $emojies = Set-UtilsCache -Object $emojies -Identifier $Identifier
         $emojies = Get-UtilsCache -Identifier $Identifier -AsHashtable
     }

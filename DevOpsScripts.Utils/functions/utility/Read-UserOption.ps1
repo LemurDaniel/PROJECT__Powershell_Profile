@@ -57,8 +57,8 @@ function Read-UserOption {
 
         # A Foregroundcolor for the text prompt.
         [Parameter()]
-        [System.ConsoleColor]
-        $Foregroundcolor = [System.ConsoleColor]::White,
+        [System.String]
+        $TextHighlighting = "`e[37m",
 
         # Prevents jumping to the next line
         # When this method is called several times with these switch
@@ -78,9 +78,8 @@ function Read-UserOption {
         $optionsSpacing = 2
         $optionsSpacing = (1..$optionsSpacing | ForEach-Object { ' ' }) -join ''
 
-        $OptionsForeground = [System.ConsoleColor]::Gray
-        $OptionsSelectedForeground = [System.ConsoleColor]::White
-        $OptionsSelectedBackground = [System.ConsoleColor]::Magenta
+        $OptionsForeground = "`e[90m"
+        $OptionsSelected = "`e[37m`e[45m"
 
         $selectedIndex = 0
 
@@ -94,17 +93,23 @@ function Read-UserOption {
             $emptyLine = (1..$($host.UI.RawUI.WindowSize.Width) | ForEach-Object { ' ' }) -join ''
             [System.Console]::Write($emptyLine)
             [System.Console]::SetCursorPosition(0, [System.Console]::GetCursorPosition().Item2)
+            [System.Console]::Write($TextHighlighting)
+            [System.Console]::write($Prompt)
+            [System.Console]::Write("`e[0m")
 
-            Write-Host -ForegroundColor $Foregroundcolor -NoNewline $Prompt
 
             for ($index = 0; $index -LT $Options.Count; $index++) {
 
-                Write-Host -NoNewline $optionsSpacing
+                [System.Console]::Write($optionsSpacing)
                 if ($index -EQ $selectedIndex) {
-                    Write-Host -ForegroundColor $OptionsSelectedForeground -BackgroundColor $OptionsSelectedBackground -NoNewline $Options[$index]
+                    [System.Console]::Write($OptionsSelected)
+                    [System.Console]::Write($Options[$index])
+                    [System.Console]::Write("`e[0m")
                 }
                 else {
-                    Write-Host -ForegroundColor $OptionsForeground -NoNewline $Options[$index]
+                    [System.Console]::Write($OptionsForeground)
+                    [System.Console]::Write($Options[$index])
+                    [System.Console]::Write("`e[0m")
                 }
 
             }

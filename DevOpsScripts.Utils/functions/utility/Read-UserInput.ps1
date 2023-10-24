@@ -113,8 +113,8 @@ function Read-UserInput {
 
         # A Foregroundcolor for the text prompt.
         [Parameter()]
-        [System.ConsoleColor]
-        $Foregroundcolor = [System.ConsoleColor]::White,
+        [System.String]
+        $TextHighlighting = "`e[37m",
 
 
         # Only return user input, also if empty. Disregard placeholder.
@@ -149,15 +149,17 @@ function Read-UserInput {
 
             # Overwrite line with empty string reset cursor again and the draw actual prompt.
             $whitespaces = (0..($host.UI.RawUI.WindowSize.Width - 1) | ForEach-Object { " " }) -join ""
-            Write-Host -NoNewline $whitespaces
+            [System.Console]::Write($whitespaces)
 
             [System.Console]::SetCursorPosition(0, [System.Console]::GetCursorPosition().Item2)
-            Write-Host -ForegroundColor $Foregroundcolor  -NoNewline $Prompt
+            [System.Console]::Write($TextHighlighting)
+            [System.Console]::Write($Prompt)
+            [System.Console]::Write("`e[0m")
 
 
             if ([System.String]::IsNullOrEmpty($UserInput)) {
                 # Write Placeholder text as greyish to inidcate placeholder text.
-                Write-Host -ForegroundColor Black -NoNewline $Placeholder
+                [System.Console]::Write("`e[30m$Placeholder`e[0m")
 
                 # Set the Cursor on wihtespace before placeholder text, so user can overwrite placeholder.
                 [System.Console]::SetCursorPosition(
@@ -176,7 +178,7 @@ function Read-UserInput {
                 }
                    
                 # Draw Userinput and set cursorposition at the end of drawn line.
-                Write-Host -ForegroundColor White -NoNewline $drawnUserInput
+                [System.Console]::Write("`e[37m$drawnUserInput`e[0m")
                 [System.Console]::SetCursorPosition(
                     $Prompt.Length + $CursorOffset, # Use cursoroffset
                     [System.Console]::GetCursorPosition().Item2
@@ -184,7 +186,7 @@ function Read-UserInput {
             }
 
             if ($ErrorMessage) {
-                Write-Host -ForegroundColor Red -NoNewline " $ErrorMessage"
+                [System.Console]::Write("`e[31m $ErrorMessage")
             }
 
             # That the Cursor visible again as user input is now expected.

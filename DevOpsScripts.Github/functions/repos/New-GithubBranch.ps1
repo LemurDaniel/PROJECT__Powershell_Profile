@@ -156,7 +156,7 @@ function New-GithubBranch {
     }
     
     else {
-        throw "Not Supported"
+        throw [System.NotSupportedException]::new("Please provde a valid issue.")
     }
   
 }

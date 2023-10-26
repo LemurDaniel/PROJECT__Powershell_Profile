@@ -57,6 +57,25 @@
 
     PS> Show-ConsoleImage -Center -Random -Testimage cutedog
 
+    .EXAMPLE
+
+    Some interesting looking character options:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '*' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '@' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '^' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '°' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '~' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '+' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '&' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel "'" -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '"' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel '_' -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel "><" -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel "{}" -Background Black
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel "\/" -Background Black
+
+
 
     .EXAMPLE
 
@@ -173,19 +192,49 @@ function Show-ConsoleImage {
         )]
         [System.int32]
         $Width = -1,
+
+        # When drawing colored characters in foreground, set a custom background for more contrast.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+    
+                return [System.Management.Automation.PSStyle+BackgroundColor]::new().PSObject.Properties.name
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
+            }
+        )]
+        [ValidateScript(
+            {
+                $_ -in [System.Management.Automation.PSStyle+BackgroundColor]::new().PSObject.Properties.name
+            },
+            ErrorMessage = {
+                "'$_' is not valid!"
+            }
+        )]
+        [System.String]
+        $Background,
         
         # Set a custom character to display as a pixel.
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false
+        )]
         [System.String]
         $Pixel = " ",
 
         # Print each line with a delay, because looks funny.
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false
+        )]
         [System.int32]
         $Delay = 0,
 
         # Set alpha treshold
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false
+        )]
         [System.Byte]
         $AlphaTrs = 32,
         # Ignore alpha channel.
@@ -326,6 +375,11 @@ function Show-ConsoleImage {
             $characters += 0..$imageOffset | ForEach-Object { ' ' }
         }
 
+        if ($drawMode -EQ 38 -AND $PSBoundParameters.ContainsKey("Background")) {
+            # Make background black for better contrast, when draw mode is set to foreground
+            $characters += [System.Management.Automation.PSStyle+BackgroundColor]::new()."$Background"
+        }
+        
         for ($col = 0; $col -LT $Image.Width; $col++) {
             $imagePixel = $Image.GetPixel($col, $row)
 
@@ -339,6 +393,7 @@ function Show-ConsoleImage {
                 # Simluate alpha-channel by drawing pixel in terminal background.
                 $characters += "`e[0m$alphaCharacters"
             }
+
             elseif ($Grayscale) {
                 # According to Rec. 601 Luma-Coefficients
                 # https://en.wikipedia.org/wiki/Luma_(video)#Rec._601_luma_versus_Rec._709_luma_coefficients
@@ -348,6 +403,7 @@ function Show-ConsoleImage {
                     "`e[{0};2;{1};{2};{3}m{4}", $drawMode, $grey, $grey, $grey, $pixelCharacters
                 )
             }
+
             else {
                 $characters += [System.String]::Format(
                     # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary

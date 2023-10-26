@@ -201,14 +201,14 @@ function Show-ConsoleImage {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
     
-                return [System.Management.Automation.PSStyle+BackgroundColor]::new().PSObject.Properties.name
+                return [System.Management.Automation.PSStyle]::Instance.Background.PSObject.Properties.name
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
             }
         )]
         [ValidateScript(
             {
-                $_ -in [System.Management.Automation.PSStyle+BackgroundColor]::new().PSObject.Properties.name
+                $_ -in [System.Management.Automation.PSStyle]::Instance.Background.PSObject.Properties.name
             },
             ErrorMessage = {
                 "'$_' is not valid!"
@@ -379,7 +379,7 @@ function Show-ConsoleImage {
             # Make background black for better contrast, when draw mode is set to foreground
             $characters += [System.Management.Automation.PSStyle+BackgroundColor]::new()."$Background"
         }
-        
+
         for ($col = 0; $col -LT $Image.Width; $col++) {
             $imagePixel = $Image.GetPixel($col, $row)
 
@@ -397,6 +397,10 @@ function Show-ConsoleImage {
             elseif ($Grayscale) {
                 # According to Rec. 601 Luma-Coefficients
                 # https://en.wikipedia.org/wiki/Luma_(video)#Rec._601_luma_versus_Rec._709_luma_coefficients
+
+                # Putting the link here for anyone, just to be clear these numbers really mean something,
+                # regarding the eyes different sensitvities to the colors and aren't randomly out of my head. 😅
+                # https://en.wikipedia.org/wiki/Grayscale#Luma_coding_in_video_systems
                 $grey = [System.Math]::Round($imagePixel.R * 0.299 + $imagePixel.G * 0.587 + $imagePixel.B * 0.114)
                 $characters += [System.String]::Format(
                     # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary

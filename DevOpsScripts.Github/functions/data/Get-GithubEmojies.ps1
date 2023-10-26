@@ -29,7 +29,7 @@ function Get-GithubEmojies {
 
     if ($null -EQ $emojies -OR $Refresh) {
         $emojies = Invoke-RestMethod -Uri "https://api.github.com/emojis"
-        $emojies = Set-UtilsCache -Object $emojies -Identifier $Identifier
+        $emojies = Set-UtilsCache -Object $emojies -Identifier $Identifier -Forever
         $emojies = Get-UtilsCache -Identifier $Identifier -AsHashtable
     }
 

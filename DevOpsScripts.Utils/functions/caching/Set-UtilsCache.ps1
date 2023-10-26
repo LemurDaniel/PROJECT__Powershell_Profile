@@ -89,7 +89,7 @@ function Set-UtilsCache {
     
         $Date = $null
         if ($Forever) {
-            $Date = ([DateTime]::Now).AddMilliseconds([System.Int32]::MaxValue)
+            $Date = [DateTime]::MaxValue
         }
         elseif ($PSBoundParameters.ContainsKey('Alive')) {
             $Date = ([DateTime]::Now).AddMinutes($Alive)
@@ -109,7 +109,7 @@ function Set-UtilsCache {
     END {
         $cacheContent = $inputList
 
-        if($inputList.Count -EQ 1) {
+        if ($inputList.Count -EQ 1) {
             $cacheContent = $inputList[0]
         }
 

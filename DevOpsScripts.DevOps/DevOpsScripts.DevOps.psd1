@@ -70,31 +70,31 @@ RequiredAssemblies = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Invoke-DevOpsRest', 'New-AutomatedTag', 'Remove-AutomatedTags', 
-               'Get-DevOpsPAT', 'Get-DevOpsPATList', 'New-DevOpsPAT', 
-               'Revoke-DevOpsPAT', 'Save-DevOpsPAT', 'Update-DevOpsPAT', 
-               'Add-QuickContext', 'Get-DevOpsContext', 'Get-OrganizationInfo', 
-               'Get-ProjectInfo', 'Get-RepositoryInfo', 'Remove-QuickContext', 
-               'Set-DevOpsContext', 'Show-DevOpsContext', 'Switch-Organization', 
-               'Switch-Project', 'Switch-QuickContext', 'Add-SprintIncrement', 
-               'Add-SprintMember', 'Add-SprintTeamDaysOff', 'Connect-Workitem', 
-               'Get-SprintIterations', 'Get-Workitem', 'Get-WorkItemQueries', 
-               'New-BranchFromWorkItem', 'New-SprintIteration', 'New-Workitem', 
-               'Open-WorkItemInBrowser', 'Search-WorkItemInIteration', 
-               'Select-Workitems', 'Update-Workitem', 'Get-BuildLogs', 'New-Pipeline', 
-               'Open-BuildInBrowser', 'Start-Pipeline', 'Start-PipelineOnBranch', 
-               'Start-PipelinesInOrder', 'Add-OrganizationPAT', 
-               'Get-AzureDevOpsCache', 'Get-DevOpsOrganizationData', 
-               'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 'Get-DevOpsUser', 
-               'Get-OrganizationPAT', 'Get-QuickContexts', 
-               'Get-WorkItemRelationTypes', 'Remove-OrganizationPAT', 
-               'Set-AzureDevOpsCache', 'Get-DevOpsArtifactFeeds', 
-               'Register-DevOpsFeedAsPSRepository', 
                'Edit-RepositoriesForRedeployment', 'Get-RecentSubmoduleTags', 
                'Get-RepositoryRefs', 'Invoke-ScriptInRepositories', 'New-FeaturePR', 
                'New-MasterPR', 'New-PullRequest', 'New-Repository', 
                'Open-DevOpsRepository', 'Open-DevOpsRepositoryInBrowser', 
                'Remove-MovedBlocksAllRepositories', 'Start-RepositoryImport', 
-               'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath'
+               'Update-ModuleSourcesAllRepositories', 'Update-ModuleSourcesInPath', 
+               'Get-BuildLogs', 'New-Pipeline', 'Open-BuildInBrowser', 
+               'Start-Pipeline', 'Start-PipelineOnBranch', 'Start-PipelinesInOrder', 
+               'Get-DevOpsArtifactFeeds', 'Register-DevOpsFeedAsPSRepository', 
+               'Add-SprintIncrement', 'Add-SprintMember', 'Add-SprintTeamDaysOff', 
+               'Connect-Workitem', 'Get-SprintIterations', 'Get-Workitem', 
+               'Get-WorkItemQueries', 'New-BranchFromWorkItem', 
+               'New-SprintIteration', 'New-Workitem', 'Open-WorkItemInBrowser', 
+               'Search-WorkItemInIteration', 'Select-Workitems', 'Update-Workitem', 
+               'Add-QuickContext', 'Get-DevOpsContext', 'Get-OrganizationInfo', 
+               'Get-ProjectInfo', 'Get-RepositoryInfo', 'Remove-QuickContext', 
+               'Set-DevOpsContext', 'Show-DevOpsContext', 'Switch-Organization', 
+               'Switch-Project', 'Switch-QuickContext', 'Get-DevOpsPAT', 
+               'Get-DevOpsPATList', 'New-DevOpsPAT', 'Revoke-DevOpsPAT', 
+               'Save-DevOpsPAT', 'Update-DevOpsPAT', 'Add-OrganizationPAT', 
+               'Get-AzureDevOpsCache', 'Get-DevOpsOrganizationData', 
+               'Get-DevOpsOrganizations', 'Get-DevOpsPipelines', 'Get-DevOpsUser', 
+               'Get-OrganizationPAT', 'Get-QuickContexts', 
+               'Get-WorkItemRelationTypes', 'Remove-OrganizationPAT', 
+               'Set-AzureDevOpsCache'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -103,8 +103,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'Set-OrgContext', 'swo', 'Set-ProjectContext', 'swp', 'swc', 'gitW', 'vc', 
-               'repoBrowser'
+AliasesToExport = 'vc', 'repoBrowser', 'gitW', 'Set-OrgContext', 'swo', 'Set-ProjectContext', 
+               'swp', 'swc'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

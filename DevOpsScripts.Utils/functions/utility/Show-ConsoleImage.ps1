@@ -205,8 +205,16 @@ function Show-ConsoleImage {
         $Width = $Height * $ratio
     }
     elseif ($Height -LE 0 -AND $Width -LE 0) {
-        $Height = $MaxHeight
-        $Width = $Height * $ratio
+
+        if ($MaxHeight * $ratio -LE $MaxWidth) {
+            $Height = $MaxHeight
+            $Width = $Height * $ratio
+        }
+        else {
+            $Width = $MaxWidth
+            $Height = $Width * (1 / $ratio)
+        }
+        
     }
 
 

@@ -33,6 +33,8 @@ function Show-GithubEmojie {
 
     [Alias('git-emojie')]
     param(
+        
+        # An emojie returned from the github api.
         [Parameter(
             Position = 0,
             Mandatory = $true
@@ -51,12 +53,32 @@ function Show-GithubEmojie {
         [Parameter(
             Mandatory = $false
         )]
-        $Height = 20,
+        $Height,
 
         [Parameter(
             Mandatory = $false
         )]
-        $Width = 20
+        $Width,
+
+        # Ignore alpha channel.
+        [Parameter()]
+        [switch]
+        $NoAlpha,
+        
+        # Set with to maximum.
+        [Parameter()]
+        [switch]
+        $Stretch,
+        
+        # Center image in console.
+        [Parameter()]
+        [switch]
+        $Center,
+        
+        # Prints image as grayscale/black&white/monochrome grey or whatever to call it.
+        [Parameter()]
+        [switch]
+        $Grayscale
     )
 
 
@@ -71,6 +93,15 @@ function Show-GithubEmojie {
         Remove-Item -Path $tempFile -ErrorAction SilentlyContinue
     }
 
-    Show-ConsoleImage -Width $Width -Height $Height -Base64 $base64
+    $Parameters = @{
+        Grayscale = $Grayscale
+        Center    = $Center
+        Stretch   = $Stretch
+        NoAlpha   = $NoAlpha
+        Width     = $Width
+        Height    = $Height
+        Base64    = $base64
+    }
+    Show-ConsoleImage @Parameters
 
 }

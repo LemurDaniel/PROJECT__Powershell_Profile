@@ -47,6 +47,12 @@
 
     .EXAMPLE
 
+    Draw a dog with a custom witdh, preserving ratio:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Width 40 -Pixel "#"
+
+    .EXAMPLE
+
     Draw a dog with random pixels:
 
     PS> Show-ConsoleImage -Center -Random -Testimage cutedog
@@ -78,6 +84,9 @@
 
 function Show-ConsoleImage {
 
+    [Alias(
+        "print-img"
+    )]
     [CmdletBinding(
         DefaultParameterSetName = "file"
     )]

@@ -31,13 +31,19 @@
 
     .EXAMPLE
 
-    Draw an image saved in the clipboard
+    Draw an image saved in the clipboard:
 
     PS> Show-ConsoleImage -Stretch -Center -Clipboard
 
     .EXAMPLE
 
-    Draw a file as an image to the console
+    Draw an image saved in the clipboard as grayscale:
+
+    PS> Show-ConsoleImage -Stretch -Center -Grayscale -Clipboard
+
+    .EXAMPLE
+
+    Draw a file as an image to the console:
 
     PS> Show-ConsoleImage -Stretch -Center -File <autocompleted_path>
 
@@ -115,6 +121,10 @@ function Show-ConsoleImage {
         [System.int32]
         $Width = -1,
 
+        # Print each line with a delay, because looks funny.
+        [Parameter()]
+        [System.int32]
+        $Delay = 0,
 
         # Set alpha treshold
         [Parameter()]
@@ -133,7 +143,12 @@ function Show-ConsoleImage {
         # Center image in console.
         [Parameter()]
         [switch]
-        $Center
+        $Center,
+
+        # Prints image as grayscale/black&white/monochrome grey or whatever to call it.
+        [Parameter()]
+        [switch]
+        $Grayscale
     )
 
 
@@ -231,16 +246,24 @@ function Show-ConsoleImage {
 
         for ($col = 0; $col -LT $Image.Width; $col++) {
             $pixel = $Image.GetPixel($col, $row)
-            
+
             if ($pixel.A -LT $AlphaTrs -AND !$NoAlpha) {
                 # Simluate alpha-channel by drawing pixel in terminal background.
                 $characters += "`e[0m  "
             }
+            elseif ($Grayscale) {
+                # According to Rec. 601 Luma-Coefficients
+                # https://en.wikipedia.org/wiki/Luma_(video)#Rec._601_luma_versus_Rec._709_luma_coefficients
+                $grey = [System.Math]::Round($pixel.R * 0.299 + $pixel.G * 0.587 + $pixel.B * 0.114)
+                $characters += [System.String]::Format(
+                    # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary
+                    "`e[48;2;{0};{1};{2}m  ", $grey, $grey, $grey
+                )
+            }
             else {
                 $characters += [System.String]::Format(
                     # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary
-                    "`e[48;2;{0};{1};{2}m  ", 
-                    $pixel.R, $pixel.G, $pixel.B
+                    "`e[48;2;{0};{1};{2}m  ", $pixel.R, $pixel.G, $pixel.B
                 )
             }
         }
@@ -248,6 +271,10 @@ function Show-ConsoleImage {
         $line = $characters -join ''
         $line += "`e[0m`n"
         [System.Console]::Write($line)
-    }
+
+        if ($Delay -GT 0) {
+            Start-Sleep -Milliseconds $Delay
+        }
+    } 
 
 }

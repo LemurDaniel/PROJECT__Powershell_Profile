@@ -76,6 +76,23 @@
     PS> Show-ConsoleImage -Center -Testimage cutedog -Pixel "\/" -Background Black
 
 
+    
+    # Even more examples:
+
+    .EXAMPLE
+
+    Draw a honey flask in monochrome grey:
+
+    PS> Show-ConsoleImage -Center -Stretch -Random -Grayscale -Testimage honey
+
+    .EXAMPLE
+
+    Draw a some fireworks:
+
+    PS> Show-ConsoleImage -Center -Stretch -Pixel '#' -Testimage fireworks
+
+
+
 
     .EXAMPLE
 

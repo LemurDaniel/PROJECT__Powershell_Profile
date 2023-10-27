@@ -94,7 +94,9 @@ Function Select-ConsoleMenu {
             # [System.Console]::Clear()
             Clear-Host
         
-            $DescriptionEndocded = ("**$($Description.trim() -replace '_+', ' ')**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+            #$DescriptionEndocded = ("**$($Description.trim() -replace '_+', ' ')**" | ConvertFrom-Markdown -AsVT100EncodedString).VT100EncodedString
+            # Use ANSI-Code to make bold instead of **
+            $DescriptionEndocded = "`e[1m$($Description.trim() -replace '_+', ' ')`e[0m`n"
             [System.Console]::WriteLine($DescriptionEndocded)
 
 

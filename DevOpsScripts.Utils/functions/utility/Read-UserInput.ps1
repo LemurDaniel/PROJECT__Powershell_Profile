@@ -55,6 +55,37 @@
         
     PS> Read-UserInput @readUserInputOptions
 
+
+    # Even more examples
+    .EXAMPLE
+
+    Read user input as valid guid:
+
+    PS> Read-UserInput -Prompt "Enter a Tenant ID: " -Validation GUID
+ 
+    .EXAMPLE
+
+    Check for a valid Archival date:
+
+    PS> Read-UserInput -Prompt "Enter a Date: " -Validation DATE_ARCHIVE
+
+    .EXAMPLE
+
+    Read user input as a valid date:
+
+    PS> Read-UserInput -Prompt "Enter a Date: " -Validation DATE
+
+    .EXAMPLE
+
+    Read user input as a valid E-Mail:
+
+    PS> Read-UserInput -Prompt "Enter a E-Mail: " -Validation EMAIL -Required
+
+    .EXAMPLE
+
+    Read user input as a valid URL:
+
+    PS> Read-UserInput -Prompt "Enter a URL: " -Validation URL -Required
 #>
 
 
@@ -83,6 +114,7 @@ function Read-UserInput {
         [Alias('i')]
         $Indendation = 0,
 
+
         # The maximum input length. Defaults to a high value.
         [Parameter(
             Mandatory = $false
@@ -96,6 +128,7 @@ function Read-UserInput {
         )]
         [System.String]
         $Minimum = 0,
+
 
         # A map of regex-matches (keys) and error-messages (values).
         [Parameter(
@@ -117,6 +150,15 @@ function Read-UserInput {
         $TextHighlighting = "`e[37m",
 
 
+        # A block for default regex validations.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        [ValidateSet('GUID', 'URL', 'EMAIL', 'DATE', 'DATE_ARCHIVE', 'ALPHANUMERIC', 'ALPHANUMERIC_SPACE')]
+        $Validation,
+
+
         # Only return user input, also if empty. Disregard placeholder.
         [Parameter()]
         [switch]
@@ -128,30 +170,63 @@ function Read-UserInput {
         $Required
     )
 
+    switch($Validation) {
+        GUID {
+            $null = $Matches.Add("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$", "Must be a valid GUID!")
+        }
+
+        EMAIL {
+            $null = $Matches.Add("^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$", "Must be a valid e-mail address.")
+        }
+
+        ALPHANUMERIC {
+            $null = $Matches.Add("^[a-zA-Z0-9]*$", "Only alphanumeric characters are allowed.")
+        }
+
+        ALPHANUMERIC_SPACE {
+            $null = $Matches.Add("^[a-zA-Z0-9]*$", "Only alphanumeric characters and spaces are allowed.")
+        }
+
+        URL {
+            $null = $Matches.Add("^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$", "Must be a valid URL.")
+        }
+
+        DATE {
+            $null = $Matches.Add("^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$", "Must be a valid date in form dd-mmm-YYYY or dd/mmm/YYYY or dd.mmm.YYYY")
+        }
+    
+        DATE_ARCHIVE {
+            $null = $Matches.Add("^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$", "Must be a valid date in format YYYY-MM-DD.")
+        }
+    }
+
     $prefix = ''
     if ($Indendation -GT 0) {
         $prefix = (0..$indendation | ForEach-Object { ' ' }) -join ''
     }
-    $Prompt = $prefix + $Prompt.TrimEnd() + " "
 
+    $Prompt = $prefix + $Prompt.TrimEnd() + " "
     $Placeholder = $Placeholder.Trim()
+    $CursorOffset = 0 # Offset cursor from left to right
     $ErrorMessage = ""
     $UserInput = ""
-    $CursorOffset = 0 # Offset cursor from left to right
-    
+
     try {
+
+        $cursorPositionY = [System.Console]::GetCursorPosition().Item2
+
         do {
 
             # Reset Cursor Position to start of Line for redrawing line.
             # Set the Cursor invisible to hide any movements.
             [System.Console]::CursorVisible = $false
-            [System.Console]::SetCursorPosition(0, [System.Console]::GetCursorPosition().Item2)
+            [System.Console]::SetCursorPosition(0, $cursorPositionY)
 
             # Overwrite line with empty string reset cursor again and the draw actual prompt.
             $whitespaces = (0..($host.UI.RawUI.WindowSize.Width - 1) | ForEach-Object { " " }) -join ""
             [System.Console]::Write($whitespaces)
 
-            [System.Console]::SetCursorPosition(0, [System.Console]::GetCursorPosition().Item2)
+            [System.Console]::SetCursorPosition(0, $cursorPositionY)
             [System.Console]::Write($TextHighlighting)
             [System.Console]::Write($Prompt)
             [System.Console]::Write("`e[0m")
@@ -164,7 +239,7 @@ function Read-UserInput {
                 # Set the Cursor on wihtespace before placeholder text, so user can overwrite placeholder.
                 [System.Console]::SetCursorPosition(
                     [System.Console]::GetCursorPosition().Item1 - $Placeholder.Length - 1,
-                    [System.Console]::GetCursorPosition().Item2
+                    $cursorPositionY
                 )
             }
 
@@ -181,7 +256,7 @@ function Read-UserInput {
                 [System.Console]::Write("`e[37m$drawnUserInput`e[0m")
                 [System.Console]::SetCursorPosition(
                     $Prompt.Length + $CursorOffset, # Use cursoroffset
-                    [System.Console]::GetCursorPosition().Item2
+                    $cursorPositionY
                 )
             }
 

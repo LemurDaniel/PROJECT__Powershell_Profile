@@ -114,6 +114,42 @@
 
     PS> Show-ConsoleImage -Stretch -Center -File <autocompleted_path>
 
+
+
+    # More stuff and Examples
+
+    .EXAMPLE
+
+    Some interesting black and white effects:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -BlackWhite -BlackWhiteTrs 40 -Pixel '#'
+
+
+    .EXAMPLE
+
+    Get some interesting monochrome effects:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Monochrome Yellow -Saturation .5 -Brightness 1
+
+    .EXAMPLE
+
+    Make an image brigther:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Brightness 2
+    
+    .EXAMPLE
+
+    Make an image less bright and saturated:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Brightness .8 -Saturation .5
+
+
+    .EXAMPLE
+
+    Get a grayscale effect by desaturation:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -Saturation 0
+
     .LINK
         
 #>
@@ -210,6 +246,8 @@ function Show-ConsoleImage {
         [System.int32]
         $Width = -1,
 
+
+
         # When drawing colored characters in foreground, set a custom background for more contrast.
         [Parameter(
             Mandatory = $false
@@ -234,7 +272,33 @@ function Show-ConsoleImage {
         [System.String]
         $Background,
         
-        # Set a custom character to display as a pixel.
+
+        # Get some interesting monochrome results.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        [ValidateSet("Red", "Yellow", "Green", "Cyan", "Blue", "Magenta")]
+        $Monochrome,
+
+
+        # Change the saturation of the image.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Single]
+        [ValidateRange(0, 10)]
+        $Saturation,
+
+        # Change the brightness of the image.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Single]
+        [ValidateRange(0, 10)]
+        $Brightness,
+
+
         [Parameter(
             Mandatory = $false
         )]
@@ -259,6 +323,8 @@ function Show-ConsoleImage {
         [switch]
         $NoAlpha,
 
+
+
         # Set with to maximum.
         [Parameter()]
         [switch]
@@ -269,10 +335,18 @@ function Show-ConsoleImage {
         [switch]
         $Center,
 
-        # Prints image as grayscale/black&white/monochrome grey or whatever to call it.
+        # Prints image as grayscale/monochrome grey or whatever to call it.
         [Parameter()]
         [switch]
         $Grayscale,
+
+        # Prints the picture in black and white
+        [Parameter()]
+        [switch]
+        $BlackWhite,
+        [Parameter()]
+        [System.Byte]
+        $BlackWhiteTrs = 200,
 
         # Draw image with random characters.
         [Parameter()]
@@ -280,6 +354,13 @@ function Show-ConsoleImage {
         $Random
     )
 
+
+    if ($PSBoundParameters.ContainsKey("Grayscale") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
+        throw [System.NotSupportedException]::new("Parameters 'Grayscale' and 'MonochromeHue' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("Pixel") -AND $PSBoundParameters.ContainsKey("Random")) {
+        throw [System.NotSupportedException]::new("Parameters 'Pixel' and 'Random' can't be used together.")
+    }
 
 
     if ($Clipboard) {
@@ -376,12 +457,49 @@ function Show-ConsoleImage {
         clear screen: `e[2J
     #>
 
+    $MonochromeHue = $null
+    switch ($Monochrome) {
+
+        Red {
+            $MonochromeHue = 0
+        }
+
+        Yellow {
+            $MonochromeHue = 60
+        }
+
+        Green {
+            $MonochromeHue = 120
+        }
+
+        Cyan {
+            $MonochromeHue = 180
+        }
+
+        Blue {
+            $MonochromeHue = 240
+        }
+
+        Magenta {
+            $MonochromeHue = 300
+        }
+
+        Default {
+            if ($PSBoundParameters.ContainsKey("Monochrome")) {
+                throw [System.NotSupportedException]::new("Parameters '$Monochrome' is not valid.")
+            }
+        }
+    }
+
     $imageOffset = $MaxWidth - $Image.Width - 2
     $imageOffset = [System.Convert]::ToInt32($imageOffset)
     $imageOffset = [System.Math]::Max($imageOffset, 0)
 
+
     $isInvisible = [System.Char]::IsControl($Pixel[0]) -OR [System.Char]::IsWhiteSpace($Pixel[0]) # Should hopefully cover most
     $drawMode = $isInvisible -AND !$Random ? 48 : 38 # Draw visible characters as foreground and invisible as background  
+    $BackgroundColor = [System.Management.Automation.PSStyle+BackgroundColor]::new()."$Background"
+    
     $pixelCharacters = $Pixel.Length -EQ 1 ? "$Pixel$Pixel" : $Pixel
     $alphaCharacters = "  "    
     
@@ -394,11 +512,33 @@ function Show-ConsoleImage {
 
         if ($drawMode -EQ 38 -AND $PSBoundParameters.ContainsKey("Background")) {
             # Make background black for better contrast, when draw mode is set to foreground
-            $characters += [System.Management.Automation.PSStyle+BackgroundColor]::new()."$Background"
+            $characters += $BackgroundColor
         }
+
 
         for ($col = 0; $col -LT $Image.Width; $col++) {
             $imagePixel = $Image.GetPixel($col, $row)
+
+            if ($PSBoundParameters.ContainsKey("Monochrome")) {
+                $ConvertedRGB = ConvertTo-RGB -Hue $MonochromeHue -Saturation 1 -Value 1
+                $RedPercent = $ConvertedRGB.R / 255
+                $GreenPercent = $ConvertedRGB.G / 255
+                $BluePercent = $ConvertedRGB.B / 255
+                $imagePixel = [System.Drawing.Color]::FromArgb(
+                    $imagePixel.A,
+                    $imagePixel.R * $RedPercent, 
+                    $imagePixel.G * $GreenPercent, 
+                    $imagePixel.B * $BluePercent
+                )
+            }
+
+            if ($PSBoundParameters.ContainsKey('Saturation') -OR $PSBoundParameters.ContainsKey('Brightness')) {
+                $SaturationCalculated = $imagePixel.GetSaturation() * ($PSBoundParameters.ContainsKey('Saturation') ? $Saturation : 1)
+                $BrightnessCalculated = $imagePixel.GetBrightness() * ($PSBoundParameters.ContainsKey('Brightness') ? $Brightness : 1)
+                $SaturationCalculated = [System.Math]::Min([System.Math]::Max($SaturationCalculated, 0), 1)
+                $BrightnessCalculated = [System.Math]::Min([System.Math]::Max($BrightnessCalculated, 0), 1)
+                $imagePixel = ConvertTo-RGB -Hue $imagePixel.GetHue() -Saturation $SaturationCalculated -Value $BrightnessCalculated -Alpha $imagePixel.A
+            }
 
             if ($Random) {
                 $randomChar1 = [System.Convert]::ToChar((Get-Random -Minimum 32 -Maximum 127))
@@ -406,11 +546,13 @@ function Show-ConsoleImage {
                 $pixelCharacters = "$randomChar1$randomChar2"
             }
             
+
+            # Simluate alpha-channel by drawing pixel in terminal background color or background color.
             if ($imagePixel.A -LT $AlphaTrs -AND !$NoAlpha) {
-                # Simluate alpha-channel by drawing pixel in terminal background.
-                $characters += "`e[0m$alphaCharacters"
+                $characters += $PSBoundParameters.ContainsKey("Background") ? "$BackgroundColor$alphaCharacters" : "`e[0m$alphaCharacters"
             }
 
+            # Draw pixels in grayscale.
             elseif ($Grayscale) {
                 # According to Rec. 601 Luma-Coefficients
                 # https://en.wikipedia.org/wiki/Luma_(video)#Rec._601_luma_versus_Rec._709_luma_coefficients
@@ -420,18 +562,36 @@ function Show-ConsoleImage {
                 # https://en.wikipedia.org/wiki/Grayscale#Luma_coding_in_video_systems
                 $grey = [System.Math]::Round($imagePixel.R * 0.299 + $imagePixel.G * 0.587 + $imagePixel.B * 0.114)
                 $characters += [System.String]::Format(
-                    # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary
+                    # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary.
                     "`e[{0};2;{1};{2};{3}m{4}", $drawMode, $grey, $grey, $grey, $pixelCharacters
                 )
             }
 
+            elseif ($BlackWhite) {
+                $luma = [System.Math]::Round($imagePixel.R * 0.299 + $imagePixel.G * 0.587 + $imagePixel.B * 0.114)
+                if ($luma -GT $BlackWhiteTrs) {
+                    $characters += [System.String]::Format(
+                        # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary.
+                        "`e[{0};2;{1};{2};{3}m{4}", $drawMode, 0, 0, 0, $pixelCharacters
+                    )
+                }
+                else {
+                    $characters += [System.String]::Format(
+                        # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary.
+                        "`e[{0};2;{1};{2};{3}m{4}", $drawMode, 255, 255, 255, $pixelCharacters
+                    )
+                }
+            }
+                        
+            # Draw pixels in their normal colors.
             else {
                 $characters += [System.String]::Format(
-                    # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary
+                    # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary.
                     "`e[{0};2;{1};{2};{3}m{4}", $drawMode, $imagePixel.R, $imagePixel.G, $imagePixel.B, $pixelCharacters
                 )
             }
         }
+
 
         $line = $characters -join ''
         $line += "`e[0m`n"

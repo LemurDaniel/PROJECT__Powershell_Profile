@@ -122,14 +122,19 @@
 
     Some interesting black and white effects:
 
-    PS> Show-ConsoleImage -Center -Testimage cutedog -BlackWhite -BlackWhiteTrs 40 -Pixel '#'
+    PS> Show-ConsoleImage -Center -Testimage cutedog -BlackWhite 40 -Pixel '#'
+    
+    .EXAMPLE
 
+    Some interesting black and white effects:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -BlackWhite 40 -Random
 
     .EXAMPLE
 
     Get some interesting monochrome effects:
 
-    PS> Show-ConsoleImage -Center -Testimage cutedog -Monochrome Yellow -Saturation .5 -Brightness 1
+    PS> Show-ConsoleImage -Center -Testimage cutedog -MonochromeColor Yellow -Saturation .5 -Brightness 1
 
     .EXAMPLE
 
@@ -143,6 +148,17 @@
 
     PS> Show-ConsoleImage -Center -Testimage cutedog -Brightness .8 -Saturation .5
 
+    .EXAMPLE
+
+    Get some more monochrome effects:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -MonochromeHue 270
+
+    .EXAMPLE
+
+    Get some more monochrome effects:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog -MonochromeHue 120
 
     .EXAMPLE
 
@@ -274,12 +290,21 @@ function Show-ConsoleImage {
         
 
         # Get some interesting monochrome results.
+        # Select a predefined color.
         [Parameter(
             Mandatory = $false
         )]
         [System.String]
-        [ValidateSet("Red", "Yellow", "Green", "Cyan", "Blue", "Magenta")]
-        $Monochrome,
+        [ValidateSet("Red", "Orange", "Yellow", "Green", "Cyan", "Violett", "Blue", "Magenta")]
+        $MonochromeColor,
+        # Get some interesting monochrome results.
+        # Select a hue by angle from the color wheel.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.Int32]
+        [ValidateRange(0, 360)]
+        $MonochromeHue,
 
 
         # Change the saturation of the image.
@@ -342,11 +367,8 @@ function Show-ConsoleImage {
 
         # Prints the picture in black and white
         [Parameter()]
-        [switch]
-        $BlackWhite,
-        [Parameter()]
         [System.Byte]
-        $BlackWhiteTrs = 200,
+        $BlackWhite = 40,
 
         # Draw image with random characters.
         [Parameter()]
@@ -361,7 +383,18 @@ function Show-ConsoleImage {
     if ($PSBoundParameters.ContainsKey("Pixel") -AND $PSBoundParameters.ContainsKey("Random")) {
         throw [System.NotSupportedException]::new("Parameters 'Pixel' and 'Random' can't be used together.")
     }
-
+    if ($PSBoundParameters.ContainsKey("MonochromeColor") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
+        throw [System.NotSupportedException]::new("Parameters 'MonochromeColor' and 'MonochromeHue' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("BlackWhite") -AND $PSBoundParameters.ContainsKey("Grayscale")) {
+        throw [System.NotSupportedException]::new("Parameters 'BlackWhite' and 'Grayscale' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("BlackWhite") -AND $PSBoundParameters.ContainsKey("MonochromeColor")) {
+        throw [System.NotSupportedException]::new("Parameters 'BlackWhite' and 'MonochromeColor' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("BlackWhite") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
+        throw [System.NotSupportedException]::new("Parameters 'BlackWhite' and 'MonochromeHue' can't be used together.")
+    }
 
     if ($Clipboard) {
         if (![System.Windows.Clipboard]::ContainsImage()) {
@@ -457,39 +490,47 @@ function Show-ConsoleImage {
         clear screen: `e[2J
     #>
 
-    $MonochromeHue = $null
-    switch ($Monochrome) {
+    if ($PSBoundParameters.ContainsKey("MonochromeColor")) {
+        switch ($MonochromeColor) {
 
-        Red {
-            $MonochromeHue = 0
-        }
+            Red {
+                $MonochromeHue = 0
+            }
 
-        Yellow {
-            $MonochromeHue = 60
-        }
+            Orange {
+                $MonochromeHue = 30
+            }
 
-        Green {
-            $MonochromeHue = 120
-        }
+            Yellow {
+                $MonochromeHue = 60
+            }
 
-        Cyan {
-            $MonochromeHue = 180
-        }
+            Green {
+                $MonochromeHue = 120
+            }
 
-        Blue {
-            $MonochromeHue = 240
-        }
+            Cyan {
+                $MonochromeHue = 180
+            }
 
-        Magenta {
-            $MonochromeHue = 300
-        }
+            Blue {
+                $MonochromeHue = 240
+            }
 
-        Default {
-            if ($PSBoundParameters.ContainsKey("Monochrome")) {
+            Violett {
+                $MonochromeHue = 270
+            }
+
+            Magenta {
+                $MonochromeHue = 300
+            }
+
+            Default {
                 throw [System.NotSupportedException]::new("Parameters '$Monochrome' is not valid.")
             }
         }
     }
+
 
     $imageOffset = $MaxWidth - $Image.Width - 2
     $imageOffset = [System.Convert]::ToInt32($imageOffset)
@@ -519,7 +560,7 @@ function Show-ConsoleImage {
         for ($col = 0; $col -LT $Image.Width; $col++) {
             $imagePixel = $Image.GetPixel($col, $row)
 
-            if ($PSBoundParameters.ContainsKey("Monochrome")) {
+            if ($PSBoundParameters.ContainsKey("MonochromeColor") -OR $PSBoundParameters.ContainsKey("MonochromeHue")) {
                 $ConvertedRGB = ConvertTo-RGB -Hue $MonochromeHue -Saturation 1 -Value 1
                 $RedPercent = $ConvertedRGB.R / 255
                 $GreenPercent = $ConvertedRGB.G / 255
@@ -567,18 +608,18 @@ function Show-ConsoleImage {
                 )
             }
 
-            elseif ($BlackWhite) {
+            elseif ($PSBoundParameters.ContainsKey("BlackWhite")) {
                 $luma = [System.Math]::Round($imagePixel.R * 0.299 + $imagePixel.G * 0.587 + $imagePixel.B * 0.114)
-                if ($luma -GT $BlackWhiteTrs) {
+                if ($luma -GT $BlackWhite) {
                     $characters += [System.String]::Format(
                         # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary.
-                        "`e[{0};2;{1};{2};{3}m{4}", $drawMode, 0, 0, 0, $pixelCharacters
+                        "`e[{0};2;{1};{2};{3}m{4}", $drawMode, 255, 255, 255, $pixelCharacters
                     )
                 }
                 else {
                     $characters += [System.String]::Format(
                         # Append an empty space two times, since it doesn't draw squares and 2/1 looks more squary.
-                        "`e[{0};2;{1};{2};{3}m{4}", $drawMode, 255, 255, 255, $pixelCharacters
+                        "`e[{0};2;{1};{2};{3}m{4}", $drawMode, 0, 0, 0, $pixelCharacters
                     )
                 }
             }

@@ -67,6 +67,11 @@ function Start-LoadingCircleAnimation {
         $windowWidth = $host.UI.RawUI.WindowSize.Width - ($host.UI.RawUI.WindowSize.Width / 8)
         $offsetWindowY = [System.Math]::Round($windowHeight / 2 - $DefaultParameters.Circle.Radius / 2) - 4
         
+        # Some information because TAU isn't as common as PI
+        # I like to use TAU as a shortand for 2*PI, but still love PI nonetheless.
+        # Some additional resources:
+        # - https://de.wikipedia.org/wiki/Kreiszahl#Alternative_Kreiszahl_τ
+        # - https://en.wikipedia.org/wiki/Tau#Mathematics
         $offsetAngle += [System.Math]::TAU / $steps
         for ($angle = [System.Math]::TAU / $steps * 2; $angle -LT [System.Math]::TAU; $angle += [System.Math]::TAU / $steps) {
         

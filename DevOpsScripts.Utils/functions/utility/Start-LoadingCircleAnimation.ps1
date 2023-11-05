@@ -72,6 +72,7 @@ function Start-LoadingCircleAnimation {
         # Some additional resources:
         # - https://de.wikipedia.org/wiki/Kreiszahl#Alternative_Kreiszahl_τ
         # - https://en.wikipedia.org/wiki/Tau#Mathematics
+        # - https://www.youtube.com/watch?v=ZPv1UV0rD8U # funniest talk on this
         $offsetAngle += [System.Math]::TAU / $steps
         for ($angle = [System.Math]::TAU / $steps * 2; $angle -LT [System.Math]::TAU; $angle += [System.Math]::TAU / $steps) {
         

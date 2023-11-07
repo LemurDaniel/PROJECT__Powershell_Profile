@@ -559,7 +559,7 @@ function Show-ConsoleImage {
 
             Sepia {
                 $MonochromeHue = 30
-                $Saturation = .2
+                $Saturation = .3
                 $Brightness = 2.5
             }
 

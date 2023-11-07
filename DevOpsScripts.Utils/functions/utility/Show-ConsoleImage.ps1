@@ -166,6 +166,14 @@
 
     PS> Show-ConsoleImage -Center -Testimage cutedog -Saturation 0
 
+
+
+    .EXAMPLE
+
+    Create a Sepia-like effect (Not Perfect though):
+
+    PS> show-ConsoleImage -Center -Testimage cutedog2 -Preset Sepia
+
     .LINK
         
 #>
@@ -349,6 +357,10 @@ function Show-ConsoleImage {
         $NoAlpha,
 
 
+        [Parameter()]
+        [System.String]
+        [ValidateSet('Sepia')]
+        $Preset,
 
         # Set with to maximum.
         [Parameter()]
@@ -394,6 +406,18 @@ function Show-ConsoleImage {
     }
     if ($PSBoundParameters.ContainsKey("BlackWhite") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
         throw [System.NotSupportedException]::new("Parameters 'BlackWhite' and 'MonochromeHue' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
+        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'MonochromeHue' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("BlackWhite")) {
+        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'BlackWhite' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("MonochromeColor")) {
+        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'MonochromeColor' can't be used together.")
+    }
+    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("Grayscale")) {
+        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'MonochromeHue' can't be used together.")
     }
 
     if ($Clipboard) {
@@ -526,7 +550,21 @@ function Show-ConsoleImage {
             }
 
             Default {
-                throw [System.NotSupportedException]::new("Parameters '$Monochrome' is not valid.")
+                throw [System.NotSupportedException]::new("Parameters '$MonochromeColor' is not valid.")
+            }
+        }
+    }
+    elseif ($PSBoundParameters.ContainsKey("Preset")) {
+        switch ($Preset) {
+
+            Sepia {
+                $MonochromeHue = 30
+                $Saturation = .2
+                $Brightness = 2.5
+            }
+
+            Default {
+                throw [System.NotSupportedException]::new("Parameters '$MonochromeColor' is not valid.")
             }
         }
     }
@@ -560,7 +598,7 @@ function Show-ConsoleImage {
         for ($col = 0; $col -LT $Image.Width; $col++) {
             $imagePixel = $Image.GetPixel($col, $row)
 
-            if ($PSBoundParameters.ContainsKey("MonochromeColor") -OR $PSBoundParameters.ContainsKey("MonochromeHue")) {
+            if ($PSBoundParameters.ContainsKey('Preset') -OR $PSBoundParameters.ContainsKey("MonochromeColor") -OR $PSBoundParameters.ContainsKey("MonochromeHue")) {
                 $ConvertedRGB = ConvertTo-RGB -Hue $MonochromeHue -Saturation 1 -Value 1
                 $RedPercent = $ConvertedRGB.R / 255
                 $GreenPercent = $ConvertedRGB.G / 255
@@ -573,9 +611,9 @@ function Show-ConsoleImage {
                 )
             }
 
-            if ($PSBoundParameters.ContainsKey('Saturation') -OR $PSBoundParameters.ContainsKey('Brightness')) {
-                $SaturationCalculated = $imagePixel.GetSaturation() * ($PSBoundParameters.ContainsKey('Saturation') ? $Saturation : 1)
-                $BrightnessCalculated = $imagePixel.GetBrightness() * ($PSBoundParameters.ContainsKey('Brightness') ? $Brightness : 1)
+            if ($PSBoundParameters.ContainsKey('Preset') -OR $PSBoundParameters.ContainsKey('Saturation') -OR $PSBoundParameters.ContainsKey('Brightness')) {
+                $SaturationCalculated = $imagePixel.GetSaturation() * ($Null -NE $Saturation ? $Saturation : 1)
+                $BrightnessCalculated = $imagePixel.GetBrightness() * ($Null -NE $Brightness ? $Brightness : 1)
                 $SaturationCalculated = [System.Math]::Min([System.Math]::Max($SaturationCalculated, 0), 1)
                 $BrightnessCalculated = [System.Math]::Min([System.Math]::Max($BrightnessCalculated, 0), 1)
                 $imagePixel = ConvertTo-RGB -Hue $imagePixel.GetHue() -Saturation $SaturationCalculated -Value $BrightnessCalculated -Alpha $imagePixel.A
@@ -593,6 +631,7 @@ function Show-ConsoleImage {
                 $characters += $PSBoundParameters.ContainsKey("Background") ? "$BackgroundColor$alphaCharacters" : "`e[0m$alphaCharacters"
             }
 
+        
             # Draw pixels in grayscale.
             elseif ($Grayscale) {
                 # According to Rec. 601 Luma-Coefficients

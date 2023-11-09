@@ -43,7 +43,9 @@
 
 function New-GithubPullRequest {
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        DefaultParameterSetName = "FromBranch"
+    )]
     [Alias('git-pull')]
     param (
         [Parameter(
@@ -176,6 +178,10 @@ function New-GithubPullRequest {
         $FromIssue,
 
 
+        # Name the Pull-Request after the branch.
+        [Parameter()]
+        [switch]
+        $FromBranch,
 
         # Flag to create a draft pull request.
         [Parameter()]
@@ -242,7 +248,13 @@ function New-GithubPullRequest {
             $null = $Request.Body.Add('body', $Body)
         }
 
-        $pullRequest = Invoke-GithubRest @Request
+        else {
+            $branchName = git -C $repositoryData.LocalPath branch --show-current
+            $null = $Request.Body.Add('title', $branchName)
+            $null = $Request.Body.Add('body', "")
+        }
+
+        $pullRequest = Invoke-GithubRest @Request -Verbose
         Write-Host ' 🎉 New Pull-Request created! 🎉  '
     }
 
@@ -255,5 +267,5 @@ function New-GithubPullRequest {
         Start-Process $pullRequest.html_url
     }
 
-    return $pullRequests
+    return $pullRequest
 }

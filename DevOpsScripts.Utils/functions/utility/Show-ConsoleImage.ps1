@@ -170,6 +170,12 @@
 
     .EXAMPLE
 
+    A cute dog in a pool and return the pixel and character count:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog_in_pool -PixelCount
+
+    .EXAMPLE
+
     Create a Sepia-like effect (Not Perfect though):
 
     PS> show-ConsoleImage -Center -Testimage cutedog2 -Preset Sepia
@@ -385,40 +391,31 @@ function Show-ConsoleImage {
         # Draw image with random characters.
         [Parameter()]
         [switch]
-        $Random
+        $Random,
+
+        # A switch that returns the pixel count after image printing
+        [Parameter()]
+        [switch]
+        $PixelCount
     )
 
+    $exclusiveParameters = @("MonoChromeHue", "MonoChromeColor", "Preset", "BlackWhite", "GrayScale")
 
-    if ($PSBoundParameters.ContainsKey("Grayscale") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
-        throw [System.NotSupportedException]::new("Parameters 'Grayscale' and 'MonochromeHue' can't be used together.")
+    $firstFoundParameter = $Null
+    foreach ($parameter in $exclusiveParameters) {
+        if ($parameter -notin $PSBoundParameters.Keys) {
+            continue
+        }
+
+        if ($null -EQ $firstFoundParameter) {
+            $firstFoundParameter = $parameter
+        }
+        else {
+            throw [System.NotSupportedException]::new("Parameters '$firstFoundParameter' and '$parameter' can't be used together.")
+        }
     }
-    if ($PSBoundParameters.ContainsKey("Pixel") -AND $PSBoundParameters.ContainsKey("Random")) {
-        throw [System.NotSupportedException]::new("Parameters 'Pixel' and 'Random' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("MonochromeColor") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
-        throw [System.NotSupportedException]::new("Parameters 'MonochromeColor' and 'MonochromeHue' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("BlackWhite") -AND $PSBoundParameters.ContainsKey("Grayscale")) {
-        throw [System.NotSupportedException]::new("Parameters 'BlackWhite' and 'Grayscale' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("BlackWhite") -AND $PSBoundParameters.ContainsKey("MonochromeColor")) {
-        throw [System.NotSupportedException]::new("Parameters 'BlackWhite' and 'MonochromeColor' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("BlackWhite") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
-        throw [System.NotSupportedException]::new("Parameters 'BlackWhite' and 'MonochromeHue' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("MonochromeHue")) {
-        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'MonochromeHue' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("BlackWhite")) {
-        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'BlackWhite' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("MonochromeColor")) {
-        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'MonochromeColor' can't be used together.")
-    }
-    if ($PSBoundParameters.ContainsKey("Preset") -AND $PSBoundParameters.ContainsKey("Grayscale")) {
-        throw [System.NotSupportedException]::new("Parameters 'Preset' and 'MonochromeHue' can't be used together.")
-    }
+
+
 
     if ($Clipboard) {
         if (![System.Windows.Clipboard]::ContainsImage()) {
@@ -681,5 +678,21 @@ function Show-ConsoleImage {
             Start-Sleep -Milliseconds $Delay
         }
     } 
+
+    if ($PixelCount) {
+        $totalCount = $Width * $Height
+        $cultureInfo = [System.Globalization.CultureInfo]::CurrentCulture
+        return @(
+            [System.String]::Format(
+                $cultureInfo.NumberFormat, "{0:n0} pixels", $totalCount
+            ),
+            [System.String]::Format(
+                $cultureInfo.NumberFormat, "{0:n0} drawn characters", $totalCount * $pixelCharacters.Length
+            ),
+            [System.String]::Format(
+                $cultureInfo.NumberFormat, "{0:n0}x{1:n0} current Resolution", $Width, $Height
+            )
+        )
+    }
 
 }

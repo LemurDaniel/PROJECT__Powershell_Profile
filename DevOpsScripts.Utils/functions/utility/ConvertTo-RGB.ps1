@@ -76,8 +76,6 @@ function ConvertTo-RGB {
         $Alpha = 255
     )
 
-    $hue = $hue % 360
-
     $Red = $null
     $Blue = $null
     $Green = $null
@@ -96,7 +94,7 @@ function ConvertTo-RGB {
 
         Switch ($h) {
 
-            0 {
+            { $_ -in @(0, 6) } {
                 $Red = $Value
                 $Green = $t
                 $Blue = $p

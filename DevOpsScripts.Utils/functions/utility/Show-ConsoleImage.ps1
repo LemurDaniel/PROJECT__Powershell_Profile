@@ -327,7 +327,7 @@ function Show-ConsoleImage {
         )]
         [System.Single]
         [ValidateRange(0, 10)]
-        $Saturation,
+        $Saturation = 1,
 
         # Change the brightness of the image.
         [Parameter(
@@ -335,7 +335,7 @@ function Show-ConsoleImage {
         )]
         [System.Single]
         [ValidateRange(0, 10)]
-        $Brightness,
+        $Brightness = 1,
 
 
         [Parameter(
@@ -609,8 +609,8 @@ function Show-ConsoleImage {
             }
 
             if ($PSBoundParameters.ContainsKey('Preset') -OR $PSBoundParameters.ContainsKey('Saturation') -OR $PSBoundParameters.ContainsKey('Brightness')) {
-                $SaturationCalculated = $imagePixel.GetSaturation() * ($Null -NE $Saturation ? $Saturation : 1)
-                $BrightnessCalculated = $imagePixel.GetBrightness() * ($Null -NE $Brightness ? $Brightness : 1)
+                $SaturationCalculated = $imagePixel.GetSaturation() * $Saturation
+                $BrightnessCalculated = $imagePixel.GetBrightness() * $Brightness
                 $SaturationCalculated = [System.Math]::Min([System.Math]::Max($SaturationCalculated, 0), 1)
                 $BrightnessCalculated = [System.Math]::Min([System.Math]::Max($BrightnessCalculated, 0), 1)
                 $imagePixel = ConvertTo-RGB -Hue $imagePixel.GetHue() -Saturation $SaturationCalculated -Value $BrightnessCalculated -Alpha $imagePixel.A

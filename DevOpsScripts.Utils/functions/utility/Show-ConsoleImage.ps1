@@ -172,7 +172,14 @@
 
     A cute dog in a pool and return the pixel and character count:
 
+    PS> Show-ConsoleImage -Center -Testimage cutedog_with_christmas_hat -PixelCount
+
+    .EXAMPLE
+
+    Example with pixelcount of a dog with a christmas hat:
+
     PS> Show-ConsoleImage -Center -Testimage cutedog_in_pool -PixelCount
+
 
     .EXAMPLE
 

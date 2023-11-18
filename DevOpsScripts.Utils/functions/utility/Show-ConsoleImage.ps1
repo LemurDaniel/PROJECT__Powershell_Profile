@@ -180,6 +180,11 @@
 
     PS> Show-ConsoleImage -Center -Testimage cutedog_in_pool -PixelCount
 
+    .EXAMPLE
+
+    Example of a cute dog driving around:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog_likes_driving -GrayScale
 
     .EXAMPLE
 

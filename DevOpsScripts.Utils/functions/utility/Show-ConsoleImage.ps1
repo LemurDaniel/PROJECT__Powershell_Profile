@@ -188,6 +188,12 @@
 
     .EXAMPLE
 
+    Another example of a cute dog:
+
+    PS> Show-ConsoleImage -Center -Testimage cutedog3
+
+    .EXAMPLE
+
     Create a Sepia-like effect (Not Perfect though):
 
     PS> show-ConsoleImage -Center -Testimage cutedog2 -Preset Sepia

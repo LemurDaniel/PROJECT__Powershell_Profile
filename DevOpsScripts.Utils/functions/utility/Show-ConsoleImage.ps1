@@ -198,6 +198,12 @@
 
     PS> show-ConsoleImage -Center -Testimage cutedog2 -Preset Sepia
 
+    .EXAMPLE
+
+    Example of a cute dog in a raing coat:
+
+    PS> show-ConsoleImage -Center -Testimage cutedog_in_raincoat -Preset Sepia
+
     .LINK
         
 #>

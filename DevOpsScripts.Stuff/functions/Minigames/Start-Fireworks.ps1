@@ -44,7 +44,11 @@ function Start-Fireworks {
         $TickIntervall = 5
     )
 
+<<<<<<< HEAD
     $fireworkExplosionTypes = (Import-PowerShellDataFile -Path $t).fire_works
+=======
+    $fireworkExplosionTypes = (Import-PowerShellDataFile -Path "$PSScriptRoot/fireworks.psd1").fire_works
+>>>>>>> 5c1beb54b59cf479c1e1b399f4436f044f855d35
 
     # The configurations for this game
     $Configuration = @{

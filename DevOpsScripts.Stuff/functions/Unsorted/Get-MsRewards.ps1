@@ -37,15 +37,27 @@ function Get-MsRewards {
 
         if ($calls - $current -GT 1) {
             $progressBar.PercentComplete = [System.Math]::Floor($current / $calls * 100)
-            $sleepMilliseconds = Get-Random -Minimum 10000 -Maximum 12000
-            for ($sleep = 0; $sleep -LT $sleepMilliseconds; $sleep += 100) {
-                Start-Sleep -Milliseconds 100
 
-                $secondsLeft = [System.Math]::Floor(($sleepMilliseconds - $sleep) / 1000)
-                $milliSecondsLeft = [System.Math]::Floor(($sleepMilliseconds - $sleep) % 1000 / 100)
-                $progressBar.Status = "$($current+1)/$calls - (Next in $secondsLeft.$milliSecondsLeft Seconds)"
-
-                Write-Progress @progressBar
+            if ($current -NE 0 -AND $current % 3 -EQ 0) {
+                $sleepSeconds = Get-Random -Minimum 120 -Maximum 200
+                while ($sleepSeconds-- -GT 0) {
+                    Start-Sleep -Seconds 1
+                    $progressBar.Status = "$($current+1)/$calls - (Next in $sleepSeconds Seconds)"
+                    Write-Progress @progressBar
+                }
+            }
+            else {
+                $sleepMilliseconds = Get-Random -Minimum 10000 -Maximum 20000
+                for ($sleep = 0; $sleep -LT $sleepMilliseconds; $sleep += 100) {
+                    Start-Sleep -Milliseconds 100
+    
+                    $secondsLeft = [System.Math]::Floor(($sleepMilliseconds - $sleep) / 1000)
+                    $milliSecondsLeft = [System.Math]::Floor(($sleepMilliseconds - $sleep) % 1000 / 100)
+                    $progressBar.Status = "$($current+1)/$calls - (Next in $secondsLeft.$milliSecondsLeft Seconds)"
+    
+                    Write-Progress @progressBar
+                }
+    
             }
         }
         

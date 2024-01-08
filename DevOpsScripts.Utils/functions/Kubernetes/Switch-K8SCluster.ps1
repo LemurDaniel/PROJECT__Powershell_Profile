@@ -77,7 +77,7 @@ function Switch-K8SCluster {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-K8SClusterResources -Type Namespace -Cluster $PSBoundParameters['Cluster']).metadata.name
+                [System.String]::isNullOrEmpty($_) -OR $_ -in (Get-K8SClusterResources -Type Namespace -Cluster $PSBoundParameters['Cluster']).metadata.name
             }
         )]
         $Namespace
@@ -89,7 +89,8 @@ function Switch-K8SCluster {
         $null = kubectl config set-context --current --namespace=$Namespace
     }
     else {
-        $Namespace = (Get-K8SContexts -Current).namespace
+        $Namespace = (Get-K8SContexts -Current).namespace 
+        $Namespace = [System.String]::isNullOrEmpty($Namespace) ? "Default" : $Namespace
     }
 
     Write-Host -ForegroundColor Magenta "Switched to Cluster: '$Cluster' with namespace: '$Namespace'"

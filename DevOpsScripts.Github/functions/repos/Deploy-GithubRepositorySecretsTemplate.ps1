@@ -118,16 +118,31 @@ function Deploy-GithubRepositorySecretsTemplate {
     }
     
     Set-GithubRepositorySecret -Secrets $templateFile['repository_secrets'] @repositoryInfo
+    Set-GithubRepositoryVariable -Variables $templateFile['repository_variables'] @repositoryInfo
    
     $environments = Get-GithubEnvironments @repositoryInfo
-    $templateFile['environment_secrets'] 
-    | ForEach-Object {
-        if ($_.environment_name -notin $environments.name) {
-            Write-Host -ForeGroundColor GREEN "Create Environment '$($_.environment_name)'"
-            $null = Set-GithubEnvironment -Name $_.environment_name @repositoryInfo
-        }
+    $environmentNames = @()
+    $environmentNames += $templateFile['environment_secrets'].environment_name
+    $environmentNames += $templateFile['environment_variables'].environment_name
 
-        Set-GithubRepositorySecret -Environment $_.environment_name -Secrets $_.secrets @repositoryInfo
+    $environmentNames 
+    | Sort-Object | Get-Unique
+    | ForEach-Object {
+        if ($_ -notin $environments.name) {
+            Write-Host -ForeGroundColor GREEN "Create Environment '$($_)'"
+            $null = Set-GithubEnvironment -Name $_ @repositoryInfo
+        }
     }
 
+    $templateFile['environment_secrets'] 
+    | ForEach-Object {
+        Write-Host -ForeGroundColor GREEN "-- Setting Environment Secrets '$($_.environment_name)'"
+        Set-GithubRepositorySecret -Environment $_.environment_name -Secrets $_.secrets @repositoryInfo
+    }
+    $environments = Get-GithubEnvironments @repositoryInfo
+    $templateFile['environment_variables'] 
+    | ForEach-Object {
+        Write-Host -ForeGroundColor GREEN "-- Setting Environment Variables '$($_.environment_name)'"
+        Set-GithubRepositoryVariable -Environment $_.environment_name -Variables $_.variables @repositoryInfo
+    }
 }

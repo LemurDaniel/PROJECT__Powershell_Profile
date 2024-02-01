@@ -13,16 +13,19 @@
 
     .LINK
 
-    {
-        "repository_secrets": {
-
-        },
-        "environment_secrets": [
+{
+    "repository_secrets": {},
+    "repository_variables": {},
+    "environment_secrets": [
         {
             "environment_name": "dev",
-            "secrets": {
-
-            }
+            "secrets": {}
+        }
+    ],
+    "environment_variables": [
+        {
+            "environment_name": "dev",
+            "variables": {}
         }
     ]
 }
@@ -66,48 +69,79 @@ function Save-GithubRepositorySecretsTemplate {
     )
 
     $templateFile = @{
-        repository_secrets  = @{}
-        environment_secrets = @()
+        repository_secrets    = @{}
+        repository_variables  = @{}
+        environment_secrets   = @()
+        environment_variables = @()
     }
     
     $TemplateFilePath = Resolve-Path -Path "$((Get-Location).Path)/$TemplateFilePath"
     $data = Get-Content -Path $TemplateFilePath | ConvertFrom-Json -AsHashtable
-    if (!$data.ContainsKey('repository_secrets')) {
-        throw [System.InvalidOperationException]::new("File is invalid! Missing 'repository_secrets'")
-    }
-    if ($null -NE $data['repository_secrets']) {
-        $data['repository_secrets'].GetEnumerator() |
-        ForEach-Object {
+
+    if ($data.ContainsKey('repository_secrets')) {
+        $data['repository_secrets'].GetEnumerator()
+        | ForEach-Object {
             $jsonValue = $_.Value | ConvertTo-Json
             $null = $templateFile['repository_secrets'].add($_.Key, $jsonValue)
         }
     }
-    
-    if (!$data.ContainsKey('environment_secrets')) {
-        throw [System.InvalidOperationException]::new("File is invalid! Missing 'environment_secrets'")
-    }
-    $data['environment_secrets'] | 
-    ForEach-Object {
-        if (!$_.ContainsKey("environment_name")) {
-            throw [System.InvalidOperationException]::new("File is invalid! Missing 'environment_name'")
-        }
-        if (!$_.ContainsKey("secrets") -OR $Null -EQ $_['Secrets']) {
-            $_['Secrets'] = @{}
-        }
-    
-        $environmentDefinition = @{
-            environment_name = $_['environment_name']
-            secrets          = @{}
-        }
-    
-        $_['secrets'].GetEnumerator() | ForEach-Object {
+    if ($data.ContainsKey('repository_variables')) {
+        $data['repository_variables'].GetEnumerator() 
+        | ForEach-Object {
             $jsonValue = $_.Value | ConvertTo-Json
-            $null = $environmentDefinition['secrets'].add($_.Key, $jsonValue)
+            $null = $templateFile['repository_variables'].add($_.Key, $jsonValue)
         }
-    
-        $templateFile['environment_secrets'] += $environmentDefinition
     }
     
+    if ($data.ContainsKey('environment_secrets')) {
+        $data['environment_secrets'] 
+        | ForEach-Object {
+            if (!$_.ContainsKey("environment_name")) {
+                throw [System.InvalidOperationException]::new("File is invalid! Missing 'environment_name'")
+            }
+            if (!$_.ContainsKey("secrets") -OR $Null -EQ $_['secrets']) {
+                $_['secrets'] = @{}
+            }
+    
+            $environmentDefinition = @{
+                environment_name = $_['environment_name']
+                secrets          = @{}
+            }
+    
+            $_['secrets'].GetEnumerator() 
+            | ForEach-Object {
+                $jsonValue = $_.Value | ConvertTo-Json
+                $null = $environmentDefinition['secrets'].add($_.Key, $jsonValue)
+            }
+    
+            $templateFile['environment_secrets'] += $environmentDefinition
+        }
+    }
+    
+    if ($data.ContainsKey('environment_variables')) {
+        $data['environment_variables'] 
+        | ForEach-Object {
+            if (!$_.ContainsKey("environment_name")) {
+                throw [System.InvalidOperationException]::new("File is invalid! Missing 'environment_name'")
+            }
+            if (!$_.ContainsKey("variables") -OR $Null -EQ $_['variables']) {
+                $_['variables'] = @{}
+            }
+    
+            $environmentDefinition = @{
+                environment_name = $_['environment_name']
+                variables        = @{}
+            }
+    
+            $_['variables'].GetEnumerator() 
+            | ForEach-Object {
+                $jsonValue = $_.Value | ConvertTo-Json
+                $null = $environmentDefinition['variables'].add($_.Key, $jsonValue)
+            }
+    
+            $templateFile['environment_variables'] += $environmentDefinition
+        }
+    }
 
     $templates = Get-UtilsCache -Identifier "github.secrets_templates.all" -AsHashtable
     if ($null -EQ $templates) {

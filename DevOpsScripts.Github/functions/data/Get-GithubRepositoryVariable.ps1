@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Adds or Updates a Variable in a Github-Repository via API.
+    Gets all variables on a repository.
 
     .DESCRIPTION
-    Adds or Updates a Variable in a Github-Repository via API.
+    Gets all variables on a repository.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,43 +14,23 @@
 
     .EXAMPLE
 
-    Adding/Updating a secret to the repository on the current path:
+    Get all variables on the repository for the current path:
 
-    PS> Set-GithubRepositoryVariable -Name "VariableName" -Value "Value"
-
-    .EXAMPLE
-
-    Adding/Updating multiple secrets to the repository on the current path:
-
-    PS> Set-GithubRepositoryVariable -Variables @{
-        Secret1 = "Value1"
-        Secret2 = "Value2"
-    }
+    PS> Get-GithubRepositoryVariable 
 
     .EXAMPLE
 
-    Adding/Updating a secret in a specific environment in the repository on the current path:
+    Get all variables of an environment on the repository for the current path:
 
-    PS> Set-GithubRepositoryVariable -Environment dev -Name "VariableName" -Value "Value"
-
-    .EXAMPLE
-
-    Adding/Updating multiple secrets in a specific environment in the repository on the current path:
-
-    PS> Set-GithubRepositoryVariable -Environment dev -Variables @{
-        Secret1 = "SecretValue"
-        Secret2 = "SecretValue"
-    }
+    PS> Get-GithubRepositoryVariable -Environment dev
 
     .LINK
         
 #>
 
-function Set-GithubRepositoryVariable {
+function Get-GithubRepositoryVariable {
 
-    [CmdletBinding(
-        DefaultParameterSetName = "Single"
-    )]
+    [CmdletBinding()]
     param (
         [Parameter(
             Position = 3,
@@ -123,77 +103,22 @@ function Set-GithubRepositoryVariable {
 
 
 
-        # The Environment to set the variable in. Leaving this empty creates a Repository variable.
+        # The Environment where to get the variable from
         [Parameter(
             Mandatory = $false
         )]
         [System.String]
-        $Environment,
-
-        # The name of the variable.
-        [Parameter(
-            Mandatory = $true,
-            ParameterSetName = "Single"
-        )]
-        [System.String]
-        $Name,
-
-        # The value of the variable.
-        [Parameter(
-            Mandatory = $true,
-            ParameterSetName = "Single"
-        )]
-        [System.String]
-        $Value,
-
-        # The hashtable of variable names and values to add to the repository.
-        [Parameter(
-            Mandatory = $true,
-            ParameterSetName = "Hashtable"
-        )]
-        [System.Collections.Hashtable]
-        $Variables
+        $Environment
     )
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
-
-    if (!$PSBoundParameters.ContainsKey("Variables")) {
-        $Variables = [System.Collections.Hashtable]::new()
-        $null = $Variables.add($Name, $Value)
-    }
-
 
     $remoteUrl = "/repos/$($repositoryData.full_name)/actions/variables"
     if (![System.String]::IsNullOrEmpty($Environment)) {
         $remoteUrl = "/repositories/$($repositoryData.id)/environments/$Environment/variables"
     }
 
-    $existingVariables = Invoke-GithubRest -API $remoteUrl -Account $Account
+    return Invoke-GithubRest -API $remoteUrl -Account $Account
+    | Select-Object -ExpandProperty variables
 
-    $Variables.GetEnumerator() 
-    | ForEach-Object {
-
-        $Request = @{
-            METHOD  = $null
-            API     = $remoteUrl
-            Account = $repositoryData.Account
-            Body    = @{
-                name  = $_.Key
-                value = $_.Value
-            }
-        }
-
-        if ($_.Key -in $existingVariables.variables.name) {
-            $Request.METHOD = "PATCH"
-            $Request.API = "$remoteUrl/$($_.Key)"
-            Write-Host -ForegroundColor GREEN "Updating Variable '$($_.Key)'"
-        }
-        else {
-            $Request.METHOD = "POST"
-            Write-Host -ForegroundColor GREEN "Adding Variable '$($_.Key)'"
-        }
-
-        $null = Invoke-GithubRest @Request
-    }
-    
 }

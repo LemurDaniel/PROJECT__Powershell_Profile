@@ -138,7 +138,7 @@ function Open-GithubBrowser {
             {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-                $validValues = (Get-Content -Path "$PSScriptRoot/repository.tabs.json" | ConvertFrom-Json -AsHashtable).Keys
+                $validValues = (Get-Content -Path "$PSScriptRoot/../.resources/repository.tabs.json" | ConvertFrom-Json -AsHashtable).Keys
 
                 $validValues
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
@@ -147,7 +147,7 @@ function Open-GithubBrowser {
         )]
         [ValidateScript(
             {
-                $_ -in (Get-Content -Path "$PSScriptRoot/repository.tabs.json" | ConvertFrom-Json -AsHashtable).Keys
+                $_ -in (Get-Content -Path "$PSScriptRoot/../.resources/repository.tabs.json" | ConvertFrom-Json -AsHashtable).Keys
             }
         )]
         [Alias('t')]
@@ -157,7 +157,7 @@ function Open-GithubBrowser {
     $repository = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Name
 
     if ($PSBoundParameters.ContainsKey('Tab')) {
-        $urlPath = (Get-Content -Path "$PSScriptRoot/repository.tabs.json" | ConvertFrom-Json -AsHashtable)[$Tab]
+        $urlPath = (Get-Content -Path "$PSScriptRoot/../.resources/repository.tabs.json" | ConvertFrom-Json -AsHashtable)[$Tab]
         Start-Process "$($repository.html_url)$urlPath"
     }
     else {

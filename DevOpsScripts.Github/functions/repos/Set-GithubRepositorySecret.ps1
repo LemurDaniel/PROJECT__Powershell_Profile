@@ -214,7 +214,7 @@ function Set-GithubRepositorySecret {
     | ForEach-Object {
 
         Write-Host -ForegroundColor GREEN "Setting Secret '$($_.Key)'"
-        $encryptedSecret = node "$PSScriptRoot/encrypt.js" $_.Value $publicKey.key
+        $encryptedSecret = node "$PSScriptRoot/../.resources/encrypt.js" $_.Value $publicKey.key
 
         $Request = @{
             METHOD  = "PUT"

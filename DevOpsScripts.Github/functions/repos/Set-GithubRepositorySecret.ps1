@@ -212,6 +212,8 @@ function Set-GithubRepositorySecret {
 
     $Secrets.GetEnumerator() 
     | ForEach-Object {
+
+        Write-Host -ForegroundColor GREEN "Setting Secret '$($_.Key)'"
         $encryptedSecret = node "$PSScriptRoot/encrypt.js" $_.Value $publicKey.key
 
         $Request = @{
@@ -224,7 +226,7 @@ function Set-GithubRepositorySecret {
             }
         }
 
-        Invoke-GithubRest @Request -Verbose
+        Invoke-GithubRest @Request
     }
     
 }

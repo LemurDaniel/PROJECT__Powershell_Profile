@@ -127,7 +127,7 @@ function Deploy-GithubRepositorySecretsTemplate {
             $null = Set-GithubEnvironment -Name $_.environment_name @repositoryInfo
         }
 
-        Set-GithubRepositorySecret -Environment $_.environment_name -Secrets $templateFile['repository_secrets'] @repositoryInfo
+        Set-GithubRepositorySecret -Environment $_.environment_name -Secrets $_.secrets @repositoryInfo
     }
 
 }

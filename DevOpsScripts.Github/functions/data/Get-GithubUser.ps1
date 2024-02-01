@@ -52,7 +52,7 @@ function Get-GithubUser {
         | Where-Object -Property primary -EQ $true 
         | Select-Object -First 1 -ExpandProperty email
 
-        $user = Set-UtilsCache -Object $user -Identifier "git.user.$((Get-GithubAccountContext -Account $Account).cacheRef)"
+        $user = Set-UtilsCache -Object $user -Alive 1440 -Identifier "git.user.$((Get-GithubAccountContext -Account $Account).cacheRef)"
     }
     return $user
 }

@@ -226,7 +226,7 @@ function Set-GithubRepositorySecret {
             }
         }
 
-        Invoke-GithubRest @Request
+        $null = Invoke-GithubRest @Request
     }
     
 }

@@ -81,14 +81,14 @@ function Save-GithubRepositorySecretsTemplate {
     if ($data.ContainsKey('repository_secrets')) {
         $data['repository_secrets'].GetEnumerator()
         | ForEach-Object {
-            $jsonValue = $_.Value | ConvertTo-Json
+            $jsonValue = $_.Value.GetType() -EQ [System.String] ? $_.Value : ($_.Value | ConvertTo-Json -Compress)
             $null = $templateFile['repository_secrets'].add($_.Key, $jsonValue)
         }
     }
     if ($data.ContainsKey('repository_variables')) {
         $data['repository_variables'].GetEnumerator() 
         | ForEach-Object {
-            $jsonValue = $_.Value | ConvertTo-Json
+            $jsonValue = $_.Value.GetType() -EQ [System.String] ? $_.Value : ($_.Value | ConvertTo-Json -Compress)
             $null = $templateFile['repository_variables'].add($_.Key, $jsonValue)
         }
     }
@@ -110,7 +110,7 @@ function Save-GithubRepositorySecretsTemplate {
     
             $_['secrets'].GetEnumerator() 
             | ForEach-Object {
-                $jsonValue = $_.Value | ConvertTo-Json
+                $jsonValue = $_.Value.GetType() -EQ [System.String] ? $_.Value : ($_.Value | ConvertTo-Json -Compress)
                 $null = $environmentDefinition['secrets'].add($_.Key, $jsonValue)
             }
     
@@ -135,7 +135,7 @@ function Save-GithubRepositorySecretsTemplate {
     
             $_['variables'].GetEnumerator() 
             | ForEach-Object {
-                $jsonValue = $_.Value | ConvertTo-Json
+                $jsonValue = $_.Value.GetType() -EQ [System.String] ? $_.Value : ($_.Value | ConvertTo-Json -Compress)
                 $null = $environmentDefinition['variables'].add($_.Key, $jsonValue)
             }
     

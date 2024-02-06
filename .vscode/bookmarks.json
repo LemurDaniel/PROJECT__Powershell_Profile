@@ -9,6 +9,16 @@
 					"label": "Add Body Params"
 				}
 			]
+		},
+		{
+			"path": "DevOpsScripts.Github/functions/repos/Set-GithubBranchProtection.ps1",
+			"bookmarks": [
+				{
+					"line": 155,
+					"column": 8,
+					"label": "configure remaining parameters"
+				}
+			]
 		}
 	]
 }

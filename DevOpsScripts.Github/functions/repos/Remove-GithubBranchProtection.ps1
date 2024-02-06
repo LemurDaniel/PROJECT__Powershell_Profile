@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Gets the environments for a github repository.
+    Removes branch protection rules for a branch.
 
     .DESCRIPTION
-    Gets the environments for a github repository.
+    Removes branch protection rules for a branch.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -11,33 +11,20 @@
     .OUTPUTS
     None
 
-    .EXAMPLE
-
-    Get a list of environments for the repository on the current path:
-
-    PS> Get-GithubEnvironments
-
 
     .EXAMPLE
 
-    Get a list of environments of a specific repository in another account:
+    Removing the branch protection on a branch:
 
-    PS> Get-GithubEnvironments -Account <autocompleted_account> <autocomplete_repo>
-
-
-    .EXAMPLE
-
-    Get a list of environments in another Account and another Context:
-
-    PS> Get-GithubEnvironments -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
-    
+    PS> Remove-GithubBranchProtection -Branch <autocompleted_branch>
 
     .LINK
         
 #>
 
-function Get-GithubEnvironments {
+function Remove-GithubBranchProtection {
 
+    [CmdletBinding()]
     param (
         [Parameter(
             Position = 3,
@@ -87,6 +74,7 @@ function Get-GithubEnvironments {
         [Alias('c')]
         $Context,
 
+        
         # The Name of the Github Repository.
         [Parameter(
             Mandatory = $false,
@@ -97,30 +85,45 @@ function Get-GithubEnvironments {
                 param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
                 $Context = Get-GithubContextInfo -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context']
                 $validValues = $Context.repositories.Name
-        
+
                 $validValues 
                 | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
                 | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
         [System.String]
+        [Alias('r')]
         $Repository,
 
-        [Parameter()]
-        [switch]
-        $Refresh
+
+
+        # The name of the target branch
+        [Parameter(
+            Mandatory = $true
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                $validValues = Get-GithubBranches -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context'] -Repository $fakeBoundParameters['Repository']
+                | Select-Object -ExpandProperty name
+
+                $validValues 
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Branch
     )
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
-    $Identifier = "environments.$($repositoryData.Context).$($repositoryData.name)"
-    $remoteUrl = "/repos/$($repositoryData.full_name)/environments"
-    $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
-
-    if ($null -EQ $data -OR $Refresh) {
-        $data = Invoke-GithubRest -Method GET -API $remoteUrl -Account $repositoryData.Account
-        $data = Set-GithubCache -Object $data.environments -Identifier $Identifier -Account $repositoryData.Account
+    $Request = @{
+        METHOD  = "DELETE"
+        API     = "/repos/$($repositoryData.full_name)/branches/$Branch/protection"
+        Account = $repositoryData.Account
     }
 
-    return $data
+    return Invoke-GithubRest @Request
+    
 }

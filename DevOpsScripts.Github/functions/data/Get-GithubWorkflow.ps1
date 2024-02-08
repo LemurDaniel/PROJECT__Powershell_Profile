@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Get a list of all releases of a repository.
+    Retrieves a list of all workflows for that repository.
 
     .DESCRIPTION
-    Get a list of all releases of a repository.
+    Retrieves a list of all workflows for that repository.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,31 +14,33 @@
 
     .EXAMPLE
 
-    Get a list of issues for the repository on the current path:
+    Get a list of workflows for the repository on the current path:
 
-    PS> Get-GithubIssues
-
-
-    .EXAMPLE
-
-    Get a list of issues a specific repository in another account:
-
-    PS> Get-GithubIssues -Account <autocompleted_account> <autocomplete_repo>
+    PS> Get-GithubWorkflow
 
 
     .EXAMPLE
 
-    Get a list of issues in another Account and another Context in the current account:
+    Get a list of workflows of a specific repository in another account:
 
-    PS> Get-GithubIssues -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    PS> Get-GithubWorkflow -Account <autocompleted_account> <autocomplete_repo>
+
+
+    .EXAMPLE
+
+    Get a list of workflows in another Account and another Context:
+
+    PS> Get-GithubWorkflow -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    
 
 
     .LINK
         
 #>
 
-function Get-GithubIssues {
+function Get-GithubWorkflow {
 
+    [CmdletBinding()]
     param (
         [Parameter(
             Position = 3,
@@ -92,7 +94,7 @@ function Get-GithubIssues {
         # The Name of the Github Repository.
         [Parameter(
             Mandatory = $false,
-            Position = 0
+            Position = 1
         )]
         [ArgumentCompleter(
             {
@@ -106,26 +108,68 @@ function Get-GithubIssues {
             }
         )]
         [System.String]
+        [Alias('r')]
         $Repository,
+
+        # The filename of the workflow.
+        [Parameter(
+            Mandatory = $false,
+            Position = 0
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                
+                $Repository = @{
+                    Repository = $fakeBoundParameters['Repository']
+                    Context    = $fakeBoundParameters['Context']
+                    Account    = $fakeBoundParameters['Account']
+                }
+                $validValues = Get-GithubWorkflow @Repository
+                | Select-Object -ExpandProperty file_name
+                
+                $validValues
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Name,
 
         [Parameter()]
         [switch]
         $Refresh
     )
 
+    
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
+    $repositoryIdentifier = @{
+        Account    = $repositoryData.Account
+        Context    = $RepositoryData.Context
+        Repository = $repositoryData.Name
+    }
 
-    $Identifier = "issues.$($repositoryData.Context).$($repositoryData.name)"
-    $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
+    $data = Get-GithubCache @repositoryIdentifier -Identifier "workflows"
 
-    if ($null -EQ $issues -OR $Refresh) {
+    if ($null -EQ $data -OR $Refresh) {
         $Request = @{
             Method  = "GET"
-            URL     = $repositoryData.issues_url -replace '{/number}', ''
+            API     = "/repos/$($repositoryData.full_name)/actions/workflows"
             Account = $repositoryData.Account
         }
-        $data = (Invoke-GithubRest @Request) ?? @()
-        $data = Set-GithubCache -Object $data -Identifier $Identifier -Account $repositoryData.Account
+        $data = Invoke-GithubRest @Request
+        
+        $data = $null -EQ $data ? @() : $data.workflows
+        | Select-Object *, @{
+            Name       = "file_name" 
+            Expression = { $_.path -split '/' | Select-Object -Last 1 }
+        }
+
+        $data = Set-GithubCache -Object $data @repositoryIdentifier -Identifier "workflows"
+    }
+
+    if (![System.String]::IsNullOrEmpty($Name)) {
+        return $data | Where-Object -Property file_name -EQ $Name
     }
 
     return $data

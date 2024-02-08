@@ -126,6 +126,7 @@ function Open-GithubBrowser {
             }
         )]
         [System.String]
+        [Alias('Repository')]
         $Name,
 
 

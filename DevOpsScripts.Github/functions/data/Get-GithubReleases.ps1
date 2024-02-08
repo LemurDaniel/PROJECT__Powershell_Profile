@@ -116,14 +116,17 @@ function Get-GithubReleases {
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
     $Identifier = "releases.$($repositoryData.Context).$($repositoryData.name)"
-    $releases = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
+    $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
 
-    if ($null -EQ $releases -OR $Refresh) {
-
-        $releaseUrl = $repositoryData.releases_url -replace '{/id}', ''
-        $releases = Invoke-GithubRest -Method GET -URL $releaseUrl -Account $repositoryData.Account
-        $releases = Set-GithubCache -Object $releases -Identifier $Identifier -Account $repositoryData.Account
+    if ($null -EQ $data -OR $Refresh) {
+        $Request = @{
+            Method  = "GET"
+            URL     = $repositoryData.release_url -replace '{/id}', ''
+            Account = $repositoryData.Account
+        }
+        $data = (Invoke-GithubRest @Request) ?? @()
+        $data = Set-GithubCache -Object $data -Identifier $Identifier -Account $repositoryData.Account
     }
 
-    return $releases
+    return $data
 }

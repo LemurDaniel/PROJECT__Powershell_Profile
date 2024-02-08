@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Get a list of all releases of a repository.
+    Enables a workflow.
 
     .DESCRIPTION
-    Get a list of all releases of a repository.
+    Enables a workflow.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,31 +14,38 @@
 
     .EXAMPLE
 
-    Get a list of issues for the repository on the current path:
+    Enable a workflow for the current repository:
 
-    PS> Get-GithubIssues
+    PS> Enable-GithubWorkflow <autocompleted_workflow>
+
+    .EXAMPLE
+
+    Enable a workflow for the another repository:
+
+    PS> Enable-GithubWorkflow -Repository <autocomplete_repo> <autocompleted_workflow>
+
+    .EXAMPLE
+
+    Enable a workflow for the a repository in another account:
+
+    PS> Enable-GithubWorkflow -Account <autocompleted_account> <autocomplete_repo> <autocompleted_workflow>
 
 
     .EXAMPLE
 
-    Get a list of issues a specific repository in another account:
+    Enable a workflow for the a repository in another account and context:
 
-    PS> Get-GithubIssues -Account <autocompleted_account> <autocomplete_repo>
-
-
-    .EXAMPLE
-
-    Get a list of issues in another Account and another Context in the current account:
-
-    PS> Get-GithubIssues -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    PS> Enable-GithubWorkflow -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo> <autocompleted_workflow>
+    
 
 
     .LINK
         
 #>
 
-function Get-GithubIssues {
+function Enable-GithubWorkflow {
 
+    [CmdletBinding()]
     param (
         [Parameter(
             Position = 3,
@@ -92,7 +99,7 @@ function Get-GithubIssues {
         # The Name of the Github Repository.
         [Parameter(
             Mandatory = $false,
-            Position = 0
+            Position = 1
         )]
         [ArgumentCompleter(
             {
@@ -106,27 +113,54 @@ function Get-GithubIssues {
             }
         )]
         [System.String]
+        [Alias('r')]
         $Repository,
 
-        [Parameter()]
-        [switch]
-        $Refresh
+        # The filename of the workflow.
+        [Parameter(
+            Mandatory = $false,
+            Position = 0
+        )]
+        [ArgumentCompleter(
+            {
+                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
+                
+                $Repository = @{
+                    Repository = $fakeBoundParameters['Repository']
+                    Context    = $fakeBoundParameters['Context']
+                    Account    = $fakeBoundParameters['Account']
+                }
+                $validValues = Get-GithubWorkflow @Repository
+                | Select-Object -ExpandProperty file_name
+                
+                $validValues
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+            }
+        )]
+        [System.String]
+        $Name
     )
 
+    
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
-
-    $Identifier = "issues.$($repositoryData.Context).$($repositoryData.name)"
-    $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
-
-    if ($null -EQ $issues -OR $Refresh) {
-        $Request = @{
-            Method  = "GET"
-            URL     = $repositoryData.issues_url -replace '{/number}', ''
-            Account = $repositoryData.Account
-        }
-        $data = (Invoke-GithubRest @Request) ?? @()
-        $data = Set-GithubCache -Object $data -Identifier $Identifier -Account $repositoryData.Account
+    $repositoryIdentifier = @{
+        Account    = $repositoryData.Account
+        Context    = $RepositoryData.Context
+        Repository = $repositoryData.Name
     }
 
-    return $data
+    $workflow = Get-GithubWorkflow @repositoryIdentifier -Name $Name
+
+    $Request = @{
+        Method  = "PUT"
+        Account = $repositoryData.Account
+        API     = "/repos/$($repositoryData.full_name)/actions/workflows/$($workflow.id)/enable"
+        Body    = @{
+            ref    = [System.String]::IsNullOrEmpty($ref) ? $repositoryData.default_branch : $ref
+            inputs = @{}
+        }
+    }
+
+    return Invoke-GithubRest @Request -Verbose
 }

@@ -75,6 +75,7 @@ function Get-GithubRepositoryInfo {
             }
         )]
         [System.String]
+        [Alias('Repository')]
         $Name,
 
         # The Name of the Github Context to use. Defaults to current Context.

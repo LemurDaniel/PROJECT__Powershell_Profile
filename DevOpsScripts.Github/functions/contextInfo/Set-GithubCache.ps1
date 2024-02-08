@@ -35,12 +35,20 @@ function Set-GithubCache {
 
         [Parameter()]
         [System.String]
-        $Account
+        $Account,
+
+        [Parameter()]
+        [System.String]
+        $Context,
+
+        [Parameter()]
+        [System.String]
+        $Repository
     )
 
     $Cache = @{
         Type       = [System.String]::format("{0}.{1}", (Get-GithubAccountContext -Account $Account).cacheRef, (Get-GithubUser -Account $Account).login)
-        Identifier = $Identifier
+        Identifier = (@($Identifier, $Context, $Repository) | Where-Object { ![System.String]::IsNullOrEmpty($_) }) -join '.'
         Forever    = $Forever
         Alive      = $Alive
         Object     = $Object

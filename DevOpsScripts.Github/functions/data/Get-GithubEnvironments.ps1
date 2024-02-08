@@ -114,11 +114,15 @@ function Get-GithubEnvironments {
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
     $Identifier = "environments.$($repositoryData.Context).$($repositoryData.name)"
-    $remoteUrl = "/repos/$($repositoryData.full_name)/environments"
     $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
 
     if ($null -EQ $data -OR $Refresh) {
-        $data = Invoke-GithubRest -Method GET -API $remoteUrl -Account $repositoryData.Account
+        $Request = @{
+            Method  = "GET"
+            API     = "/repos/$($repositoryData.full_name)/environments"
+            Account = $repositoryData.Account
+        }
+        $data = Invoke-GithubRest @Request
         $data = Set-GithubCache -Object $data.environments -Identifier $Identifier -Account $repositoryData.Account
     }
 

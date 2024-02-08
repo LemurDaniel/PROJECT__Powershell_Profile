@@ -118,8 +118,12 @@ function Get-GithubBranches {
     $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
 
     if ($null -EQ $data -OR $Refresh) {
-        $remoteUrl = "/repos/$($repositoryData.full_name)/branches"
-        $data = Invoke-GithubRest -Method GET -API $remoteUrl -Account $repositoryData.Account
+        $Request = @{
+            Method  = "GET"
+            API     = "/repos/$($repositoryData.full_name)/branches"
+            Account = $repositoryData.Account
+        }
+        $data = Invoke-GithubRest @Request
         $data = Set-GithubCache -Object $data -Identifier $Identifier -Account $repositoryData.Account
     }
 

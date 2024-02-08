@@ -11,12 +11,12 @@
 			]
 		},
 		{
-			"path": "DevOpsScripts.Github/functions/repos/Set-GithubBranchProtection.ps1",
+			"path": "DevOpsScripts.Github/functions/repos/Invoke-WorkflowDispatchEvent.ps1",
 			"bookmarks": [
 				{
-					"line": 155,
-					"column": 8,
-					"label": "configure remaining parameters"
+					"line": 145,
+					"column": 0,
+					"label": "add tags as ref"
 				}
 			]
 		}

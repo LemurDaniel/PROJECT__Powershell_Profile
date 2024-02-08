@@ -35,7 +35,7 @@ function Clear-UtilsCache {
     )
 
     try {
-        $CacheFolderPath = ![System.String]::IsNullOrEmpty($Path) ? $Path : $env:UTILS_CACHE_PATH ?? "$([System.IO.Path]::GetTempPath())/.cache/"
+        $CacheFolderPath = Get-UtilsCachePath -Path $Path -Source "Utilscache"
         $filename = ($($type, $Identifier, "json") | Where-Object { $_ }) -join '.' | Get-CleanFilename
         $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath  $filename.toLower()
 

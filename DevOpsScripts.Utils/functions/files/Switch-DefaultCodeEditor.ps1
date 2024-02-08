@@ -41,6 +41,6 @@ function Switch-DefaultCodeEditor {
         $Name
     )
 
-    return Set-UtilsCache -Object $Name -Identifier git.codeeditor.current -Forever
+    return Set-UtilsConfiguration -Object $Name -Identifier git.codeeditor.current
     
 }

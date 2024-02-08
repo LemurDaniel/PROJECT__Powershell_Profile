@@ -30,7 +30,7 @@ function Open-SecureStringFolder {
         $tool = 'explorer'
     )
 
-    $CacheFolderPath = [System.String]::IsNullOrEmpty($Path) ? "$env:USERPROFILE/.secure_devopsscripts/" : $Path
+    $CacheFolderPath = Get-UtilsCachePath -Source "Securestring"
     switch ($tool) {
         code { 
             return code $CacheFolderPath

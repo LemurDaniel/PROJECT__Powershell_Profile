@@ -30,7 +30,7 @@ function Open-UtilsCacheFolder {
         $tool = 'explorer'
     )
 
-    $CacheFolderPath = ![System.String]::IsNullOrEmpty($Path) ? $Path : $env:UTILS_CACHE_PATH ?? "$([System.IO.Path]::GetTempPath())/.cache/"
+    $CacheFolderPath = Get-UtilsCachePath -Source "Configurationdata"
     switch ($tool) {
         code { 
             return code $CacheFolderPath

@@ -40,9 +40,9 @@ function Clear-CodeEditor {
         $Name
     )
 
-    $editors = Read-SecureStringFromFile -Identifier git.codeeditors.all -AsHashTable
-    $editors.Remove($Name)
-    Save-SecureStringToFile -Identifier git.codeeditors.all -Object $editors
+    $editors = Get-UtilsConfiguration -Identifier git.codeeditors.all -AsHashTable
+    $null = $editors.Remove($Name)
+    Set-UtilsConfiguration -Identifier git.codeeditors.all -Object $editors
 
     return $editors
     

@@ -13,10 +13,11 @@
     .OUTPUTS
     Return the cached object.
 
+
     .LINK
         
 #>
-function Set-UtilsCache {
+function Set-UtilsConfiguration {
 
     [CmdletBinding( )]
     param (
@@ -39,23 +40,6 @@ function Set-UtilsCache {
         [System.String]
         $Identifier,
 
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Int32]
-        $Alive = 720,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Int32]
-        $AliveMilli = 3000,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [Switch]
-        $Forever,
 
         [Parameter(
             Mandatory = $false
@@ -66,23 +50,12 @@ function Set-UtilsCache {
 
     BEGIN {
 
-        $CacheFolderPath = Get-UtilsCachePath -Path $Path -Source "Utilscache"
+        $CacheFolderPath = Get-UtilsCachePath -Path $Path -Source "Configurationdata"
         $filename = ($($type, $Identifier, "json") | Where-Object { $_ }) -join '.' | Get-CleanFilename
         $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath  $filename.toLower()
     
         if (-not (Test-Path -Path $CacheFolderPath)) {
             $null = New-Item -Path $CacheFolderPath -ItemType Directory -Force
-        }
-    
-        $Date = $null
-        if ($Forever) {
-            $Date = [DateTime]::MaxValue
-        }
-        elseif ($PSBoundParameters.ContainsKey('Alive')) {
-            $Date = ([DateTime]::Now).AddMinutes($Alive)
-        }
-        else {
-            $Date = ([DateTime]::Now).AddMilliseconds($AliveMilli)
         }
     
         $inputList = [System.Collections.ArrayList]::new()
@@ -101,7 +74,6 @@ function Set-UtilsCache {
         }
 
         @{
-            Date    = $Date
             Content = $cacheContent
         }  
         | ConvertTo-Json -Depth 16 

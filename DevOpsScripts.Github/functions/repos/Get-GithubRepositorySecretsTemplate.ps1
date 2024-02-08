@@ -58,7 +58,7 @@ function Get-GithubRepositorySecretsTemplate {
         $ListAvailable
     )
 
-    $templates = Get-UtilsCache -Identifier "github.secrets_templates.all" -AsHashtable
+    $templates = Get-UtilsConfiguration -Identifier "github.secrets_templates.all" -AsHashtable
     if ($null -EQ $templates) {
         $templates = [System.Collections.Hashtable]::new()
     }

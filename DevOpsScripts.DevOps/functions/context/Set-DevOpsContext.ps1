@@ -35,7 +35,7 @@ function Set-DevOpsContext {
         $null = Set-UtilsCache -Object $Context -Type Context -Identifier DevOps -Forever
 
         $Context = @{
-            Project      = Get-OrganizationInfo daniellandau0574 | Select-Object -ExpandProperty projects -First 1 | Select-Object -ExpandProperty name
+            Project      = Get-OrganizationInfo $Context.Organization | Select-Object -ExpandProperty projects -First 1 | Select-Object -ExpandProperty name
             Organization = $Context.Organization
         }     
 

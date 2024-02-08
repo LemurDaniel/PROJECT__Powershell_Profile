@@ -74,7 +74,7 @@ function Read-SecureStringFromFile {
         $Path
     )
 
-    $directory = [System.String]::IsNullOrEmpty($Path) ? "$env:USERPROFILE/.secure_devopsscripts/" : $Path
+    $directory = Get-UtilsCachePath -Path $Path -Source "Securestring"
     $filename = ".$Identifier.secure" | Get-CleanFilename
     $filePath = Join-Path -Path $directory -ChildPath $filename
 

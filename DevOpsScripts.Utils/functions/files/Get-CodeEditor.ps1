@@ -21,9 +21,9 @@ function Get-CodeEditor {
         $ListAvailable
     )
 
-    $editors = Read-SecureStringFromFile -Identifier git.codeeditors.all -AsHashTable
+    $editors = Get-UtilsConfiguration -Identifier git.codeeditors.all -AsHashTable
     if ($null -EQ $editors -OR $editors.count -EQ 0) {
-        Save-SecureStringToFile -Identifier git.codeeditors.all -Object (
+        Set-UtilsConfiguration -Identifier git.codeeditors.all -Object (
             @{
                 'Visual Studio Code' = @{
                     name        = 'Visual Studio Code'
@@ -37,7 +37,7 @@ function Get-CodeEditor {
                 }
             }
         )
-        $editors = Read-SecureStringFromFile -Identifier git.codeeditors.all -AsHashTable
+        $editors = Get-UtilsConfiguration -Identifier git.codeeditors.all -AsHashTable
     }
 
     if ($ListAvailable) {
@@ -46,7 +46,7 @@ function Get-CodeEditor {
 
 
     if ([System.String]::IsNullOrEmpty($Programm)) {
-        $Programm = Get-UtilsCache -Identifier git.codeeditor.current 
+        $Programm = Get-UtilsConfiguration -Identifier git.codeeditor.current 
     }
 
     if ([System.String]::IsNullOrEmpty($Programm)) {

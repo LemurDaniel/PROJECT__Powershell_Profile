@@ -59,7 +59,7 @@ function Add-CodeEditor {
         path        = $Path
         windowStyle = "Normal"
     }
-    Save-SecureStringToFile -Identifier git.codeeditors.all -Object $editors
+    Set-UtilsConfiguration -Identifier git.codeeditors.all -Object $editors
 
     if ($Default) {
         $null = Switch-DefaultCodeEditor -Name $Name

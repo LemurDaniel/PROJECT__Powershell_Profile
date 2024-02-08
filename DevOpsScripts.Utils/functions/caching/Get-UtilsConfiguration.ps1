@@ -12,23 +12,10 @@
     .OUTPUTS
     Returns the Property or Array of Properties if found.
 
-
-    .EXAMPLE
-
-    Get the current User cached back:
-
-    PS> Get-UtilsCache -Type User -Identifier current
-
-    .EXAMPLE
-
-    Get all PIM Profiles as a hashtable back.
-
-    PS> Get-UtilsCache -Type PIM_Profiles -Identifier all -AsHashtable
-    
     .LINK
         
 #>
-function Get-UtilsCache {
+function Get-UtilsConfiguration {
 
     [CmdletBinding()]
     param (
@@ -49,35 +36,19 @@ function Get-UtilsCache {
 
         [Parameter(Mandatory = $false)]
         [System.String]
-        $Path,
-
-        # returns data when cache expires
-        [Parameter()]
-        [switch]
-        $ExpirationData
+        $Path
     )
 
     try {
-        $CacheFolderPath = Get-UtilsCachePath -Path $Path -Source "Utilscache"
+        $CacheFolderPath = Get-UtilsCachePath -Path $Path -Source "Configurationdata"
         $filename = ($($type, $Identifier, "json") | Where-Object { $_ }) -join '.' | Get-CleanFilename
         $CacheFilePath = Join-Path -Path $CacheFolderPath -ChildPath  $filename.toLower()
 
         Write-Verbose $CacheFilePath
 
-        $Cache = Get-Content $CacheFilePath | ConvertFrom-Json -AsHashtable:$AsHashtable 
-        if ([DateTime]$Cache.Date.toUniversalTime() -gt [datetime]::Now.toUniversalTime()) {
-            
-            if ($ExpirationData) {
-                return @{
-                    ExpiresIn = $Cache.Date.toUniversalTime() - [System.DateTime]::Now.toUniversalTime()
-                    Date      = $Cache.Date
-                    Content   = $Cache.Content
-                }
-            }
-            else {
-                return $Cache.Content
-            }
-        }      
+        return Get-Content $CacheFilePath 
+        | ConvertFrom-Json -AsHashtable:$AsHashtable     
+        | Select-Object -ExpandProperty Content
     }
     catch {
         return $null

@@ -74,9 +74,10 @@ FunctionsToExport = 'Invoke-GithubRest', 'Show-GithubEmojie', 'Get-GithubBranche
                'Get-GithubIgnoreTemplate', 'Get-GithubIssues', 'Get-GithubPublicKey', 
                'Get-GithubReleases', 'Get-GithubRepositories', 
                'Get-GithubRepositorySecrets', 'Get-GithubRepositoryVariable', 
-               'Get-GithubWorkflow', 'New-GithubBranch', 'New-GithubPullRequest', 
-               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository', 
-               'Remove-GithubBranchProtection', 'Set-GithubBranchProtection', 
+               'Get-GithubWorkflow', 'Add-GithubIgnore', 'New-GithubBranch', 
+               'New-GithubPullRequest', 'New-GithubRepository', 'Open-GithubBrowser', 
+               'Open-GithubRepository', 'Remove-GithubBranchProtection', 
+               'Set-GithubBranchProtection', 
                'Deploy-GithubRepositorySecretsTemplate', 'Disable-GithubWorkflow', 
                'Enable-GithubWorkflow', 'Get-GithubRepositorySecretsTemplate', 
                'Invoke-WorkflowDispatchEvent', 
@@ -96,8 +97,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'git-emojie', 'git-branch', 'git-pull', 'gitbrowser', 'gitvc', 'git-wf', 
-               'git-swa', 'git-swc'
+AliasesToExport = 'git-emojie', 'git-ignore', 'git-branch', 'git-pull', 'gitbrowser', 'gitvc', 
+               'git-wf', 'git-swa', 'git-swc'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

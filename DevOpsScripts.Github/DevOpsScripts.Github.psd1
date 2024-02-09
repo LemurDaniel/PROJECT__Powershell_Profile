@@ -69,10 +69,9 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-GithubGenericArgumentCompleter', 
-               'Invoke-GithubGenericValidateScript', 'Invoke-GithubRest', 
-               'Show-GithubEmojie', 'Get-GithubBranches', 'Get-GithubEmojies', 
-               'Get-GithubEnvironments', 'Get-GithubIssues', 'Get-GithubPublicKey', 
+FunctionsToExport = 'Invoke-GithubRest', 'Show-GithubEmojie', 'Get-GithubBranches', 
+               'Get-GithubEmojies', 'Get-GithubEnvironments', 
+               'Get-GithubIgnoreTemplate', 'Get-GithubIssues', 'Get-GithubPublicKey', 
                'Get-GithubReleases', 'Get-GithubRepositories', 
                'Get-GithubRepositorySecrets', 'Get-GithubRepositoryVariable', 
                'Get-GithubWorkflow', 'New-GithubBranch', 'New-GithubPullRequest', 

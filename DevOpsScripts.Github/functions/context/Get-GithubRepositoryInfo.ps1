@@ -67,6 +67,7 @@ function Get-GithubRepositoryInfo {
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
         [System.String]
         [Alias('r')]
+        [Alias('Name')]
         $Repository,
         
 

@@ -18,96 +18,48 @@ function Deploy-GithubRepositorySecretsTemplate {
 
     [CmdletBinding()]
     param (
+        # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 0,
-            Mandatory = $true
-        )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = Get-GithubRepositorySecretsTemplate -ListAvailable
-                
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [validateScript(
-            {
-                $_ -in (Get-GithubRepositorySecretsTemplate -ListAvailable)
-            }
-        )]
-        [System.String]
-        $Name,
-
-        [Parameter(
-            Position = 4,
+            Position = 3,
             Mandatory = $false
         )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Account' })]
         [System.String]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubAccountContext -ListAvailable).name
-                
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [validateScript(
-            {
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubAccountContext -ListAvailable).name
-            }
-        )]
         [Alias('a')]
         $Account,
 
         # The Name of the Github Context to use. Defaults to current Context.
         [Parameter(
             Mandatory = $false,
-            Position = 3
+            Position = 2
         )]
-        [ValidateScript(
-            { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts -Account $PSBoundParameters['Account']).login
-            },
-            ErrorMessage = 'Please specify an correct Context.'
-        )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
-        
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
         [System.String]
         [Alias('c')]
         $Context,
 
-        
-        # The Name of the Github Repository.
+        # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
             Position = 1
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Context = Get-GithubContextInfo -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context']
-                $validValues = $Context.repositories.Name
-
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
         [System.String]
         [Alias('r')]
-        $Repository
+        $Repository,
+
+
+        [Parameter(
+            Position = 0,
+            Mandatory = $true
+        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args -alias 'SecretsTemplate' })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'SecretsTemplate' })]
+        [System.String]
+        $Name
     )
 
     $templateFile = Get-GithubRepositorySecretsTemplate -Name $Name -AsPlainText | ConvertFrom-Json -AsHashtable

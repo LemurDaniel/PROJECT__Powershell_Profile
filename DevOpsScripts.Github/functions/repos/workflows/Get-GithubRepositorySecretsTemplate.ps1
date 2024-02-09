@@ -22,27 +22,13 @@ function Get-GithubRepositorySecretsTemplate {
     param (
         [Parameter(
             Position = 0,
-            Mandatory = $true,
-            ParameterSetName = "specfic"
+            Mandatory = $false
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = Get-GithubRepositorySecretsTemplate -ListAvailable
-                
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [validateScript(
-            {
-                $_ -in (Get-GithubRepositorySecretsTemplate -ListAvailable)
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args -alias 'SecretsTemplate' })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'SecretsTemplate' })]
         [System.String]
         $Name,
-
+        
         # Retrives as Plain text rather than a secure string.
         [Parameter(
             ParameterSetName = "specfic"

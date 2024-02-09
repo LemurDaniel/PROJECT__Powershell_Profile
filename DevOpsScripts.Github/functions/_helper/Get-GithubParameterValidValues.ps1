@@ -60,6 +60,10 @@ function Get-GithubParameterValidValues {
             | Select-Object -ExpandProperty name
         }
 
+        'SecretsTemplate' {
+            return Get-GithubRepositorySecretsTemplate -ListAvailable
+        }
+
         'Gitignore' {
             return Get-GithubIgnoreTemplate
         }

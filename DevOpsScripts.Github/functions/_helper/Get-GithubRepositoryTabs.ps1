@@ -26,12 +26,11 @@ function Get-GithubRepositoryTabs {
         $Tabname
     )
 
-    $jsonConfigurationPath = "C:\Users\Daniel\git\repos\GITHUB\LemurDaniel\LemurDaniel\PROJECT__Powershell_Profile\DevOpsScripts.Github\functions\.resources\repository.tabs.json"
-    $content = Get-Content -Path $jsonConfigurationPath | ConvertFrom-Json -AsHashtable
+    $content = Get-Content -Path "$PSScriptRoot/../.resources/repository.tabs.json" | ConvertFrom-Json -AsHashtable
 
     if (![System.String]::IsNullOrEmpty($Tabname)) {
         return $content[$Tabname]
     }
-    return $content
 
+    return $content
 }

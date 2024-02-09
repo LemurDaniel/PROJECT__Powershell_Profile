@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Gets the environments for a github repository.
+    Get a list of all releases of a repository.
 
     .DESCRIPTION
-    Gets the environments for a github repository.
+    Get a list of all releases of a repository.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -11,32 +11,36 @@
     .OUTPUTS
     None
 
-    .EXAMPLE
-
-    Get a list of environments for the repository on the current path:
-
-    PS> Get-GithubEnvironments
-
 
     .EXAMPLE
 
-    Get a list of environments of a specific repository in another account:
+    Get refs for the current repository:
 
-    PS> Get-GithubEnvironments -Account <autocompleted_account> <autocomplete_repo>
+    PS> Get-GithubRef
 
 
     .EXAMPLE
 
-    Get a list of environments in another Account and another Context:
+     Get refs for another repository:
 
-    PS> Get-GithubEnvironments -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    PS> Get-GithubRef <autocomplete_repo>
+
+
+    .EXAMPLE
+
+    Get refs for other accounts, contexts, etc:
     
+    PS> Get-GithubRef -Context <autocomplete_context> <autocomplete_repo>
+
+    PS> Get-GithubRef -Account <autocompleted_account> <autocomplete_repo>
+
+    PS> Get-GithubRef -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
 
     .LINK
         
 #>
 
-function Get-GithubEnvironments {
+function Get-GithubRef {
 
     param (
         # The name of the github account to use. Defaults to current Account.
@@ -80,17 +84,17 @@ function Get-GithubEnvironments {
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
-    $Identifier = "environments.$($repositoryData.Context).$($repositoryData.name)"
+    $Identifier = "refs.$($repositoryData.Context).$($repositoryData.name)"
     $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
 
     if ($null -EQ $data -OR $Refresh) {
         $Request = @{
             Method  = "GET"
-            API     = "/repos/$($repositoryData.full_name)/environments"
+            URL     = $repositoryData.git_refs_url -replace '{/sha}', ''
             Account = $repositoryData.Account
         }
-        $data = Invoke-GithubRest @Request
-        $data = Set-GithubCache -Object $data.environments -Identifier $Identifier -Account $repositoryData.Account
+        $data = (Invoke-GithubRest @Request) ?? @()
+        $data = Set-GithubCache -Object $data -Identifier $Identifier -Account $repositoryData.Account
     }
 
     return $data

@@ -56,8 +56,13 @@ function Get-GithubParameterValidValues {
         }
 
         'Branch' {
-            return Get-GithubBranches @Identifier
+            return Get-GithubBranch @Identifier
             | Select-Object -ExpandProperty name
+        }
+
+        'Ref' {
+            return Get-GithubRef @Identifier
+            | Select-Object -ExpandProperty ref
         }
 
         'SecretsTemplate' {

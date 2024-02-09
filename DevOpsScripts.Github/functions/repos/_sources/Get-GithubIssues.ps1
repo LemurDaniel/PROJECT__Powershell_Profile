@@ -14,30 +14,34 @@
 
     .EXAMPLE
 
-    Get a list of releases for the repository on the current path:
+    Get issues for the current repository:
 
-    PS> Get-GithubReleases
-
-
-    .EXAMPLE
-
-    Get a list of releases a specific repository in another account:
-
-    PS> Get-GithubReleases -Account <autocompleted_account> <autocomplete_repo>
+    PS> Get-GithubIssues
 
 
     .EXAMPLE
 
-    Get a list of releases in another Account and another Context in the current account:
+    Get issues for another repository:
 
-    PS> Get-GithubReleases -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    PS> Get-GithubIssues <autocomplete_repo>
+
+
+    .EXAMPLE
+
+    Get issues for other accounts, contexts, etc:
+    
+    PS> Get-GithubIssues -Context <autocomplete_context> <autocomplete_repo>
+
+    PS> Get-GithubIssues -Account <autocompleted_account> <autocomplete_repo>
+
+    PS> Get-GithubIssues -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
 
 
     .LINK
         
 #>
 
-function Get-GithubReleases {
+function Get-GithubIssues {
 
     param (
         # The name of the github account to use. Defaults to current Account.
@@ -81,13 +85,13 @@ function Get-GithubReleases {
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
-    $Identifier = "releases.$($repositoryData.Context).$($repositoryData.name)"
+    $Identifier = "issues.$($repositoryData.Context).$($repositoryData.name)"
     $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
 
     if ($null -EQ $data -OR $Refresh) {
         $Request = @{
             Method  = "GET"
-            URL     = $repositoryData.release_url -replace '{/id}', ''
+            URL     = $repositoryData.issues_url -replace '{/number}', ''
             Account = $repositoryData.Account
         }
         $data = (Invoke-GithubRest @Request) ?? @()

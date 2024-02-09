@@ -14,23 +14,27 @@
 
     .EXAMPLE
 
-    Get a list of branches for the repository on the current path:
+    Get brances for the current repository:
 
-    PS> Get-GithubBranches
-
-
-    .EXAMPLE
-
-    Get a list of branches of a specific repository in another account:
-
-    PS> Get-GithubBranches -Account <autocompleted_account> <autocomplete_repo>
+    PS> Get-GithubBranch
 
 
     .EXAMPLE
 
-    Get a list of branches in another Account and another Context:
+    Get brances for another repository:
 
-    PS> Get-GithubBranches -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    PS> Get-GithubBranch <autocomplete_repo>
+
+
+    .EXAMPLE
+
+    Get brances for other accounts, contexts, etc:
+    
+    PS> Get-GithubBranch -Context <autocomplete_context> <autocomplete_repo>
+
+    PS> Get-GithubBranch -Account <autocompleted_account> <autocomplete_repo>
+
+    PS> Get-GithubBranch -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
     
 
 
@@ -38,7 +42,7 @@
         
 #>
 
-function Get-GithubBranches {
+function Get-GithubBranch {
 
     [CmdletBinding()]
     param (

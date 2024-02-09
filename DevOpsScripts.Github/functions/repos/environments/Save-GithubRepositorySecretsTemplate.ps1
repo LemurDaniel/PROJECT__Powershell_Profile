@@ -34,38 +34,20 @@
 function Save-GithubRepositorySecretsTemplate {
 
     [CmdletBinding()]
-    param (
-        # The name of the template
+    param ( 
+        # The filepath to the json.
+        [Parameter(
+            Mandatory = $true
+        )]
+        [ArgumentCompleter({ Invoke-AutoCompleterFileName @args -Depth 3 -Filter "*.json" })]
+        $TemplateFilePath,
+
+        # The saved name of the template.
         [Parameter(
             Mandatory = $true
         )]
         [System.String]
-        $Name,
-
-        [Parameter(
-            Mandatory = $true
-        )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-
-                return (Get-ChildItem -Filter '*.json' -Recurse -Depth 3) 
-                | ForEach-Object {
-                    return @{
-                        file = $_.Name
-                        path = $_.FullName.replace((Get-Location).Path, '')
-                    }
-                }
-                | Where-Object {
-                    $_.file.toLower() -like ($wordToComplete.Length -lt 3 ? "$wordToComplete*" : "*$wordToComplete*").toLower() 
-                } 
-                | Select-Object -ExpandProperty path
-                | ForEach-Object { 
-                    $_.contains(' ') ? "'$_'" : $_ 
-                } 
-            }
-        )]
-        $TemplateFilePath
+        $Name
     )
 
     $templateFile = @{

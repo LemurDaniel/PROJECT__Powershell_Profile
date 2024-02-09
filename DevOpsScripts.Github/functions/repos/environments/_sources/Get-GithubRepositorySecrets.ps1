@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Get a list of all releases of a repository.
+    Gets all secerts on a repository.
 
     .DESCRIPTION
-    Get a list of all releases of a repository.
+    Gets all secerts on a repository.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,31 +14,23 @@
 
     .EXAMPLE
 
-    Get a list of issues for the repository on the current path:
+    Get all variables on the repository for the current path:
 
-    PS> Get-GithubIssues
-
-
-    .EXAMPLE
-
-    Get a list of issues a specific repository in another account:
-
-    PS> Get-GithubIssues -Account <autocompleted_account> <autocomplete_repo>
-
+    PS> Get-GithubRepositorySecret 
 
     .EXAMPLE
 
-    Get a list of issues in another Account and another Context in the current account:
+    Get all variables of an environment on the repository for the current path:
 
-    PS> Get-GithubIssues -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
-
+    PS> Get-GithubRepositorySecret -Environment dev
 
     .LINK
         
 #>
 
-function Get-GithubIssues {
+function Get-GithubRepositorySecret {
 
+    [CmdletBinding()]
     param (
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
@@ -72,27 +64,24 @@ function Get-GithubIssues {
         [System.String]
         [Alias('r')]
         $Repository,
-        
 
-        [Parameter()]
-        [switch]
-        $Refresh
+
+        # The Environment where to get the secret from.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $Environment
     )
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
-    $Identifier = "issues.$($repositoryData.Context).$($repositoryData.name)"
-    $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
-
-    if ($null -EQ $issues -OR $Refresh) {
-        $Request = @{
-            Method  = "GET"
-            URL     = $repositoryData.issues_url -replace '{/number}', ''
-            Account = $repositoryData.Account
-        }
-        $data = (Invoke-GithubRest @Request) ?? @()
-        $data = Set-GithubCache -Object $data -Identifier $Identifier -Account $repositoryData.Account
+    $remoteUrl = "/repos/$($repositoryData.full_name)/actions/secrets"
+    if (![System.String]::IsNullOrEmpty($Environment)) {
+        $remoteUrl = "/repositories/$($repositoryData.id)/environments/$Environment/secrets"
     }
 
-    return $data
+    return Invoke-GithubRest -API $remoteUrl -Account $Account
+    | Select-Object -ExpandProperty secrets
+
 }

@@ -14,21 +14,25 @@
 
     .EXAMPLE
 
-    Get a list of workflows for the repository on the current path:
+    Get workflows for the current repository:
 
     PS> Get-GithubWorkflow
 
 
     .EXAMPLE
 
-    Get a list of workflows of a specific repository in another account:
+    Get workflows for another repository:
 
-    PS> Get-GithubWorkflow -Account <autocompleted_account> <autocomplete_repo>
+    PS> Get-GithubWorkflow <autocomplete_repo>
 
 
     .EXAMPLE
 
-    Get a list of workflows in another Account and another Context:
+    Get workflows for other accounts, contexts, etc:
+    
+    PS> Get-GithubWorkflow -Context <autocomplete_context> <autocomplete_repo>
+
+    PS> Get-GithubWorkflow -Account <autocompleted_account> <autocomplete_repo>
 
     PS> Get-GithubWorkflow -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
     
@@ -81,32 +85,17 @@ function Get-GithubWorkflow {
             Mandatory = $false,
             Position = 0
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                
-                $Repository = @{
-                    Repository = $fakeBoundParameters['Repository']
-                    Context    = $fakeBoundParameters['Context']
-                    Account    = $fakeBoundParameters['Account']
-                }
-                $validValues = Get-GithubWorkflow @Repository
-                | Select-Object -ExpandProperty file_name
-                
-                $validValues
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Workflow' })]
         [System.String]
-        $Name,
+        [Alias('Name')]
+        $Workflow,
 
         [Parameter()]
         [switch]
         $Refresh
     )
 
-    
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
     $repositoryIdentifier = @{
         Account    = $repositoryData.Account
@@ -133,8 +122,8 @@ function Get-GithubWorkflow {
         $data = Set-GithubCache -Object $data @repositoryIdentifier -Identifier "workflows"
     }
 
-    if (![System.String]::IsNullOrEmpty($Name)) {
-        return $data | Where-Object -Property file_name -EQ $Name
+    if (![System.String]::IsNullOrEmpty($Workflow)) {
+        return $data | Where-Object -Property file_name -EQ $Workflow
     }
 
     return $data

@@ -84,22 +84,8 @@ function Invoke-WorkflowDispatchEvent {
         [Parameter(
             Mandatory = $false
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Repository = @{
-                    Repository = $fakeBoundParameters['Repository']
-                    Context    = $fakeBoundParameters['Context']
-                    Account    = $fakeBoundParameters['Account']
-                }
-                $validValues = Get-GithubBranches @Repository
-                | Select-Object -ExpandProperty name
-
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Ref' })]
         [System.String]
         $Ref,
 
@@ -129,7 +115,7 @@ function Invoke-WorkflowDispatchEvent {
         Repository = $repositoryData.Name
     }
 
-    $workflowObject = Get-GithubWorkflow @repositoryIdentifier -Name $Name
+    $workflowObject = Get-GithubWorkflow @repositoryIdentifier -Name $Workflow
 
     if ($Dispatch) {
         $Request = @{

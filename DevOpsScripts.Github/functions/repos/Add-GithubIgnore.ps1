@@ -88,9 +88,31 @@ function Add-GithubIgnore {
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Gitignore' })]
         [System.String]
         [Alias('Name')]
-        $Gitignore
+        $Gitignore,
+
+
+        # Save the template to the clipboard instead.
+        [Parameter()]
+        [switch]
+        $Clipboard
     )
 
+    if ($Clipboard) {
+        Get-GithubIgnoreTemplate -Name $Gitignore
+        | Select-Object -ExpandProperty source 
+        | Set-Clipboard
+    }
+
+    if ( 
+        ( 
+            [System.String]::IsNullOrEmpty($Repository) -AND 
+            [System.String]::IsNullOrEmpty($Context) -AND 
+            [System.String]::IsNullOrEmpty($Account) 
+        ) -OR $Clipboard
+    ) {
+        return Get-GithubIgnoreTemplate -Name $Gitignore
+        | Select-Object -ExpandProperty source
+    }
     
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
     $repositoryIdentifier = @{
@@ -106,8 +128,8 @@ function Add-GithubIgnore {
         Write-Error "A .gitignore already exists in '$($repositoryData.full_name)'"
     }
 
-    Get-GithubIgnoreTemplate -Name Actionscript 
+    Get-GithubIgnoreTemplate -Name $Gitignore
     | Select-Object -ExpandProperty source
     | Out-File -FilePath $ignoreFilePath
-    
+
 }

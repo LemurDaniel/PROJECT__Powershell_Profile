@@ -50,7 +50,11 @@ function Get-GithubContextInfo {
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
         [System.String]
         [Alias('c')]
-        $Context
+        $Context,
+
+        [Parameter()]
+        [switch]
+        $Refresh
     )
 
     $Context = [System.String]::IsNullOrEmpty($Context) ? (Get-GithubContext -Account $Account) : $Context

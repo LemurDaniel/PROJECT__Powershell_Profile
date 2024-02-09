@@ -76,26 +76,26 @@ function Get-GithubRepositoryInfo {
         $Refresh
     )
 
-    if ([System.String]::IsNullOrEmpty($Name) -and [System.String]::IsNullOrEmpty($Context)) {
+    if ([System.String]::IsNullOrEmpty($Repository) -and [System.String]::IsNullOrEmpty($Context)) {
 
         $currentPath = Get-Location
         if (!(Test-IsRepository)) {
             throw "'$currentPath' is not a valid repositorypath."
         }
         $repoPath = git -C $currentPath rev-parse --show-toplevel
-        $Name = $repoPath.split('/')[-1]
+        $Repository = $repoPath.split('/')[-1]
         $Context = $repoPath.split('/')[-2]
         $Account = $repoPath.split('/')[-3]
     }
 
-    $repository = Get-GithubContextInfo -Account $Account -Context $Context -Refresh:$Refresh 
+    $repositoryObject = Get-GithubContextInfo -Account $Account -Context $Context -Refresh:$Refresh 
     | Select-Object -ExpandProperty repositories 
-    | Where-Object -Property Name -EQ -Value $Name
+    | Where-Object -Property Name -EQ -Value $Repository
 
-    if ($null -eq $repository) {
-        throw "No Repository found for '$Name' in Context '$Context' for '$Account'"
+    if ($null -eq $repositoryObject) {
+        throw "No Repository found for '$RepositoryName' in Context '$Context' for '$Account'"
     }
 
-    return $repository
+    return $repositoryObject
 
 }

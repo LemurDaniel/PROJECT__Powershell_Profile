@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Removes branch protection rules for a branch.
+    Enables a workflow.
 
     .DESCRIPTION
-    Removes branch protection rules for a branch.
+    Enables a workflow.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,15 +14,36 @@
 
     .EXAMPLE
 
-    Removing the branch protection on a branch:
+    Enable a workflow for the current repository:
 
-    PS> Remove-GithubBranchProtection -Branch <autocompleted_branch>
+    PS> Enable-GithubWorkflow <autocompleted_workflow>
+
+    .EXAMPLE
+
+    Enable a workflow for the another repository:
+
+    PS> Enable-GithubWorkflow -Repository <autocomplete_repo> <autocompleted_workflow>
+
+    .EXAMPLE
+
+    Enable a workflow for the a repository in another account:
+
+    PS> Enable-GithubWorkflow -Account <autocompleted_account> <autocomplete_repo> <autocompleted_workflow>
+
+
+    .EXAMPLE
+
+    Enable a workflow for the a repository in another account and context:
+
+    PS> Enable-GithubWorkflow -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo> <autocompleted_workflow>
+    
+
 
     .LINK
         
 #>
 
-function Remove-GithubBranchProtection {
+function Enable-GithubWorkflow {
 
     [CmdletBinding()]
     param (
@@ -51,7 +72,7 @@ function Remove-GithubBranchProtection {
         # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
-            Position = 0
+            Position = 1
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
@@ -59,28 +80,38 @@ function Remove-GithubBranchProtection {
         [Alias('r')]
         $Repository,
 
-
-        # The name of the target branch
+        
+        # The filename of the workflow.
         [Parameter(
-            Mandatory = $true
-        )]
-        [Parameter(
-            Mandatory = $true
+            Mandatory = $false,
+            Position = 0
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
-        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Branch' })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Workflow' })]
         [System.String]
-        $Branch
+        [Alias('Name')]
+        $Workflow
     )
 
+    
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
-
-    $Request = @{
-        METHOD  = "DELETE"
-        API     = "/repos/$($repositoryData.full_name)/branches/$Branch/protection"
-        Account = $repositoryData.Account
+    $repositoryIdentifier = @{
+        Account    = $repositoryData.Account
+        Context    = $RepositoryData.Context
+        Repository = $repositoryData.Name
     }
 
-    return Invoke-GithubRest @Request
-    
+    $workflowObject = Get-GithubWorkflow @repositoryIdentifier -Name $Workflow
+
+    $Request = @{
+        Method  = "PUT"
+        Account = $repositoryData.Account
+        API     = "/repos/$($repositoryData.full_name)/actions/workflows/$($workflowObject.id)/enable"
+        Body    = @{
+            ref    = [System.String]::IsNullOrEmpty($ref) ? $repositoryData.default_branch : $ref
+            inputs = @{}
+        }
+    }
+
+    return Invoke-GithubRest @Request -Verbose
 }

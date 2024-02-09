@@ -37,9 +37,9 @@ function Get-GithubAccountContext {
                 param($cmd, $param, $wordToComplete)
                 $validValues = (Read-SecureStringFromFile -Identifier git.accounts.all -AsHashTable).keys
                 
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
+                $validValues 
+                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
+                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
             }
         )]
         [ValidateScript(

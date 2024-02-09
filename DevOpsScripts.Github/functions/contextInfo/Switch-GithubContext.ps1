@@ -32,46 +32,26 @@ function Switch-GithubContext {
 
     [Alias('git-swc')]
     param(
+        # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 1,
+            Position = 3,
             Mandatory = $false
         )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Account' })]
         [System.String]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubAccountContext -ListAvailable).name
-                
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [ValidateScript(
-            {
-                [System.String]::IsNullOrEmpty( $_) -OR $_ -in (Get-GithubAccountContext -ListAvailable).name
-            },
-            ErrorMessage = 'Not a valid account.'
-        )]
+        [Alias('a')]
         $Account,
 
-        # The specific Context to use
-        [parameter(
-            Position = 0,
-            Mandatory = $true
+        # The Name of the Github Context to use. Defaults to current Context.
+        [Parameter(
+            Mandatory = $false,
+            Position = 2
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
-                
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
         [System.String]
+        [Alias('c')]
         $Context
     )
 

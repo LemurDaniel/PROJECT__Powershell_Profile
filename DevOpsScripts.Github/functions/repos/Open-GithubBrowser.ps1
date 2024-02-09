@@ -61,26 +61,14 @@ function Open-GithubBrowser {
 
     [Alias('gitbrowser')]
     param (
+        # The name of the github account to use. Defaults to current Account.
         [Parameter(
             Position = 3,
             Mandatory = $false
         )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Account' })]
         [System.String]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubAccountContext -ListAvailable).name
-                
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [validateScript(
-            {
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubAccountContext -ListAvailable).name
-            }
-        )]
         [Alias('a')]
         $Account,
 
@@ -89,68 +77,30 @@ function Open-GithubBrowser {
             Mandatory = $false,
             Position = 2
         )]
-        #[ValidateScript(
-        #    { 
-        #        [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
-        #    },
-        #    ErrorMessage = 'Please specify an correct Context.'
-        #)]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
-        
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
         [System.String]
         [Alias('c')]
         $Context,
 
-        # The Name of the Github Repository.
+        # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
             Position = 0
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Context = Get-GithubContextInfo -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context']
-                $validValues = $Context.repositories.Name
-
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
         [System.String]
-        [Alias('Repository')]
-        $Name,
-
+        [Alias('Name')]
+        $Repository,
 
         [Parameter(
             Mandatory = $false,
             Position = 1
         )]
         [System.String]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-                $validValues = (Get-Content -Path "$PSScriptRoot/../.resources/repository.tabs.json" | ConvertFrom-Json -AsHashtable).Keys
-
-                $validValues
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [ValidateScript(
-            {
-                $_ -in (Get-Content -Path "$PSScriptRoot/../.resources/repository.tabs.json" | ConvertFrom-Json -AsHashtable).Keys
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Tab' })]
         [Alias('t')]
         $Tab
     )
@@ -158,7 +108,7 @@ function Open-GithubBrowser {
     $repository = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Name
 
     if ($PSBoundParameters.ContainsKey('Tab')) {
-        $urlPath = (Get-Content -Path "$PSScriptRoot/../.resources/repository.tabs.json" | ConvertFrom-Json -AsHashtable)[$Tab]
+        $urlPath = Get-GithubRepositoryTabs -Name $Tab
         Start-Process "$($repository.html_url)$urlPath"
     }
     else {

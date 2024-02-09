@@ -18,23 +18,14 @@ function Switch-GithubAccountContext {
 
     [Alias('git-swa')]
     param(
+        # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Mandatory = $true
+            Position = 3,
+            Mandatory = $false
         )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [System.String]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubAccountContext -ListAvailable).name
-                
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [ValidateScript({
-            $_ -in (Get-GithubAccountContext -ListAvailable).name
-        })]
+        [Alias('a')]
         $Account
     )
 

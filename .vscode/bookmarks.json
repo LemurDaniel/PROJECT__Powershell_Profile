@@ -1,20 +1,20 @@
 {
 	"files": [
 		{
-			"path": "DevOpsScripts.Github/functions/repos/Set-GithubEnvironment.ps1",
+			"path": "DevOpsScripts.Github/functions/repos/workflows/Set-GithubEnvironment.ps1",
 			"bookmarks": [
 				{
-					"line": 124,
+					"line": 87,
 					"column": 12,
 					"label": "Add Body Params"
 				}
 			]
 		},
 		{
-			"path": "DevOpsScripts.Github/functions/repos/Invoke-WorkflowDispatchEvent.ps1",
+			"path": "DevOpsScripts.Github/functions/repos/workflows/Invoke-WorkflowDispatchEvent.ps1",
 			"bookmarks": [
 				{
-					"line": 145,
+					"line": 97,
 					"column": 0,
 					"label": "add tags as ref"
 				}

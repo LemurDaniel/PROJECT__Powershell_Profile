@@ -102,7 +102,6 @@ function Get-GithubRepositorySecret {
         $Repository,
 
 
-
         # The Environment where to get the secret from.
         [Parameter(
             Mandatory = $false

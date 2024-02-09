@@ -38,9 +38,6 @@ Import-Module "$PSScriptRoot\DevOpsScripts"
 $settingsFile = Get-Item -Path "$env:APPDATA/../Local/Packages/Microsoft.WindowsTerminal*/LocalState/settings.json" -ErrorAction SilentlyContinue
 if ($settingsFile) {
     $settingsContent = Get-Content -Raw -Path "$PSScriptRoot/.resources/settings.json" | ConvertFrom-Json -Depth 99
-    #$settingsContent.profiles.defaults.elevate = $env:USERNAME -ne 'M01947'
-    #$terminalProfile = $settingsContent.profiles.list | Where-Object -Property name -EQ -Value 'PS 7'
-    #$terminalProfile.commandline = "$($global:DefaultEnvPaths['PowerShell'])/pwsh.exe"
     $settingsContent | ConvertTo-Json -Depth 99 | Out-File -FilePath $settingsFile.FullName
 }
 
@@ -72,7 +69,7 @@ if ([System.Boolean]::parse($gpgSigning)) {
     $gpgPath = $env:Path -Split ';' | Where-Object { $_ -like '*GnuPG*' } | Select-Object -First 1
     $null = git config --global --replace-all gpg.program "$gpgPath/gpg.exe"
     $null = git config --global --unset gpg.format
-    $null = git config --global user.signingkey $gpg_id   
+    $null = git config --global user.signingkey $gpg_id
 
     $gpgMainFolder = Get-ChildItem $env:APPDATA -Filter 'gnupg'
     @(
@@ -80,7 +77,7 @@ if ([System.Boolean]::parse($gpgSigning)) {
         'max-cache-ttl 345600'
         'allow-preset-passphrase'
     ) -join "`r`n" | Out-File -FilePath "$($gpgMainFolder.FullName)/gpg-agent.conf"
-    $null = gpgconf --kill gpg-agent #gpg-connect-agent reloadagent /bye
+    $null = gpgconf --kill gpg-agent # gpg-connect-agent reloadagent /bye
     $null = gpgconf --launch gpg-agent
     $null = $gpg_phrase | ConvertFrom-SecureString -AsPlainText | gpg-preset-passphrase --preset $gpg_grip
 

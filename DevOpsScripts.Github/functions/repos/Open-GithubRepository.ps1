@@ -47,90 +47,45 @@ function Open-GithubRepository {
         ConfirmImpact = 'high'
     )]
     param (
+        # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 2,
+            Position = 3,
             Mandatory = $false
         )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Account' })]
         [System.String]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubAccountContext -ListAvailable).name
-                
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [validateScript(
-            {
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubAccountContext -ListAvailable).name
-            }
-        )]
+        [Alias('a')]
         $Account,
-
-        # The Name of the Github Repository.
-        [Parameter(
-            Mandatory = $false,
-            Position = 0
-        )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Context = Get-GithubContextInfo -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context']
-                $validValues = $Context.repositories.Name
-
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [System.String]
-        [Alias('Repository')]
-        $Name,
 
         # The Name of the Github Context to use. Defaults to current Context.
         [Parameter(
             Mandatory = $false,
-            Position = 1
+            Position = 2
         )]
-        #[ValidateScript(
-        #    { 
-        #        [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
-        #    },
-        #    ErrorMessage = 'Please specify an correct Context.'
-        #)]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
-
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
         [System.String]
+        [Alias('c')]
         $Context,
 
+        # The Name of the Github Repository. Defaults to current Repository.
+        [Parameter(
+            Mandatory = $false,
+            Position = 0
+        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
+        [System.String]
+        [Alias('Name')]
+        $Repository,
 
+        # The Name of the Code Editor to use. Default to default.
         [Parameter(
             Mandatory = $false
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-                return (Get-CodeEditor -ListAvailable).Keys
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ }
-            }
-        )]
-        [ValidateScript(
-            {
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-CodeEditor -ListAvailable).Keys
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'CodeEditor' })]
         [System.String]
         $CodeEditor,
 
@@ -159,14 +114,12 @@ function Open-GithubRepository {
         return Start-Process $repository.html_url
     }
 
-
     # Replace existing repository
     if ($replace) {
         if ($PSCmdlet.ShouldProcess($repository.LocalPath, 'Do you want to replace the existing repository and any data in it.')) {
             Remove-Item -Path $repository.LocalPath -Recurse -Force -Confirm:$false
         }
     }
-
 
     # Clone via http or ssh
     if (!(Test-Path -Path $repository.LocalPath)) {

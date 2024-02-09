@@ -35,26 +35,14 @@ function Invoke-WorkflowDispatchEvent {
     [CmdletBinding()]
     [Alias('git-wf')]
     param (
+        # The name of the github account to use. Defaults to current Account.
         [Parameter(
             Position = 3,
             Mandatory = $false
         )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Account' })]
         [System.String]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubAccountContext -ListAvailable).name
-                
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [validateScript(
-            {
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubAccountContext -ListAvailable).name
-            }
-        )]
         [Alias('a')]
         $Account,
 
@@ -63,71 +51,34 @@ function Invoke-WorkflowDispatchEvent {
             Mandatory = $false,
             Position = 2
         )]
-        [ValidateScript(
-            { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts -Account $PSBoundParameters['Account']).login
-            },
-            ErrorMessage = 'Please specify an correct Context.'
-        )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $validValues = (Get-GithubContexts -Account $fakeBoundParameters['Account']).login
-        
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
         [System.String]
         [Alias('c')]
         $Context,
 
-        
-        # The Name of the Github Repository.
+        # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
             Position = 1
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Context = Get-GithubContextInfo -Account $fakeBoundParameters['Account'] -Context $fakeBoundParameters['Context']
-                $validValues = $Context.repositories.Name
-
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
         [System.String]
         [Alias('r')]
         $Repository,
 
+
         # The filename of the workflow.
         [Parameter(
-            Mandatory = $true,
+            Mandatory = $false,
             Position = 0
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                
-                $Repository = @{
-                    Repository = $fakeBoundParameters['Repository']
-                    Context    = $fakeBoundParameters['Context']
-                    Account    = $fakeBoundParameters['Account']
-                }
-                $validValues = Get-GithubWorkflow @Repository
-                | Select-Object -ExpandProperty file_name
-                
-                $validValues
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Workflow' })]
         [System.String]
-        $Name,
+        [Alias('Name')]
+        $Workflow,
 
         # The ref-name for the dispatch event. Either a tag or branch. Defaults to defaukt branch.
         [Parameter(
@@ -178,13 +129,13 @@ function Invoke-WorkflowDispatchEvent {
         Repository = $repositoryData.Name
     }
 
-    $workflow = Get-GithubWorkflow @repositoryIdentifier -Name $Name
+    $workflowObject = Get-GithubWorkflow @repositoryIdentifier -Name $Name
 
     if ($Dispatch) {
         $Request = @{
             Method  = "POST"
             Account = $repositoryData.Account
-            API     = "/repos/$($repositoryData.full_name)/actions/workflows/$($workflow.id)/dispatches"
+            API     = "/repos/$($repositoryData.full_name)/actions/workflows/$($workflowObject.id)/dispatches"
             Body    = @{
                 ref    = [System.String]::IsNullOrEmpty($ref) ? $repositoryData.default_branch : $ref
                 inputs = @{}
@@ -197,6 +148,6 @@ function Invoke-WorkflowDispatchEvent {
         if ($Dispatch) {
             Start-Sleep -Milliseconds 1500
         }
-        Start-Process -FilePath "$($RepositoryData.html_url)/actions/workflows/$($workflow.file_name)"
+        Start-Process -FilePath "$($RepositoryData.html_url)/actions/workflows/$($workflowObject.file_name)"
     }
 }

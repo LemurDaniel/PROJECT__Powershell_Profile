@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Gets the environments for a github repository.
+    Adds or Updates an environment to a Github-Repository.
 
     .DESCRIPTION
-    Gets the environments for a github repository.
+    Adds or Updates a environment to a Github-Repository.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -11,33 +11,30 @@
     .OUTPUTS
     None
 
-    .EXAMPLE
-
-    Get a list of environments for the repository on the current path:
-
-    PS> Get-GithubEnvironments
-
 
     .EXAMPLE
 
-    Get a list of environments of a specific repository in another account:
+    Adding/Updating a secret to the repository on the current path:
 
-    PS> Get-GithubEnvironments -Account <autocompleted_account> <autocomplete_repo>
-
+    PS> Set-GithubRepositorySecret -Name "Secret" -Value "SecretValue"
 
     .EXAMPLE
 
-    Get a list of environments in another Account and another Context:
+    Adding/Updating a multiple secrets to the repository on the current path:
 
-    PS> Get-GithubEnvironments -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
-    
+    PS> Set-GithubRepositorySecret -Secrets @{
+        Secret1 = "SecretValue"
+        Secret2 = "SecretValue"
+    }
+
 
     .LINK
         
 #>
 
-function Get-GithubEnvironments {
+function Set-GithubEnvironment {
 
+    [CmdletBinding()]
     param (
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
@@ -64,34 +61,33 @@ function Get-GithubEnvironments {
         # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
-            Position = 1
+            Position = 0
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
         [System.String]
         [Alias('r')]
         $Repository,
-        
 
-        [Parameter()]
-        [switch]
-        $Refresh
+        # The Name of the environment.
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $Name
     )
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
-    $Identifier = "environments.$($repositoryData.Context).$($repositoryData.name)"
-    $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
+    $Request = @{
+        METHOD  = "PUT"
+        API     = "/repos/$($repositoryData.full_name)/environments/$Name"
+        Account = $repositoryData.Account
+        Body    = @{
 
-    if ($null -EQ $data -OR $Refresh) {
-        $Request = @{
-            Method  = "GET"
-            API     = "/repos/$($repositoryData.full_name)/environments"
-            Account = $repositoryData.Account
         }
-        $data = Invoke-GithubRest @Request
-        $data = Set-GithubCache -Object $data.environments -Identifier $Identifier -Account $repositoryData.Account
     }
 
-    return $data
+    return Invoke-GithubRest @Request
+    
 }

@@ -69,20 +69,20 @@ RequiredAssemblies = @()
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Invoke-GithubRest', 'Show-GithubEmojie', 'Get-GithubBranches', 
-               'Get-GithubEmojies', 'Get-GithubEnvironments', 
-               'Get-GithubIgnoreTemplate', 'Get-GithubIssues', 'Get-GithubPublicKey', 
-               'Get-GithubReleases', 'Get-GithubRepositories', 
-               'Get-GithubRepositorySecrets', 'Get-GithubRepositoryVariable', 
-               'Get-GithubWorkflow', 'Add-GithubIgnore', 'New-GithubBranch', 
-               'New-GithubPullRequest', 'New-GithubRepository', 'Open-GithubBrowser', 
-               'Open-GithubRepository', 'Remove-GithubBranchProtection', 
-               'Set-GithubBranchProtection', 
-               'Deploy-GithubRepositorySecretsTemplate', 'Disable-GithubWorkflow', 
-               'Enable-GithubWorkflow', 'Get-GithubRepositorySecretsTemplate', 
-               'Invoke-WorkflowDispatchEvent', 
+FunctionsToExport = 'Invoke-GithubRest', 'Show-GithubEmojie', 'Add-GithubIgnore', 
+               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository', 
+               'Deploy-GithubRepositorySecretsTemplate', 
+               'Get-GithubRepositorySecretsTemplate', 
                'Save-GithubRepositorySecretsTemplate', 'Set-GithubEnvironment', 
                'Set-GithubRepositorySecret', 'Set-GithubRepositoryVariable', 
+               'Get-GithubEnvironments', 'Get-GithubPublicKey', 
+               'Get-GithubRepositorySecrets', 'Get-GithubRepositoryVariable', 
+               'Disable-GithubWorkflow', 'Enable-GithubWorkflow', 
+               'Invoke-WorkflowDispatchEvent', 'Get-GithubWorkflow', 
+               'New-GithubBranch', 'New-GithubPullRequest', 
+               'Remove-GithubBranchProtection', 'Set-GithubBranchProtection', 
+               'Get-GithubBranch', 'Get-GithubRef', 'Get-GithubEmojies', 
+               'Get-GithubIgnoreTemplate', 'Get-GithubIssues', 'Get-GithubReleases', 
                'Get-GithubParameterValidValues', 'Get-GithubRepositoryTabs', 
                'Invoke-GithubGenericArgumentCompleter', 
                'Invoke-GithubGenericValidateScript', 'Get-GithubCache', 
@@ -91,7 +91,7 @@ FunctionsToExport = 'Invoke-GithubRest', 'Show-GithubEmojie', 'Get-GithubBranche
                'Get-GithubAccountContext', 'Switch-GithubAccountContext', 
                'Update-GithubAccountContext', 'Clear-GithubPat', 'Get-GithubPat', 
                'Get-GithubContext', 'Get-GithubContextInfo', 'Get-GithubContexts', 
-               'Switch-GithubContext'
+               'Get-GithubRepositories', 'Switch-GithubContext'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -100,8 +100,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'git-emojie', 'git-ignore', 'git-branch', 'git-pull', 'gitbrowser', 'gitvc', 
-               'git-wf', 'git-swa', 'git-swc'
+AliasesToExport = 'git-emojie', 'git-ignore', 'gitbrowser', 'gitvc', 'git-wf', 'git-branch', 
+               'git-pull', 'git-swa', 'git-swc'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -64,9 +64,6 @@ function Remove-GithubBranchProtection {
         [Parameter(
             Mandatory = $true
         )]
-        [Parameter(
-            Mandatory = $true
-        )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Branch' })]
         [System.String]

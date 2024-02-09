@@ -88,14 +88,14 @@ function Get-GithubRepositoryInfo {
         $Account = $repoPath.split('/')[-3]
     }
 
-    $repositoryObject = Get-GithubContextInfo -Account $Account -Context $Context -Refresh:$Refresh 
+    $repositoryData = Get-GithubContextInfo -Account $Account -Context $Context -Refresh:$Refresh 
     | Select-Object -ExpandProperty repositories 
     | Where-Object -Property Name -EQ -Value $Repository
 
-    if ($null -eq $repositoryObject) {
+    if ($null -eq $repositoryData) {
         throw "No Repository found for '$RepositoryName' in Context '$Context' for '$Account'"
     }
 
-    return $repositoryObject
+    return $repositoryData
 
 }

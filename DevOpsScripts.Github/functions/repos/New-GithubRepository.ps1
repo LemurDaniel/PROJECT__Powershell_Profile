@@ -32,6 +32,29 @@ function New-GithubRepository {
 
     [CmdletBinding()]
     param (
+        # The name of the github account to use. Defaults to current Account.
+        [Parameter(
+            Position = 3,
+            Mandatory = $false
+        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Account' })]
+        [System.String]
+        [Alias('a')]
+        $Account,
+
+        # The Name of the Github Context to use. Defaults to current Context.
+        [Parameter(
+            Mandatory = $false,
+            Position = 2
+        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
+        [System.String]
+        [Alias('c')]
+        $Context,
+
+
         # The Name of the Github Repository.
         [Parameter(
             Mandatory = $false,
@@ -39,30 +62,6 @@ function New-GithubRepository {
         )]
         [System.String]
         $Name,
-
-        # The Name of the Github Context to use. Defaults to current Context.
-        [Parameter(
-            Mandatory = $false,
-            Position = 1
-        )]
-        [ValidateScript(
-            { 
-                [System.String]::IsNullOrEmpty($_) -OR $_ -in (Get-GithubContexts).login
-            },
-            ErrorMessage = 'Please specify an correct Context.'
-        )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete)
-                $validValues = (Get-GithubContexts).login
-
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        [System.String]
-        $Context,
 
         # Description for the repository
         [Parameter()]
@@ -91,7 +90,7 @@ function New-GithubRepository {
     $Request = @{
         Method  = 'POST'
         Context = $contextInfo.login
-        API     = $contextInfo.IsUserContext ? '/user/repos' : '/orgs/{org}/repos'
+        API     = $contextInfo.IsUserContext ? '/user/repos' : "/orgs/$($contextInfo.login)/repos"
         Body    = @{
             org         = $contextInfo.login
             name        = $Name

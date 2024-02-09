@@ -1,22 +1,39 @@
 function Invoke-GithubGenericArgumentCompleter {
     param ( 
-        [Parameter()]
+        [Parameter(
+            Mandatory = $true
+        )]
         [System.String]
         $commandName,
 
-        [Parameter()]
+        [Parameter(
+            Mandatory = $true
+        )]
         [System.String]
         $parameterName,
 
-        [Parameter()]
+        [Parameter(
+            Mandatory = $false
+        )]
         [System.String]
         $wordToComplete,
 
-        [Parameter()]
+        [Parameter(
+            Mandatory = $true
+        )]
         $commandAst,
 
-        [Parameter()]
-        $fakeBoundParameters
+        [Parameter(
+            Mandatory = $true
+        )]
+        [System.Collections.Hashtable]
+        $fakeBoundParameters,
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $alias
     )
 
     $validValues = $null
@@ -26,6 +43,7 @@ function Invoke-GithubGenericArgumentCompleter {
         Repository = $fakeBoundParameters['Repository']
     }
     
+    $parameterName = [System.String]::IsNullOrEmpty($alias) ? $parameterName : $alias
     switch ($parameterName) {
 
         'Account' {
@@ -40,6 +58,17 @@ function Invoke-GithubGenericArgumentCompleter {
             $validValues = Get-GithubContextInfo -Account $Identifier.Account -Context $Identifier.Context
             | Select-Object -ExpandProperty repositories
             | Select-Object -ExpandProperty Name
+        }
+
+        'Issue' {
+            $validValues = Get-GithubIssues @Identifier
+            | Select-Object -ExpandProperty title
+        }
+
+        'IssueOpen' {
+            $validValues = Get-GithubIssues @Identifier
+            | Where-Object -Property state -EQ open
+            | Select-Object -ExpandProperty title
         }
 
         'Workflow' {
@@ -61,10 +90,14 @@ function Invoke-GithubGenericArgumentCompleter {
         }
 
         default {
-            throw [System.InvalidOperationException]::new("Parameter '$parameterName' is not supported!")
+            return "'Parameter '$parameterName' is not supported!'"
         }
     }
 
+
+    if ($null -EQ $validValues -OR $validValues.Count -EQ 0) {
+        return "'<no values...>'"
+    }
 
     return $validValues 
     | Where-Object { 

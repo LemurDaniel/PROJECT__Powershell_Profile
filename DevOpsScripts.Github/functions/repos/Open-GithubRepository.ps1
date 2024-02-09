@@ -108,44 +108,45 @@ function Open-GithubRepository {
 
     $user = Get-GithubUser -Account $Account
     $accountContext = Get-GithubAccountContext -Account $Account
-    $repository = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Name
+    $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
     if ($Browser) {
-        return Start-Process $repository.html_url
+        return Start-Process $repositoryData.html_url
     }
 
+    
     # Replace existing repository
     if ($replace) {
-        if ($PSCmdlet.ShouldProcess($repository.LocalPath, 'Do you want to replace the existing repository and any data in it.')) {
-            Remove-Item -Path $repository.LocalPath -Recurse -Force -Confirm:$false
+        if ($PSCmdlet.ShouldProcess($repositoryData.LocalPath, 'Do you want to replace the existing repository and any data in it.')) {
+            Remove-Item -Path $repositoryData.LocalPath -Recurse -Force -Confirm:$false
         }
     }
 
     # Clone via http or ssh
-    if (!(Test-Path -Path $repository.LocalPath)) {
-        $repository.LocalPath = New-Item -ItemType Directory -Path $repository.LocalPath
+    if (!(Test-Path -Path $repositoryData.LocalPath)) {
+        $repositoryData.LocalPath = New-Item -ItemType Directory -Path $repositoryData.LocalPath
 
         if ($accountContext.useSSH) {
-            git -C $repository.LocalPath clone $repository.ssh_url .
+            git -C $repositoryData.LocalPath clone $repositoryData.ssh_url .
         }
         else {
-            git -C $repository.LocalPath clone $repository.clone_url .
+            git -C $repositoryData.LocalPath clone $repositoryData.clone_url .
         }
     }
     
-    $safeDirectoyPath = ($repository.LocalPath -replace '[\\]+', '/' )
+    $safeDirectoyPath = ($repositoryData.LocalPath -replace '[\\]+', '/' )
     $included = (git config --global --get-all safe.directory | Where-Object { $_ -eq $safeDirectoyPath } | Measure-Object).Count -gt 0
     if (!$included) {
         $null = git config --global --add safe.directory $safeDirectoyPath
     }
 
-    $null = git -C $repository.LocalPath config --local user.name $user.login 
-    $null = git -C $repository.LocalPath config --local user.email $user.email
-    $null = git -C $repository.LocalPath config --local commit.gpgsign $accountContext.commitSigning
+    $null = git -C $repositoryData.LocalPath config --local user.name $user.login 
+    $null = git -C $repositoryData.LocalPath config --local user.email $user.email
+    $null = git -C $repositoryData.LocalPath config --local commit.gpgsign $accountContext.commitSigning
 
     if (!$onlyDownload) {
-        Open-InCodeEditor -Programm $CodeEditor -Path $repository.Localpath
+        Open-InCodeEditor -Programm $CodeEditor -Path $repositoryData.Localpath
     }
 
-    return Get-Item $repository.LocalPath
+    return Get-Item $repositoryData.LocalPath
 }

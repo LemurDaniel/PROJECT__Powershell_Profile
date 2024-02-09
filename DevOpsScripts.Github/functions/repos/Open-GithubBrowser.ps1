@@ -105,14 +105,14 @@ function Open-GithubBrowser {
         $Tab
     )
 
-    $repository = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Name
+    $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
     if ($PSBoundParameters.ContainsKey('Tab')) {
         $urlPath = Get-GithubRepositoryTabs -Name $Tab
-        Start-Process "$($repository.html_url)$urlPath"
+        Start-Process "$($repositoryData.html_url)$urlPath"
     }
     else {
-        Start-Process $repository.html_url
+        Start-Process $repositoryData.html_url
     }
 
 }

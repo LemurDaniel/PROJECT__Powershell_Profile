@@ -119,23 +119,8 @@ function New-GithubPullRequest {
         [Parameter(
             ParameterSetName = "FromIssueTitle"
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-                $Source = @{
-                    Account    = $fakeBoundParameters['Account']
-                    Context    = $fakeBoundParameters['Context']
-                    Repository = $fakeBoundParameters['Repository']
-                }
-                $validValues = Get-GithubIssues @Source
-                | Where-Object -Property state -EQ open
-                | Select-Object -ExpandProperty title
-
-                $validValues 
-                | Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } 
-                | ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
+        [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args -alias 'IssueOpen' })]
+        [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'IssueOpen' })]
         [System.String]
         $FromIssue,
 

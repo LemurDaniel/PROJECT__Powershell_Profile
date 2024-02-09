@@ -45,6 +45,17 @@ function Invoke-GithubGenericValidateScript {
             | Select-Object -ExpandProperty Name
         }
 
+        'Issue' {
+            $validValues = Get-GithubIssues @Identifier
+            | Select-Object -ExpandProperty title
+        }
+
+        'IssueOpen' {
+            $validValues = Get-GithubIssues @Identifier
+            | Where-Object -Property state -EQ open
+            | Select-Object -ExpandProperty title
+        }
+
         'Workflow' {
             $validValues = Get-GithubWorkflow @Identifier
             | Select-Object -ExpandProperty file_name
@@ -64,7 +75,7 @@ function Invoke-GithubGenericValidateScript {
         }
 
         default {
-            throw [System.InvalidOperationException]::new("Parameter '$parameterName' is not supported!")
+            return "'Parameter '$parameterName' is not supported!'"
         }
     }
 

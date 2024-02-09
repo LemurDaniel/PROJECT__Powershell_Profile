@@ -83,12 +83,15 @@ FunctionsToExport = 'Invoke-GithubRest', 'Show-GithubEmojie', 'Get-GithubBranche
                'Invoke-WorkflowDispatchEvent', 
                'Save-GithubRepositorySecretsTemplate', 'Set-GithubEnvironment', 
                'Set-GithubRepositorySecret', 'Set-GithubRepositoryVariable', 
-               'Get-GithubCache', 'Get-GithubRepositoryInfo', 'Get-GithubUser', 
-               'Set-GithubCache', 'Add-GithubAccountContext', 
-               'Clear-GithubAccountContext', 'Get-GithubAccountContext', 
-               'Switch-GithubAccountContext', 'Update-GithubAccountContext', 
-               'Clear-GithubPat', 'Get-GithubPat', 'Get-GithubContext', 
-               'Get-GithubContextInfo', 'Get-GithubContexts', 'Switch-GithubContext'
+               'Get-GithubParameterValidValues', 'Get-GithubRepositoryTabs', 
+               'Invoke-GithubGenericArgumentCompleter', 
+               'Invoke-GithubGenericValidateScript', 'Get-GithubCache', 
+               'Get-GithubRepositoryInfo', 'Get-GithubUser', 'Set-GithubCache', 
+               'Add-GithubAccountContext', 'Clear-GithubAccountContext', 
+               'Get-GithubAccountContext', 'Switch-GithubAccountContext', 
+               'Update-GithubAccountContext', 'Clear-GithubPat', 'Get-GithubPat', 
+               'Get-GithubContext', 'Get-GithubContextInfo', 'Get-GithubContexts', 
+               'Switch-GithubContext'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

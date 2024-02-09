@@ -2,7 +2,7 @@ function Invoke-GithubGenericValidateScript {
     param(
         # The value to validate.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [System.String]
         $Value,

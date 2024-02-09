@@ -75,23 +75,20 @@ FunctionsToExport = 'Invoke-GithubGenericArgumentCompleter',
                'Get-GithubEnvironments', 'Get-GithubIssues', 'Get-GithubPublicKey', 
                'Get-GithubReleases', 'Get-GithubRepositories', 
                'Get-GithubRepositorySecrets', 'Get-GithubRepositoryVariable', 
-               'Get-GithubWorkflow', 'Add-GithubAccountContext', 
-               'Clear-GithubAccountContext', 'Get-GithubAccountContext', 
-               'Get-GithubCache', 'Get-GithubContext', 'Get-GithubContextInfo', 
-               'Get-GithubRepositoryInfo', 'Set-GithubCache', 
-               'Switch-GithubAccountContext', 'Switch-GithubContext', 
-               'Update-GithubAccountContext', 'Clear-GithubPat', 
-               'Get-GithubContexts', 'Get-GithubPat', 'Get-GithubUser', 
-               'Get-GithubRepositorySecretsTemplate', 'New-GithubBranch', 
-               'New-GithubPullRequest', 'New-GithubRepository', 'Open-GithubBrowser', 
-               'Open-GithubRepository', 'Remove-GithubBranchProtection', 
-               'Save-GithubRepositorySecretsTemplate', 
-               'Set-GithubBranchProtection', 
+               'Get-GithubWorkflow', 'New-GithubBranch', 'New-GithubPullRequest', 
+               'New-GithubRepository', 'Open-GithubBrowser', 'Open-GithubRepository', 
+               'Remove-GithubBranchProtection', 'Set-GithubBranchProtection', 
                'Deploy-GithubRepositorySecretsTemplate', 'Disable-GithubWorkflow', 
                'Enable-GithubWorkflow', 'Get-GithubRepositorySecretsTemplate', 
                'Invoke-WorkflowDispatchEvent', 
                'Save-GithubRepositorySecretsTemplate', 'Set-GithubEnvironment', 
-               'Set-GithubRepositorySecret', 'Set-GithubRepositoryVariable'
+               'Set-GithubRepositorySecret', 'Set-GithubRepositoryVariable', 
+               'Get-GithubCache', 'Get-GithubRepositoryInfo', 'Get-GithubUser', 
+               'Set-GithubCache', 'Add-GithubAccountContext', 
+               'Clear-GithubAccountContext', 'Get-GithubAccountContext', 
+               'Switch-GithubAccountContext', 'Update-GithubAccountContext', 
+               'Clear-GithubPat', 'Get-GithubPat', 'Get-GithubContext', 
+               'Get-GithubContextInfo', 'Get-GithubContexts', 'Switch-GithubContext'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -100,8 +97,8 @@ CmdletsToExport = @()
 # VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'git-emojie', 'git-swa', 'git-swc', 'git-branch', 'git-pull', 'gitbrowser', 
-               'gitvc', 'git-wf'
+AliasesToExport = 'git-emojie', 'git-branch', 'git-pull', 'gitbrowser', 'gitvc', 'git-wf', 
+               'git-swa', 'git-swc'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -69,24 +69,29 @@ function Get-GithubPublicKey {
     )
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
+    $repositoryIdentifier = @{
+        Account    = $repositoryData.Account
+        Context    = $repositoryData.Context
+        Repository = $repositoryData.Repository
+    }
 
     $Identifier = $null
     $remoteUrl = $null
 
     if ([System.String]::IsNullOrEmpty($Environment)) {
-        $Identifier = "publickey.$($repositoryData.Context).$($repositoryData.name)"
+        $Identifier = "publickey"
         $remoteUrl = "/repos/$($repositoryData.full_name)/actions/secrets/public-key"    
     }
     else {
-        $Identifier = "publickey.$($repositoryData.Context).$($repositoryData.name).$environment"
+        $Identifier = "publickey.$environment"
         $remoteUrl = "/repositories/$($repositoryData.id)/environments/$environment/secrets/public-key"
     }
 
-    $data = Get-GithubCache -Identifier $Identifier -Account $repositoryData.Account
+    $data = Get-GithubCache -Identifier $Identifier @repositoryIdentifier
 
     if ($null -EQ $data) {
         $data = Invoke-GithubRest -Method GET -API $remoteUrl -Account $repositoryData.Account
-        $data = Set-GithubCache -Object $data -Identifier $Identifier -Account $repositoryData.Account
+        $data = Set-GithubCache -Object $data -Identifier $Identifier @repositoryIdentifier
     }
 
     return $data

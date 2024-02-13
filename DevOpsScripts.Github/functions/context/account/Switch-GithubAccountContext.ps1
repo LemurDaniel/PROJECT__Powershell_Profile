@@ -20,7 +20,7 @@ function Switch-GithubAccountContext {
     param(
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 3,
+            Position = 0,
             Mandatory = $false
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]

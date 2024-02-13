@@ -34,7 +34,7 @@ function Switch-GithubContext {
     param(
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 3,
+            Position = 1,
             Mandatory = $false
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
@@ -46,7 +46,7 @@ function Switch-GithubContext {
         # The Name of the Github Context to use. Defaults to current Context.
         [Parameter(
             Mandatory = $false,
-            Position = 2
+            Position = 0
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]

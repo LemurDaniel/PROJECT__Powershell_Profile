@@ -14,7 +14,7 @@
     .LINK
 #>
 
-function Deploy-GithubRepositorySecretsTemplate {
+function Deploy-GithubSecretsTemplate {
 
     [CmdletBinding()]
     param (
@@ -62,15 +62,16 @@ function Deploy-GithubRepositorySecretsTemplate {
         $Name
     )
 
-    $templateFile = Get-GithubRepositorySecretsTemplate -Name $Name -AsPlainText | ConvertFrom-Json -AsHashtable
+    $templateFile = Get-GithubSecretsTemplate -Name $Name -AsPlainText | ConvertFrom-Json -AsHashtable
+    $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Repository $Repository
     $repositoryInfo = @{
-        Account    = $Account
-        Context    = $Context
-        Repository = $Repository
+        Account    = $repositoryData.Account
+        Context    = $repositoryData.Context
+        Repository = $repositoryData.Repository
     }
     
-    Set-GithubRepositorySecret -Secrets $templateFile['repository_secrets'] @repositoryInfo
-    Set-GithubRepositoryVariable -Variables $templateFile['repository_variables'] @repositoryInfo
+    Set-GithubSecret -Secrets $templateFile['repository_secrets'] @repositoryInfo
+    Set-GithubVariable -Variables $templateFile['repository_variables'] @repositoryInfo
    
     $environments = Get-GithubEnvironments @repositoryInfo
     $environmentNames = @()
@@ -89,12 +90,12 @@ function Deploy-GithubRepositorySecretsTemplate {
     $templateFile['environment_secrets'] 
     | ForEach-Object {
         Write-Host -ForeGroundColor GREEN "-- Setting Environment Secrets '$($_.environment_name)'"
-        Set-GithubRepositorySecret -Environment $_.environment_name -Secrets $_.secrets @repositoryInfo
+        Set-GithubSecret -Environment $_.environment_name -Secrets $_.secrets @repositoryInfo
     }
     $environments = Get-GithubEnvironments @repositoryInfo
     $templateFile['environment_variables'] 
     | ForEach-Object {
         Write-Host -ForeGroundColor GREEN "-- Setting Environment Variables '$($_.environment_name)'"
-        Set-GithubRepositoryVariable -Environment $_.environment_name -Variables $_.variables @repositoryInfo
+        Set-GithubVariable -Environment $_.environment_name -Variables $_.variables @repositoryInfo
     }
 }

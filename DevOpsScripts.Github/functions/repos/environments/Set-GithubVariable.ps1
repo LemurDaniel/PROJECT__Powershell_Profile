@@ -16,13 +16,13 @@
 
     Adding/Updating a secret to the repository on the current path:
 
-    PS> Set-GithubRepositoryVariable -Name "VariableName" -Value "Value"
+    PS> Set-GithubVariable -Name "VariableName" -Value "Value"
 
     .EXAMPLE
 
     Adding/Updating multiple secrets to the repository on the current path:
 
-    PS> Set-GithubRepositoryVariable -Variables @{
+    PS> Set-GithubVariable -Variables @{
         Secret1 = "Value1"
         Secret2 = "Value2"
     }
@@ -31,13 +31,13 @@
 
     Adding/Updating a secret in a specific environment in the repository on the current path:
 
-    PS> Set-GithubRepositoryVariable -Environment dev -Name "VariableName" -Value "Value"
+    PS> Set-GithubVariable -Environment dev -Name "VariableName" -Value "Value"
 
     .EXAMPLE
 
     Adding/Updating multiple secrets in a specific environment in the repository on the current path:
 
-    PS> Set-GithubRepositoryVariable -Environment dev -Variables @{
+    PS> Set-GithubVariable -Environment dev -Variables @{
         Secret1 = "SecretValue"
         Secret2 = "SecretValue"
     }
@@ -46,7 +46,7 @@
         
 #>
 
-function Set-GithubRepositoryVariable {
+function Set-GithubVariable {
 
     [CmdletBinding(
         DefaultParameterSetName = "Single"

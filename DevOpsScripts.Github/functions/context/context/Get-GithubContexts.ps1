@@ -21,7 +21,7 @@ function Get-GithubContexts {
     param(
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 3,
+            Position = 0,
             Mandatory = $false
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
@@ -44,7 +44,7 @@ function Get-GithubContexts {
         $AccountContext = Get-GithubAccountContext -Account $Account
 
         $gitContexts = @()
-        $gitContexts += Get-GithubUser -Refresh:$Refresh -Account $Account
+        $gitContexts += Get-GithubUser -Refresh:$Refresh -Account $AccountContext.name
         | Select-Object *, @{
             Name       = 'IsUserContext';
             Expression = { $true }
@@ -54,7 +54,7 @@ function Get-GithubContexts {
             Expression = { $false }
         }
 
-        $gitContexts += Invoke-GithubRest -Method GET -API 'user/orgs' -Account $Account
+        $gitContexts += Invoke-GithubRest -Method GET -API 'user/orgs' -Account $AccountContext.name
         | ForEach-Object { $_ }
         | Select-Object *, @{
             Name       = 'IsUserContext';
@@ -66,6 +66,16 @@ function Get-GithubContexts {
         }
 
         $gitContexts = $gitContexts | Select-Object *, @{
+            Name       = 'Account';
+            Expression = {
+                $AccountContext.name
+            }
+        }, @{
+            Name       = 'Context';
+            Expression = {
+                $_.login
+            }
+        }, @{
             Name       = 'LocalPath';
             Expression = {
                 "$basePath\GITHUB\$($AccountContext.name)\$($_.login)"

@@ -33,6 +33,12 @@ function Get-GithubParameterValidValues {
             return (Get-GithubContexts -Account $Identifier.Account).login
         }
 
+        'Organization' {
+            return Get-GithubContexts -Account $Identifier.Account
+            | Where-Object -Property IsOrgContext -EQ $true
+            | Select-Object -ExpandProperty login
+        }
+
         'Repository' {
             return Get-GithubContextInfo -Account $Identifier.Account -Context $Identifier.Context
             | Select-Object -ExpandProperty repositories
@@ -66,7 +72,7 @@ function Get-GithubParameterValidValues {
         }
 
         'SecretsTemplate' {
-            return Get-GithubRepositorySecretsTemplate -ListAvailable
+            return Get-GithubSecretsTemplate -ListAvailable
         }
 
         'Gitignore' {

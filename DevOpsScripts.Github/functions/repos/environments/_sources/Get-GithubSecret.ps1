@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Gets all variables on a repository.
+    Gets all secerts on a repository.
 
     .DESCRIPTION
-    Gets all variables on a repository.
+    Gets all secerts on a repository.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -16,19 +16,19 @@
 
     Get all variables on the repository for the current path:
 
-    PS> Get-GithubRepositoryVariable 
+    PS> Get-GithubSecret 
 
     .EXAMPLE
 
     Get all variables of an environment on the repository for the current path:
 
-    PS> Get-GithubRepositoryVariable -Environment dev
+    PS> Get-GithubSecret -Environment dev
 
     .LINK
         
 #>
 
-function Get-GithubRepositoryVariable {
+function Get-GithubSecret {
 
     [CmdletBinding()]
     param (
@@ -57,7 +57,7 @@ function Get-GithubRepositoryVariable {
         # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
-            Position = 0
+            Position = 1
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
@@ -65,8 +65,8 @@ function Get-GithubRepositoryVariable {
         [Alias('r')]
         $Repository,
 
-        
-        # The Environment where to get the variable from
+
+        # The Environment where to get the secret from.
         [Parameter(
             Mandatory = $false
         )]
@@ -76,12 +76,12 @@ function Get-GithubRepositoryVariable {
 
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
 
-    $remoteUrl = "/repos/$($repositoryData.full_name)/actions/variables"
+    $remoteUrl = "/repos/$($repositoryData.full_name)/actions/secrets"
     if (![System.String]::IsNullOrEmpty($Environment)) {
-        $remoteUrl = "/repositories/$($repositoryData.id)/environments/$Environment/variables"
+        $remoteUrl = "/repositories/$($repositoryData.id)/environments/$Environment/secrets"
     }
 
     return Invoke-GithubRest -API $remoteUrl -Account $Account
-    | Select-Object -ExpandProperty variables
+    | Select-Object -ExpandProperty secrets
 
 }

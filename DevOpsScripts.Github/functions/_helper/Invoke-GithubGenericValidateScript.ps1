@@ -22,13 +22,16 @@ function Invoke-GithubGenericValidateScript {
         $ParameterName
     )
 
-    $validValues = Get-GithubParameterValidValues -ParameterName $ParameterName -BoundParameters $BoundParameters
-
-    $isValid = [System.String]::IsNullOrEmpty($Value) -OR $Value -IN $validValues
-
-    if (!$isValid) {
-        Write-Error "`n`n*** '$Value' is not a valid value for '$ParameterName'! ***`n`n"
+    if ([System.String]::IsNullOrEmpty($Value)) {
+        return $true
     }
 
-    return $true
+
+    $validValues = Get-GithubParameterValidValues -ParameterName $ParameterName -BoundParameters $BoundParameters
+
+    if ($Value -IN $validValues) {
+        return $true
+    }
+
+    Write-Error "`n`n*** '$Value' is not a valid value for '$ParameterName'! ***`n`n"
 }

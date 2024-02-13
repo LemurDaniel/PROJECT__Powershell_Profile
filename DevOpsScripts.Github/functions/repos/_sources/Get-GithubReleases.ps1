@@ -46,7 +46,7 @@ function Get-GithubReleases {
     param (
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 3,
+            Position = 2,
             Mandatory = $false
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
@@ -58,7 +58,7 @@ function Get-GithubReleases {
         # The Name of the Github Context to use. Defaults to current Context.
         [Parameter(
             Mandatory = $false,
-            Position = 2
+            Position = 1
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
@@ -69,7 +69,7 @@ function Get-GithubReleases {
         # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
-            Position = 1
+            Position = 0
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]

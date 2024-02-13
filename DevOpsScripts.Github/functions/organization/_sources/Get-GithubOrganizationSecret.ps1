@@ -1,35 +1,23 @@
 <#
     .SYNOPSIS
-    Get Information about a Github a Context.
+    Gets all secerts on an organization.
 
     .DESCRIPTION
-    Get Information about a Github a Context.
+    Gets all secerts on an organization.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
 
     .OUTPUTS
-    The Information about the Repository.
-
-    .EXAMPLE
-
-    Get Info about the current Context:
-
-    PS> Get-GithubContextInfo
-
-    .EXAMPLE
-
-    Get Info about another Context:
-
-    PS> Get-GithubContextInfo <autocomplete_context>
+    None
 
     .LINK
         
 #>
 
-function Get-GithubContextInfo {
+function Get-GithubOrganizationSecret {
 
-    param(
+    param (
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
             Position = 1,
@@ -50,22 +38,21 @@ function Get-GithubContextInfo {
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
         [System.String]
         [Alias('c')]
-        $Context,
-
-        [Parameter()]
-        [switch]
-        $Refresh
+        [Alias('context')]
+        $Organization
     )
 
-    $Context = [System.String]::IsNullOrEmpty($Context) ? (Get-GithubContext -Account $Account) : $Context
-
-    return Get-GithubContexts -Account $Account -Refresh:$Refresh
-    | Where-Object -Property login -EQ $Context
-    | Select-Object *, @{
-        Name       = 'repositories';
-        Expression = {
-            Get-GithubRepositories -Account $Account -Context $Context -Refresh:$Refresh
-        }
+    $contextData = Get-GithubContextInfo -Account $Account -Context $Organization
+    $contextInfo = @{
+        Account = $contextData.Account
+        Context = $contextData.Context
     }
 
+    $Request = @{
+        Method  = "GET"
+        API     = "/orgs/$($contextInfo.Context)/actions/secrets"
+        Account = $contextInfo.Account
+    }
+    return Invoke-GithubRest @Request
+    | Select-Object -ExpandProperty secrets
 }

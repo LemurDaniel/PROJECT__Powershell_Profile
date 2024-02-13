@@ -31,7 +31,7 @@
 }
 #>
 
-function Save-GithubRepositorySecretsTemplate {
+function Save-GithubSecretsTemplate {
 
     [CmdletBinding()]
     param ( 

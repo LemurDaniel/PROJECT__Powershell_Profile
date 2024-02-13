@@ -117,8 +117,8 @@ function Add-GithubIgnore {
     $repositoryData = Get-GithubRepositoryInfo -Account $Account -Context $Context -Name $Repository
     $repositoryIdentifier = @{
         Account    = $repositoryData.Account
-        Context    = $RepositoryData.Context
-        Repository = $repositoryData.Name
+        Context    = $repositoryData.Context
+        Repository = $repositoryData.Repository
     }
 
     $null = Open-GithubRepository @repositoryIdentifier -onlyDownload

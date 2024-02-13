@@ -14,7 +14,7 @@
     .LINK
 #>
 
-function Get-GithubRepositorySecretsTemplate {
+function Get-GithubSecretsTemplate {
 
     [CmdletBinding(
         DefaultParameterSetName = "specfic"

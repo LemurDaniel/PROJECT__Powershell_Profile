@@ -38,7 +38,7 @@ function Get-GithubRepositoryInfo {
     param(
         # The name of the github account to use. Defaults to current Account.
         [Parameter(
-            Position = 3,
+            Position = 2,
             Mandatory = $false
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
@@ -50,7 +50,7 @@ function Get-GithubRepositoryInfo {
         # The Name of the Github Context to use. Defaults to current Context.
         [Parameter(
             Mandatory = $false,
-            Position = 2
+            Position = 1
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Context' })]
@@ -61,7 +61,7 @@ function Get-GithubRepositoryInfo {
         # The Name of the Github Repository. Defaults to current Repository.
         [Parameter(
             Mandatory = $false,
-            Position = 1
+            Position = 0
         )]
         [ArgumentCompleter({ Invoke-GithubGenericArgumentCompleter @args })]
         [ValidateScript({ Invoke-GithubGenericValidateScript $_ $PSBoundParameters 'Repository' })]
@@ -76,6 +76,12 @@ function Get-GithubRepositoryInfo {
         $Refresh
     )
 
+    $repositoryIdentifier = @{
+        Account    = $Account
+        Context    = $Context
+        Repository = $Repository
+    }
+
     if ([System.String]::IsNullOrEmpty($Repository) -and [System.String]::IsNullOrEmpty($Context)) {
 
         $currentPath = Get-Location
@@ -83,17 +89,17 @@ function Get-GithubRepositoryInfo {
             throw "'$currentPath' is not a valid repositorypath."
         }
         $repoPath = git -C $currentPath rev-parse --show-toplevel
-        $Repository = $repoPath.split('/')[-1]
-        $Context = $repoPath.split('/')[-2]
-        $Account = $repoPath.split('/')[-3]
+        $repositoryIdentifier.Account = $repoPath.split('/')[-3]
+        $repositoryIdentifier.Context = $repoPath.split('/')[-2]
+        $repositoryIdentifier.Repository = $repoPath.split('/')[-1]
     }
 
-    $repositoryData = Get-GithubContextInfo -Account $Account -Context $Context -Refresh:$Refresh 
+    $repositoryData = Get-GithubContextInfo -Account $repositoryIdentifier.Account -Context $repositoryIdentifier.Context -Refresh:$Refresh 
     | Select-Object -ExpandProperty repositories 
-    | Where-Object -Property Name -EQ -Value $Repository
-
+    | Where-Object -Property Name -EQ -Value $repositoryIdentifier.Repository
+    
     if ($null -eq $repositoryData) {
-        throw "No Repository found for '$RepositoryName' in Context '$Context' for '$Account'"
+        throw "No Repository found for '$($repositoryIdentifier.RepositoryName)' in Context '$($repositoryIdentifier.Context)' for '$($repositoryIdentifier.Account)'"
     }
 
     return $repositoryData

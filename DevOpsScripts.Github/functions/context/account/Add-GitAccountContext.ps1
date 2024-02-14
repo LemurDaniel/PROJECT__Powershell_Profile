@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Add a account context with a pat and custom domain. defaults to api.Git.com
+    Add a account context with a pat and custom domain. defaults to api.Github.com
 
     .DESCRIPTION
-    Add a account context with a pat and custom domain. defaults to api.Git.com
+    Add a account context with a pat and custom domain. defaults to api.Github.com
     Path should have access to user and repo.
 
     .INPUTS
@@ -30,14 +30,14 @@ function Add-GitAccountContext {
     Write-Host -ForegroundColor Magenta "Leave custom domain empty for Git.com!"
     $name = Read-UserInput -Prompt   '   Account-Context Name:' -Minimum 3
 
-    $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder 'api.Git.com'
+    $domain = Read-UserInput -Prompt '   Custom domain:' -Placeholder 'api.Github.com'
     $useSSH = Read-UserInput -Prompt '   clone via SSH [yes/no]:'
     $signCommit = Read-UserInput -Prompt '   sign commits [yes/no]:'
 
     $Accounts[$name] = [ordered]@{
         useSSH        = $useSSH.toLower() -eq "yes" ?  $true : $false
         name          = $name
-        domain        = $domain -ne 'api.Git.com' ? "$domain/api/v3" : "api.Git.com"
+        domain        = $domain -ne 'api.Github.com' ? "$domain/api/v3" : "api.Github.com"
         commitSigning = $signCommit.toLower() -eq "yes" ?  $true : $false
         patRef        = $Accounts.ContainsKey($name) ? $Accounts[$name].patRef : (new-RandomBytes Hex 16)
         cacheRef      = $Accounts.ContainsKey($name) ? $Accounts[$name].cacheRef : (new-RandomBytes Hex 16)

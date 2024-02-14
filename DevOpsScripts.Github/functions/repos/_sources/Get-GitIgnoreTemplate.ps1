@@ -35,10 +35,10 @@ function Get-GitIgnoreTemplate {
 
     if ($null -EQ $data -OR $Refresh) {
         if ([System.String]::IsNullOrEmpty($Gitignore)) {
-            $data = Invoke-GitRest -URL "https://api.Git.com/gitignore/templates"
+            $data = Invoke-GitRest -URL "https://api.Github.com/gitignore/templates"
         }
         else {
-            $data = Invoke-GitRest -URL "https://api.Git.com/gitignore/templates/$Gitignore"
+            $data = Invoke-GitRest -URL "https://api.Github.com/gitignore/templates/$Gitignore"
         }
         $data = Set-GitCache -Object $data -Identifier "gitignore.$Gitignore"
     }

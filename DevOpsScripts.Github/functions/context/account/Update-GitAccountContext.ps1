@@ -42,7 +42,7 @@ function Update-GitAccountContext {
     $Accounts[$name] = [ordered]@{
         useSSH        = $useSSH.toLower() -eq "yes" ?  $true : $false
         name          = $name
-        domain        = $domain -ne 'api.Git.com' ? "$domain/api/v3" : "api.Git.com"
+        domain        = $domain -ne 'api.Github.com' ? "$domain/api/v3" : "api.Github.com"
         commitSigning = $signCommit.toLower() -eq "yes" ?  $true : $false
         patRef        = $Accounts[$Account].patRef
         cacheRef      = $Accounts[$Account].cacheRef

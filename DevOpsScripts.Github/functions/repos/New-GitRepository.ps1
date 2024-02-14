@@ -68,6 +68,16 @@ function New-GitRepository {
         [System.String]
         $Description = '',
 
+        # Initialize repository with a gitignore template.
+        [Parameter(
+            Position = 0,
+            Mandatory = $false
+        )] 
+        [ArgumentCompleter({ Invoke-GitGenericArgumentCompleter @args })]
+        [ValidateScript({ Invoke-GitGenericValidateScript $_ $PSBoundParameters 'Gitignore' })]
+        [System.String]
+        $Gitignore,
+
         # Visibility of the repository
         [Parameter()]
         [validateSet('public', 'private')]
@@ -85,12 +95,17 @@ function New-GitRepository {
         $onlyCreate
     )
 
-    $contextInfo = Get-GitContextInfo -Context $Context
+    $contextInfo = Get-GitContextInfo -Account $Account -Context $Context
+    $contextIdentifier = @{
+        Account = $contextInfo.Account
+        Context = $Context.login
+    }
     
     $Request = @{
         Method  = 'POST'
         Context = $contextInfo.login
         API     = $contextInfo.IsUserContext ? '/user/repos' : "/orgs/$($contextInfo.login)/repos"
+        Account = $contextInfo.Account
         Body    = @{
             org         = $contextInfo.login
             name        = $Name
@@ -99,17 +114,27 @@ function New-GitRepository {
         }
     }
 
-    $repository = Invoke-GitRest @Request
+    $repository = Invoke-GitRest @Request -Verbose
+    # Fetch newly created repo to cache.
+    $null = Get-GitContextInfo @contextIdentifier -Refresh
+
+    if (![System.String]::IsNullOrEmpty($Gitignore)) {
+        $gitignoreContent = @{
+            Repository = $repository.name
+            Path       = ".gitignore"
+            message    = "initialize .gitignore"
+            Branch     = $repository.default_branch
+            Content    = (Get-GitIgnoreTemplate -Gitignore $Gitignore).source
+        }
+        $null = Set-GitContent @gitignoreContent @contextIdentifier -Verbose
+    }
 
     if ($Browser) {
         Start-Process $repository.html_url
     }
-
-    # Fetch newly created repo to cache.
-    $null = Get-GitRepositories -Context $contextInfo.login -Refresh
     
     if (!$onlyCreate) {
-        Open-GitRepository -Name $Name -Context $contextInfo.login
+        Open-GitRepository @contextIdentifier -Repository $repository.name
     }
     
     return $repository

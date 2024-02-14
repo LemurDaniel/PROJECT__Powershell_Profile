@@ -78,7 +78,7 @@ function Get-GitContexts {
         }, @{
             Name       = 'LocalPath';
             Expression = {
-                "$basePath\Git\$($AccountContext.name)\$($_.login)"
+                "$basePath\GITHUB\$($AccountContext.name)\$($_.login)"
             }
         }
         $gitContexts | ForEach-Object {

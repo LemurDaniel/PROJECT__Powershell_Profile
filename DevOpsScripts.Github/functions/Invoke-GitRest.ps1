@@ -40,7 +40,6 @@ function Invoke-GitRest {
         [System.String]
         $API,
 
-
         # Override with complete url
         [Parameter(
             ParameterSetName = "url"
@@ -59,67 +58,28 @@ function Invoke-GitRest {
         [PSCustomObject]
         $Body,
 
-        # A switch parameter to Force interpret the Body as an array. (Single Value arrays may cause troubles by being interpreted as an object.)
-        [Parameter()]
-        [switch]
-        $AsArray,
-
-
+        [Parameter(
+            Mandatory = $false
+        )]
+        [System.String]
+        $Account,
 
         # When using scope Orgs.
         [parameter(
             Mandatory = $false
         )]
-        [ArgumentCompleter(
-            {
-                param($cmd, $param, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-                $validValues = (Get-GitContexts).login
-                
-                $validValues | `
-                    Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-                    ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-            }
-        )]
-        #[validateScript(
-        #    {
-        #        $_ -in (Get-GitContexts).login
-        #    }
-        #)]
         [System.String]
         $Context,
-
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.String]
-        #[ArgumentCompleter(
-        #    {
-        #        param($cmd, $param, $wordToComplete)
-        #        $validValues = (Get-GitAccountContext -ListAvailable).name
-        #        
-        #        $validValues | `
-        #            Where-Object { $_.toLower() -like "*$wordToComplete*".toLower() } | `
-        #            ForEach-Object { $_.contains(' ') ? "'$_'" : $_ } 
-        #    }
-        #)]
-        #[validateScript(
-        #    {
-        #        $_ -in (Get-GitAccountContext -ListAvailable).name
-        #    }
-        #)]
-        $Account,
-
-
 
         # The affiliation of requested resources. owner for example only returns repositories that you are owner of.
         [parameter()]
         [ValidateScript(
             {
-                ('owner,collaborator,organization_member'.split(',') | 
-                Where-Object { 
+                ('owner,collaborator,organization_member'.split(',') 
+                | Where-Object { 
                     $_ -NotIn @('owner', 'collaborator', 'organization_member') 
-                } | Measure-Object).Count -eq 0
+                } 
+                | Measure-Object).Count -eq 0
             }
         )]
         [System.String]
@@ -128,7 +88,7 @@ function Invoke-GitRest {
         # The content type for the requests. Set to Git default.
         [parameter()]
         [System.String]
-        $ContentType = 'application/vnd.Git+json',
+        $ContentType = 'application/vnd.github+json',
 
         # The visibilty of requested resources. public for example only return public repositories, etc.
         [parameter()]
@@ -139,45 +99,65 @@ function Invoke-GitRest {
         # The content type for the requests. Set to Git default.
         [parameter()]
         [System.String]
-        $apiVersion = '2022-11-28'
+        $apiVersion = '2022-11-28',
+
+        # A switch parameter to Force interpret the Body as an array. (Single Value arrays may cause troubles by being interpreted as an object.)
+        [Parameter()]
+        [switch]
+        $AsArray
     )
 
+    $AccountContext = Get-GitAccountContext -Account $Account
+    $PAT = Get-GitPAT -Account $AccountContext.name -AsPlainText
+
     # Build a hashtable of providedy Query params and Query params in provied api-url.
-    $Query = $null -ne $Query ? $Query : [System.Collections.Hashtable]::new()
+    $Query = $Query ?? [System.Collections.Hashtable]::new()
     $Query.Add('affiliation', $affiliation)
     $Query.Add('visibility', $visibility)
     $Query.Add('per_page', 100)
 
-    $APIEndpoint = ($API -split '\?')[0].replace('{org}', $Context)
-    $null = ($API -split '\?')[1] -split '&' | `
-        Where-Object { ![System.String]::IsNullOrEmpty($_) } | `
-        ForEach-Object { $Query.Add($_.split('=')[0], $_.split('=')[1]) }
+    $APISegments = $API -split '\?'
+    $APIEndpoint = $APISegments[0].replace('{org}', $Context)
+    $null = $APISegments[1] -split '&'
+    | Where-Object { 
+        ![System.String]::IsNullOrEmpty($_) 
+    } 
+    | ForEach-Object { 
+        $Query.Add($_.split('=')[0], $_.split('=')[1]) 
+    }
+
+    $QueryString = $Query.GetEnumerator() 
+    | Sort-Object -Descending { 
+        $_.Name -ne 'api-version' 
+    } 
+    | ForEach-Object {
+        "$($_.Name)=$($_.Value)" 
+    }
+    $QueryString = $QueryString -join '&'
+    
 
 
-    $QueryString = ($Query.GetEnumerator() | `
-            Sort-Object -Descending { $_.Name -ne 'api-version' } | `
-            ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '&'
+    $bodyJson = $body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray 
+    if ([System.String]::IsNullOrEmpty($URL)) {
+        $URL = "https://" + ([System.String]::Format("{0}/{1}?{2}", $AccountContext.domain, $APIEndpoint, $QueryString) -replace '/+', '/')
+    }
     
-    $bodyByteArray = [System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Depth 8 -Compress -AsArray:$AsArray))   
-    
-    $AccountContext = Get-GitAccountContext -Account $Account
-    $PAT = Get-GitPAT -Account $AccountContext.name -AsPlainText
     $Request = @{
         Method = $Method
         header = @{
             Accept                 = $contentType
-            'X-Git-Api-Version' = $apiVersion
+            'X-GitHub-Api-Version' = $apiVersion
             Authorization          = "Bearer $PAT"
         }
-        uri    = $PSBoundParameters.ContainsKey('URL') ? $URL : "https://" + ([System.String]::Format("{0}/{1}?{2}", $AccountContext.domain, $APIEndpoint, $QueryString) -replace '/+', '/')
-        Body   = $bodyByteArray   
+        uri    = $URL
+        Body   = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)  
     }
 
     Write-Verbose $Request.uri
 
     Write-Verbose "Method: $([String]$Request.Method)"
     Write-Verbose "URI: $($Request.Uri)"
-    Write-Verbose "BODY: $($body | ConvertTo-Json -Depth 8 -AsArray:$AsArray)"
+    Write-Verbose "BODY: $bodyJson"
 
     
     if ($PSCmdlet.ShouldProcess($Request.Uri, $($Request.Method))) {

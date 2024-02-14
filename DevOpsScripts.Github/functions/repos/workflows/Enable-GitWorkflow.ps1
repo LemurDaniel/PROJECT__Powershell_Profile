@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Creates a new disptach event for a workflow on any branch.
+    Enables a workflow.
 
     .DESCRIPTION
-    Creates a new disptach event for a workflow on any branch.
+    Enables a workflow.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,26 +14,38 @@
 
     .EXAMPLE
 
-    Invoke a dispatch event for a workflow for the current repository:
+    Enable a workflow for the current repository:
 
-    PS> Invoke-WorkflowDispatchEvent <autocompleted_workflow> -Dispatch
+    PS> Enable-GitWorkflow <autocompleted_workflow>
+
+    .EXAMPLE
+
+    Enable a workflow for the another repository:
+
+    PS> Enable-GitWorkflow -Repository <autocomplete_repo> <autocompleted_workflow>
+
+    .EXAMPLE
+
+    Enable a workflow for the a repository in another account:
+
+    PS> Enable-GitWorkflow -Account <autocompleted_account> <autocomplete_repo> <autocompleted_workflow>
 
 
     .EXAMPLE
 
-    Invoke a dispatch event for a workflow for another repository:
+    Enable a workflow for the a repository in another account and context:
 
-    PS> Invoke-WorkflowDispatchEvent -Repository <autocomplete_repo> <autocompleted_workflow> -Dispatch
+    PS> Enable-GitWorkflow -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo> <autocompleted_workflow>
+    
 
 
     .LINK
         
 #>
 
-function Invoke-WorkflowDispatchEvent {
+function Enable-GitWorkflow {
 
     [CmdletBinding()]
-    [Alias('git-wf')]
     param (
         # The name of the Git account to use. Defaults to current Account.
         [Parameter(
@@ -68,7 +80,7 @@ function Invoke-WorkflowDispatchEvent {
         [Alias('r')]
         $Repository,
 
-
+        
         # The filename of the workflow.
         [Parameter(
             Mandatory = $false,
@@ -78,33 +90,7 @@ function Invoke-WorkflowDispatchEvent {
         [ValidateScript({ Invoke-GitGenericValidateScript $_ $PSBoundParameters 'Workflow' })]
         [System.String]
         [Alias('Name')]
-        $Workflow,
-
-        # The ref-name for the dispatch event. Either a tag or branch. Defaults to defaukt branch.
-        [Parameter(
-            Mandatory = $false
-        )]
-        [ArgumentCompleter({ Invoke-GitGenericArgumentCompleter @args })]
-        [ValidateScript({ Invoke-GitGenericValidateScript $_ $PSBoundParameters 'Ref' })]
-        [System.String]
-        $Ref,
-
-        # A dictionary of inputs for the workflow.
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Collections.Hashtable]
-        $Inputs = @{},
-
-        # Prevent opening the workflow in the browser.
-        [Parameter()]
-        [switch]
-        $NoBrowserLaunch,
-
-        # Create a workflow dispatch event.
-        [Parameter()]
-        [switch]
-        $Dispatch
+        $Workflow
     )
 
     
@@ -117,23 +103,15 @@ function Invoke-WorkflowDispatchEvent {
 
     $workflowObject = Get-GitWorkflow @repositoryIdentifier -Name $Workflow
 
-    if ($Dispatch) {
-        $Request = @{
-            Method  = "POST"
-            Account = $repositoryData.Account
-            API     = "/repos/$($repositoryData.full_name)/actions/workflows/$($workflowObject.id)/dispatches"
-            Body    = @{
-                ref    = [System.String]::IsNullOrEmpty($ref) ? $repositoryData.default_branch : $ref
-                inputs = @{}
-            }
+    $Request = @{
+        Method  = "PUT"
+        Account = $repositoryData.Account
+        API     = "/repos/$($repositoryData.full_name)/actions/workflows/$($workflowObject.id)/enable"
+        Body    = @{
+            ref    = [System.String]::IsNullOrEmpty($ref) ? $repositoryData.default_branch : $ref
+            inputs = @{}
         }
-        $null = Invoke-GitRest @Request
     }
 
-    if (!$NoBrowserLaunch) {
-        if ($Dispatch) {
-            Start-Sleep -Milliseconds 1500
-        }
-        Start-Process -FilePath "$($RepositoryData.html_url)/actions/workflows/$($workflowObject.file_name)"
-    }
+    return Invoke-GitRest @Request -Verbose
 }

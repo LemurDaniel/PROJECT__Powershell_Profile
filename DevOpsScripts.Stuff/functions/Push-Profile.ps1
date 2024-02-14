@@ -2,9 +2,9 @@ function Push-Profile {
 
     param()
 
-    $fileItem = Open-GithubRepository -Account 'LemurDaniel' -Context 'LemurDaniel' -Name 'PROJECT__Powershell_Profile' -onlyDownload
+    $fileItem = Open-GitRepository -Account 'LemurDaniel' -Context 'LemurDaniel' -Name 'PROJECT__Powershell_Profile' -onlyDownload
 
-    $gitUser = Get-GithubUser -Account 'LemurDaniel'
+    $gitUser = Get-GitUser -Account 'LemurDaniel'
 
     if ($fileItem) {
         $byteArray = (1..4 | ForEach-Object { [byte](Get-Random -Max 256) })

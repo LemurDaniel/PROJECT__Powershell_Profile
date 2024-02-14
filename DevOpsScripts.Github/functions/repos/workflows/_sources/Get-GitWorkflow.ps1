@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-    Creates a new disptach event for a workflow on any branch.
+    Retrieves a list of all workflows for that repository.
 
     .DESCRIPTION
-    Creates a new disptach event for a workflow on any branch.
+    Retrieves a list of all workflows for that repository.
 
     .INPUTS
     None. You cannot pipe objects into the Function.
@@ -14,26 +14,37 @@
 
     .EXAMPLE
 
-    Invoke a dispatch event for a workflow for the current repository:
+    Get workflows for the current repository:
 
-    PS> Invoke-WorkflowDispatchEvent <autocompleted_workflow> -Dispatch
+    PS> Get-GitWorkflow
 
 
     .EXAMPLE
 
-    Invoke a dispatch event for a workflow for another repository:
+    Get workflows for another repository:
 
-    PS> Invoke-WorkflowDispatchEvent -Repository <autocomplete_repo> <autocompleted_workflow> -Dispatch
+    PS> Get-GitWorkflow <autocomplete_repo>
+
+
+    .EXAMPLE
+
+    Get workflows for other accounts, contexts, etc:
+    
+    PS> Get-GitWorkflow -Context <autocomplete_context> <autocomplete_repo>
+
+    PS> Get-GitWorkflow -Account <autocompleted_account> <autocomplete_repo>
+
+    PS> Get-GitWorkflow -Account <autocompleted_account> -Context <autocomplete_context> <autocomplete_repo>
+    
 
 
     .LINK
         
 #>
 
-function Invoke-WorkflowDispatchEvent {
+function Get-GitWorkflow {
 
     [CmdletBinding()]
-    [Alias('git-wf')]
     param (
         # The name of the Git account to use. Defaults to current Account.
         [Parameter(
@@ -67,7 +78,7 @@ function Invoke-WorkflowDispatchEvent {
         [System.String]
         [Alias('r')]
         $Repository,
-
+        
 
         # The filename of the workflow.
         [Parameter(
@@ -80,34 +91,11 @@ function Invoke-WorkflowDispatchEvent {
         [Alias('Name')]
         $Workflow,
 
-        # The ref-name for the dispatch event. Either a tag or branch. Defaults to defaukt branch.
-        [Parameter(
-            Mandatory = $false
-        )]
-        [ArgumentCompleter({ Invoke-GitGenericArgumentCompleter @args })]
-        [ValidateScript({ Invoke-GitGenericValidateScript $_ $PSBoundParameters 'Ref' })]
-        [System.String]
-        $Ref,
-
-        # A dictionary of inputs for the workflow.
-        [Parameter(
-            Mandatory = $false
-        )]
-        [System.Collections.Hashtable]
-        $Inputs = @{},
-
-        # Prevent opening the workflow in the browser.
         [Parameter()]
         [switch]
-        $NoBrowserLaunch,
-
-        # Create a workflow dispatch event.
-        [Parameter()]
-        [switch]
-        $Dispatch
+        $Refresh
     )
 
-    
     $repositoryData = Get-GitRepositoryInfo -Account $Account -Context $Context -Name $Repository
     $repositoryIdentifier = @{
         Account    = $repositoryData.Account
@@ -115,25 +103,28 @@ function Invoke-WorkflowDispatchEvent {
         Repository = $repositoryData.Name
     }
 
-    $workflowObject = Get-GitWorkflow @repositoryIdentifier -Name $Workflow
+    $data = Get-GitCache @repositoryIdentifier -Identifier "workflows"
 
-    if ($Dispatch) {
+    if ($null -EQ $data -OR $Refresh) {
         $Request = @{
-            Method  = "POST"
+            Method  = "GET"
+            API     = "/repos/$($repositoryData.full_name)/actions/workflows"
             Account = $repositoryData.Account
-            API     = "/repos/$($repositoryData.full_name)/actions/workflows/$($workflowObject.id)/dispatches"
-            Body    = @{
-                ref    = [System.String]::IsNullOrEmpty($ref) ? $repositoryData.default_branch : $ref
-                inputs = @{}
-            }
         }
-        $null = Invoke-GitRest @Request
+        $data = Invoke-GitRest @Request
+        
+        $data = $null -EQ $data ? @() : $data.workflows
+        | Select-Object *, @{
+            Name       = "file_name" 
+            Expression = { $_.path -split '/' | Select-Object -Last 1 }
+        }
+
+        $data = Set-GitCache -Object $data @repositoryIdentifier -Identifier "workflows"
     }
 
-    if (!$NoBrowserLaunch) {
-        if ($Dispatch) {
-            Start-Sleep -Milliseconds 1500
-        }
-        Start-Process -FilePath "$($RepositoryData.html_url)/actions/workflows/$($workflowObject.file_name)"
+    if (![System.String]::IsNullOrEmpty($Workflow)) {
+        return $data | Where-Object -Property file_name -EQ $Workflow
     }
+
+    return $data
 }

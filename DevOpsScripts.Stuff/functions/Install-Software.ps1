@@ -31,6 +31,16 @@ function Install-Software {
 
         [Parameter()]
         [System.String[]]
+        $psModules = @(
+            "Az",
+            "Bicep",
+            "OneDrive",
+            "ImportExcel",
+            "Microsoft.WinGet.Client"
+        ),
+
+        [Parameter()]
+        [System.String[]]
         $npmPackages = @(
             "yo",
             "sharp",
@@ -54,6 +64,7 @@ function Install-Software {
             "Opera.Opera",
             "Opera.OperaGX",
             "Valve.Steam",
+            "Discord.Discord",
             "JGraph.Draw",
             "GnuPG.Gpg4win",
             "Postman.Postman",
@@ -62,8 +73,10 @@ function Install-Software {
             "Notepad++.Notepad++",
             "OBSProject.OBSStudio",
             "Ultimaker.Cura",
+            "OpenJS.NodeJS",
             "Microsoft.Teams",
             "Microsoft.AzureCLI",
+            "Microsoft.Bicep",
             "Microsoft.PowerBI",
             "Microsoft.WindowsTerminal",
             "Microsoft.VisualStudioCode",
@@ -73,14 +86,14 @@ function Install-Software {
             "Microsoft.Azure.StorageExplorer",
             "Microsoft.AzureDataStudio",
             "Microsoft.PowerShell",
-            "OpenJS.NodeJS",
             "Microsoft.DotNet.SDK.7",
-            "VMware.WorkstationPlayer"
+            "VMware.WorkstationPlayer",
+            "CrystalDewWorld.CrystalDiskMark"
         )
     )
 
     if (
-        $null -EQ (Get-InstalledModule -Name Microsoft.WinGet.Client -MinimumVersion 0.2.1 -ErrorAction SilentlyContinue)
+        $null -EQ (Get-Command -Module Microsoft.WinGet.Client -ErrorAction SilentlyContinue)
     ) {
         Write-Host -ForeGroundColor Magenta "Installing required Module 'Microsoft.WinGet.Client'"
         Install-Module -Name Microsoft.WinGet.Client -Repository PSGallery
@@ -95,10 +108,11 @@ function Install-Software {
         install; upgrade; deinstall; none
     }
     enum Programm {
-        winget; npm
+        PowerShell; winget; npm;
     }
 
     $ProgramSelection = Select-ConsoleMenu -Options @(
+        [Programm]::PowerShell.ToString() 
         [Programm]::winget.ToString() 
         [Programm]::npm.ToString() 
     )
@@ -109,7 +123,18 @@ function Install-Software {
     }
 
     $commandReference = @{
-        [Programm]::winget = @{
+        [Programm]::PowerShell = @{
+            [Operation]::install   = {
+                param($id, $commandOptions)    Install-Module -Name $id -AllowClobber
+            }
+            [Operation]::deinstall = {
+                param($id, $commandOptions)    Uninstall-Module -Name $id
+            }
+            [Operation]::upgrade   = {
+                param($id, $commandOptions)    Update-Module -Name $id
+            }
+        }
+        [Programm]::winget     = @{
             [Operation]::install   = {
                 param($id, $commandOptions)    Install-WinGetPackage -Id $id
             }
@@ -120,7 +145,7 @@ function Install-Software {
                 param($id, $commandOptions)    Update-WinGetPackage -Id $id
             }
         }
-        [Programm]::npm    = @{
+        [Programm]::npm        = @{
             [Operation]::install   = {
                 param($id, $commandOptions)    npm install $id $commandOptions
             }
@@ -170,7 +195,21 @@ function Install-Software {
                 } 
             }
         }
-
+        elseif ([Programm]::PowerShell -EQ [Programm]$ProgramSelection) {
+            
+            $PackageRefrences = $psModules
+            $null = Get-Module -ListAvailable 
+            | Where-Object {
+                $_.Name -IN $PackageRefrences
+            }
+            | ForEach-Object {
+                $InstalledPackages[$_.Name] = @{
+                    id      = $_.Name
+                    version = $_.Version
+                    display = "$($_.Name) @$($_.Version)"
+                } 
+            }
+        }
 
 
 

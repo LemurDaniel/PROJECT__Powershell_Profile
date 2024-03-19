@@ -67,7 +67,7 @@ function Deploy-GitSecretsTemplate {
     $repositoryInfo = @{
         Account    = $repositoryData.Account
         Context    = $repositoryData.Context
-        Repository = $repositoryData.Repository
+        Repository = $repositoryData.name
     }
     
     Set-GitSecret -Secrets $templateFile['repository_secrets'] @repositoryInfo

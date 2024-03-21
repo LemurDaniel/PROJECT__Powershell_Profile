@@ -65,9 +65,24 @@ function Set-GitBranchProtection {
             Mandatory = $true
         )]
         [ArgumentCompleter({ Invoke-GitGenericArgumentCompleter @args })]
-        [ValidateScript({ Invoke-GitGenericValidateScript $_ $PSBoundParameters 'Branch' })]
+        # [ValidateScript({ Invoke-GitGenericValidateScript $_ $PSBoundParameters 'Branch' })]
         [System.String]
         $Branch,
+
+
+        [Parameter()]
+        [PSCustomObject]
+        $RequireStatusChecks = $null,
+        <#
+            @{
+                strict = $false
+                checks = @()
+            }
+        #>
+
+        [Parameter()]
+        [PSCustomObject]
+        $RequirePullRequestReviews = $null,
 
         # Requires all conversations on code to be resolved before a pull request can be merged into a branch that matches this rule. Set to false to disable. Default: false.
         [Parameter()]
@@ -107,9 +122,9 @@ function Set-GitBranchProtection {
         Account = $repositoryData.Account
         Body    = @{
         
-            required_status_checks           = $null
+            required_status_checks           = $RequireStatusChecks
             enforce_admins                   = $null
-            required_pull_request_reviews    = $null
+            required_pull_request_reviews    = $RequirePullRequestReviews
             restrictions                     = $null
 
             required_conversation_resolution = $ConverstionResolution -eq $true

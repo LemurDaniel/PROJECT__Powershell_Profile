@@ -21,4 +21,19 @@ Get-GitRepositories -Account 'Loro Play' -Context adesso
     Write-Host $Repository.full_name
 
     Deploy-GitSecretsTemplate @Identifier -Name LoRo.Repo.Default
+
+    $BranchProtection = @{
+        Branch                      = 'main'
+        ConverstionResolution       = $true
+        RequireStatusChecks         = @{
+            strict = $true
+            checks = @()
+        }
+        RequirePullRequestReviews = @{
+            dismiss_stale_reviews           = $true
+            required_approving_review_count = $true
+            require_last_push_approval      = $true
+        }
+    }
+    Set-GitBranchProtection @Identifier @BranchProtection
 }

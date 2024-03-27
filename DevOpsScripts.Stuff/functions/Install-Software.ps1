@@ -33,6 +33,8 @@ function Install-Software {
         [System.String[]]
         $psModules = @(
             "Az",
+            "AzTable",
+            "Az.ResourceGraph",
             "Bicep",
             "OneDrive",
             "ImportExcel",
@@ -87,6 +89,7 @@ function Install-Software {
             "Microsoft.AzureDataStudio",
             "Microsoft.PowerShell",
             "Microsoft.DotNet.SDK.7",
+            "Microsoft.Azure.AZCopy.10",
             "VMware.WorkstationPlayer",
             "CrystalDewWorld.CrystalDiskMark"
         )

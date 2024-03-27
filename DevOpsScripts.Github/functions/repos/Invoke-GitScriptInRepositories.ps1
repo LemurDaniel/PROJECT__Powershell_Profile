@@ -37,14 +37,14 @@ function Invoke-GitScriptInRepositories {
 
         # The commit message.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [System.String]
         $Message,
 
         # The name of the Pull Request.
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [System.String]
         $PullRequestTitle,
@@ -96,6 +96,11 @@ function Invoke-GitScriptInRepositories {
 
         & $ScriptBlock -Repository $Repository -Identifier $Identifier
 
+
+        if ([System.String]::IsNullOrEmpty($PullRequestTitle) -OR [System.String]::IsNullOrEmpty($Message)) {
+            git -C $Repository.LocalPath stash apply "stash^{/$stashName}" 2>$null
+            return
+        }
 
 
         $changes = git -C $Repository.LocalPath status --porcelain | Measure-Object
